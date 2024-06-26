@@ -1,0 +1,48 @@
+spring:
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  datasource:
+    url: jdbc:log4jdbc:mariadb://localhost:3306/baedalyo
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    username: root
+    password: green502
+  servlet:
+    multipart:
+      max-file-size: 5MB
+
+mybatis:
+  mapper-locations: mappers/**/*.xml
+
+springdoc:
+  api-docs:
+    version: openapi_3_1
+  swagger-ui:
+    path: /swagger
+    operations-sorter: method
+    default-model-expand-depth: 10
+  cache:
+    disabled: true
+
+file:
+  dir: D:\youp\download\baedalyo\
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: tdd
+  datasource:
+    url: jdbc:log4jdbc:mariadb://localhost:3306/baedalyo_tdd
+  sql:
+    init:
+      mode: always
+
+
+logging:
+  directory: D:\youp\download\baedalyo\
+
