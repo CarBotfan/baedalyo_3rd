@@ -6,7 +6,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
-    url: jdbc:log4jdbc:mariadb://localhost:3306/baedalyo
+    url: jdbc:log4jdbc:mariadb://192.168.0.19:3306/baedalyo
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
     username: root
     password: green502
@@ -29,6 +29,18 @@ springdoc:
 
 file:
   dir: D:\youp\download\baedalyo\
+
+app:
+  jwt:
+    secret: DaeguGreenArtAcademy3rdTeamJavaSpringBootSecondProjectAF423DF1SD51FEWGREENQWT12QWQ4561
+
+    header-schema-name: authorization
+
+    token-type: Bearer
+
+    access-token-expiry: 60_000
+
+    refresh-token-expiry: 1_296_000_000
 
 ---
 
