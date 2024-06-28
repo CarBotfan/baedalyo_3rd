@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.beadalyo.lmy.order.OrderMapper">
+
+    <insert id="postOrderTable" keyProperty="orderPk" useGeneratedKeys="true">
+        INSERT INTO order
+        SET order_user_pk = #{orderUserPk}
+            , order_res_pk = #{orderResPk}
+            , order_price = #{orderPrice}
+            , order_request = #{orderRequest}
+            , payment_Method = #{paymentMethod}
+    </insert>
+
+    <insert id="postOrderMenuTable" keyProperty="orderMenuPk" useGeneratedKeys="true">
+        INSERT INTO order_menu
+        SET menu_pk = #{menuPk}
+            , menu_name = #{}
+            , menu_price = #{}
+    </insert>
+</mapper>
