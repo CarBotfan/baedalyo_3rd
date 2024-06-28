@@ -112,6 +112,6 @@ public class JwtTokenProvider {
             return null;
         }
 
-        return jwt.substring(appProperties.getJwt().getTokenType().length());
+        return jwt.substring(appProperties.getJwt().getTokenType().length() + 1);
     }
 }

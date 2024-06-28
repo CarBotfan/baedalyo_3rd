@@ -1,11 +1,13 @@
 package com.green.beadalyo.jhw.common;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.UUID;
 
+@Configuration
 public class CustomFileUtils {
 
     public final String uploadPath;

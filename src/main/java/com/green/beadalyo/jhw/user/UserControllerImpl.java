@@ -29,7 +29,12 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    public ResultDto<String> patchProfilePic() {
+    public ResultDto<Integer> patchUserInfo(UserInfoPatchReq p) {
+        return null;
+    }
+
+    @Override
+    public ResultDto<String> patchProfilePic(UserPicPatchReq p) {
         return null;
     }
 
