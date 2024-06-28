@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.beadalyo.kdh.menu.MenuMapper">
+<insert id="postMenu" useGeneratedKeys="true" keyProperty="menuPk">
+    INSERT INTO menu
+    SET menu_res_pk  = #{menuResPk},
+        menu_name    = #{menuName},
+        menu_content = #{menuContent},
+        menu_price   = #{menuPrice},
+        menu_pic     = #{menuPic},
+        menu_state   = #{menuState}
+</insert>
+
+<select id="getAllMenu">
+    SELECT  menu_pk AS menuPk,
+            menu_res_pk AS menuResPk,
+            menu_name AS menuName,
+            menu_content AS menuContent,
+            menu_price AS menuPrice,
+            menu_pic AS menuPic,
+            menu_state AS menuState,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+    FROM menu
+    WHERE menu_res_pk = #{menuResPk}
+</select>
+
+<select id="getOneMenu">
+    SELECT  menu_pk AS menuPk,
+            menu_res_pk AS menuResPk,
+            menu_name AS menuName,
+            menu_content AS menuContent,
+            menu_price AS menuPrice,
+            menu_pic AS menuPic,
+            menu_state AS menuState,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+    FROM menu
+    WHERE menu_pk = #{menuPk}
+</select>
+
+<update id="putMenu">
+UPDATE menu
+    <set>
+        <if test=" menuName != null and menuName != '' ">
+            menu_name = #{menuName},
+        </if>
+        <if test=" menuContent != null and menuContent != '' ">
+            menu_content = #{menuContent},
+        </if>
+        <if test=" menuPrice != null and menuPrice != '' ">
+            menu_price = #{menuPrice},
+        </if>
+        <if test=" menuPic != null and menuPic != '' ">
+            menu_pic = #{menuPic},
+        </if>
+        <if test=" menuState != null and menuState != '' ">
+            menu_state = #{menuState},
+        </if>
+    </set>
+WHERE menu_pk = #{menuPk}
+</update>
+</mapper>
