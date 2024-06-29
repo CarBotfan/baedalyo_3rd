@@ -39,6 +39,16 @@
     WHERE menu_pk = #{menuPk}
 </select>
 
+<select id="getMenuWithOption">
+    SELECT
+            B.option1_name AS option1Name,
+            B.option2_name AS option2Name,
+            B.option_price AS optionPrice
+    FROM menu A
+    INNER JOIN option B
+    ON A.menu_pk = B.option_menu_pk
+    WHERE A.menu_pk = #{menuPk}
+</select>
 <update id="putMenu">
 UPDATE menu
     <set>
@@ -60,4 +70,10 @@ UPDATE menu
     </set>
 WHERE menu_pk = #{menuPk}
 </update>
+
+<delete id="delMenu">
+    DELETE
+    FROM menu
+    WHERE menu_pk = #{menuPk}
+</delete>
 </mapper>

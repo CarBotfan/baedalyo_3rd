@@ -3,6 +3,8 @@ package com.green.beadalyo.kdh.menu;
 
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.kdh.menu.model.*;
+import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
+import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,12 +66,9 @@ public class MenuService {
         return mapper.getAllMenu(p);
     }
 
-    public GetOneMenuRes getOneMenu(GetOneMenuReq p){
-        return mapper.getOneMenu(p);
-    }
 
     @Transactional
-    public PutMenuRes PutMenu(MultipartFile menuPic, PutMenuReq p){
+    public PutMenuRes putMenu(MultipartFile menuPic, PutMenuReq p){
 
             GetOneMenuReq req = new GetOneMenuReq(p.getMenuPk());
             GetOneMenuRes originalMenu = mapper.getOneMenu(req);
@@ -116,4 +115,10 @@ public class MenuService {
                 .build();
         return result;
     }
+
+    public int delMenu(long menuPk){
+        int result = mapper.delMenu(menuPk);
+        return result;
+    }
+
 }

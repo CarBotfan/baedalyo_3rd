@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.beadalyo.kdh.menuOption.MenuOptionMapper">
+
+<insert id="postMenuOption" useGeneratedKeys="true" keyProperty="optionPk">
+    INSERT INTO option
+    SET option_menu_pk  = #{optionMenuPk},
+        option1_name    = #{option1Name},
+        option2_name    = #{option2Name},
+        option_price    = #{optionPrice},
+        option_state    = #{optionState}
+</insert>
+
+<select id="getMenuOption">
+    SELECT  option_pk AS optionPk,
+            option_menu_pk AS optionMenuPk,
+            option1_name AS option1Name,
+            option2_name AS option2Name,
+            option_price AS optionPrice,
+            option_state AS optionState,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+    FROM  option
+    WHERE option_pk = #{optionPk}
+</select>
+
+
+
+<update id="putMenuOption">
+UPDATE option
+    <set>
+        <if test=" option1Name != null and option1Name != '' ">
+            option1_name = #{option1Name},
+        </if>
+        <if test=" option2Name != null and option2Name != '' ">
+            option2_name = #{option2Name},
+        </if>
+        <if test=" optionPrice != null and optionPrice != '' ">
+            option_price = #{optionPrice},
+        </if>
+        <if test=" optionState != null and optionState != '' ">
+            option_state = #{optionState},
+        </if>
+    </set>
+WHERE option_pk = #{optionPk}
+</update>
+
+<delete id="delMenuOption">
+    DELETE
+    FROM option
+    WHERE option_pk = #{optionPk}
+</delete>
+
+<select id="getMenuWithOption">
+    SELECT
+    B.option1_name AS option1Name,
+    B.option2_name AS option2Name,
+    B.option_price AS optionPrice
+    FROM menu A
+    INNER JOIN option B
+    ON A.menu_pk = B.option_menu_pk
+    WHERE A.menu_pk = #{menuPk}
+</select>
+</mapper>
