@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResultDto<T> {
-    private HttpStatus statusCode;
+    private int statusCode;
     private String ResultMsg;
     private T Result;
 }

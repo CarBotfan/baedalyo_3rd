@@ -11,6 +11,6 @@ public interface UserService {
     int signUpPostReq(MultipartFile pic, SignUpPostReq p);
     SignInRes signInPost(HttpServletResponse res, SignInPostReq p);
     UserInfoGetRes getUserInfo(UserInfoGetReq p);
-    String patchProfilePic(UserPicPatchReq p);
+    String patchProfilePic(MultipartFile pic, UserPicPatchReq p);
     Map getAccessToken(HttpServletRequest req);
 }

@@ -65,20 +65,22 @@ public class UserServiceImpl implements UserService{
         User user = mapper.signInUser(p.getUserId());
 
         if(user == null) {
-            throw new RuntimeException();
+            throw new RuntimeException("존재하지 않는 ID");
         }
         if(BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
-            throw new RuntimeException();
+            throw new RuntimeException("비밀번호 불일치");
         }
         if(user.getUserRole() == 3) {
-            throw new RuntimeException(); // 탈퇴 유저
+            throw new RuntimeException("탈퇴 유저입니다"); // 탈퇴 유저
         }
 
-        String role = "";
+        String role;
         if(user.getUserRole() == 1) {
             role = "ROLE_USER";
         } else if(user.getUserRole() == 2) {
             role = "ROLE_OWNER";
+        } else {
+            throw new RuntimeException("비정상 권한 코드");
         }
 
         MyUser myUser = MyUser.builder()
@@ -104,12 +106,31 @@ public class UserServiceImpl implements UserService{
     public UserInfoGetRes getUserInfo(UserInfoGetReq p) {
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         //프론트에서 직접 pk 전달 X, 백엔드에서 토큰을 가지고 알아서 처리
-        return mapper.selProfileUserInfo(p);
+        try{ return mapper.selProfileUserInfo(p); }
+        catch(Exception e) {
+            throw new RuntimeException("DB 에러");
+        }
     }
 
     @Override
-    public String patchProfilePic(UserPicPatchReq p) {
-        return null;
+    @Transactional
+    public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) {
+        p.setSignedUserId(authenticationFacade.getLoginUserPk());
+        String fileName = customFileUtils.makeRandomFileName(pic);
+        p.setPicName(fileName);
+        mapper.updProfilePic(p);
+
+        try {
+            String midPath = String.format("user/%d", p.getSignedUserId());
+            String delAbsoluteFolderPath = String.format("%s/%s", customFileUtils.uploadPath, midPath);
+            customFileUtils.deleteFolder(delAbsoluteFolderPath);
+            customFileUtils.makeFolders(midPath);
+            String target = String.format("%s/%s", midPath, fileName);
+            customFileUtils.transferTo(pic, target);
+        } catch(Exception e) {
+            throw new RuntimeException();
+        }
+        return fileName;
     }
 
     @Override

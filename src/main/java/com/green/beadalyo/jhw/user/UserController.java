@@ -10,7 +10,7 @@ import java.util.Map;
 public interface UserController {
     ResultDto<Integer> postSignUp(MultipartFile pic, SignUpPostReq p);
     ResultDto<SignInRes> postSignIn(SignInPostReq p);
-    ResultDto<String> patchProfilePic(UserPicPatchReq p);
+    ResultDto<String> patchProfilePic(MultipartFile pic, UserPicPatchReq p);
     ResultDto<Integer> patchUserInfo(UserInfoPatchReq p);
     ResultDto<Map> getAccessToken(HttpServletRequest req);
     ResultDto<UserInfoGetRes> getUserInfo(UserInfoGetReq p);
