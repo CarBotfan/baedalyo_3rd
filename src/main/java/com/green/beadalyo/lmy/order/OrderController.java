@@ -18,10 +18,10 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResultDto<Object> postOrder(@RequestBody OrderPostReq p){
+    public ResultDto<Integer> postOrder(@RequestBody OrderPostReq p){
         int code = 2;
-        String msg = "board 업로드 완료";
-        Object result = -1;
+        String msg = "order 업로드 완료";
+        int result = -1;
 
         try {
             result = orderService.postOrder(p);
@@ -30,7 +30,11 @@ public class OrderController {
             msg = e.getMessage();
         }
 
-        return ResultDto.builder().build();
+        return ResultDto.<Integer>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
     }
 
 }

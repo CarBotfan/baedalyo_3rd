@@ -4,19 +4,39 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.green.beadalyo.lmy.order.OrderMapper">
 
+    <!-- 메뉴 데이터를 한 번에 가져오는 쿼리 -->
+    <select id="selectMenus" parameterType="java.util.List" resultType="Map">
+        SELECT menu_pk, menu_name, menu_price
+        FROM menu
+        WHERE menu_pk IN
+        <foreach item="menuPk" index="index" collection="list" open="(" separator="," close=")">
+            #{menuPk}
+        </foreach>
+    </select>
+
+    <!-- order 테이블에 데이터를 삽입하는 쿼리 -->
     <insert id="postOrderTable" keyProperty="orderPk" useGeneratedKeys="true">
-        INSERT INTO order
-        SET order_user_pk = #{orderUserPk}
-            , order_res_pk = #{orderResPk}
-            , order_price = #{orderPrice}
-            , order_request = #{orderRequest}
-            , payment_Method = #{paymentMethod}
+        INSERT INTO `order`
+        (order_user_pk, order_res_pk, order_price, order_request, payment_method)
+        VALUES
+        (#{orderUserPk}, #{orderResPk}, #{orderPrice}, #{orderRequest}, #{paymentMethod})
     </insert>
 
-    <insert id="postOrderMenuTable" keyProperty="orderMenuPk" useGeneratedKeys="true">
-        INSERT INTO order_menu
-        SET menu_pk = #{menuPk}
-            , menu_name = #{}
-            , menu_price = #{}
+    <!-- order_menu에 데이터를 배치로 삽입하는 쿼리 -->
+    <insert id="insertOrderMenuBatch" parameterType="java.util.List">
+        INSERT INTO order_menu (order_pk, menu_pk, menu_name, menu_price)
+        VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (
+            #{item.orderPk},
+            #{item.menuPk},
+            #{item.menuName},
+            #{item.menuPrice}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="">
+
     </insert>
 </mapper>
