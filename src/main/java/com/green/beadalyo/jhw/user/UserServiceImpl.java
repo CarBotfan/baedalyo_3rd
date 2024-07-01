@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public int signUpPostReq(MultipartFile pic, SignUpPostReq p) {
+    public int postSignUp(MultipartFile pic, UserSignUpPostReq p) {
         String fileName = customFileUtils.makeRandomFileName(pic);
         p.setUserPic(fileName);
 
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public SignInRes signInPost(HttpServletResponse res, SignInPostReq p) {
+    public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) {
         User user = mapper.signInUser(p.getUserId());
 
         if(user == null) {

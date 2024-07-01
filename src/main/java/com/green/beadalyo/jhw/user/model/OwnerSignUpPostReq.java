@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SignUpPostReq {
+public class OwnerSignUpPostReq {
     @JsonIgnore
     private long userPk;
     private String userId;
@@ -16,6 +16,8 @@ public class SignUpPostReq {
     @JsonIgnore
     private String userPic;
     private String userPhone;
-    private String userRole;
+    @JsonIgnore
+    private int userRole;
+    @JsonIgnore
     private int userLoginType;
 }

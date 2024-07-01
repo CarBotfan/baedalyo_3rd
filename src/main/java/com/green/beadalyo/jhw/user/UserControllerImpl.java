@@ -20,7 +20,22 @@ public class UserControllerImpl implements UserController{
     private final UserServiceImpl service;
 
     @Override
-    public ResultDto<Integer> postSignUp(MultipartFile pic, SignUpPostReq p) {
+    public ResultDto<Integer> postUserSignUp(MultipartFile pic, UserSignUpPostReq p) {
+        p.setUserRole(1);
+        return null;
+    }
+
+    @Override
+    public ResultDto<Integer> postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p) {
+        UserSignUpPostReq req = UserSignUpPostReq.builder()
+                .userId(p.getUserId())
+                .userPw(p.getUserPw())
+                .userName(p.getUserName())
+                .userNickName(p.getUserNickName())
+                .userPhone(p.getUserNickName())
+                .userRole(2)
+                .build();
+        service.postSignUp(pic, req);
         return null;
     }
 
@@ -35,7 +50,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    public ResultDto<String> patchProfilePic(@RequestPart MultipartFile pic, @RequestPart UserPicPatchReq p) {
+    public ResultDto<String> patchProfilePic(@RequestPart(required = false) MultipartFile pic, @RequestPart UserPicPatchReq p) {
         return null;
     }
 
