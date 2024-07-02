@@ -16,7 +16,7 @@ import java.io.IOException;
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final String uploadPath;
 
-    public WebMvcConfiguration(@Value("${file.directory}") String uploadPath) {
+    public WebMvcConfiguration(@Value("${file.dir}") String uploadPath) {
         this.uploadPath = uploadPath;
     }
 

@@ -13,5 +13,6 @@ public class User {
     private String userPw;
     private String userName;
     private String userPic;
-    private int userRole;
+    private int userState;
+    private String userRole;
 }

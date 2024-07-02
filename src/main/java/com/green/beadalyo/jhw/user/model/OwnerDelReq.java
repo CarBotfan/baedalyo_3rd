@@ -6,9 +6,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserInfoPatchReq {
+public class OwnerDelReq {
     @JsonIgnore
     private long signedUserPk;
-    private String userNickName;
-    private String userPhone;
+    private String userPw;
 }

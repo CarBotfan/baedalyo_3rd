@@ -6,9 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserInfoPatchReq {
+public class UserPasswordPatchReq {
     @JsonIgnore
     private long signedUserPk;
-    private String userNickName;
-    private String userPhone;
+    private String userPw;
+    private String newPw;
 }

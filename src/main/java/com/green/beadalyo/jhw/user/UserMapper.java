@@ -9,5 +9,8 @@ public interface UserMapper {
     User signInUser(String userId);
     UserInfoGetRes selProfileUserInfo(UserInfoGetReq p);
     int updProfilePic(UserPicPatchReq p);
-    User getUserById(String userId);
+    User getUser(long userPk);
+    int deleteUser(long userPk);
+    int updUserPassWord(UserPasswordPatchReq p);
+    int updUserInfo(UserInfoPatchReq p);
 }

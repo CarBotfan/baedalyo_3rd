@@ -14,10 +14,12 @@ public class UserSignUpPostReq {
     private String userId;
     private String userPw;
     private String userName;
-    private String userNickName;
+    private String userNickname;
     @JsonIgnore
     private String userPic;
     private String userPhone;
-    private int userRole;
+    @JsonIgnore
+    private String userRole;
+    @JsonIgnore
     private int userLoginType;
 }

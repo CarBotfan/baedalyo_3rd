@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,28 +65,16 @@ public class UserServiceImpl implements UserService{
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) {
         User user = mapper.signInUser(p.getUserId());
 
-        if(user == null) {
+        if(user == null || user.getUserState() == 3) {
             throw new RuntimeException("존재하지 않는 ID");
         }
         if(BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
             throw new RuntimeException("비밀번호 불일치");
         }
-        if(user.getUserRole() == 3) {
-            throw new RuntimeException("탈퇴 유저입니다"); // 탈퇴 유저
-        }
-
-        String role;
-        if(user.getUserRole() == 1) {
-            role = "ROLE_USER";
-        } else if(user.getUserRole() == 2) {
-            role = "ROLE_OWNER";
-        } else {
-            throw new RuntimeException("비정상 권한 코드");
-        }
 
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
-                .role(role)
+                .role(user.getUserRole())
                 .build();
 
         String accessToken = jwtTokenProvider.generateAccessToken(myUser);
@@ -106,10 +95,7 @@ public class UserServiceImpl implements UserService{
     public UserInfoGetRes getUserInfo(UserInfoGetReq p) {
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         //프론트에서 직접 pk 전달 X, 백엔드에서 토큰을 가지고 알아서 처리
-        try{ return mapper.selProfileUserInfo(p); }
-        catch(Exception e) {
-            throw new RuntimeException("DB 에러");
-        }
+        return mapper.selProfileUserInfo(p);
     }
 
     @Override
@@ -131,6 +117,42 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException();
         }
         return fileName;
+    }
+
+    @Override
+    public int deleteUser(UserDelReq p) {
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        User user = mapper.getUser(p.getSignedUserPk());
+        if(user == null || user.getUserState() == 3) {
+            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
+        }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
+            throw new RuntimeException("비밀번호 불일치");
+        }
+        return mapper.deleteUser(p.getSignedUserPk());
+    }
+
+    @Override
+    public int patchUserInfo(UserInfoPatchReq p) {
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        User user = mapper.getUser(p.getSignedUserPk());
+        if(user == null || user.getUserState() == 3) {
+            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
+        }
+        return mapper.updUserInfo(p);
+    }
+
+    @Override
+    public int patchUserPassword(UserPasswordPatchReq p) {
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        User user = mapper.getUser(p.getSignedUserPk());
+        if(user == null || user.getUserState() == 3) {
+            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
+        }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
+            throw new RuntimeException("비밀번호 불일치");
+        }
+        String hashedPassword = passwordEncoder.encode(p.getNewPw());
+        p.setNewPw(hashedPassword);
+        return mapper.updUserPassWord(p);
     }
 
     @Override

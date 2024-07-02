@@ -12,7 +12,7 @@ public class CustomFileUtils {
 
     public final String uploadPath;
 
-    public CustomFileUtils(@Value("${file.directory}") String uploadPath) {
+    public CustomFileUtils(@Value("${file.dir}") String uploadPath) {
         this.uploadPath = uploadPath;
     }
 

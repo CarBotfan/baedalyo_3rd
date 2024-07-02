@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @Builder
@@ -12,6 +11,6 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class ResultDto<T> {
     private int statusCode;
-    private String ResultMsg;
-    private T Result;
+    private String resultMsg;
+    private T result;
 }

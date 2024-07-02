@@ -9,6 +9,9 @@ import java.util.Map;
 
 public interface UserService {
     int postSignUp(MultipartFile pic, UserSignUpPostReq p);
+    int deleteUser(UserDelReq p);
+    int patchUserInfo(UserInfoPatchReq p);
+    int patchUserPassword(UserPasswordPatchReq p);
     SignInRes postSignIn(HttpServletResponse res, SignInPostReq p);
     UserInfoGetRes getUserInfo(UserInfoGetReq p);
     String patchProfilePic(MultipartFile pic, UserPicPatchReq p);

@@ -20,4 +20,12 @@ public class OwnerSignUpPostReq {
     private int userRole;
     @JsonIgnore
     private int userLoginType;
+    private String openTime;
+    private String closeTime;
+    private String addr;
+    private String coorX;
+    private String coorY;
+    private String restaurantName;
+    private String regiNum;
+
 }
