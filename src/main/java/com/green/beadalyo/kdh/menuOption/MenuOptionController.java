@@ -16,8 +16,8 @@ public class MenuOptionController {
     private final MenuOptionService service;
 
     @PostMapping
-    @Operation(summary = "옵션을 등록합니다." , description = "optionPk는 등록된 '옵션'의 고유 번호(PK)입니다." +
-            "                                       optionMenuPk는 옵션이 달린 '메뉴'의 고유 번호(PK)입니다." +
+    @Operation(summary = "옵션을 등록합니다." , description = "optionPk는 등록된 '옵션'의 고유 번호(PK)입니다.\n" +
+            "                                       optionMenuPk는 옵션이 달린 '메뉴'의 고유 번호(PK)입니다.\n" +
             "                                       optionState ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.")
     public ResultDto<PostMenuOptionRes> postMenuOption(@RequestBody PostMenuOptionReq p){
 
@@ -59,8 +59,8 @@ public class MenuOptionController {
     }
 
     @PutMapping
-    @Operation(summary = "옵션을 수정합니다." , description = "optionPk는 등록된 '옵션'의 고유 번호(PK)입니다." +
-            "                                       optionMenuPk는 옵션이 달린 '메뉴'의 고유 번호(PK)입니다." +
+    @Operation(summary = "옵션을 수정합니다." , description = "optionPk는 등록된 '옵션'의 고유 번호(PK)입니다.\n" +
+            "                                       optionMenuPk는 옵션이 달린 '메뉴'의 고유 번호(PK)입니다.\n" +
             "                                       optionState ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.")
     public ResultDto<PutMenuOptionRes> putMenuOption(@RequestBody PutMenuOptionReq p){
 
@@ -82,8 +82,8 @@ public class MenuOptionController {
     }
 
     @DeleteMapping
-    @Operation(summary = "옵션을 삭제합니다." , description = "option_pk는 등록된 '옵션'의 고유 번호(PK)입니다." +
-            "                                        넘어온 데이터가 1이라면 삭제 완료입니다." +
+    @Operation(summary = "옵션을 삭제합니다." , description = "option_pk는 등록된 '옵션'의 고유 번호(PK)입니다.\n" +
+            "                                        넘어온 데이터가 1이라면 삭제 완료입니다.\n" +
             "                                        (삭제한 옵션의 갯수라고 생각하시면 됩니다.)")
     public ResultDto<Integer> delMenuOption(@ParameterObject @ModelAttribute DelMenuOptionReq p){
 
