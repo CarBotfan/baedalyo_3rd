@@ -13,7 +13,7 @@ public interface UserService {
     int patchUserInfo(UserInfoPatchReq p);
     int patchUserPassword(UserPasswordPatchReq p);
     SignInRes postSignIn(HttpServletResponse res, SignInPostReq p);
-    UserInfoGetRes getUserInfo(UserInfoGetReq p);
+    UserInfoGetRes getUserInfo();
     String patchProfilePic(MultipartFile pic, UserPicPatchReq p);
     Map getAccessToken(HttpServletRequest req);
 }

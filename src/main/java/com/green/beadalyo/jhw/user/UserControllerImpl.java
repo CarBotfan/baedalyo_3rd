@@ -129,8 +129,8 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @GetMapping
-    public ResultDto<UserInfoGetRes> getUserInfo(@RequestBody UserInfoGetReq p) {
-        UserInfoGetRes result = service.getUserInfo(p);
+    public ResultDto<UserInfoGetRes> getUserInfo() {
+        UserInfoGetRes result = service.getUserInfo();
         return ResultDto.<UserInfoGetRes>builder()
                 .statusCode(2)
                 .resultMsg("조회 완료")

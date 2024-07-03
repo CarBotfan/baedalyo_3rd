@@ -1,10 +1,13 @@
 package com.green.beadalyo.jhw.user.model;
 
+import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @EqualsAndHashCode
 public class User {
@@ -15,4 +18,5 @@ public class User {
     private String userPic;
     private int userState;
     private String userRole;
+    private UserAddrGetRes mainAddr;
 }

@@ -16,7 +16,7 @@ public interface UserController {
     ResultDto<Integer> patchUserInfo(UserInfoPatchReq p);
     ResultDto<Integer> patchUserPassword(UserPasswordPatchReq p);
     ResultDto<Map> getAccessToken(HttpServletRequest req);
-    ResultDto<UserInfoGetRes> getUserInfo(UserInfoGetReq p);
+    ResultDto<UserInfoGetRes> getUserInfo();
     ResultDto<Integer> deleteUser(UserDelReq p);
     ResultDto<Integer> deleteOwner(OwnerDelReq p);
 }

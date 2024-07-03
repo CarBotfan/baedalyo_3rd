@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class UserPicPatchReq {
     @JsonIgnore
-    private long signedUserId;
+    private long signedUserPk;
     @JsonIgnore
     private String picName;
 }

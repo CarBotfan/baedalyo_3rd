@@ -13,4 +13,73 @@
         , user_role = #{userRole}
         , user_logintype = #{userLoginType}
     </insert>
+    <select id="getUserById">
+        SELECT
+        user_pk AS userPk
+        , user_id AS userId
+        , user_pw AS userPw
+        , user_name AS userName
+        , user_pic AS userPic
+        , user_state AS userState
+        , user_role AS userRole
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+    <select id="getUserByPk">
+        SELECT
+        user_pk AS userPk
+        , user_id AS userId
+        , user_pw AS userPw
+        , user_name AS userName
+        , user_pic AS userPic
+        , user_state AS userState
+        , user_role AS userRole
+        FROM user
+        WHERE user_pk = #{userPk}
+    </select>
+    <select id="selProfileUserInfo">
+        SELECT
+        user_id AS userId
+        , user_name AS userName
+        , user_pic AS userPic
+        , user_phone AS userPhone
+        FROM user
+        WHERE user_pk = #{signedUserPk}
+    </select>
+    <update id="updProfilePic">
+        UPDATE user
+        SET user_pic = #{picName}
+        WHERE user_pk = #{signedUserPk}
+    </update>
+    <update id="updUserInfo">
+        UPDATE user
+        <set>
+            <if test="userNickName != null and !userNickname.equals('')">
+                userNickName = #{userNickName}
+            </if>
+            <if test = "userPhone != null and !userPhone.equals('')">
+                userPhone = #{userPhone}
+            </if>
+        </set>
+    </update>
+    <update id="updUserPassword">
+        UPDATE user
+        SET user_pw = #{newPw}
+        WHERE user_pk = #{signedUserPk}
+    </update>
+    <update id="deleteUser">
+        UPDATE user
+        SET user_state = 3
+        WHERE user_pk = #{userPk}
+    </update>
+    <select id="getMainAddr">
+        SELECT
+        addr1 , addr2
+        , addr_zip AS addrZip
+        , addr_coor_x AS addrCoorX
+        , addr_coor_y AS addrCoorY
+        FROM address
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_default = #{signedUserPk}
+    </select>
 </mapper>

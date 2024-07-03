@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,8 +62,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) {
-        User user = mapper.signInUser(p.getUserId());
-
+        User user = mapper.getUserById(p.getUserId());
+        user.setMainAddr(mapper.getMainAddr(user.getUserPk()));
         if(user == null || user.getUserState() == 3) {
             throw new RuntimeException("존재하지 않는 ID");
         }
@@ -88,26 +87,30 @@ public class UserServiceImpl implements UserService{
                 .userPk(user.getUserPk())
                 .userName(user.getUserName())
                 .userPic(user.getUserPic())
+                .mainAddr(user.getMainAddr())
                 .accessToken(accessToken).build();
     }
 
     @Override
-    public UserInfoGetRes getUserInfo(UserInfoGetReq p) {
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+    public UserInfoGetRes getUserInfo() {
+        long userPk = authenticationFacade.getLoginUserPk();
         //프론트에서 직접 pk 전달 X, 백엔드에서 토큰을 가지고 알아서 처리
-        return mapper.selProfileUserInfo(p);
+        UserInfoGetRes result = mapper.selProfileUserInfo(userPk);
+        result.setMainAddr(mapper.getMainAddr(userPk));
+        return result;
+
     }
 
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) {
-        p.setSignedUserId(authenticationFacade.getLoginUserPk());
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = customFileUtils.makeRandomFileName(pic);
         p.setPicName(fileName);
         mapper.updProfilePic(p);
 
         try {
-            String midPath = String.format("user/%d", p.getSignedUserId());
+            String midPath = String.format("user/%d", p.getSignedUserPk());
             String delAbsoluteFolderPath = String.format("%s/%s", customFileUtils.uploadPath, midPath);
             customFileUtils.deleteFolder(delAbsoluteFolderPath);
             customFileUtils.makeFolders(midPath);
@@ -120,21 +123,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int deleteUser(UserDelReq p) {
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUser(p.getSignedUserPk());
-        if(user == null || user.getUserState() == 3) {
-            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
-        }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
-            throw new RuntimeException("비밀번호 불일치");
-        }
-        return mapper.deleteUser(p.getSignedUserPk());
-    }
-
-    @Override
     public int patchUserInfo(UserInfoPatchReq p) {
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUser(p.getSignedUserPk());
+        User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
         }
@@ -144,7 +135,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public int patchUserPassword(UserPasswordPatchReq p) {
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUser(p.getSignedUserPk());
+        User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
         }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
@@ -152,7 +143,19 @@ public class UserServiceImpl implements UserService{
         }
         String hashedPassword = passwordEncoder.encode(p.getNewPw());
         p.setNewPw(hashedPassword);
-        return mapper.updUserPassWord(p);
+        return mapper.updUserPassword(p);
+    }
+
+    @Override
+    public int deleteUser(UserDelReq p) {
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        User user = mapper.getUserByPk(p.getSignedUserPk());
+        if(user == null || user.getUserState() == 3) {
+            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
+        }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
+            throw new RuntimeException("비밀번호 불일치");
+        }
+        return mapper.deleteUser(p.getSignedUserPk());
     }
 
     @Override

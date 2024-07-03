@@ -6,14 +6,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserAddrPostReq {
-    @JsonIgnore
-    private long addrPk;
+public class MainUserAddrPatchReq {
     @JsonIgnore
     private long signedUserId;
-    private String addr1;
-    private String addr2;
-    private String addrZip;
-    private float addrCoorX;
-    private float addrCoorY;
+    private long changeAddressPk;
 }
