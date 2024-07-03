@@ -1,14 +1,9 @@
 package com.green.beadalyo.lmy.order;
 
-import com.green.beadalyo.lmy.order.model.OrderEntity;
-import com.green.beadalyo.lmy.order.model.OrderGetRes;
-import com.green.beadalyo.lmy.order.model.OrderMenuEntity;
-import com.green.beadalyo.lmy.order.model.OrderPostReq;
+import com.green.beadalyo.lmy.order.model.*;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +32,8 @@ public class OrderService {
                         .sum())
                 .sum();
 
-        // orderPostReq에 총 가격 설정
         p.setOrderPrice(totalPrice);
 
-        // order 테이블에 데이터 삽입
         try {
             orderMapper.postOrderTable(p);
         } catch (Exception e) {
@@ -149,11 +142,11 @@ public class OrderService {
         return 1;
     }
 
-    public List<OrderGetRes> getUserOrderList(Long userPk){
-        List<OrderGetRes> result = null;
+    public List<OrderMiniGetRes> getUserOrderList(Long userPk){
+        List<OrderMiniGetRes> result = null;
         try {
             result = orderMapper.selectOrdersByUserPk(userPk);
-            for (OrderGetRes item : result) {
+            for (OrderMiniGetRes item : result) {
                 List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
                 item.setMenuName(result2);
             }
@@ -164,14 +157,26 @@ public class OrderService {
         return result;
     }
 
-    public List<OrderGetRes> getResOrderList(Long resPk){
-        List<OrderGetRes> result = null;
+    public List<OrderMiniGetRes> getResOrderList(Long resPk){
+        List<OrderMiniGetRes> result = null;
         try {
             result = orderMapper.selectOrdersByResPk(resPk);
-            for (OrderGetRes item : result) {
+            for (OrderMiniGetRes item : result) {
                 List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
                 item.setMenuName(result2);
             }
+        } catch (Exception e) {
+            throw new RuntimeException("불러오기 오류");
+        }
+
+        return result;
+    }
+
+    public OrderGetRes getOrderInfo(Long orderPk) {
+        OrderGetRes result = null;
+        try {
+            result = orderMapper.getOrderInfo(orderPk);
+            result.setMenuInfoList(orderMapper.selectMenuInfo(orderPk));
         } catch (Exception e) {
             throw new RuntimeException("불러오기 오류");
         }

@@ -1,9 +1,6 @@
 package com.green.beadalyo.lmy.order;
 
-import com.green.beadalyo.lmy.order.model.OrderEntity;
-import com.green.beadalyo.lmy.order.model.OrderGetRes;
-import com.green.beadalyo.lmy.order.model.OrderMenuEntity;
-import com.green.beadalyo.lmy.order.model.OrderPostReq;
+import com.green.beadalyo.lmy.order.model.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -21,7 +18,10 @@ public interface OrderMapper {
     void insertDoneOrderMenu(List<OrderMenuEntity> orderMenuEntities);
     void deleteOrder(Long orderPk);
 
-    List<OrderGetRes> selectOrdersByUserPk(Long userPk);
-    List<OrderGetRes> selectOrdersByResPk(Long resPk);
+    List<OrderMiniGetRes> selectOrdersByUserPk(Long userPk);
+    List<OrderMiniGetRes> selectOrdersByResPk(Long resPk);
     List<String> selectMenuNames(Long orderPk);
+
+    OrderGetRes getOrderInfo(Long orderPk);
+    List<MenuInfoDto> selectMenuInfo(Long orderPk);
 }
