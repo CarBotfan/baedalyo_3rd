@@ -157,10 +157,25 @@ public class OrderService {
         return result;
     }
 
-    public List<OrderMiniGetRes> getResOrderList(Long resPk){
+    public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk){
         List<OrderMiniGetRes> result = null;
         try {
-            result = orderMapper.selectOrdersByResPk(resPk);
+            result = orderMapper.selectNonConfirmOrdersByResPk(resPk);
+            for (OrderMiniGetRes item : result) {
+                List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
+                item.setMenuName(result2);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("불러오기 오류");
+        }
+
+        return result;
+    }
+
+    public List<OrderMiniGetRes> getResConfirmOrderList(Long resPk){
+        List<OrderMiniGetRes> result = null;
+        try {
+            result = orderMapper.selectConfirmOrdersByResPk(resPk);
             for (OrderMiniGetRes item : result) {
                 List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
                 item.setMenuName(result2);
@@ -182,5 +197,15 @@ public class OrderService {
         }
 
         return result;
+    }
+
+    public Integer confirmOrder(Long orderPk) {
+        try {
+            orderMapper.confirmOrder(orderPk);
+        } catch (Exception e) {
+            throw new RuntimeException("접수 오류~!~!");
+        }
+
+        return 1;
     }
 }

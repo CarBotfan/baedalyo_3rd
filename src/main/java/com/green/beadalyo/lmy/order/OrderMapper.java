@@ -19,9 +19,12 @@ public interface OrderMapper {
     void deleteOrder(Long orderPk);
 
     List<OrderMiniGetRes> selectOrdersByUserPk(Long userPk);
-    List<OrderMiniGetRes> selectOrdersByResPk(Long resPk);
+    List<OrderMiniGetRes> selectNonConfirmOrdersByResPk(Long resPk);
+    List<OrderMiniGetRes> selectConfirmOrdersByResPk(Long resPk);
     List<String> selectMenuNames(Long orderPk);
 
     OrderGetRes getOrderInfo(Long orderPk);
     List<MenuInfoDto> selectMenuInfo(Long orderPk);
+
+    void confirmOrder(Long orderPk);
 }

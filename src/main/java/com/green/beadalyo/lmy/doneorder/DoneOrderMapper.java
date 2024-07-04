@@ -15,4 +15,5 @@ public interface DoneOrderMapper {
     List<DoneOrderMiniGetRes> selectDoneOrderByResPk(Long resPk);
     List<DoneOrderMiniGetRes> selectCancelOrderByResPk(Long resPk);
     DoneOrderGetRes getDoneOrderInfo(Long doneOrderPk);
+
 }

@@ -71,7 +71,7 @@
         WHERE order_pk = #{orderPk}
     </delete>
 
-    <!-- 여기부터 본인 주문 목록 가져오기-->
+    <!--여기부터 본인 주문 목록 가져오기-->
     <select id="selectOrdersByUserPk">
         SELECT
         o.order_pk AS orderPk,
@@ -84,8 +84,8 @@
         o.order_user_pk = #{userPk}
     </select>
 
-    <!-- 여기부터 상점 주문 목록 가져오기-->
-    <select id="selectOrdersByResPk">
+    <!--여기부터 상점 주문 목록 가져오기-->
+    <select id="selectNonConfirmOrdersByResPk">
         SELECT
         o.order_pk AS orderPk,
         o.order_res_pk AS resPk,
@@ -94,7 +94,19 @@
         FROM
         `order` o
         WHERE
-        o.order_res_pk = #{resPk}
+        o.order_res_pk = #{resPk} AND o.order_state = 1
+    </select>
+
+    <select id="selectConfirmOrdersByResPk">
+        SELECT
+        o.order_pk AS orderPk,
+        o.order_res_pk AS resPk,
+        o.order_price AS orderPrice,
+        o.order_state AS orderState
+        FROM
+        `order` o
+        WHERE
+        o.order_res_pk = #{resPk} AND o.order_state = 2
     </select>
 
     <select id="selectMenuNames">
@@ -117,4 +129,11 @@
         FROM order_menu
         WHERE order_pk = #{orderPk}
     </select>
+
+    <!--주문 상태 변경(조리중으로)-->
+    <update id="confirmOrder">
+        UPDATE `order`
+        SET order_state = 2
+        WHERE order_pk = #{orderPk}
+    </update>
 </mapper>

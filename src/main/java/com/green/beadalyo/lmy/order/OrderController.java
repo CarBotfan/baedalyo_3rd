@@ -98,14 +98,34 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("res")
-    public ResultDto<List<OrderMiniGetRes>> getResOrderList(@RequestParam Long resPk) {
+    @GetMapping("res/noconfirm")
+    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam Long resPk) {
         int code = 2;
         String msg = "상점의 진행중인 주문정보 불러오기 완료";
         List<OrderMiniGetRes> result = null;
 
         try {
-            result = orderService.getResOrderList(resPk);
+            result = orderService.getResNonConfirmOrderList(resPk);
+        } catch (Exception e) {
+            code = 4;
+            msg = e.getMessage();
+        }
+
+        return ResultDto.<List<OrderMiniGetRes>>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+
+    @GetMapping("res/confirm")
+    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam Long resPk) {
+        int code = 2;
+        String msg = "상점의 진행중인 주문정보 불러오기 완료";
+        List<OrderMiniGetRes> result = null;
+
+        try {
+            result = orderService.getResConfirmOrderList(resPk);
         } catch (Exception e) {
             code = 4;
             msg = e.getMessage();
@@ -132,6 +152,26 @@ public class OrderController {
         }
 
         return ResultDto.<OrderGetRes>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+
+    @PatchMapping
+    public ResultDto<Integer> confirmOrder(@RequestParam Long orderPk){
+        int code = 2;
+        String msg = "주문 접수 완료";
+        Integer result = -1;
+
+        try {
+            result = orderService.confirmOrder(orderPk);
+        } catch (Exception e) {
+            code = 4;
+            msg = e.getMessage();
+        }
+
+        return ResultDto.<Integer>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
