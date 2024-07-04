@@ -1,17 +1,22 @@
-package com.green.beadalyo.gyb;
+package com.green.beadalyo.gyb.restaurant;
 
 import com.green.beadalyo.gyb.common.FileUtils;
 import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.common.exception.DataWrongException;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
-import com.green.beadalyo.gyb.dto.RestaurantUpdateDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.User;
+import com.green.beadalyo.gyb.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.green.beadalyo.gyb.common.ConstVariable.PAGE_SIZE;
 
 @Service
 @Slf4j
@@ -25,6 +30,13 @@ public class RestaurantService
     public void save(Restaurant data) throws Exception
     {
         repository.save(data);
+    }
+
+    //음식점 카테고리 기준 정보 호출
+    public Page<Restaurant> getRestaurantByCategory(Long seq, Integer page )
+    {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE) ;
+        return repository.findByCategoryId(seq,pageable);
     }
 
     //음식점 정보 호출
@@ -77,7 +89,6 @@ public class RestaurantService
         FileUtils.fileInput(data.getSeq().toString(),file) ;
 
     }
-
 
 
 }

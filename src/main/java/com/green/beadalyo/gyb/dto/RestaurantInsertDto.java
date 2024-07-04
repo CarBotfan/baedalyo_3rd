@@ -1,7 +1,6 @@
 package com.green.beadalyo.gyb.dto;
 
 import com.green.beadalyo.gyb.model.User;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalTime;

@@ -53,8 +53,23 @@ public class User
         this.userNickname = "스토마게돈" ;
         this.userPic = null ;
         this.userPhone = "010-1244-4815" ;
-        this.userRole = "role_owner" ;
+        this.userRole = "ROLE_OWNER" ;
         this.userState = 1 ;
         this.userLoginType = 1 ;
+    }
+
+    public User Admin()
+    {
+        this.seq = 2L ;
+        this.userId = "gsb7080" ;
+        this.userPw = "asdf" ;
+        this.userName = "김관리자" ;
+        this.userNickname = "관리자마게돈" ;
+        this.userPic = null ;
+        this.userPhone = "010-1244-4815" ;
+        this.userRole = "ROLE_ADMIN" ;
+        this.userState = 1 ;
+        this.userLoginType = 1 ;
+        return this ;
     }
 }

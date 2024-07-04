@@ -1,15 +1,14 @@
 package com.green.beadalyo.gyb;
 
+import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class RestaurantManageApiControllerTest
 {
 
-    @MockBean RestaurantService service ;
+    @MockBean
+    RestaurantService service ;
 
     @Test
     void getManageData()

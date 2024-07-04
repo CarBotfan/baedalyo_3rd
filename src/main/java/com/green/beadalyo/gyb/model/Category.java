@@ -1,7 +1,10 @@
 package com.green.beadalyo.gyb.model;
 
+import com.green.beadalyo.gyb.response.CategoryRes;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -11,6 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "category")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category
@@ -32,5 +36,13 @@ public class Category
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createAt ;
+
+
+    public Category(String categoryName, String categoryPic)
+    {
+        this.categoryName = categoryName;
+        this.categoryPic = categoryPic;
+    }
+
 
 }
