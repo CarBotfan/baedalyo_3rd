@@ -65,6 +65,7 @@ public class RestaurantService
         Restaurant data = repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
         data.setState(3);
         repository.save(data);
+        System.out.println(data);
     }
 
     //음식점 상태 전환(영업 <-> 휴점)
