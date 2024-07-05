@@ -2,6 +2,7 @@ package com.green.beadalyo.jhw.user;
 
 import com.green.beadalyo.jhw.common.model.ResultDto;
 import com.green.beadalyo.jhw.user.model.*;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PostMapping("/normal/sign-up")
+    @Operation(description = "일반 유저 가입")
     public ResultDto<Integer> postUserSignUp(@RequestPart(required = false) MultipartFile pic, @RequestPart UserSignUpPostReq p) {
         int statusCode = 2;
         int result = -1;
@@ -54,6 +56,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PostMapping("/sign-in")
+    @Operation(description = "로그인")
     public ResultDto<SignInRes> postSignIn(HttpServletResponse res, @RequestBody SignInPostReq p) {
         int statusCode = 2;
         SignInRes result = new SignInRes();
@@ -74,6 +77,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("/update-info")
+    @Operation(description = "유저 정보 수정")
     public ResultDto<Integer> patchUserInfo(@RequestBody UserInfoPatchReq p) {
         int result = service.patchUserInfo(p);
         return ResultDto.<Integer>builder()
@@ -84,6 +88,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("/update-pic")
+    @Operation(description = "프로필 이미지 수정")
     public ResultDto<String> patchProfilePic(@RequestPart(required = false) MultipartFile pic, @RequestPart UserPicPatchReq p) {
         int statusCode = 2;
         String result = "";
@@ -103,6 +108,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("update-pw")
+    @Operation(description = "비밀번호 수정")
     public ResultDto<Integer> patchUserPassword(@RequestBody UserPasswordPatchReq p) {
         int statusCode = 2;
         int result = -1;
@@ -122,6 +128,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @GetMapping("access-token")
+    @Operation(description = "액세스 토큰 발급")
     public ResultDto<Map> getAccessToken(HttpServletRequest req) {
         Map result = service.getAccessToken(req);
         return ResultDto.<Map>builder()
@@ -132,6 +139,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @GetMapping
+    @Operation(description = "유저 정보 조회")
     public ResultDto<UserInfoGetRes> getUserInfo() {
         UserInfoGetRes result = service.getUserInfo();
         return ResultDto.<UserInfoGetRes>builder()
@@ -142,6 +150,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PostMapping("/normal/delete")
+    @Operation(description = "유저 탈퇴")
     public ResultDto<Integer> deleteUser(@RequestBody UserDelReq p) {
         int statusCode = 2;
         int result = -1;

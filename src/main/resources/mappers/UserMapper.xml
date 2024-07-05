@@ -40,6 +40,7 @@
         SELECT
         user_id AS userId
         , user_name AS userName
+        , user_nickname AS userNickname
         , user_pic AS userPic
         , user_phone AS userPhone
         FROM user
@@ -75,7 +76,6 @@
     <select id="getMainAddr">
         SELECT
         addr1 , addr2
-        , addr_zip AS addrZip
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
         FROM address

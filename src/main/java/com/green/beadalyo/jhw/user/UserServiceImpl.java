@@ -8,6 +8,7 @@ import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
 import com.green.beadalyo.jhw.user.model.*;
+import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -69,7 +70,7 @@ public class UserServiceImpl implements UserService{
         if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new RuntimeException("비밀번호 불일치");
         }
-//        user.setMainAddr(mapper.getMainAddr(user.getUserPk()));
+        UserAddrGetRes mainAddr = mapper.getMainAddr(user.getUserPk());
 
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
@@ -85,9 +86,9 @@ public class UserServiceImpl implements UserService{
 
         return SignInRes.builder()
                 .userPk(user.getUserPk())
-                .userName(user.getUserName())
+                .userNickname(user.getUserName())
                 .userPic(user.getUserPic())
-//                .mainAddr(user.getMainAddr())
+                .mainAddr(mainAddr)
                 .accessToken(accessToken).build();
     }
 

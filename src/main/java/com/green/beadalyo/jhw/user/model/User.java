@@ -18,5 +18,4 @@ public class User {
     private String userPic;
     private int userState;
     private String userRole;
-//    private UserAddrGetRes mainAddr;
 }

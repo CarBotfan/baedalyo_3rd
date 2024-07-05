@@ -6,13 +6,11 @@
         SET addr_user_pk = #{signedUserId}
         , addr1 = #{addr1}
         , addr2 = #{addr2}
-        , addr_zip = #{addrZip}
         , addr_coor_x = #{addrCoorX}
         , addr_coor_y = #{addrCoorY}
     </insert>
     <select id="getUserAddrList">
         SELECT addr1, addr2
-        , addr_zip AS addrZip
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
         FROM address
@@ -21,7 +19,6 @@
     </select>
     <select id="getMainUserAddr">
         SELECT addr1, addr2
-        , addr_zip AS addrZip
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
         FROM address
