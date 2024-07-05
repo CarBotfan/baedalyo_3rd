@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class UserAddrDelReq {
     @JsonIgnore
-    private long signedUserId;
+    private long signedUserPk;
     private long userAddrPk;
 }

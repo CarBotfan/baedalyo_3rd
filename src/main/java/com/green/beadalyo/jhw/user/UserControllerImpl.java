@@ -29,7 +29,7 @@ public class UserControllerImpl implements UserController{
             result = service.postSignUp(pic, p);
         } catch (Exception e) {
             statusCode = -1;
-            String resultMsg = e.getMessage();
+            msg = e.getMessage();
         }
 
         return ResultDto.<Integer>builder()
@@ -62,6 +62,7 @@ public class UserControllerImpl implements UserController{
         try {
             result = service.postSignIn(res, p);
         } catch (Exception e) {
+            e.printStackTrace();
             msg = e.getMessage();
             statusCode = -1;
         }
@@ -90,6 +91,7 @@ public class UserControllerImpl implements UserController{
         try {
             result = service.patchProfilePic(pic, p);
         } catch(Exception e) {
+            e.printStackTrace();
             msg = e.getMessage();
             statusCode = -1;
         }
@@ -108,6 +110,7 @@ public class UserControllerImpl implements UserController{
         try {
             result = service.patchUserPassword(p);
         } catch(Exception e) {
+            e.printStackTrace();
             msg = e.getMessage();
             statusCode = -1;
         }

@@ -9,6 +9,6 @@ import lombok.Setter;
 public class UserInfoPatchReq {
     @JsonIgnore
     private long signedUserPk;
-    private String userNickName;
+    private String userNickname;
     private String userPhone;
 }

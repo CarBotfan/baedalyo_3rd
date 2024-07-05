@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class MainUserAddrPatchReq {
     @JsonIgnore
-    private long signedUserId;
-    private long changeAddressPk;
+    private long signedUserPk;
+    private long changeAddrPk;
 }

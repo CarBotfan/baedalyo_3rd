@@ -28,7 +28,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return String.valueOf(myUser.getUserPk());
     }
 
     @Override

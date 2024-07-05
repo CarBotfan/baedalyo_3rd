@@ -63,13 +63,13 @@ public class UserServiceImpl implements UserService{
     @Override
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) {
         User user = mapper.getUserById(p.getUserId());
-        user.setMainAddr(mapper.getMainAddr(user.getUserPk()));
         if(user == null || user.getUserState() == 3) {
             throw new RuntimeException("존재하지 않는 ID");
         }
-        if(BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
+        if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new RuntimeException("비밀번호 불일치");
         }
+//        user.setMainAddr(mapper.getMainAddr(user.getUserPk()));
 
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService{
                 .userPk(user.getUserPk())
                 .userName(user.getUserName())
                 .userPic(user.getUserPic())
-                .mainAddr(user.getMainAddr())
+//                .mainAddr(user.getMainAddr())
                 .accessToken(accessToken).build();
     }
 
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService{
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
-        }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
+        }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new RuntimeException("비밀번호 불일치");
         }
         String hashedPassword = passwordEncoder.encode(p.getNewPw());

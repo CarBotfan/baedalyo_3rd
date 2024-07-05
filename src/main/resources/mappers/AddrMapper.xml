@@ -17,6 +17,7 @@
         , addr_coor_y AS addrCoorY
         FROM address
         WHERE addr_user_pk = #{signedUserPk}
+        ORDER BY addr_default DESC
     </select>
     <select id="getMainUserAddr">
         SELECT addr1, addr2
@@ -41,16 +42,23 @@
         UPDATE address
         <set>
             <if test="signedUserPk != 0">
-                addr_default = signedUserPk
+                addr_default = #{signedUserPk}
             </if>
         </set>
+        WHERE addr_Pk = #{changeAddrPk}
+    </update>
+    <update id="updUserAddr">
+        UPDATE address
+        SET addr1 = #{addr1}
+        , addr2 = #{addr2}
+        , addr_coor_x = #{addrCoorX}
+        , addr_coor_y = #{addrCoorY}
         WHERE addr_user_pk = #{signedUserPk}
         AND addr_Pk = #{addrPk}
     </update>
-    <update id="updUserAddr">
-
-    </update>
     <delete id="deleteUserAddr">
-
+        DELETE FROM address
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_Pk = #{addrPk}
     </delete>
 </mapper>

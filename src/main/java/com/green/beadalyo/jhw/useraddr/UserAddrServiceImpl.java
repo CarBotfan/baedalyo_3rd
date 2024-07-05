@@ -36,20 +36,20 @@ public class UserAddrServiceImpl implements UserAddrService{
 
     @Override
     public int patchUserAddr(UserAddrPatchReq p) {
-        p.setSignedUserId(authenticationFacade.getLoginUserPk());
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         return mapper.updUserAddr(p);
     }
 
     @Override
     public int patchMainUserAddr(MainUserAddrPatchReq p) {
-        p.setSignedUserId(authenticationFacade.getLoginUserPk());
-        mapper.patchCurrentMainUserAddr(p.getSignedUserId());
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        mapper.patchCurrentMainUserAddr(p.getSignedUserPk());
         return mapper.patchMainUserAddr(p);
     }
 
     @Override
     public int deleteUserAddr(UserAddrDelReq p) {
-        p.setSignedUserId(authenticationFacade.getLoginUserPk());
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         return mapper.deleteUserAddr(p);
     }
 

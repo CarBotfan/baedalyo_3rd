@@ -38,7 +38,7 @@ app:
 
     token-type: Bearer
 
-    access-token-expiry: 60_000
+    access-token-expiry: 180_000
 
     refresh-token-expiry: 1_296_000_000
 

@@ -8,7 +8,8 @@ import lombok.Setter;
 @Setter
 public class UserAddrPatchReq {
     @JsonIgnore
-    private long signedUserId;
+    private long signedUserPk;
+    private long addrPk;
     private String addr1;
     private String addr2;
     private String addrZip;

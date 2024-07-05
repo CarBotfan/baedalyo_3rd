@@ -4,13 +4,14 @@ import com.green.beadalyo.jhw.common.model.ResultDto;
 import com.green.beadalyo.jhw.useraddr.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/user/address")
+@RequestMapping("/api/address")
 @RequiredArgsConstructor
 public class UserAddrControllerImpl implements UserAddrController{
     private final UserAddrServiceImpl service;
@@ -55,6 +56,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     }
 
     @Override
+    @PatchMapping("/main-address")
     public ResultDto<Integer> patchMainUserAddr(@RequestBody MainUserAddrPatchReq p) {
         int result = service.patchMainUserAddr(p);
         return ResultDto.<Integer>builder()
@@ -65,7 +67,7 @@ public class UserAddrControllerImpl implements UserAddrController{
 
     @Override
     @DeleteMapping
-    public ResultDto<Integer> deleteUserAddr(UserAddrDelReq p) {
+    public ResultDto<Integer> deleteUserAddr(@ModelAttribute @ParameterObject UserAddrDelReq p) {
         int result = service.deleteUserAddr(p);
         return ResultDto.<Integer>builder()
                 .statusCode(2)
