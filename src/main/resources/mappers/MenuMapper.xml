@@ -49,6 +49,7 @@
     ON A.menu_pk = B.option_menu_pk
     WHERE A.menu_pk = #{menuPk}
 </select>
+
 <update id="putMenu">
 UPDATE menu
     <set>
