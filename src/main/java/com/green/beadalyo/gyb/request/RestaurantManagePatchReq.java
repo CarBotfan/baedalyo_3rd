@@ -27,4 +27,10 @@ public class RestaurantManagePatchReq
     @Schema(description = "사업자 번호")
     private String regiNum ;
 
+    @Schema(description = "사업장 설명")
+    private String restaurantDescription;
+
+    @Schema(description = "리뷰 설명")
+    private String reviewDescription ;
+
 }

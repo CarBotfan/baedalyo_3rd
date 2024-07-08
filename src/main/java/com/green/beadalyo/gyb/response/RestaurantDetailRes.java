@@ -18,6 +18,8 @@ public class RestaurantDetailRes
     private Double reviewScore ;
     @Schema(description = "음식점 설명")
     private String restaurantDesc ;
+    @Schema(description = "리뷰 공지")
+    private String reviewDesc ;
     @Schema(description = "음식점 총 리뷰 수")
     private Integer reviewTotalElements ;
     @Schema(description = "음식점 주소")
@@ -36,7 +38,8 @@ public class RestaurantDetailRes
         this.restaurantName = data.getName() ;
         this.restaurantAddr = data.getAddress() ;
         this.regiNum = data.getRegiNum() ;
-        this.restaurantDesc = data.getDescription() ;
+        this.restaurantDesc = data.getRestaurantDescription() ;
+        this.reviewDesc = data.getReviewDescription() ;
         this.restaurantState = data.getState() ;
         //임시 데이터
         this.reviewTotalElements = (int)(Math.random()*2000) ;

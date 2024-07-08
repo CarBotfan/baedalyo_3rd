@@ -1,4 +1,4 @@
-package com.green.beadalyo.gyb.repository;
+package com.green.beadalyo.gyb.restaurant;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.User;

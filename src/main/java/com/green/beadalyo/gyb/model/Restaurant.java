@@ -41,9 +41,13 @@ public class Restaurant
     @Comment("음식점 이름")
     private String name;
 
-    @Column(name = "res_description", length = 300)
+    @Column(name = "res_description1", length = 300)
     @Comment("가게 설명")
-    private String description;
+    private String RestaurantDescription;
+
+    @Column(name = "res_description2", length = 300)
+    @Comment("가게 설명")
+    private String reviewDescription;
 
     @Column(name = "res_addr" , nullable = false , length = 100)
     @Comment("음식점 주소")
@@ -106,22 +110,28 @@ public class Restaurant
         this.coorY = data.getResCoorY() ;
         this.openTime = data.getOpenTime() ;
         this.closeTime = data.getCloseTime() ;
+        this.RestaurantDescription = data.getDesc1() ;
+        this.reviewDescription = data.getDesc2() ;
         this.pic = data.getResPic() ;
         this.state = 2 ;
     }
 
     public void update(RestaurantManagePatchReq data)
     {
-        if (data.getRestaurantName() != null && data.getRestaurantName().isEmpty())
+        if (data.getRestaurantName() != null && !data.getRestaurantName().isEmpty())
             this.name = data.getRestaurantName() ;
-        if (data.getAddr() != null && data.getAddr().isEmpty())
+        if (data.getAddr() != null && !data.getAddr().isEmpty())
             this.address = data.getAddr() ;
-        if (data.getRegiNum() != null && data.getRegiNum().isEmpty())
+        if (data.getRegiNum() != null && !data.getRegiNum().isEmpty())
             this.regiNum = data.getRegiNum() ;
         if (data.getCoorX() != null)
             this.coorX = data.getCoorX() ;
         if (data.getCoorY() != null)
             this.coorY = data.getCoorY() ;
+        if (data.getRestaurantDescription() != null && !data.getRestaurantDescription().isEmpty())
+            this.RestaurantDescription = data.getRestaurantDescription() ;
+        if (data.getReviewDescription() != null && !data.getReviewDescription().isEmpty())
+            this.reviewDescription = data.getReviewDescription() ;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String time = data.getOpenTime() ;
         if (time != null)

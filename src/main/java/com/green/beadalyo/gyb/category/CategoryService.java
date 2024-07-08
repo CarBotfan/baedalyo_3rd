@@ -5,6 +5,7 @@ import com.green.beadalyo.gyb.model.MatchingCategoryRestaurant;
 import com.green.beadalyo.gyb.model.Restaurant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,8 @@ public class CategoryService
 
     public void InsertCategory(String str, String filepath) throws Exception
     {
+        if (repository.existsByCategoryName(str)) throw new DuplicateKeyException("중복된 키 입니다.") ;
+
         Category category = new Category(str, filepath) ;
         repository.save(category);
     }

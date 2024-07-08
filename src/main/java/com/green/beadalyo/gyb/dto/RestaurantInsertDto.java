@@ -17,6 +17,10 @@ public class RestaurantInsertDto
     private String regiNum ;
     //사업장 주소
     private String resAddr ;
+    //사업장 설명
+    private String desc1 ;
+    //리뷰 설명
+    private String desc2 ;
     //위도(X)
     private Double resCoorX ;
     //경도(Y)

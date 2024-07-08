@@ -27,6 +27,12 @@ public class RestaurantManageRes
     @Schema(description = "사업자 번호")
     private String regiNum ;
 
+    @Schema(description = "가게 설명")
+    private String restaurantDescription ;
+
+    @Schema(description = "리뷰 설명")
+    private String reviewDescription ;
+
 
     public RestaurantManageRes(Restaurant data)
     {
@@ -38,6 +44,8 @@ public class RestaurantManageRes
         this.addr = data.getAddress();
         this.restaurantName = data.getName();
         this.regiNum = data.getRegiNum();
+        this.restaurantDescription = data.getRestaurantDescription() ;
+        this.reviewDescription = data.getReviewDescription() ;
 
     }
 }

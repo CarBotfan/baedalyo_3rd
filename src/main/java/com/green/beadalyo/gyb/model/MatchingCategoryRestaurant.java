@@ -1,7 +1,9 @@
 package com.green.beadalyo.gyb.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "cate_res_matching")
+@NoArgsConstructor
+@AllArgsConstructor
 public class MatchingCategoryRestaurant
 {
     @Id

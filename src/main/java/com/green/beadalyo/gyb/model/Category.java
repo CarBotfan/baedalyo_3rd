@@ -24,7 +24,7 @@ public class Category
     @Column(name = "cate_pk")
     private Long seq ;
 
-    @Column(name = "cate_name" , nullable = false , length = 20)
+    @Column(name = "cate_name" , nullable = false , length = 20, unique = true)
     private String categoryName ;
 
     @Column(name = "cate_pic" , length = 100)

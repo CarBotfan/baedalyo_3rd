@@ -2,10 +2,12 @@ package com.green.beadalyo.gyb.restaurant;
 
 import com.green.beadalyo.gyb.category.CategoryService;
 import com.green.beadalyo.gyb.common.Result;
+import com.green.beadalyo.gyb.common.UserRepository;
 import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.common.ResultDto;
 import com.green.beadalyo.gyb.common.ResultError;
 import com.green.beadalyo.gyb.common.exception.DataWrongException;
+import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.model.Category;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.User;
@@ -21,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalTime;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +35,33 @@ public class RestaurantManageApiController
     private final RestaurantService service;
     private final CategoryService categoryService;
 
+    private final UserRepository repository ;
+
+
+    @GetMapping("test")
+    @Operation(summary = "(테스트) 음식점 추가")
+    public Result putRestaurant()
+    {
+        RestaurantInsertDto dto = new RestaurantInsertDto() ;
+        dto.setUser(getLoginUser());
+        dto.setRegiNum("123-45-67891");
+        dto.setResAddr("대구 북구 대현동");
+        dto.setResCoorX(128.59636652);
+        dto.setResCoorY(35.87280588);
+        dto.setOpenTime(LocalTime.of(11,0));
+        dto.setCloseTime(LocalTime.of(22,0));
+        dto.setName("레스타우란트");
+        dto.setResPic(null);
+        try {
+            service.insertRestaurantData(dto);
+
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
+        return ResultDto.builder().build();
+
+    }
 
     @GetMapping
     @Operation(summary = "로그인한 유저의 음식점 데이터 불러오기")
@@ -112,7 +143,7 @@ public class RestaurantManageApiController
                     "<p> -4 : 사업자 등록 번호 유효성 검사 실패 </p>" +
                     "<p> -5 : 상호 명 유효성 검사 실패 </p>"
     )
-    public Result patchManageData(RestaurantManagePatchReq request)
+    public Result patchManageData(@RequestBody RestaurantManagePatchReq request)
     {
         //유저 부분 처리전까지 임시 처리
         User user = getLoginUser() ;
@@ -120,11 +151,11 @@ public class RestaurantManageApiController
         if (user == null)
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
         //사업자 번호 유효성 검사
-        String regex = "^\\d{3}-\\d{2}-\\d{5}$" ;
-        if (request.getRegiNum().matches(regex))
+        String regex = "^\\d{3}-\\d{2}-\\d{5}$";
+        if (!request.getRegiNum().matches(regex))
             return ResultError.builder().statusCode(-4).resultMsg("사업자 등록 번호를 재 확인 해 주세요.").build();
         //상호명 유효성 검사
-        if (request.getRestaurantName().length() < 20)
+        if (request.getRestaurantName().length() > 20)
             return ResultError.builder().statusCode(-5).resultMsg("상호 명 은 20자리 까지만 허용 됩니다.").build();
 
         try {
@@ -156,7 +187,7 @@ public class RestaurantManageApiController
                     "<p> -3 : 음식점 정보 조회 실패 </p>"
 
     )
-    public Result updatePic(MultipartFile file)
+    public Result updatePic(@RequestPart MultipartFile file)
     {
         User user = getLoginUser() ;
         //유효성 검사
@@ -164,7 +195,10 @@ public class RestaurantManageApiController
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
 
         try {
-            service.updateRestaurantPic(user,file);
+            String filename = service.updateRestaurantPic(user,file);
+            Restaurant rest = service.getRestaurantData(user) ;
+            rest.setPic(filename);
+            service.save(rest);
 
             return ResultDto.builder().build();
         } catch (NullPointerException e) {
@@ -225,7 +259,7 @@ public class RestaurantManageApiController
     }
 
     @DeleteMapping("category")
-    @Operation(summary = "음식점 카테고리 추가")
+    @Operation(summary = "음식점 카테고리 삭제")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
             description =
                     "<p> 1 : 정상 </p>" +
@@ -277,7 +311,7 @@ public class RestaurantManageApiController
     private User getLoginUser()
     {
         //유저 부분 처리전까지 임시 처리
-        return new User();
+        return repository.findBySeq(4L);
     }
 
 }

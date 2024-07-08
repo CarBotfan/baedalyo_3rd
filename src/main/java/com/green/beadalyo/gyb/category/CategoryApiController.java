@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +33,8 @@ public class CategoryApiController
                     "<p> 1 : 정상 </p>" +
                     "<p> -1 : 실패 </p>" +
                     "<p> -2 : 로그인 정보 획득 실패 </p>" +
-                    "<p> -3 : 권한 부족 </p>"
+                    "<p> -3 : 권한 부족 </p>" +
+                    "<p> -4 : 파일 확장자 체크 실패(jpg, png, gif) </p>"
     )
     public Result putCategory(@RequestPart String str, @RequestPart MultipartFile file)
     {
@@ -46,7 +49,10 @@ public class CategoryApiController
         String filename = null ;
         if (file != null && !file.isEmpty())
         {
+            //파일 확장자 유효성 검증
             try {
+                if (!FileUtils.checksumExt(List.of(Ext.GIF,Ext.PNG,Ext.JPG,Ext.JPEG) ,file))
+                    return ResultError.builder().statusCode(-4).resultMsg("파일은 jpg, gif, png 만 허용됩니다.").build();
 
                 filename = FileUtils.fileInput("category",file) ;
             } catch (Exception e) {
@@ -57,9 +63,17 @@ public class CategoryApiController
         }
 
         try {
-            service.InsertCategory(str,filename);
+            service.InsertCategory(str, filename);
+        } catch (DuplicateKeyException e) {
+            try {
+                FileUtils.fileDelete(filename) ;
+            } catch (Exception e1) {log.error(e1.toString());}
+            return ResultError.builder().statusCode(-5).resultMsg("이미 만들어져있는 카테고리 입니다.").build() ;
         } catch (Exception e) {
             log.error("An error occurred: ", e);
+            try {
+                FileUtils.fileDelete(filename) ;
+            } catch (Exception e1) {log.error(e1.toString());}
             return ResultError.builder().build();
         }
 
@@ -74,7 +88,8 @@ public class CategoryApiController
                     "<p> 1 : 정상 </p>" +
                             "<p> -1 : 실패 </p>" +
                             "<p> -2 : 로그인 정보 획득 실패 </p>" +
-                            "<p> -3 : 권한 부족 </p>"
+                            "<p> -3 : 권한 부족 </p>" +
+                            "<p> -4 : 존재하지 않는 카테고리 </p>"
     )
     public Result deleteCategory(@PathVariable Long seq)
     {
@@ -88,10 +103,12 @@ public class CategoryApiController
 
         try {
             Category cate = service.getCategory(seq) ;
-            FileUtils.fileDelete("category",cate.getCategoryPic()) ;
+            FileUtils.fileDelete(cate.getCategoryPic()) ;
             service.deleteCategory(cate) ;
             
             return ResultDto.builder().build();
+        } catch (NullPointerException e) {
+            return ResultError.builder().statusCode(-4).resultMsg("존재하지 않는 카테고리입니다.").build();
         } catch (Exception e) {
             log.error("An error occurred: ", e);
             return ResultError.builder().build();

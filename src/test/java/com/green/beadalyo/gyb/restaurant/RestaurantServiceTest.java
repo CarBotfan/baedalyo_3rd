@@ -1,28 +1,21 @@
 package com.green.beadalyo.gyb.restaurant;
 
-import com.green.beadalyo.gyb.common.FileUtils;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.User;
-import com.green.beadalyo.gyb.repository.RestaurantRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.multipart.MultipartFile;
 
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Import(RestaurantService.class)
 @ExtendWith(SpringExtension.class)

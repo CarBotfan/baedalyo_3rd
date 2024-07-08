@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class FileUtils
@@ -26,10 +27,51 @@ public class FileUtils
 
     }
 
+    public static boolean checksumExt(List<Ext> exts, MultipartFile file)
+    {
+        if (file == null || file.isEmpty()) return false ;
+
+        String ext = getExt(file) ;
+        if (ext == null || ext.isEmpty()) return false ;
+        for (Ext checksum : exts)
+        {
+            System.out.println(checksum +  " : " + ext);
+            if(checksum.toString().equals(ext)) {
+                return true;
+            }
+        }
+        return false ;
+    }
+
+    public static String getExt(MultipartFile file)
+    {
+        if (file == null || file.isEmpty()) return null ;
+
+        String fileName = file.getOriginalFilename();
+        try {
+            return Objects.requireNonNull(fileName).substring(fileName.lastIndexOf("."));
+        } catch (NullPointerException e) {
+            return null ;
+        }
+    }
+
+    public static String getExt(String fileName)
+    {
+        if (fileName == null || fileName.lastIndexOf(".") < 0) return null ;
+
+        try {
+            return Objects.requireNonNull(fileName).substring(fileName.lastIndexOf("."));
+        } catch (NullPointerException e) {
+            return null ;
+        }
+    }
+
     @SuppressWarnings("all")
     public static String fileInput(String path, MultipartFile file) throws IOException
     {
+
         String filename = getRandomName();
+        filename += getExt(file);
         Path directoryPath = Paths.get(absolutePath, path);
         File directory = directoryPath.toFile();
 
@@ -41,11 +83,10 @@ public class FileUtils
         // 파일 저장 경로 설정
         Path filePath = directoryPath.resolve(filename);
         File newFile = filePath.toFile();
-
         try {
             // 파일을 지정된 경로로 복사
             file.transferTo(newFile);
-            return filename;
+            return "/" + path + "/" + filename;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -53,11 +94,11 @@ public class FileUtils
     }
 
     @SuppressWarnings("all")
-    public static Boolean fileDelete(String path, String fileName) throws Exception
+    public static Boolean fileDelete(String fileName) throws Exception
     {
         try {
             // 경로 조합
-            Path filePath = Paths.get(absolutePath, path , fileName);
+            Path filePath = Paths.get(absolutePath , fileName);
             File fileToDelete = filePath.toFile();
 
             // 파일 존재 여부 확인

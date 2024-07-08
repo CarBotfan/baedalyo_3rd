@@ -6,7 +6,6 @@ import com.green.beadalyo.gyb.common.exception.DataWrongException;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.User;
-import com.green.beadalyo.gyb.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -82,12 +81,13 @@ public class RestaurantService
     }
 
     //음식점 사진 변경
-    public void updateRestaurantPic(User user, MultipartFile file) throws Exception
+    public String updateRestaurantPic(User user, MultipartFile file) throws Exception
     {
         Restaurant data = repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
 
-        if (data.getPic() != null) FileUtils.fileDelete(data.getSeq().toString(),data.getPic()) ;
-        FileUtils.fileInput(data.getSeq().toString(),file) ;
+        if (data.getPic() != null) FileUtils.fileDelete(data.getPic()) ;
+        return FileUtils.fileInput(data.getSeq().toString(),file) ;
+
 
     }
 
