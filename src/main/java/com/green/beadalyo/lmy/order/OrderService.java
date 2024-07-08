@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import  static  com.green.beadalyo.lmy.order.ExceptionMsgDataset.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +20,6 @@ public class OrderService {
 
     @Transactional
     public int postOrder(OrderPostReq p) {
-        if (500 < p.getOrderRequest().length()) {
-            throw new RuntimeException("요청사항 양식 안맞음(글자 수)");
-        }
 
         List<Map<String, Object>> menuList = orderMapper.selectMenus(p.getMenuPk());
 
@@ -34,11 +33,7 @@ public class OrderService {
 
         p.setOrderPrice(totalPrice);
 
-        try {
-            orderMapper.postOrderTable(p);
-        } catch (Exception e) {
-            throw new RuntimeException("order 쿼링 이슈");
-        }
+        orderMapper.postOrderTable(p);
 
         // order_menu에 삽입할 데이터 리스트 생성
         List<Map<String, Object>> orderMenuList = null;
@@ -46,7 +41,7 @@ public class OrderService {
             orderMenuList = p.getMenuPk().stream().map(menuPk -> {
                 Map<String, Object> menu = menuList.stream()
                         .filter(m -> m.get("menu_pk").equals(menuPk))
-                        .findFirst().orElseThrow(() -> new RuntimeException("Menu not found"));
+                        .findFirst().orElseThrow(() -> new NullPointerException(MENU_NOT_FOUND_ERROR));
                 Map<String, Object> orderMenuMap = new HashMap<>();
                 orderMenuMap.put("orderPk", p.getOrderPk());
                 orderMenuMap.put("menuPk", menu.get("menu_pk"));
@@ -55,15 +50,11 @@ public class OrderService {
                 return orderMenuMap;
             }).collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException("MAP 오류");
+            throw new RuntimeException(DATALIST_FAIL_ERROR);
         }
 
         // order_menu 테이블에 배치 삽입
-        try {
-            orderMapper.insertOrderMenuBatch(orderMenuList);
-        } catch (Exception e) {
-            throw new RuntimeException("orderMenu 쿼링 이슈");
-        }
+        orderMapper.insertOrderMenuBatch(orderMenuList);
 
         return 1;
     }
