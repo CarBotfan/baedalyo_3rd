@@ -27,8 +27,14 @@ springdoc:
   cache:
     disabled: true
 
+  security:
+    user:
+      name: root
+      password: 1111
+
+
 file:
-  dir: D:\youp\download\baedalyo\
+  dir: D:\backend\baedalyo\
 
 ---
 
