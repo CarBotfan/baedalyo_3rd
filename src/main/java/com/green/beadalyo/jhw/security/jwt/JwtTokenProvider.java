@@ -32,6 +32,8 @@ public class JwtTokenProvider {
         this.om = om;
         this.appProperties = appProperties;
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(appProperties.getJwt().getSecret()));
+//        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode("dxdffdhdfdfhdhdhdhdydtxtszgrsrsdhrxdrxdrhxsrxsdrdrhsdrsxhrzrzxrxrxshrhzxsrzhrzhsrzshzshzsrzrs"));
+
     }
 
     public String generateAccessToken(MyUser myUser) {

@@ -7,6 +7,7 @@ import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
+import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import jakarta.servlet.http.Cookie;
@@ -27,6 +28,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService{
     private final UserMapper mapper;
     private final CustomFileUtils customFileUtils;
@@ -118,7 +120,7 @@ public class UserServiceImpl implements UserService{
             String target = String.format("%s/%s", midPath, fileName);
             customFileUtils.transferTo(pic, target);
         } catch(Exception e) {
-            throw new RuntimeException();
+            throw new FileUploadFailedException();
         }
         return fileName;
     }
@@ -128,7 +130,7 @@ public class UserServiceImpl implements UserService{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
-            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
+            throw new UserNotFoundException();
         }
         return mapper.updUserInfo(p);
     }
@@ -138,9 +140,9 @@ public class UserServiceImpl implements UserService{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
-            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
+            throw new UserNotFoundException();
         }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
-            throw new RuntimeException("비밀번호 불일치");
+            throw new IncorrectPwException();
         }
         String hashedPassword = passwordEncoder.encode(p.getNewPw());
         p.setNewPw(hashedPassword);
@@ -152,9 +154,9 @@ public class UserServiceImpl implements UserService{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
-            throw new RuntimeException("존재하지 않거나 탈퇴한 유저");
+            throw new UserNotFoundException();
         }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
-            throw new RuntimeException("비밀번호 불일치");
+            throw new IncorrectPwException();
         }
         return mapper.deleteUser(p.getSignedUserPk());
     }
@@ -163,13 +165,14 @@ public class UserServiceImpl implements UserService{
     public Map getAccessToken(HttpServletRequest req) {
         Cookie cookie = cookieUtils.getCookie(req, "refresh-token");
         if(cookie == null) {
-            throw new RuntimeException();
+            throw new NullCookieException();
         }
         String refreshToken = cookie.getValue();
         if(!jwtTokenProvider.isValidateToken(refreshToken)) {
-            throw new RuntimeException();
+            throw new InvalidTokenException();
         }
 
+        
         UserDetails auth = jwtTokenProvider.getUserDetailsFromToken(refreshToken);
         MyUser myUser = ((MyUserDetails)auth).getMyUser();
 

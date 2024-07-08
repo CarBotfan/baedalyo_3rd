@@ -1,6 +1,8 @@
 package com.green.beadalyo.jhw.user;
 
 import com.green.beadalyo.jhw.common.model.ResultDto;
+import com.green.beadalyo.jhw.user.exception.IncorrectPwException;
+import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import com.green.beadalyo.jhw.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,15 +25,22 @@ public class UserControllerImpl implements UserController{
     @PostMapping("/normal/sign-up")
     @Operation(description = "일반 유저 가입")
     public ResultDto<Integer> postUserSignUp(@RequestPart(required = false) MultipartFile pic, @RequestPart UserSignUpPostReq p) {
-        int statusCode = 2;
-        int result = -1;
+        int statusCode = 100;
+        int result = 0;
         String msg = "가입 성공";
+        p.setUserRole("ROLE_USER");
         try {
-            p.setUserRole("ROLE_USER");
             result = service.postSignUp(pic, p);
-        } catch (Exception e) {
-            statusCode = -1;
+        } catch (UserNotFoundException e) {
+            statusCode = 101;
             msg = e.getMessage();
+        } catch (IncorrectPwException e) {
+            statusCode = 102;
+            msg = e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            statusCode = 109;
+            msg = "백엔드 에러";
         }
 
         return ResultDto.<Integer>builder()

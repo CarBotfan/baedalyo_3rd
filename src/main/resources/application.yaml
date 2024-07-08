@@ -1,4 +1,9 @@
 spring:
+  config:
+    #optional: .env 파일이 없어도 컴파일 에러가 발생 X
+    #file: 파일을 import하겠다
+    #.env: 파일명
+    import: optional:file:.env
   jpa:
     open-in-view: true
     hibernate:
@@ -9,10 +14,13 @@ spring:
     url: ${DEFAULT.DB_URL}
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
     username: ${DEFAULT.DB_USERNAME}
-    password: ${DEFAULT_DB_PASSWORD}
+    password: ${DEFAULT.DB_PASSWORD}
   servlet:
     multipart:
       max-file-size: 5MB
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
 
 
 mybatis:
