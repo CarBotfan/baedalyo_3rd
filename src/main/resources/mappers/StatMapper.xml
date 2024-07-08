@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.beadalyo.kdh.stat.StatMapper">
+
+<select id="getReviewCount">
+    SELECT COUNT(review_pk) AS reviewCount
+    FROM review
+    WHERE res_pk = #{resPk};
+</select>
+
+<select id="getReviewAvg">
+    SELECT format(AVG(review_rating) , 1) AS reviewAvg
+    FROM review
+    WHERE res_pk = #{resPk};
+</select>
+    
+<select id="getMonthSales">
+    SELECT SUM(order_price) AS monthSales
+    FROM done_order
+    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{req}
+    AND res_pk = #{resPk}
+    AND done_order_state = 1;
+</select>
+    
+<select id="getMonthOrderCount">
+    SELECT count(res_pk) AS monthOrderCount
+    FROM done_order
+    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{req}
+    AND res_pk = #{resPk}
+    AND done_order_state = 1;
+</select>
+    
+<select id="getDailySales">
+    SELECT sum(order_price) AS dailySales
+    FROM done_order
+    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{req}
+    AND res_pk = #{resPk}
+    AND done_order_state = 1;
+</select>
+
+<select id="getDailyOrderCount">
+    SELECT count(res_pk) AS dailyOrderCount
+    FROM done_order
+    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{req}
+    AND res_pk = #{resPk}
+    AND done_order_state = 1;
+</select>
+</mapper>
