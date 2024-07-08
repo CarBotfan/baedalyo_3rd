@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import  static  com.green.beadalyo.lmy.order.ExceptionMsgDataset.*;
+import  static com.green.beadalyo.lmy.order.dataset.ExceptionMsgDataset.*;
 
 import java.util.HashMap;
 import java.util.List;

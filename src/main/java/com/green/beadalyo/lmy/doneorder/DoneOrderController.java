@@ -3,7 +3,6 @@ package com.green.beadalyo.lmy.doneorder;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderGetRes;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
-import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

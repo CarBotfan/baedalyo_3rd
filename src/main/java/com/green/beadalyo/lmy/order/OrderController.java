@@ -5,17 +5,17 @@ import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import javax.xml.validation.Validator;
 import java.util.List;
 
 
-import static com.green.beadalyo.lmy.order.ExceptionMsgDataset.*;
-import static com.green.beadalyo.lmy.order.ResponseDataSet.*;
+import static com.green.beadalyo.lmy.order.dataset.ExceptionMsgDataset.*;
+import static com.green.beadalyo.lmy.order.dataset.ResponseDataSet.*;
 
 
 
