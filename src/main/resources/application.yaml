@@ -1,4 +1,9 @@
 spring:
+  config:
+    #optional: .env 파일이 없어도 컴파일 에러가 발생 X
+    #file: 파일을 import하겠다
+    #.env: 파일명
+    import: optional:file:.env
   jpa:
     open-in-view: true
     hibernate:
@@ -6,13 +11,17 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
-    url: jdbc:log4jdbc:mariadb://192.168.0.19:3306/baedalyo
+    url: ${DEFAULT.DB_URL}
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    username: root
-    password: green502
+    username: ${DEFAULT.DB_USERNAME}
+    password: ${DEFAULT.DB_PASSWORD}
   servlet:
     multipart:
       max-file-size: 5MB
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+
 
 mybatis:
   mapper-locations: mappers/**/*.xml
@@ -27,14 +36,20 @@ springdoc:
   cache:
     disabled: true
 
-  security:
-    user:
-      name: root
-      password: 1111
-
-
 file:
-  dir: D:\backend\baedalyo\
+  dir: ${DEFAULT.FILE_DIRECTORY}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+
+    header-schema-name: authorization
+
+    token-type: Bearer
+
+    access-token-expiry: 600_000
+
+    refresh-token-expiry: 1_296_000_000
 
 ---
 
@@ -43,12 +58,12 @@ spring:
     activate:
       on-profile: tdd
   datasource:
-    url: jdbc:log4jdbc:mariadb://localhost:3306/baedalyo_tdd
+    url: ${TDD.DB.URL}
   sql:
     init:
       mode: always
 
 
 logging:
-  directory: D:\youp\download\baedalyo\
+  directory: ${DEFAULT.FILE_DIRECTORY}
 

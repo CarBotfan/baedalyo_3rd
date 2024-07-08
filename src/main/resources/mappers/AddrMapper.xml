@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.beadalyo.jhw.useraddr.UserAddrMapper">
+    <insert id="postUserAddr" keyProperty="addrPk" useGeneratedKeys="true">
+        INSERT INTO address
+        SET addr_user_pk = #{signedUserId}
+        , addr1 = #{addr1}
+        , addr2 = #{addr2}
+        , addr_coor_x = #{addrCoorX}
+        , addr_coor_y = #{addrCoorY}
+    </insert>
+    <select id="getUserAddrList">
+        SELECT addr1, addr2
+        , addr_coor_x AS addrCoorX
+        , addr_coor_y AS addrCoorY
+        FROM address
+        WHERE addr_user_pk = #{signedUserPk}
+        ORDER BY addr_default DESC
+    </select>
+    <select id="getMainUserAddr">
+        SELECT addr1, addr2
+        , addr_coor_x AS addrCoorX
+        , addr_coor_y AS addrCoorY
+        FROM address
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_default = #{signedUserPk}
+    </select>
+    <update id="patchCurrentMainUserAddr">
+        UPDATE address
+        <set>
+            <if test="signedUserPk != 0">
+                addr_default = 0
+            </if>
+        </set>
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_default = #{signedUserPk}
+    </update>
+    <update id="patchMainUserAddr">
+        UPDATE address
+        <set>
+            <if test="signedUserPk != 0">
+                addr_default = #{signedUserPk}
+            </if>
+        </set>
+        WHERE addr_Pk = #{changeAddrPk}
+    </update>
+    <update id="updUserAddr">
+        UPDATE address
+        SET addr1 = #{addr1}
+        , addr2 = #{addr2}
+        , addr_coor_x = #{addrCoorX}
+        , addr_coor_y = #{addrCoorY}
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_Pk = #{addrPk}
+    </update>
+    <delete id="deleteUserAddr">
+        DELETE FROM address
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_Pk = #{addrPk}
+    </delete>
+</mapper>
