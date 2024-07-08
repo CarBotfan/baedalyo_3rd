@@ -1,10 +1,9 @@
 package com.green.beadalyo.lhn;
 
-import com.green.beadalyo.lhn.common.CustomFileUtils;
+import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.lhn.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,6 +1,6 @@
 package com.green.beadalyo.jhw.user;
 
-import com.green.beadalyo.jhw.common.model.ResultDto;
+import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.user.exception.IncorrectPwException;
 import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import com.green.beadalyo.jhw.user.model.*;
@@ -46,7 +46,7 @@ public class UserControllerImpl implements UserController{
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class UserControllerImpl implements UserController{
         return ResultDto.<SignInRes>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -90,9 +90,9 @@ public class UserControllerImpl implements UserController{
     public ResultDto<Integer> patchUserInfo(@RequestBody UserInfoPatchReq p) {
         int result = service.patchUserInfo(p);
         return ResultDto.<Integer>builder()
-                .result(2)
+                .statusCode(2)
                 .resultMsg("변경 완료")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -112,7 +112,7 @@ public class UserControllerImpl implements UserController{
         return ResultDto.<String>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -132,7 +132,7 @@ public class UserControllerImpl implements UserController{
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -143,7 +143,7 @@ public class UserControllerImpl implements UserController{
         return ResultDto.<Map>builder()
                 .statusCode(2)
                 .resultMsg("")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -154,7 +154,7 @@ public class UserControllerImpl implements UserController{
         return ResultDto.<UserInfoGetRes>builder()
                 .statusCode(2)
                 .resultMsg("조회 완료")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class UserControllerImpl implements UserController{
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override

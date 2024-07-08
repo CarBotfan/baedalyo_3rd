@@ -1,6 +1,6 @@
 package com.green.beadalyo.jhw.user;
 
-import com.green.beadalyo.jhw.common.model.ResultDto;
+import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.user.model.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

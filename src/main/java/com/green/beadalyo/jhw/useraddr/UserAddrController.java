@@ -1,6 +1,6 @@
 package com.green.beadalyo.jhw.useraddr;
 
-import com.green.beadalyo.jhw.common.model.ResultDto;
+import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.useraddr.model.*;
 
 import java.util.List;

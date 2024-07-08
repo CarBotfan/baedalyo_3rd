@@ -1,4 +1,5 @@
 spring:
+
   config:
     #optional: .env 파일이 없어도 컴파일 에러가 발생 X
     #file: 파일을 import하겠다
@@ -41,7 +42,7 @@ file:
 
 app:
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ${JWT.SECRET}
 
     header-schema-name: authorization
 

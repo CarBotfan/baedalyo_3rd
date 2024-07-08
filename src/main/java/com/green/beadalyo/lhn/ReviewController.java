@@ -1,12 +1,11 @@
 package com.green.beadalyo.lhn;
 
-import com.green.beadalyo.lhn.common.model.ResultDto;
+import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.lhn.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -3,10 +3,12 @@ package com.green.beadalyo.common.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class ResultDto<T> {
     @Schema(example = "2")

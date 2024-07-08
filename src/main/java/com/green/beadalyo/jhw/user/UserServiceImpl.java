@@ -1,8 +1,8 @@
 package com.green.beadalyo.jhw.user;
 
-import com.green.beadalyo.jhw.common.AppProperties;
-import com.green.beadalyo.jhw.common.CookieUtils;
-import com.green.beadalyo.jhw.common.CustomFileUtils;
+import com.green.beadalyo.common.AppProperties;
+import com.green.beadalyo.common.CookieUtils;
+import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService{
         }
         try {
             String path = String.format("user/%d", p.getUserPk());
-            customFileUtils.makeFolders(path);
+            customFileUtils.makeFolder(path);
             String target = String.format("%s/%s", path, fileName);
             customFileUtils.transferTo(pic, target);
         } catch (Exception e) {
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService{
             String midPath = String.format("user/%d", p.getSignedUserPk());
             String delAbsoluteFolderPath = String.format("%s/%s", customFileUtils.uploadPath, midPath);
             customFileUtils.deleteFolder(delAbsoluteFolderPath);
-            customFileUtils.makeFolders(midPath);
+            customFileUtils.makeFolder(midPath);
             String target = String.format("%s/%s", midPath, fileName);
             customFileUtils.transferTo(pic, target);
         } catch(Exception e) {

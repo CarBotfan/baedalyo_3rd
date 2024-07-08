@@ -28,16 +28,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/**")
                 .resourceChain(true)
-                .addResolver(new PathResourceResolver(){
-                   @Override
+                .addResolver(new PathResourceResolver() {
+                    @Override
                     protected Resource getResource(String resourcePath, Resource location) throws IOException {
-                       Resource requestedResource = location.createRelative(resourcePath);
+                        Resource requestedResource = location.createRelative(resourcePath);
 
-                       if (requestedResource.exists() && requestedResource.isReadable()) {
-                           return requestedResource;
-                       }
-                       return new ClassPathResource("/static/index.html");
-                   }
+                        if(requestedResource.exists() && requestedResource.isReadable()) {
+                            return requestedResource;
+                        }
+
+                        return new ClassPathResource("/static/index.html");
+                    }
                 });
     }
 }

@@ -1,7 +1,7 @@
 package com.green.beadalyo.jhw.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.green.beadalyo.jhw.common.AppProperties;
+import com.green.beadalyo.common.AppProperties;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
 import io.jsonwebtoken.Claims;
@@ -10,7 +10,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.CurrentTimestamp;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;

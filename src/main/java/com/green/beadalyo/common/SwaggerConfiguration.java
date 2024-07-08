@@ -1,17 +1,24 @@
 package com.green.beadalyo.common;
-
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
-import org.springframework.beans.factory.annotation.Configurable;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
-@Configurable
 @OpenAPIDefinition(
         info = @Info(
-                title = "Postime"
-                , description = "Postime 1차 프로젝트"
-                , version = "응애버전"
-        )
+                title = "배달요",
+                description = "Second Project",
+                version = "v1"
+        ),
+        security = @SecurityRequirement(name = "authorization")
 )
-public class SwaggerConfiguration {
-
-}
+@SecurityScheme(
+        type = SecuritySchemeType.HTTP
+        , name = "authorization"
+        , in = SecuritySchemeIn.HEADER
+        , bearerFormat = "JWT"
+        , scheme = "Bearer"
+)
+public class SwaggerConfiguration {}

@@ -1,6 +1,6 @@
 package com.green.beadalyo.jhw.useraddr;
 
-import com.green.beadalyo.jhw.common.model.ResultDto;
+import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.useraddr.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class UserAddrControllerImpl implements UserAddrController{
         return ResultDto.<Long>builder()
                 .statusCode(2)
                 .resultMsg("")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class UserAddrControllerImpl implements UserAddrController{
         return ResultDto.<List<UserAddrGetRes>>builder()
                 .statusCode(2)
                 .resultMsg("")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class UserAddrControllerImpl implements UserAddrController{
         return ResultDto.<UserAddrGetRes>builder()
                 .statusCode(2)
                 .resultMsg("")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class UserAddrControllerImpl implements UserAddrController{
         return ResultDto.<Integer>builder()
                 .statusCode(2)
                 .resultMsg("")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class UserAddrControllerImpl implements UserAddrController{
         return ResultDto.<Integer>builder()
                 .statusCode(2)
                 .resultMsg("")
-                .result(result).build();
+                .resultData(result).build();
     }
 
     @Override
@@ -79,6 +79,6 @@ public class UserAddrControllerImpl implements UserAddrController{
         return ResultDto.<Integer>builder()
                 .statusCode(2)
                 .resultMsg("")
-                .result(result).build();
+                .resultData(result).build();
     }
 }
