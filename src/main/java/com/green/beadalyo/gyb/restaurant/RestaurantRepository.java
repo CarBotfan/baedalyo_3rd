@@ -1,7 +1,6 @@
 package com.green.beadalyo.gyb.restaurant;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.user.model.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

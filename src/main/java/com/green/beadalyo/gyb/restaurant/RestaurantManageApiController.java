@@ -13,7 +13,6 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import com.green.beadalyo.gyb.response.RestaurantManageRes;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +22,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

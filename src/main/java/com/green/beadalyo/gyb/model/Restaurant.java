@@ -1,12 +1,9 @@
 package com.green.beadalyo.gyb.model;
 
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
-import com.green.beadalyo.gyb.dto.RestaurantUpdateDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
-import com.green.beadalyo.jhw.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
