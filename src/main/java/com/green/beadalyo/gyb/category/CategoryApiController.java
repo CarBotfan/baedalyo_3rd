@@ -2,8 +2,9 @@ package com.green.beadalyo.gyb.category;
 
 import com.green.beadalyo.gyb.common.*;
 import com.green.beadalyo.gyb.model.Category;
-import com.green.beadalyo.gyb.model.User;
 import com.green.beadalyo.gyb.response.CategoryRes;
+import com.green.beadalyo.jhw.user.UserServiceImpl;
+import com.green.beadalyo.jhw.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,6 +26,7 @@ public class CategoryApiController
 {
 
     private final CategoryService service;
+    private final UserServiceImpl userService ;
 
     @PutMapping
     @Operation(summary = "카테고리 추가")
@@ -38,7 +40,8 @@ public class CategoryApiController
     )
     public Result putCategory(@RequestPart String str, @RequestPart MultipartFile file)
     {
-        User user = new User().Admin();
+//        User user = new User().Admin();
+        User user = userService.getUserByPk() ;
         //유효성 검증
         if (user == null)
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
@@ -93,7 +96,7 @@ public class CategoryApiController
     )
     public Result deleteCategory(@PathVariable Long seq)
     {
-        User user = new User().Admin();
+        User user = userService.getUserByPk() ;
         //유효성 검증
         if (user == null)
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();

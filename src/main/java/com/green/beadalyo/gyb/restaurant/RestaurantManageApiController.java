@@ -10,9 +10,12 @@ import com.green.beadalyo.gyb.common.exception.DataWrongException;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.model.Category;
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.gyb.model.User;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import com.green.beadalyo.gyb.response.RestaurantManageRes;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.security.MyUser;
+import com.green.beadalyo.jhw.user.UserServiceImpl;
+import com.green.beadalyo.jhw.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,6 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,14 +40,17 @@ public class RestaurantManageApiController
     private final CategoryService categoryService;
 
     private final UserRepository repository ;
+    private final AuthenticationFacade authenticationFacade;
+    private final UserServiceImpl userService ;
 
 
     @GetMapping("test")
     @Operation(summary = "(테스트) 음식점 추가")
     public Result putRestaurant()
     {
+        User user = userService.getUserByPk() ;
         RestaurantInsertDto dto = new RestaurantInsertDto() ;
-        dto.setUser(getLoginUser());
+        dto.setUser(user);
         dto.setRegiNum("123-45-67891");
         dto.setResAddr("대구 북구 대현동");
         dto.setResCoorX(128.59636652);
@@ -75,16 +82,10 @@ public class RestaurantManageApiController
     public Result getManageData()
     {
 
-        //유저 부분 처리전까지 임시 처리
-        User user = getLoginUser() ;
-        //유효성 검사
-        if (user == null)
-            return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
-        //
-
+        Long seq = authenticationFacade.getLoginUserPk() ;
 
         try {
-            Restaurant data = service.getRestaurantData(user);
+            Restaurant data = service.getRestaurantData(seq);
 
             RestaurantManageRes res = new RestaurantManageRes(data);
             return ResultDto.<RestaurantManageRes>builder().resultData(res).build();
@@ -112,14 +113,10 @@ public class RestaurantManageApiController
     )
     public Result ToggleState()
     {
-        //유저 부분 처리전까지 임시 처리
-        User user = getLoginUser() ;
-        //유효성 검사
-        if (user == null)
-            return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
+        Long seq = authenticationFacade.getLoginUserPk() ;
 
         try {
-            Integer data = service.toggleState(user);
+            Integer data = service.toggleState(seq);
 
             return ResultDto.builder().statusCode(data).build();
         } catch (DataWrongException e) {
@@ -145,11 +142,7 @@ public class RestaurantManageApiController
     )
     public Result patchManageData(@RequestBody RestaurantManagePatchReq request)
     {
-        //유저 부분 처리전까지 임시 처리
-        User user = getLoginUser() ;
-        //유효성 검사
-        if (user == null)
-            return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
+        Long seq = authenticationFacade.getLoginUserPk() ;
         //사업자 번호 유효성 검사
         String regex = "^\\d{3}-\\d{2}-\\d{5}$";
         if (!request.getRegiNum().matches(regex))
@@ -159,7 +152,7 @@ public class RestaurantManageApiController
             return ResultError.builder().statusCode(-5).resultMsg("상호 명 은 20자리 까지만 허용 됩니다.").build();
 
         try {
-            Restaurant restaurant = service.getRestaurantData(user);
+            Restaurant restaurant = service.getRestaurantData(seq);
             restaurant.update(request);
             service.save(restaurant);
 
@@ -189,14 +182,11 @@ public class RestaurantManageApiController
     )
     public Result updatePic(@RequestPart MultipartFile file)
     {
-        User user = getLoginUser() ;
-        //유효성 검사
-        if (user == null)
-            return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
+        Long seq = authenticationFacade.getLoginUserPk() ;
 
         try {
-            String filename = service.updateRestaurantPic(user,file);
-            Restaurant rest = service.getRestaurantData(user) ;
+            String filename = service.updateRestaurantPic(seq,file);
+            Restaurant rest = service.getRestaurantData(seq) ;
             rest.setPic(filename);
             service.save(rest);
 
@@ -222,9 +212,7 @@ public class RestaurantManageApiController
     )
     public Result putRestaurantCategory(@RequestParam Long seq)
     {
-        User user = getLoginUser() ;
-        if (user == null)
-            return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
+        Long userSeq = authenticationFacade.getLoginUserPk() ;
 
         Category cate = null ;
         Restaurant restaurant = null ;
@@ -239,7 +227,7 @@ public class RestaurantManageApiController
         }
 
         try {
-            restaurant = service.getRestaurantData(user) ;
+            restaurant = service.getRestaurantData(userSeq) ;
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-4).resultMsg("음식점 정보 조회 실패").build();
         } catch (Exception e) {
@@ -270,9 +258,7 @@ public class RestaurantManageApiController
     )
     public Result deleteRestaurantCategory(@RequestParam Long seq)
     {
-        User user = getLoginUser() ;
-        if (user == null)
-            return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
+        Long userSeq = authenticationFacade.getLoginUserPk() ;
 
         Category cate = null ;
         Restaurant restaurant = null ;
@@ -287,7 +273,7 @@ public class RestaurantManageApiController
         }
 
         try {
-            restaurant = service.getRestaurantData(user) ;
+            restaurant = service.getRestaurantData(userSeq) ;
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-4).resultMsg("음식점 정보 조회 실패").build();
         } catch (Exception e) {
@@ -306,12 +292,5 @@ public class RestaurantManageApiController
 
     }
 
-
-
-    private User getLoginUser()
-    {
-        //유저 부분 처리전까지 임시 처리
-        return repository.findBySeq(4L);
-    }
 
 }

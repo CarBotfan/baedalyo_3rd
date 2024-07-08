@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "user")
 @Entity
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class User
 {
@@ -44,32 +45,32 @@ public class User
     @Column(name = "updated_at")
     private LocalDateTime updatedAt ;
 
-    public User()
-    {
-        this.seq = 1L ;
-        this.userId = "gsb7080" ;
-        this.userPw = "asdf" ;
-        this.userName = "공영빈" ;
-        this.userNickname = "스토마게돈" ;
-        this.userPic = null ;
-        this.userPhone = "010-1244-4815" ;
-        this.userRole = "ROLE_OWNER" ;
-        this.userState = 1 ;
-        this.userLoginType = 1 ;
-    }
-
-    public User Admin()
-    {
-        this.seq = 2L ;
-        this.userId = "gsb7080" ;
-        this.userPw = "asdf" ;
-        this.userName = "김관리자" ;
-        this.userNickname = "관리자마게돈" ;
-        this.userPic = null ;
-        this.userPhone = "010-1244-4815" ;
-        this.userRole = "ROLE_ADMIN" ;
-        this.userState = 1 ;
-        this.userLoginType = 1 ;
-        return this ;
-    }
+//    public User()
+//    {
+//        this.seq = 1L ;
+//        this.userId = "gsb7080" ;
+//        this.userPw = "asdf" ;
+//        this.userName = "공영빈" ;
+//        this.userNickname = "스토마게돈" ;
+//        this.userPic = null ;
+//        this.userPhone = "010-1244-4815" ;
+//        this.userRole = "ROLE_OWNER" ;
+//        this.userState = 1 ;
+//        this.userLoginType = 1 ;
+//    }
+//
+//    public User Admin()
+//    {
+//        this.seq = 2L ;
+//        this.userId = "gsb7080" ;
+//        this.userPw = "asdf" ;
+//        this.userName = "김관리자" ;
+//        this.userNickname = "관리자마게돈" ;
+//        this.userPic = null ;
+//        this.userPhone = "010-1244-4815" ;
+//        this.userRole = "ROLE_ADMIN" ;
+//        this.userState = 1 ;
+//        this.userLoginType = 1 ;
+//        return this ;
+//    }
 }
