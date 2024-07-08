@@ -42,13 +42,19 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public int postSignUp(MultipartFile pic, UserSignUpPostReq p) {
+    public long postSignUp(MultipartFile pic, UserSignUpPostReq p) {
+        if(mapper.getUserById(p.getUserId()) != null) {
+            throw new DuplicatedIdException();
+        }
+        if(p.getUserPw() != p.getUserPwRepeat()) {
+            throw new PwConfirmFailureException();
+        }
         String fileName = customFileUtils.makeRandomFileName(pic);
         p.setUserPic(fileName);
-
         String password = passwordEncoder.encode(p.getUserPw());
         p.setUserPw(password);
-        int result = mapper.signUpUser(p);
+        mapper.signUpUser(p);
+        long result = p.getUserPk();
         if(pic == null) {
             return result;
         }
@@ -59,7 +65,7 @@ public class UserServiceImpl implements UserService{
             customFileUtils.transferTo(pic, target);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("파일 업로드 실패");
+            throw new FileUploadFailedException();
         }
         return result;
     }
@@ -68,10 +74,10 @@ public class UserServiceImpl implements UserService{
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) {
         User user = mapper.getUserById(p.getUserId());
         if(user == null || user.getUserState() == 3) {
-            throw new RuntimeException("존재하지 않는 ID");
+            throw new UserNotFoundException();
         }
         if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
-            throw new RuntimeException("비밀번호 불일치");
+            throw new IncorrectPwException();
         }
         UserAddrGetRes mainAddr = mapper.getMainAddr(user.getUserPk());
 
@@ -190,6 +196,11 @@ public class UserServiceImpl implements UserService{
         Map map = new HashMap();
         map.put("accessToken", accessToken);
         return map;
+    }
+
+    @Override
+    public User getUserByPk(long signedUserPk) {
+        return mapper.getUserByPk(signedUserPk);
     }
 
     @Override

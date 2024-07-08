@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 public interface UserService {
-    int postSignUp(MultipartFile pic, UserSignUpPostReq p);
+    long postSignUp(MultipartFile pic, UserSignUpPostReq p);
     int deleteUser(UserDelReq p);
     int patchUserNickname(UserNicknamePatchReq p);
     int patchUserPhone(UserPhonePatchReq p);
@@ -18,4 +18,5 @@ public interface UserService {
     String patchProfilePic(MultipartFile pic, UserPicPatchReq p);
     Map getAccessToken(HttpServletRequest req);
     User getUserByPk();
+    User getUserByPk(long signedUserPk);
 }

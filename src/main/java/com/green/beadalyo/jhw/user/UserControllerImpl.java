@@ -1,8 +1,9 @@
 package com.green.beadalyo.jhw.user;
 
 import com.green.beadalyo.common.model.ResultDto;
-import com.green.beadalyo.jhw.user.exception.IncorrectPwException;
-import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
+import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
+import com.green.beadalyo.gyb.restaurant.RestaurantService;
+import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import java.util.Map;
 @RestController
 public class UserControllerImpl implements UserController{
     private final UserServiceImpl service;
+    private final RestaurantService restaurantService;
 
     @Override
     @PostMapping("/normal/sign-up")
@@ -30,13 +32,18 @@ public class UserControllerImpl implements UserController{
         String msg = "가입 성공";
         p.setUserRole("ROLE_USER");
         try {
-            result = service.postSignUp(pic, p);
-        } catch (UserNotFoundException e) {
+            service.postSignUp(pic, p);
+            result = 1;
+        } catch (DuplicatedIdException e) {
             statusCode = 101;
             msg = e.getMessage();
-        } catch (IncorrectPwException e) {
-            statusCode = 102;
+        } catch(FileUploadFailedException e) {
+            statusCode = 104;
             msg = e.getMessage();
+
+        } catch (PwConfirmFailureException e) {
+          statusCode = 105;
+          msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
             statusCode = 109;
@@ -51,28 +58,66 @@ public class UserControllerImpl implements UserController{
 
     @Override
     public ResultDto<Integer> postOwnerSignUp(@RequestPart(required = false) MultipartFile pic,@RequestPart OwnerSignUpPostReq p) {
-        UserSignUpPostReq req = UserSignUpPostReq.builder()
-                .userId(p.getUserId())
-                .userPw(p.getUserPw())
-                .userName(p.getUserName())
-                .userNickname(p.getUserNickName())
-                .userPhone(p.getUserNickName())
-                .userRole("ROLE_OWNER")
-                .build();
-        service.postSignUp(pic, req);
-        return null;
+        int result = 0;
+        String msg = "가입 성공";
+        int statusCode = -1;
+        try {
+            UserSignUpPostReq req = UserSignUpPostReq.builder()
+                    .userId(p.getUserId())
+                    .userPw(p.getUserPw())
+                    .userName(p.getUserName())
+                    .userNickname(p.getUserNickName())
+                    .userPhone(p.getUserNickName())
+                    .userRole("ROLE_OWNER")
+                    .build();
+            long userPk = service.postSignUp(pic, req);
+            User user = service.getUserByPk(userPk);
+            RestaurantInsertDto dto = new RestaurantInsertDto();
+            dto.setUser(user);
+            dto.setName(p.getRestaurantName());
+            dto.setRegiNum(p.getRegiNum());
+            dto.setResAddr(p.getAddr());
+            dto.setOpenTime(p.getOpenTime());
+            dto.setCloseTime(p.getCloseTime());
+            dto.setResCoorX(p.getCoorX());
+            dto.setResCoorY(p.getCoorY());
+            restaurantService.insertRestaurantData(dto);
+            statusCode = 100;
+            result = 1;
+        } catch (DuplicatedIdException e) {
+            statusCode = 101;
+            msg = e.getMessage();
+        } catch(FileUploadFailedException e) {
+            statusCode = 104;
+            msg = e.getMessage();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            statusCode = 109;
+            msg = "백엔드 에러";
+        }
+        return ResultDto.<Integer>builder()
+                .statusCode(statusCode)
+                .resultMsg(msg)
+                .resultData(result).build();
     }
 
     @Override
     @PostMapping("/sign-in")
     @Operation(description = "로그인")
     public ResultDto<SignInRes> postSignIn(HttpServletResponse res, @RequestBody SignInPostReq p) {
-        int statusCode = 2;
+        int statusCode = 100;
         SignInRes result = new SignInRes();
         String msg = "로그인 성공";
 
         try {
             result = service.postSignIn(res, p);
+        } catch(UserNotFoundException e) {
+           statusCode = 102;
+           msg = e.getMessage();
+        } catch(IncorrectPwException e) {
+            statusCode = 103;
+            msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
             msg = e.getMessage();
@@ -86,23 +131,41 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("/update-nickname")
-    @Operation(description = "유저 정보 수정")
+    @Operation(description = "유저 닉네임 수정")
     public ResultDto<Integer> patchUserNickname(@RequestBody UserNicknamePatchReq p) {
-        int result = service.patchUserNickname(p);
+        int statusCode = 100;
+        String msg = "변경 완료";
+        int result = 0;
+        try {
+            result = service.patchUserNickname(p);
+        } catch(Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -1;
+        }
         return ResultDto.<Integer>builder()
-                .statusCode(2)
-                .resultMsg("변경 완료")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
     @Override
     @PatchMapping("/update-phone")
-    @Operation(description = "유저 정보 수정")
+    @Operation(description = "유저 전화번호 수정")
     public ResultDto<Integer> patchUserPhone(@RequestBody UserPhonePatchReq p) {
-        int result = service.patchUserPhone(p);
+        int statusCode = 100;
+        String msg = "변경 완료";
+        int result = 0;
+        try {
+            result = service.patchUserPhone(p);
+        } catch(Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -1;
+        }
         return ResultDto.<Integer>builder()
-                .statusCode(2)
-                .resultMsg("변경 완료")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -115,6 +178,10 @@ public class UserControllerImpl implements UserController{
         String msg = "수정 완료";
         try {
             result = service.patchProfilePic(pic, p);
+        } catch(FileUploadFailedException e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = 104;
         } catch(Exception e) {
             e.printStackTrace();
             msg = e.getMessage();
