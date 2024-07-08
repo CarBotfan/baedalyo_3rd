@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,15 +110,14 @@ public class UserServiceImpl implements UserService{
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) {
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = customFileUtils.makeRandomFileName(pic);
-        p.setPicName(fileName);
+        p.setPicName("user/" + fileName);
         mapper.updProfilePic(p);
 
         try {
-            String midPath = String.format("user/%d", p.getSignedUserPk());
-            String delAbsoluteFolderPath = String.format("%s/%s", customFileUtils.uploadPath, midPath);
-            customFileUtils.deleteFolder(delAbsoluteFolderPath);
-            customFileUtils.makeFolder(midPath);
-            String target = String.format("%s/%s", midPath, fileName);
+            String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
+            File file = new File(delAbsoluteFolderPath, fileName);
+            file.delete();
+            String target = String.format("%s",fileName);
             customFileUtils.transferTo(pic, target);
         } catch(Exception e) {
             throw new FileUploadFailedException();
@@ -126,13 +126,23 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int patchUserInfo(UserInfoPatchReq p) {
+    public int patchUserNickname(UserNicknamePatchReq p) {
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
-        return mapper.updUserInfo(p);
+        return mapper.updUserNickname(p);
+    }
+
+    @Override
+    public int patchUserPhone(UserPhonePatchReq p) {
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        User user = mapper.getUserByPk(p.getSignedUserPk());
+        if(user == null || user.getUserState() == 3) {
+            throw new UserNotFoundException();
+        }
+        return mapper.updUserPhone(p);
     }
 
     @Override
@@ -180,5 +190,11 @@ public class UserServiceImpl implements UserService{
         Map map = new HashMap();
         map.put("accessToken", accessToken);
         return map;
+    }
+
+    @Override
+    public User getUserByPk() {
+        long signedUserPk = authenticationFacade.getLoginUserPk();
+        return mapper.getUserByPk(signedUserPk);
     }
 }

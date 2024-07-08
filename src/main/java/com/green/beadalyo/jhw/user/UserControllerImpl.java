@@ -85,10 +85,21 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PatchMapping("/update-info")
+    @PatchMapping("/update-nickname")
     @Operation(description = "유저 정보 수정")
-    public ResultDto<Integer> patchUserInfo(@RequestBody UserInfoPatchReq p) {
-        int result = service.patchUserInfo(p);
+    public ResultDto<Integer> patchUserNickname(@RequestBody UserNicknamePatchReq p) {
+        int result = service.patchUserNickname(p);
+        return ResultDto.<Integer>builder()
+                .statusCode(2)
+                .resultMsg("변경 완료")
+                .resultData(result).build();
+    }
+
+    @Override
+    @PatchMapping("/update-phone")
+    @Operation(description = "유저 정보 수정")
+    public ResultDto<Integer> patchUserPhone(@RequestBody UserPhonePatchReq p) {
+        int result = service.patchUserPhone(p);
         return ResultDto.<Integer>builder()
                 .statusCode(2)
                 .resultMsg("변경 완료")

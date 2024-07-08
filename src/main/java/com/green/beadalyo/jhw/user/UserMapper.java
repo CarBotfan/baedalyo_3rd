@@ -11,9 +11,11 @@ public interface UserMapper {
     User getUserByPk(long userPk);
     UserInfoGetRes selProfileUserInfo(long signedUserPk);
     int updProfilePic(UserPicPatchReq p);
-    int updUserInfo(UserInfoPatchReq p);
+    int updUserNickname(UserNicknamePatchReq p);
+    int updUserPhone(UserPhonePatchReq p);
     int updUserPassword(UserPasswordPatchReq p);
     int deleteUser(long userPk);
     UserAddrGetRes getMainAddr(long signedUserPk);
+    String getUserPicName(long signedUserPk);
 }
 

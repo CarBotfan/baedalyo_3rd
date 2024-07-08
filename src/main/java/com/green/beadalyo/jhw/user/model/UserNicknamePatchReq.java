@@ -7,11 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserInfoPatchReq {
+public class UserNicknamePatchReq {
     @JsonIgnore
     private long signedUserPk;
     @Schema(defaultValue = "변경할 닉네임")
     private String userNickname;
-    @Schema(defaultValue = "변경할 전화번호")
-    private String userPhone;
 }

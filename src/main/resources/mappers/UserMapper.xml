@@ -18,9 +18,14 @@
         , user_id AS userId
         , user_pw AS userPw
         , user_name AS userName
+        , user_nickname AS userNickname
         , user_pic AS userPic
-        , user_state AS userState
+        , user_phone AS userPhone
         , user_role AS userRole
+        , user_state AS userState
+        , user_login_type AS userLoginType
+        , created_at AS createdAt
+        , updated_at AS updatedAt
         FROM user
         WHERE user_id = #{userId}
     </select>
@@ -30,9 +35,14 @@
         , user_id AS userId
         , user_pw AS userPw
         , user_name AS userName
+        , user_nickname AS userNickname
         , user_pic AS userPic
-        , user_state AS userState
+        , user_phone AS userPhone
         , user_role AS userRole
+        , user_state AS userState
+        , user_login_type AS userLoginType
+        , created_at AS createdAt
+        , updated_at AS updatedAt
         FROM user
         WHERE user_pk = #{userPk}
     </select>
@@ -51,14 +61,20 @@
         SET user_pic = #{picName}
         WHERE user_pk = #{signedUserPk}
     </update>
-    <update id="updUserInfo">
+    <update id="updUserNickname">
         UPDATE user
         <set>
             <if test="userNickname != null and !userNickname.equals('')">
                 user_nickname = #{userNickname}
             </if>
+        </set>
+        WHERE user_pk = #{signedUserPk}
+    </update>
+    <update id="updUserPhone">
+        UPDATE user
+        <set>
             <if test = "userPhone != null and !userPhone.equals('')">
-                , user_phone = #{userPhone}
+                user_phone = #{userPhone}
             </if>
         </set>
         WHERE user_pk = #{signedUserPk}
