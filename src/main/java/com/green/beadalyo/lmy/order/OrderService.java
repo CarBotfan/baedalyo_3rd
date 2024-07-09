@@ -98,104 +98,65 @@ public class OrderService {
 
     @Transactional
     public int completeOrder(Long orderPk) {
-        OrderEntity entity = null;
-        try {
-            entity = orderMapper.selectOrderById(orderPk);
-        } catch (Exception e) {
-            throw new RuntimeException("주문 불러오기 오류");
-        }
 
-        List<OrderMenuEntity> menuEntities = null;
-        try {
-            menuEntities = orderMapper.selectOrderMenusById(orderPk);
-        } catch (Exception e) {
-            throw new RuntimeException("주문메뉴 불러오기 오류");
-        }
+        OrderEntity entity = orderMapper.selectOrderById(orderPk);
 
-        try {
-            entity.setOrderState(1);
-            orderMapper.insertDoneOrder(entity);
-            for (OrderMenuEntity orderMenuEntity : menuEntities) {
-                orderMenuEntity.setDoneOrderPk(entity.getDoneOrderPk());
-            }
-            orderMapper.insertDoneOrderMenu(menuEntities);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("완료 삽입 오류");
-        }
+        List<OrderMenuEntity> menuEntities = orderMapper.selectOrderMenusById(orderPk);
 
-        try {
-            orderMapper.deleteOrder(orderPk);
-        } catch (Exception e) {
-            throw new RuntimeException("마무리 오류");
+        entity.setOrderState(1);
+        orderMapper.insertDoneOrder(entity);
+        for (OrderMenuEntity orderMenuEntity : menuEntities) {
+            orderMenuEntity.setDoneOrderPk(entity.getDoneOrderPk());
         }
+        orderMapper.insertDoneOrderMenu(menuEntities);
+
+        orderMapper.deleteOrder(orderPk);
 
         return 1;
     }
 
     public List<OrderMiniGetRes> getUserOrderList(Long userPk){
-        List<OrderMiniGetRes> result = null;
-        try {
-            result = orderMapper.selectOrdersByUserPk(userPk);
-            for (OrderMiniGetRes item : result) {
-                List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
-                item.setMenuName(result2);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
+        List<OrderMiniGetRes> result = orderMapper.selectOrdersByUserPk(userPk);
+
+        for (OrderMiniGetRes item : result) {
+            List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
+            item.setMenuName(result2);
         }
 
         return result;
     }
 
     public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk){
-        List<OrderMiniGetRes> result = null;
-        try {
-            result = orderMapper.selectNonConfirmOrdersByResPk(resPk);
-            for (OrderMiniGetRes item : result) {
-                List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
-                item.setMenuName(result2);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
+        List<OrderMiniGetRes> result = orderMapper.selectNonConfirmOrdersByResPk(resPk);
+
+        for (OrderMiniGetRes item : result) {
+            List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
+            item.setMenuName(result2);
         }
 
         return result;
     }
 
     public List<OrderMiniGetRes> getResConfirmOrderList(Long resPk){
-        List<OrderMiniGetRes> result = null;
-        try {
-            result = orderMapper.selectConfirmOrdersByResPk(resPk);
-            for (OrderMiniGetRes item : result) {
-                List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
-                item.setMenuName(result2);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
+        List<OrderMiniGetRes> result = orderMapper.selectConfirmOrdersByResPk(resPk);
+
+        for (OrderMiniGetRes item : result) {
+            List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
+            item.setMenuName(result2);
         }
 
         return result;
     }
 
     public OrderGetRes getOrderInfo(Long orderPk) {
-        OrderGetRes result = null;
-        try {
-            result = orderMapper.getOrderInfo(orderPk);
-            result.setMenuInfoList(orderMapper.selectMenuInfo(orderPk));
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
-        }
+        OrderGetRes result = orderMapper.getOrderInfo(orderPk);
+        result.setMenuInfoList(orderMapper.selectMenuInfo(orderPk));
 
         return result;
     }
 
     public Integer confirmOrder(Long orderPk) {
-        try {
-            orderMapper.confirmOrder(orderPk);
-        } catch (Exception e) {
-            throw new RuntimeException("접수 오류~!~!");
-        }
+        orderMapper.confirmOrder(orderPk);
 
         return 1;
     }

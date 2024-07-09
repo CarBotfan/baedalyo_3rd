@@ -31,11 +31,10 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 실패 </p>"+
-                            "<p> -2 : 로그인 정보 획득 실패 </p>" +
-                            "<p> -3 : 음식점 정보 획득 실패 </p>" +
-                            "<p> -4 : 사업자 등록 번호 유효성 검사 실패 </p>" +
-                            "<p> -5 : 상호 명 유효성 검사 실패 </p>"
+                            "<p> -1 : 결제가 완료되지 않았습니다 </p>"+
+                            "<p> -2 : 글 양식을 맞춰주세요 (글자 수) </p>" +
+                            "<p> -3 : 메뉴를 찾을 수 없습니다 </p>" +
+                            "<p> -4 : 데이터 리스트 생성 실패 </p>"
     )
     public ResultDto<Integer> postOrder(@RequestBody OrderPostReq p){
 
@@ -61,141 +60,188 @@ public class OrderController {
     }
 
     @PutMapping("cancel")
+    @Operation(summary = "주문취소 하기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 주문 완료 실패 </p>"  +
+                            "<p> -3 : 메뉴 찾기 실패 </p>"
+    )
     public ResultDto<Integer> cancelOrder(@RequestParam Long orderPk) {
-        int code = 1;
-        String msg = "order 취소 완료";
         int result = -1;
 
         try {
             result = orderService.cancelOrder(orderPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+
         }
 
         return ResultDto.<Integer>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(CANCEL_ORDER_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @PutMapping("done")
+    @Operation(summary = "주문완료 하기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 주문 완료 실패 </p>"  +
+                            "<p> -3 : 메뉴 찾기 실패 </p>"
+    )
     public ResultDto<Integer> completeOrder(@RequestParam Long orderPk) {
-        int code = 1;
-        String msg = "order complete 완료";
         int result = -1;
 
         try {
             result = orderService.completeOrder(orderPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(ORDER_COMPLETE_FAIL).build();
         }
 
         return ResultDto.<Integer>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(COMPLETE_ORDER_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping("user")
+    @Operation(summary = "유저의 진행중인 주문 불러오기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 결제 미완료 </p>"+
+                            "<p> -2 : 요청사항 양식 오류 </p>" +
+                            "<p> -3 : 메뉴 찾기 실패 </p>"
+    )
     public ResultDto<List<OrderMiniGetRes>> getUserOrderList(@RequestParam Long userPk) {
-        int code = 1;
-        String msg = "유저의 진행중인 주문정보 불러오기 완료";
         List<OrderMiniGetRes> result = null;
 
         try {
             result = orderService.getUserOrderList(userPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+        }
+
+        if (result == null || result.isEmpty()) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(USER_ORDER_LIST_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping("res/noconfirm")
+    @Operation(summary = "상점의 접수 전 주문정보 불러오기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 결제 미완료 </p>"+
+                            "<p> -2 : 요청사항 양식 오류 </p>" +
+                            "<p> -3 : 메뉴 찾기 실패 </p>"
+    )
     public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam Long resPk) {
-        int code = 1;
-        String msg = "상점의 진행중인 주문정보 불러오기 완료";
         List<OrderMiniGetRes> result = null;
 
         try {
             result = orderService.getResNonConfirmOrderList(resPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+        }
+
+        if (result == null || result.isEmpty()) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(RES_ORDER_NO_CONFIRM_LIST_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping("res/confirm")
+    @Operation(summary = "상점의 접수 후 주문정보 불러오기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 결제 미완료 </p>"+
+                            "<p> -2 : 요청사항 양식 오류 </p>" +
+                            "<p> -3 : 메뉴 찾기 실패 </p>"
+    )
     public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam Long resPk) {
-        int code = 1;
-        String msg = "상점의 진행중인 주문정보 불러오기 완료";
         List<OrderMiniGetRes> result = null;
 
         try {
             result = orderService.getResConfirmOrderList(resPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+        }
+
+        if (result == null || result.isEmpty()) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(RES_ORDER_CONFIRM_LIST_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping
+    @Operation(summary = "주문정보 상세보기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 결제 미완료 </p>"+
+                            "<p> -2 : 요청사항 양식 오류 </p>"
+    )
     public ResultDto<OrderGetRes> getOrderInfo(@RequestParam Long orderPk) {
-        int code = 1;
-        String msg = "주문 상세보기 완료";
         OrderGetRes result = null;
 
         try {
             result = orderService.getOrderInfo(orderPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<OrderGetRes>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+        }
+
+        if (result == null) {
+            return ResultDto.<OrderGetRes>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<OrderGetRes>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(ORDER_INFO_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @PatchMapping
+    @Operation(summary = "주문 접수하기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 결제 미완료 </p>"+
+                            "<p> -2 : 요청사항 양식 오류 </p>"
+    )
     public ResultDto<Integer> confirmOrder(@RequestParam Long orderPk){
-        int code = 1;
-        String msg = "주문 접수 완료";
         Integer result = -1;
 
         try {
             result = orderService.confirmOrder(orderPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(ORDER_CONFIRM_FAIL).build();
         }
 
         return ResultDto.<Integer>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(CONFIRM_ORDER_SUCCESS)
                 .resultData(result)
                 .build();
     }
