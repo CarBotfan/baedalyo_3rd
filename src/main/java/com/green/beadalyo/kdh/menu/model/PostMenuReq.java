@@ -14,6 +14,9 @@ public class PostMenuReq {
     @JsonIgnore
     private long menuPk;
 
+    @JsonIgnore
+    private long resUserPk;
+
     @Schema(example = "1" , description = "가게 PK", requiredMode = Schema.RequiredMode.REQUIRED)
     private long menuResPk;
 

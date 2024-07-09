@@ -2,6 +2,7 @@ package com.green.beadalyo.kdh.menu;
 
 
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
@@ -17,9 +18,13 @@ import java.util.List;
 public class MenuService {
     private final MenuMapper mapper;
     private final CustomFileUtils customFileUtils;
+    private final AuthenticationFacade authenticationFacade;
+
     @Transactional
     public PostMenuRes postMenu(PostMenuReq p,
                                 MultipartFile pic){
+            p.setResUserPk(authenticationFacade.getLoginUserPk());
+           Long checkResult = mapper.checkResPk(p.getResUserPk(), p.getMenuResPk());
 
 
             if (pic==null || pic.isEmpty()){

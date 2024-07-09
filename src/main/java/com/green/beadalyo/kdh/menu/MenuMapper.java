@@ -10,8 +10,14 @@ import java.util.List;
 @Mapper
 public interface MenuMapper {
     int postMenu(PostMenuReq p);
+
     List<GetAllMenuRes> getAllMenu(GetAllMenuReq p);
+
     GetOneMenuRes getOneMenu(GetOneMenuReq p);
+
     int putMenu(PutMenuReq p);
+
     int delMenu(long menuPk);
+
+    Long checkResPk(long resUserPk, long menuResPk);
 }
