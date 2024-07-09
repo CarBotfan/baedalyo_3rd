@@ -17,7 +17,7 @@ public class OwnerSignUpPostReq {
     @Schema(defaultValue = "비밀번호")
     private String userPw;
     @Schema(defaultValue = "비밀번호 확인")
-    private String userPwRepeat;
+    private String userPwConfirm;
 
     @Schema(defaultValue = "이름")
     private String userName;

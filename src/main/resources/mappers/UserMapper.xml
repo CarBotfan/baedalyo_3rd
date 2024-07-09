@@ -89,6 +89,11 @@
         SET user_state = 3
         WHERE user_pk = #{userPk}
     </update>
+    <update id="deleteOwner">
+        UPDATE restaurant
+        SET restaurant_state = 3
+        WHERE res_user_pk = #{userPk}
+    </update>
     <select id="getMainAddr">
         SELECT
         addr1 , addr2

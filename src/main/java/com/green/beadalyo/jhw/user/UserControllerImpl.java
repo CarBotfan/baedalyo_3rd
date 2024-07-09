@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -46,8 +47,8 @@ public class UserControllerImpl implements UserController{
           msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
-            statusCode = 109;
-            msg = "백엔드 에러";
+            statusCode = -100;
+            msg = e.getMessage();
         }
 
         return ResultDto.<Integer>builder()
@@ -60,11 +61,12 @@ public class UserControllerImpl implements UserController{
     public ResultDto<Integer> postOwnerSignUp(@RequestPart(required = false) MultipartFile pic,@RequestPart OwnerSignUpPostReq p) {
         int result = 0;
         String msg = "가입 성공";
-        int statusCode = -1;
+        int statusCode = 100;
         try {
             UserSignUpPostReq req = UserSignUpPostReq.builder()
                     .userId(p.getUserId())
                     .userPw(p.getUserPw())
+                    .userPwConfirm(p.getUserPwConfirm())
                     .userName(p.getUserName())
                     .userNickname(p.getUserNickName())
                     .userPhone(p.getUserNickName())
@@ -82,7 +84,6 @@ public class UserControllerImpl implements UserController{
             dto.setResCoorX(p.getCoorX());
             dto.setResCoorY(p.getCoorY());
             restaurantService.insertRestaurantData(dto);
-            statusCode = 100;
             result = 1;
         } catch (DuplicatedIdException e) {
             statusCode = 101;
@@ -90,11 +91,13 @@ public class UserControllerImpl implements UserController{
         } catch(FileUploadFailedException e) {
             statusCode = 104;
             msg = e.getMessage();
-
+        } catch(PwConfirmFailureException e) {
+            statusCode = 105;
+            msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
-            statusCode = 109;
-            msg = "백엔드 에러";
+            statusCode = -100;
+            msg = e.getMessage();
         }
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
@@ -120,8 +123,8 @@ public class UserControllerImpl implements UserController{
             msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
+            statusCode = -100;
             msg = e.getMessage();
-            statusCode = -1;
         }
         return ResultDto.<SignInRes>builder()
                 .statusCode(statusCode)
@@ -138,10 +141,13 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         try {
             result = service.patchUserNickname(p);
+        } catch(UserPatchFailureException e) {
+            msg = e.getMessage();
+            statusCode = 105;
         } catch(Exception e) {
             e.printStackTrace();
+            statusCode = -100;
             msg = e.getMessage();
-            statusCode = -1;
         }
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
@@ -158,10 +164,13 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         try {
             result = service.patchUserPhone(p);
+        } catch(UserPatchFailureException e) {
+            msg = e.getMessage();
+            statusCode = 105;
         } catch(Exception e) {
             e.printStackTrace();
+            statusCode = -100;
             msg = e.getMessage();
-            statusCode = -1;
         }
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
@@ -178,14 +187,16 @@ public class UserControllerImpl implements UserController{
         String msg = "수정 완료";
         try {
             result = service.patchProfilePic(pic, p);
+        } catch(UserPatchFailureException e) {
+            msg = e.getMessage();
+            statusCode = 105;
         } catch(FileUploadFailedException e) {
-            e.printStackTrace();
             msg = e.getMessage();
             statusCode = 104;
         } catch(Exception e) {
             e.printStackTrace();
+            statusCode = -100;
             msg = e.getMessage();
-            statusCode = -1;
         }
         return ResultDto.<String>builder()
                 .statusCode(statusCode)
@@ -202,10 +213,19 @@ public class UserControllerImpl implements UserController{
         String msg = "수정 완료";
         try {
             result = service.patchUserPassword(p);
+        } catch(UserNotFoundException e) {
+            msg = e.getMessage();
+            statusCode = 102;
+        } catch(IncorrectPwException e) {
+            msg = e.getMessage();
+            statusCode = 103;
+        } catch(PwConfirmFailureException e) {
+            msg = e.getMessage();
+            statusCode = 105;
         } catch(Exception e) {
             e.printStackTrace();
+            statusCode = -100;
             msg = e.getMessage();
-            statusCode = -1;
         }
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
@@ -217,10 +237,24 @@ public class UserControllerImpl implements UserController{
     @GetMapping("access-token")
     @Operation(description = "액세스 토큰 발급")
     public ResultDto<Map> getAccessToken(HttpServletRequest req) {
-        Map result = service.getAccessToken(req);
+        int statusCode = 100;
+        String msg = "발급 성공";
+        Map result = new HashMap();
+        try { result = service.getAccessToken(req); }
+        catch (NullCookieException e) {
+            statusCode = 200;
+            msg = "쿠키 null";
+        } catch(InvalidTokenException e) {
+            statusCode = 201;
+            msg = "refresh token 만료";
+        } catch (Exception e) {
+            e.printStackTrace();
+            statusCode = -100;
+            msg = e.getMessage();
+        }
         return ResultDto.<Map>builder()
-                .statusCode(2)
-                .resultMsg("")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -228,10 +262,21 @@ public class UserControllerImpl implements UserController{
     @GetMapping
     @Operation(description = "유저 정보 조회")
     public ResultDto<UserInfoGetRes> getUserInfo() {
-        UserInfoGetRes result = service.getUserInfo();
+        UserInfoGetRes result = new UserInfoGetRes();
+        String msg = "조회 성공";
+        int statusCode = 100;
+        try {result = service.getUserInfo();}
+        catch(UserNotFoundException e) {
+            msg = e.getMessage();
+            statusCode = 102;
+        } catch (Exception e) {
+            e.printStackTrace();
+            statusCode = -100;
+            msg = e.getMessage();
+        }
         return ResultDto.<UserInfoGetRes>builder()
-                .statusCode(2)
-                .resultMsg("조회 완료")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -239,13 +284,19 @@ public class UserControllerImpl implements UserController{
     @PostMapping("/normal/delete")
     @Operation(description = "유저 탈퇴")
     public ResultDto<Integer> deleteUser(@RequestBody UserDelReq p) {
-        int statusCode = 2;
-        int result = -1;
+        int statusCode = 100;
+        int result = 0;
         String msg = "탈퇴 완료";
         try {
             result = service.deleteUser(p);
+        } catch (UserNotFoundException e) {
+            statusCode = 102;
+            msg = e.getMessage();
+        } catch(IncorrectPwException e) {
+            statusCode = 103;
+            msg = e.getMessage();
         } catch (Exception e) {
-            statusCode = -1;
+            statusCode = -100;
             msg = e.getMessage();
         }
         return ResultDto.<Integer>builder()
@@ -255,7 +306,25 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    public ResultDto<Integer> deleteOwner(OwnerDelReq p) {
-        return null;
+    public ResultDto<Integer> deleteOwner(UserDelReq p) {
+        int statusCode = 100;
+        int result = 0;
+        String msg = "탈퇴 완료";
+        try {
+            result = service.deleteOwner(p);
+        } catch (UserNotFoundException e) {
+            statusCode = 102;
+            msg = e.getMessage();
+        } catch(IncorrectPwException e) {
+            statusCode = 103;
+            msg = e.getMessage();
+        } catch (Exception e) {
+            statusCode = -100;
+            msg = e.getMessage();
+        }
+        return ResultDto.<Integer>builder()
+                .statusCode(statusCode)
+                .resultMsg(msg)
+                .resultData(result).build();
     }
 }

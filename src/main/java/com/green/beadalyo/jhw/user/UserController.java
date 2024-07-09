@@ -19,5 +19,5 @@ public interface UserController {
     ResultDto<Map> getAccessToken(HttpServletRequest req);
     ResultDto<UserInfoGetRes> getUserInfo();
     ResultDto<Integer> deleteUser(UserDelReq p);
-    ResultDto<Integer> deleteOwner(OwnerDelReq p);
+    ResultDto<Integer> deleteOwner(UserDelReq p);
 }
