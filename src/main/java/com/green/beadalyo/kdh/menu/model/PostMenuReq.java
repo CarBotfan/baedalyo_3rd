@@ -1,17 +1,20 @@
 package com.green.beadalyo.kdh.menu.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostMenuReq {
     @JsonIgnore
     private long menuPk;
 
-    @Schema(example = "가게 pk" , description = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "1" , description = "가게 PK", requiredMode = Schema.RequiredMode.REQUIRED)
     private long menuResPk;
 
     @Schema(example = "후라이드 치킨" , description = "메뉴 이름", requiredMode = Schema.RequiredMode.REQUIRED)

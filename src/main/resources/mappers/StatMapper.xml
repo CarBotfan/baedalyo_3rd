@@ -17,7 +17,7 @@
 <select id="getMonthSales">
     SELECT SUM(order_price) AS monthSales
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{req}
+    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{date}
     AND res_pk = #{resPk}
     AND done_order_state = 1;
 </select>
@@ -25,7 +25,7 @@
 <select id="getMonthOrderCount">
     SELECT count(res_pk) AS monthOrderCount
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{req}
+    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{date}
     AND res_pk = #{resPk}
     AND done_order_state = 1;
 </select>
@@ -33,7 +33,7 @@
 <select id="getDailySales">
     SELECT sum(order_price) AS dailySales
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{req}
+    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{date}
     AND res_pk = #{resPk}
     AND done_order_state = 1;
 </select>
@@ -41,7 +41,7 @@
 <select id="getDailyOrderCount">
     SELECT count(res_pk) AS dailyOrderCount
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{req}
+    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{date}
     AND res_pk = #{resPk}
     AND done_order_state = 1;
 </select>

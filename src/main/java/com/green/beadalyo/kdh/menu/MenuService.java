@@ -19,10 +19,10 @@ public class MenuService {
     private final CustomFileUtils customFileUtils;
     @Transactional
     public PostMenuRes postMenu(PostMenuReq p,
-                                MultipartFile menuPic){
+                                MultipartFile pic){
 
 
-            if (menuPic==null || menuPic.isEmpty()){
+            if (pic==null || pic.isEmpty()){
                 p.setMenuPic(null);
                 mapper.postMenu(p);
                 PostMenuRes result = PostMenuRes.builder()
@@ -36,16 +36,16 @@ public class MenuService {
                         .build();
                 return result;
             }
-            String picName = customFileUtils.makeRandomFileName(menuPic);
-            p.setMenuPic(picName);
+            String picName = customFileUtils.makeRandomFileName(pic);
             mapper.postMenu(p);
             String path = String.format("menu/%d",p.getMenuPk());
+            p.setMenuPic(path + "/"+ picName);
 
         try {
 
             customFileUtils.makeFolder(path);
             String target = String.format("%s/%s",path,picName);
-            customFileUtils.transferTo(menuPic,target);
+            customFileUtils.transferTo(pic,target);
         } catch (Exception e){
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
         }
@@ -68,11 +68,11 @@ public class MenuService {
 
 
     @Transactional
-    public PutMenuRes putMenu(MultipartFile menuPic, PutMenuReq p){
+    public PutMenuRes putMenu(MultipartFile pic, PutMenuReq p){
 
             GetOneMenuReq req = new GetOneMenuReq(p.getMenuPk());
             GetOneMenuRes originalMenu = mapper.getOneMenu(req);
-        if (menuPic == null || menuPic.isEmpty() ){
+        if (pic == null || pic.isEmpty() ){
             p.setMenuPic(originalMenu.getMenuPic());
             mapper.putMenu(p);
             GetOneMenuRes afterMenu = mapper.getOneMenu(req);
@@ -93,10 +93,10 @@ public class MenuService {
             String path = String.format("menu/%d",p.getMenuPk());
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
             customFileUtils.makeFolder(path);
-            String picName = customFileUtils.makeRandomFileName(menuPic);
+            String picName = customFileUtils.makeRandomFileName(pic);
             String target = String.format("%s/%s",path,picName);
-            customFileUtils.transferTo(menuPic,target);
-            p.setMenuPic(picName);
+            customFileUtils.transferTo(pic,target);
+            p.setMenuPic(path + "/" + picName);
             mapper.putMenu(p);
         } catch (Exception e){
             throw new RuntimeException("");
