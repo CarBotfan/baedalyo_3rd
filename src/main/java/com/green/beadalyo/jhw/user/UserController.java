@@ -20,4 +20,5 @@ public interface UserController {
     ResultDto<UserInfoGetRes> getUserInfo();
     ResultDto<Integer> deleteUser(UserDelReq p);
     ResultDto<Integer> deleteOwner(UserDelReq p);
+    ResultDto<Integer> duplicatedCheck(String userId);
 }

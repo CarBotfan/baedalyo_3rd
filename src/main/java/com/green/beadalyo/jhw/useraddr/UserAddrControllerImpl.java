@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,10 +21,18 @@ public class UserAddrControllerImpl implements UserAddrController{
     @PostMapping
     @Operation(description = "유저 주소 등록")
     public ResultDto<Long> postUserAddr(@RequestBody UserAddrPostReq p) {
-        long result = service.postUserAddr(p);
+        long result = 0;
+        String msg = "등록 완료";
+        int statusCode = 100;
+        try { result = service.postUserAddr(p); }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -100;
+        }
         return ResultDto.<Long>builder()
-                .statusCode(2)
-                .resultMsg("")
+                .statusCode(100)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -31,10 +40,18 @@ public class UserAddrControllerImpl implements UserAddrController{
     @GetMapping
     @Operation(description = "유저 주소목록 조회")
     public ResultDto<List<UserAddrGetRes>> getUserAddrList() {
-        List<UserAddrGetRes> result = service.getUserAddrList();
+        List<UserAddrGetRes> result = new ArrayList<>();
+        String msg = "조회 성공";
+        int statusCode = 100;
+        try { result = service.getUserAddrList(); }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -100;
+        }
         return ResultDto.<List<UserAddrGetRes>>builder()
-                .statusCode(2)
-                .resultMsg("")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -42,10 +59,18 @@ public class UserAddrControllerImpl implements UserAddrController{
     @GetMapping("/main-address")
     @Operation(description = "유저 메인 주소 조회")
     public ResultDto<UserAddrGetRes> getMainUserAddr() {
-        UserAddrGetRes result = service.getMainUserAddr();
+        UserAddrGetRes result = new UserAddrGetRes();
+        String msg = "조회 성공";
+        int statusCode = 100;
+        try { result = service.getMainUserAddr(); }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -100;
+        }
         return ResultDto.<UserAddrGetRes>builder()
-                .statusCode(2)
-                .resultMsg("")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -53,10 +78,18 @@ public class UserAddrControllerImpl implements UserAddrController{
     @PatchMapping
     @Operation(description = "유저 주소 수정")
     public ResultDto<Integer> patchUserAddr(@RequestBody UserAddrPatchReq p) {
-        int result = service.patchUserAddr(p);
+        int result = 0;
+        String msg = "수정 완료";
+        int statusCode = 100;
+        try { result = service.patchUserAddr(p); }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -100;
+        }
         return ResultDto.<Integer>builder()
-                .statusCode(2)
-                .resultMsg("")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -64,10 +97,18 @@ public class UserAddrControllerImpl implements UserAddrController{
     @PatchMapping("/main-address")
     @Operation(description = "유저 메인 주소 변경")
     public ResultDto<Integer> patchMainUserAddr(@RequestBody MainUserAddrPatchReq p) {
-        int result = service.patchMainUserAddr(p);
+        int result = 0;
+        String msg = "등록 완료";
+        int statusCode = 100;
+        try { result = service.patchMainUserAddr(p); }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -100;
+        }
         return ResultDto.<Integer>builder()
-                .statusCode(2)
-                .resultMsg("")
+                .statusCode(statusCode)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 
@@ -75,10 +116,18 @@ public class UserAddrControllerImpl implements UserAddrController{
     @DeleteMapping
     @Operation(description = "유저 주소 삭제")
     public ResultDto<Integer> deleteUserAddr(@ModelAttribute @ParameterObject UserAddrDelReq p) {
-        int result = service.deleteUserAddr(p);
+        int result = 0;
+        String msg = "등록 완료";
+        int statusCode = 100;
+        try { result = service.deleteUserAddr(p); }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -100;
+        }
         return ResultDto.<Integer>builder()
-                .statusCode(2)
-                .resultMsg("")
+                .statusCode(result)
+                .resultMsg(msg)
                 .resultData(result).build();
     }
 }

@@ -58,6 +58,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
+    @PostMapping("/owner/sign-up")
     public ResultDto<Integer> postOwnerSignUp(@RequestPart(required = false) MultipartFile pic,@RequestPart OwnerSignUpPostReq p) {
         int result = 0;
         String msg = "가입 성공";
@@ -167,7 +168,10 @@ public class UserControllerImpl implements UserController{
         } catch(UserPatchFailureException e) {
             msg = e.getMessage();
             statusCode = 105;
-        } catch(Exception e) {
+        } catch(InvalidRegexException e) {
+            msg = e.getMessage();
+            statusCode = 106;
+        }catch(Exception e) {
             e.printStackTrace();
             statusCode = -100;
             msg = e.getMessage();
@@ -182,7 +186,7 @@ public class UserControllerImpl implements UserController{
     @PatchMapping("/update-pic")
     @Operation(description = "프로필 이미지 수정")
     public ResultDto<String> patchProfilePic(@RequestPart(required = false) MultipartFile pic, @RequestPart UserPicPatchReq p) {
-        int statusCode = 2;
+        int statusCode = 100;
         String result = "";
         String msg = "수정 완료";
         try {
@@ -208,8 +212,8 @@ public class UserControllerImpl implements UserController{
     @PatchMapping("update-pw")
     @Operation(description = "비밀번호 수정")
     public ResultDto<Integer> patchUserPassword(@RequestBody UserPasswordPatchReq p) {
-        int statusCode = 2;
-        int result = -1;
+        int statusCode = 100;
+        int result = 0;
         String msg = "수정 완료";
         try {
             result = service.patchUserPassword(p);
@@ -306,6 +310,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
+    @PostMapping("/owner/delete")
     public ResultDto<Integer> deleteOwner(UserDelReq p) {
         int statusCode = 100;
         int result = 0;
@@ -317,6 +322,27 @@ public class UserControllerImpl implements UserController{
             msg = e.getMessage();
         } catch(IncorrectPwException e) {
             statusCode = 103;
+            msg = e.getMessage();
+        } catch (Exception e) {
+            statusCode = -100;
+            msg = e.getMessage();
+        }
+        return ResultDto.<Integer>builder()
+                .statusCode(statusCode)
+                .resultMsg(msg)
+                .resultData(result).build();
+    }
+
+    @Override
+    @GetMapping("/is-duplicated")
+    public ResultDto<Integer> duplicatedCheck(@RequestParam(name = "user_id") String userId) {
+        int statusCode = 100;
+        int result = 0;
+        String msg = "사용 가능한 ID";
+        try {
+            result = service.duplicatedCheck(userId);
+        } catch (DuplicatedIdException e) {
+            statusCode = 101;
             msg = e.getMessage();
         } catch (Exception e) {
             statusCode = -100;

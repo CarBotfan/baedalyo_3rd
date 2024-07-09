@@ -5,50 +5,52 @@ import com.green.beadalyo.jhw.useraddr.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserAddrServiceImpl implements UserAddrService{
     private final UserAddrMapper mapper;
     private final AuthenticationFacade authenticationFacade;
 
     @Override
-    public long postUserAddr(UserAddrPostReq p) {
+    public long postUserAddr(UserAddrPostReq p) throws Exception{
         p.setSignedUserId(authenticationFacade.getLoginUserPk());
         return mapper.postUserAddr(p);
     }
 
     @Override
-    public List<UserAddrGetRes> getUserAddrList() {
+    public List<UserAddrGetRes> getUserAddrList() throws Exception{
         long signedUserPk = authenticationFacade.getLoginUserPk();
         return mapper.getUserAddrList(signedUserPk);
 
     }
 
     @Override
-    public UserAddrGetRes getMainUserAddr() {
+    public UserAddrGetRes getMainUserAddr() throws Exception{
         long signedUserPk = authenticationFacade.getLoginUserPk();
         return mapper.getMainUserAddr(signedUserPk);
     }
 
     @Override
-    public int patchUserAddr(UserAddrPatchReq p) {
+    public int patchUserAddr(UserAddrPatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         return mapper.updUserAddr(p);
     }
 
     @Override
-    public int patchMainUserAddr(MainUserAddrPatchReq p) {
+    public int patchMainUserAddr(MainUserAddrPatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         mapper.patchCurrentMainUserAddr(p.getSignedUserPk());
         return mapper.patchMainUserAddr(p);
     }
 
     @Override
-    public int deleteUserAddr(UserAddrDelReq p) {
+    public int deleteUserAddr(UserAddrDelReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         return mapper.deleteUserAddr(p);
     }
