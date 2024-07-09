@@ -197,6 +197,9 @@ public class UserControllerImpl implements UserController{
         } catch(FileUploadFailedException e) {
             msg = e.getMessage();
             statusCode = 104;
+        } catch(InvalidRegexException e) {
+            msg = e.getMessage();
+            statusCode = 106;
         } catch(Exception e) {
             e.printStackTrace();
             statusCode = -100;

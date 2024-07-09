@@ -42,8 +42,11 @@ public class UserServiceImpl implements UserService{
     private final AppProperties appProperties;
     private final RestaurantService resService;
 
-    private String regex = "^\\d{3}-\\d{4}-\\d{4}$";
-    Pattern phoneRegex = Pattern.compile(regex);
+    private String regexPhone = "^\\d{3}-\\d{4}-\\d{4}$";
+    String regexFileName = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.(jpg|jpeg|png|gif|bmp|tiff|svg)$";
+
+    Pattern phonePattern = Pattern.compile(regexPhone);
+    Pattern filePattern = Pattern.compile(regexFileName);
 
 
     @Override
@@ -100,7 +103,6 @@ public class UserServiceImpl implements UserService{
         cookieUtils.setCookie(res, "refresh-token", refreshToken, refreshTokenMaxAge);
 
         return SignInRes.builder()
-                .userPk(user.getUserPk())
                 .userNickname(user.getUserName())
                 .userPic(user.getUserPic())
                 .mainAddr(mainAddr)
@@ -122,6 +124,10 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
+        Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
+        if(!matcher.matches()) {
+            throw new InvalidRegexException();
+        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = customFileUtils.makeRandomFileName(pic);
         p.setPicName("user/" + fileName);
@@ -157,7 +163,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int patchUserPhone(UserPhonePatchReq p) throws Exception{
-        Matcher matcher = phoneRegex.matcher(p.getUserPhone());
+        Matcher matcher = phonePattern.matcher(p.getUserPhone());
         if(!matcher.matches()) {
             throw new InvalidRegexException();
         }
