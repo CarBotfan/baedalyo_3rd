@@ -45,4 +45,13 @@
     AND res_pk = #{resPk}
     AND done_order_state = 1;
 </select>
+    
+    
+    
+<select id="checkResPk">
+    SELECT res_pk
+    FROM restaurant
+    WHERE res_pk = #{resPk}
+    AND res_user_pk = #{resUserPk};
+</select>
 </mapper>
