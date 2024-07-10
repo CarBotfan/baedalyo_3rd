@@ -23,7 +23,10 @@ public class MenuController {
     @PostMapping
     @Operation(summary = "메뉴 등록" , description = "menuPk는 등록된 메뉴의 고유 번호(PK)입니다.\n" +
             "                                       menuResPk는 메뉴가 등록된 식당의 고유 번호(PK)입니다.\n" +
-            "                                       menuState는 ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.")
+            "                                       <p>menuState는 ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.</p>" +
+                                                    "<p> 1 : 메뉴 등록 완료 </p>"+
+                                                    "<p> -1 : 메뉴 등록 실패 </p>"+
+                                                    "<p> -2 : 등록 양식이 맞지 않음 </p>")
     public ResultDto<PostMenuRes> postMenu(@RequestPart PostMenuReq p,
                                            @RequestPart(required = false) MultipartFile pic){
 
