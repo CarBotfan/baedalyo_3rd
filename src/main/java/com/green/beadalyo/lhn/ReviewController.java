@@ -3,6 +3,7 @@ package com.green.beadalyo.lhn;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.lhn.model.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,21 +15,45 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/review")
+@RequestMapping("api/rev")
 @Tag(name = "리뷰 CRUD")
 public class ReviewController {
     private final ReviewService service;
     @PostMapping("api/review")
-    @Operation(summary = "고객리뷰작성",description = "")
+    @Operation(summary = "고객리뷰작성")
+    @ApiResponse(
+            description = "<p> code : 1  => 리뷰 작성 완료 </p>"+
+                    "<p> code : -1  => 주문에 대한 리뷰가 이미 존재합니다 </p>" +
+                    "<p> code : -2  => 댓글에 비속어가 존재합니다 </p>"+
+                    "<p> code : -3  => 파일 개수는 4개 까지만 가능합니다 </p>" +
+                    "<p> code : -4  =>  별점은 1에서 5까지가 최대</p>" +
+                    "<p> code : -5  =>  파일 저장 중 오류 발생:  + file.getOriginalFilename(), e</p>"
+    )
     public ResultDto<Long> postReview(@RequestPart ReviewPostReq p, @RequestPart(required = false) List<MultipartFile> pics) {
-
-        int code = 2;
+        int code = 1;
         String msg = "작성 완료";
         long result = 0;
         try{
             result = service.postReview(p,pics);
-        }catch (Exception e){
-            code = 4;
+        }
+        catch (IllegalArgumentException illegalArgumentException){
+            code = -1;
+            msg = illegalArgumentException.getMessage();
+        }
+        catch (ArithmeticException arithmeticException){
+            code = -2;
+            msg = arithmeticException.getMessage();
+        }
+        catch (NullPointerException nullPointerException){
+            code = -3;
+            msg = nullPointerException.getMessage();
+        }
+        catch (RuntimeException runtimeException){
+            code = -4;
+            msg = runtimeException.getMessage();
+        }
+        catch (Exception e){
+            code = -5;
             msg = e.getMessage();
         }
         return ResultDto.<Long>builder()
@@ -40,7 +65,7 @@ public class ReviewController {
     @PostMapping("api/comment")
     @Operation(summary = "사장님 답글", description = "")
     public ResultDto<Long> postReviewReply(@RequestBody ReviewReplyReq p) {
-        int code = 2;
+        int code = 1;
         String msg = "답변 완료";
         long result = 0;
         try{
@@ -58,14 +83,14 @@ public class ReviewController {
     @GetMapping("reviewlist")
     @Operation(summary = "리뷰 리스트 불러오기", description = "")
     public ResultDto<List<ReviewGetRes>> ReviewGetRes(@ModelAttribute ReviewGetReq p){
-        int code = 2;
+        int code = 1;
         String msg = "불러오기 완료";
         List<ReviewGetRes> result = null;
         try{
             result = service.getReviewList(p);
 
         }catch (Exception e){
-            code = 4;
+            code = -13;
             msg = e.getMessage();
         }
         return ResultDto.<List<ReviewGetRes>>builder()
@@ -77,14 +102,39 @@ public class ReviewController {
 
     @PutMapping("patchreview")
     @Operation(summary = "리뷰수정" , description = "")
+    @ApiResponse(
+            description = "<p> code : 1  => 리뷰 수정 완료 </p>"+
+                    "<p> code : -7  => 리뷰를 작성한 사용자가 아닙니다 </p>" +
+                    "<p> code : -2  => 댓글에 비속어가 존재합니다 </p>"+
+                    "<p> code : -3  => 별점은 1에서 5까지가 최대 </p>" +
+                    "<p> code : -4  =>  파일 개수는 4개 까지만 가능합니다</p>" +
+                    "<p> code : -5  =>  파일 저장 중 오류 발생:  + file.getOriginalFilename(), e</p>"
+    )
     public ResultDto<Long> updReview(@RequestPart ReviewPutReq p , @RequestPart List<MultipartFile> pics) {
-        int code = 2;
+        int code = 1;
         String msg = "리뷰수정완료";
         long result = 0;
-        try {
-            result = service.updReview(p,pics);
-        } catch (Exception e) {
-            code = 4;
+        try{
+            result = service.updReview(p , pics);
+        }
+        catch (IllegalArgumentException illegalArgumentException){
+            code = -7;
+            msg = illegalArgumentException.getMessage();
+        }
+        catch (ArithmeticException arithmeticException){
+            code = -2;
+            msg = arithmeticException.getMessage();
+        }
+        catch (NullPointerException nullPointerException){
+            code = -3;
+            msg = nullPointerException.getMessage();
+        }
+        catch (RuntimeException runtimeException){
+            code = -4;
+            msg = runtimeException.getMessage();
+        }
+        catch (Exception e){
+            code = -5;
             msg = e.getMessage();
         }
         return ResultDto.<Long>builder()
@@ -95,19 +145,23 @@ public class ReviewController {
     }
     @DeleteMapping("delete")
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
+    @ApiResponse(
+            description = "<p> code : 1  => 삭제 완료 </p>"+
+                    "<p> code : -10  => 존재하지 않는 리뷰입니다 </p>" +
+                    "<p> code : -11  => 리뷰를 작성한 사용자가 아닙니다 </p>"
+    )
     public ResultDto<Integer> deleteReview(@RequestParam long reviewPk, @RequestParam long userPk) {
-        int code = 2;
+        int code = 1;
         String msg = "삭제 완료";
         try {
             service.deleteReview(reviewPk, userPk);
-        } catch (NullPointerException e) {
-            msg = e.getMessage();
-            code = 6 ;
+        } catch (NullPointerException nullPointerException) {
+            code = -10;
+            msg = nullPointerException.getMessage();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            code = 4;
-            msg = e.getMessage();
+        } catch (RuntimeException runtimeException) {
+            code = -11;
+            msg = runtimeException.getMessage();
         }
         return ResultDto.<Integer>builder()
                 .statusCode(code)
