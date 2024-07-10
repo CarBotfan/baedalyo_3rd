@@ -42,7 +42,7 @@ file:
 
 app:
   jwt:
-    secret: ${JWT.SECRET}
+    secret: ${JWT_SECRET}
 
     header-schema-name: authorization
 

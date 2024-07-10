@@ -5,6 +5,7 @@ import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/menu")
 @RequiredArgsConstructor
+@Tag(name = "메뉴 관련 컨트롤러입니다.")
 public class MenuController {
     private final MenuService service;
 
