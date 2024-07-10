@@ -7,6 +7,7 @@ import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
+import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
@@ -52,6 +53,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
+        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         if(mapper.getUserById(p.getUserId()) != null) {
             throw new DuplicatedIdException();
         }
@@ -81,7 +83,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
-        User user = mapper.getUserById(p.getUserId());
+        User user = mapper.signInUser(p);
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }

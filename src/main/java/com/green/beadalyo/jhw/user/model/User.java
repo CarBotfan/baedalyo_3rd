@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.user.model;
 
+import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;

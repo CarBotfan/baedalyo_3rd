@@ -12,6 +12,24 @@
         , user_role = #{userRole}
         , user_login_type = #{userLoginType}
     </insert>
+    <select id ="signInUser">
+        SELECT
+        user_pk AS userPk
+        , user_id AS userId
+        , user_pw AS userPw
+        , user_name AS userName
+        , user_nickname AS userNickname
+        , user_pic AS userPic
+        , user_phone AS userPhone
+        , user_role AS userRole
+        , user_state AS userState
+        , user_login_type AS userLoginType
+        , created_at AS createdAt
+        , updated_at AS updatedAt
+        FROM user
+        WHERE user_id = #{userId}
+        AND user_login_type = #{userLoginType}
+    </select>
     <select id="getUserById">
         SELECT
         user_pk AS userPk
