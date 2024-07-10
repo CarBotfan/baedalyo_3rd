@@ -77,4 +77,14 @@ WHERE menu_pk = #{menuPk}
     FROM menu
     WHERE menu_pk = #{menuPk}
 </delete>
+
+<select id="checkResPk">
+    SELECT menu_pk
+    FROM  menu
+    WHERE menu_res_pk = (SELECT res_pk
+                        FROM restaurant
+                        WHERE res_user_pk = #{resUserPk}
+                        LIMIT 1)
+    LIMIT 1 ;
+</select>
 </mapper>
