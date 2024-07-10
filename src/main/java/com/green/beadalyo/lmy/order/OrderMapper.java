@@ -27,4 +27,10 @@ public interface OrderMapper {
     List<MenuInfoDto> selectMenuInfo(Long orderPk);
 
     void confirmOrder(Long orderPk);
+
+    Long getResUserPkByOrderPk(Long orderPk);
+    Long getUserPkByOrderPk(Long orderPk);
+    Long getResUserPkByResPk(Long resPk);
+
+    Long getOrderState(Long orderPk);
 }
