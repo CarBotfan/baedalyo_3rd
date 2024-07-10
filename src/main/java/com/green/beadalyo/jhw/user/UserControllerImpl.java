@@ -103,8 +103,8 @@ public class UserControllerImpl implements UserController{
             dto.setRegiNum(p.getRegiNum());
             dto.setResAddr(p.getAddr());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            dto.setOpenTime(LocalTime.parse(p.getOpenTime()));
-            dto.setCloseTime(LocalTime.parse(p.getOpenTime()));
+            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
+            dto.setCloseTime(LocalTime.parse(p.getOpenTime(), formatter));
             dto.setResCoorX(p.getCoorX());
             dto.setResCoorY(p.getCoorY());
             restaurantService.insertRestaurantData(dto);
