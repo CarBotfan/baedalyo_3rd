@@ -62,6 +62,7 @@ public class OrderService {
 
     @Transactional
     public int cancelOrder(Long orderPk) {
+
         OrderEntity entity = null;
         try {
             entity = orderMapper.selectOrderById(orderPk);
@@ -70,29 +71,20 @@ public class OrderService {
         }
 
         List<OrderMenuEntity> menuEntities = null;
-        try {
-            menuEntities = orderMapper.selectOrderMenusById(orderPk);
-        } catch (Exception e) {
-            throw new RuntimeException("주문메뉴 불러오기 오류");
-        }
 
-        try {
-            entity.setOrderState(2);
-            orderMapper.insertDoneOrder(entity);
-            for (OrderMenuEntity orderMenuEntity : menuEntities) {
-                orderMenuEntity.setDoneOrderPk(entity.getDoneOrderPk());
-            }
-            orderMapper.insertDoneOrderMenu(menuEntities);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("취소 삽입 오류");
-        }
+        menuEntities = orderMapper.selectOrderMenusById(orderPk);
 
-        try {
-            orderMapper.deleteOrder(orderPk);
-        } catch (Exception e) {
-            throw new RuntimeException("마무리 오류");
+
+        entity.setOrderState(2);
+        orderMapper.insertDoneOrder(entity);
+        for (OrderMenuEntity orderMenuEntity : menuEntities) {
+            orderMenuEntity.setDoneOrderPk(entity.getDoneOrderPk());
         }
+        orderMapper.insertDoneOrderMenu(menuEntities);
+
+
+        orderMapper.deleteOrder(orderPk);
+
 
         return 1;
     }

@@ -1,6 +1,7 @@
 package com.green.beadalyo.lmy.order;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
@@ -24,12 +25,14 @@ import static com.green.beadalyo.lmy.order.dataset.ResponseDataSet.*;
 @Slf4j
 public class OrderController {
     private final OrderService orderService;
+    private final OrderMapper orderMapper;
+    private final AuthenticationFacade authenticationFacade;
 
     @PostMapping
     @Operation(summary = "주문하기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
+                    "<p> 1 : 주문하기 성공 </p>"+
                             "<p> -1 : 결제가 완료되지 않았습니다 </p>"+
                             "<p> -2 : 글 양식을 맞춰주세요 (글자 수) </p>" +
                             "<p> -3 : 메뉴를 찾을 수 없습니다 </p>" +
@@ -62,17 +65,29 @@ public class OrderController {
     @Operation(summary = "주문취소 하기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 주문 완료 실패 </p>"  +
-                            "<p> -3 : 메뉴 찾기 실패 </p>"
+                    "<p> 1 : 주문 취소 성공 </p>"+
+                            "<p> -1 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
+                            "<p> -3 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
+                            "<p> -3 : 주문 취소 실패 </p>"
     )
     public ResultDto<Integer> cancelOrder(@RequestParam Long orderPk) {
         int result = -1;
 
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (orderMapper.getOrderState(orderPk) == 1
+                && (userPk != orderMapper.getResUserPkByOrderPk(orderPk) || userPk != orderMapper.getUserPkByOrderPk(orderPk))){
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(NO_NON_CONFIRM_CANCEL_AUTHENTICATION).build();
+        }
+
+        if (orderMapper.getOrderState(orderPk) == 2
+                && userPk != orderMapper.getResUserPkByOrderPk(orderPk)){
+            return ResultDto.<Integer>builder().statusCode(-2).resultMsg(NO_CONFIRM_CANCEL_AUTHENTICATION).build();
+        }
+
         try {
             result = orderService.cancelOrder(orderPk);
         } catch (Exception e) {
-
+            return ResultDto.<Integer>builder().statusCode(-3).resultMsg(ORDER_CANCEL_FAIL).build();
         }
 
         return ResultDto.<Integer>builder()
@@ -86,7 +101,7 @@ public class OrderController {
     @Operation(summary = "주문완료 하기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
+                    "<p> 1 : 주문 완료 성공 </p>"+
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
     )
     public ResultDto<Integer> completeOrder(@RequestParam Long orderPk) {
@@ -109,7 +124,7 @@ public class OrderController {
     @Operation(summary = "유저의 진행중인 주문 불러오기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
+                    "<p> 1 : 유저의 진행중인 주문 불러오기 완료 </p>"+
                             "<p> -1 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
@@ -137,7 +152,7 @@ public class OrderController {
     @Operation(summary = "상점의 접수 전 주문정보 불러오기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
+                    "<p> 1 : 상점의 접수 전 주문정보 불러오기 완료 </p>"+
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
@@ -165,7 +180,7 @@ public class OrderController {
     @Operation(summary = "상점의 접수 후 주문정보 불러오기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
+                    "<p> 1 : 상점의 접수 후 주문정보 불러오기 완료 </p>"+
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
@@ -193,7 +208,7 @@ public class OrderController {
     @Operation(summary = "주문정보 상세보기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
+                    "<p> 1 : 주문정보 상세보기 완료 </p>"+
                             "<p> -1 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
@@ -221,7 +236,7 @@ public class OrderController {
     @Operation(summary = "주문 접수하기")
     @ApiResponse(
             description =
-                    "<p> 1 : 성공 </p>"+
+                    "<p> 1 : 주문 접수 완료 </p>"+
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
     )
     public ResultDto<Integer> confirmOrder(@RequestParam Long orderPk){

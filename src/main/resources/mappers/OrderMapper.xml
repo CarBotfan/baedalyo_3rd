@@ -145,9 +145,21 @@
                         WHERE order_pk = #{orderPk})
     </select>
 
+    <select id="getUserPkByOrderPk">
+        SELECT order_user_pk
+        FROM `order`
+        WHERE order_pk = #{orderPk}
+    </select>
+
     <select id="getResUserPkByResPk">
         SELECT res_user_pk
         FROM restaurant
         WHERE res_pk = resPk;
+    </select>
+
+    <select id="getOrderState">
+        SELECT order_state
+        FROM `order`
+        WHERE order_pk = #{orderPk}
     </select>
 </mapper>

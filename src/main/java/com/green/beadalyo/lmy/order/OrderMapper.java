@@ -29,5 +29,8 @@ public interface OrderMapper {
     void confirmOrder(Long orderPk);
 
     Long getResUserPkByOrderPk(Long orderPk);
+    Long getUserPkByOrderPk(Long orderPk);
     Long getResUserPkByResPk(Long resPk);
+
+    Long getOrderState(Long orderPk);
 }
