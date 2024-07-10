@@ -13,6 +13,8 @@ public class SignInRes {
     private String userNickname;
     @Schema(defaultValue = "메인 주소")
     private UserAddrGetRes mainAddr;
+    @Schema(defaultValue = "유저 역할")
+    private String userRole;
     @Schema(defaultValue = "액세스 토큰")
     private String accessToken;
 }
