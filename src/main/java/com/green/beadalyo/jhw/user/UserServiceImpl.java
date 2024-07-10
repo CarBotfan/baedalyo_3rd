@@ -107,7 +107,6 @@ public class UserServiceImpl implements UserService{
 
         return SignInRes.builder()
                 .userNickname(user.getUserName())
-                .userPic(user.getUserPic())
                 .mainAddr(mainAddr)
                 .accessToken(accessToken).build();
     }
