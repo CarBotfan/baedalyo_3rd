@@ -31,7 +31,7 @@ import java.time.LocalTime;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("api/restaurant/manage")
-@Tag(name = "음식점 관련 컨트롤러")
+@Tag(name = "음식점 매니저 컨트롤러")
 public class RestaurantManageApiController
 {
     private final RestaurantService service;

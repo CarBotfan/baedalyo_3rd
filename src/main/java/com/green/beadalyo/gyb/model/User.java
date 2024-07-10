@@ -34,7 +34,6 @@ public class User
     @Column(name = "user_phone")
     private String userPhone ;
     @Column(name = "user_role")
-    @ColumnDefault("role_user")
     private String userRole ;
     @Column(name = "user_state")
     private Integer userState ;
