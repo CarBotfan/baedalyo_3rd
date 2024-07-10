@@ -35,9 +35,9 @@ public class OwnerSignUpPostReq {
     @JsonIgnore
     private Integer userLoginType;
     @Schema(defaultValue = "영업 시작 시간")
-    private LocalTime openTime;
+    private String openTime;
     @Schema(defaultValue = "영업 종료 시간")
-    private LocalTime closeTime;
+    private String closeTime;
     @Schema(defaultValue = "가게 주소")
     private String addr;
     @Schema(defaultValue = "124.014")
