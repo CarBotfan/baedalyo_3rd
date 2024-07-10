@@ -68,3 +68,17 @@ spring:
 logging:
   directory: ${DEFAULT.FILE_DIRECTORY}
 
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${PROD.DB.URL}
+    username: ${PROD.DB.USERNAME}
+    password: ${PROD.DB.PASSWORD}
+
+file:
+  directory: ${PROD.FILE.DIRECTORY}
+
