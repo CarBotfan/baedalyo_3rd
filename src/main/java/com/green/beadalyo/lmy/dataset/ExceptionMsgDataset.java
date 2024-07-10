@@ -1,4 +1,4 @@
-package com.green.beadalyo.lmy.order.dataset;
+package com.green.beadalyo.lmy.dataset;
 
 public interface ExceptionMsgDataset {
     String PAYMENT_METHOD_ERROR = "결제가 완료되지 않았습니다";

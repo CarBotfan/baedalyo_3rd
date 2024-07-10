@@ -11,6 +11,7 @@ import java.util.List;
 public class OrderPostReq {
     @JsonIgnore
     private Long orderPk;        // 자동 생성된 orderPk를 받기 위한 필드
+    @JsonIgnore
     private Long orderUserPk;
     private Long orderResPk;
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)

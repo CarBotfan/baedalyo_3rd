@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.doneorder;
 
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderGetRes;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.MenuInfoDto;
@@ -14,48 +15,44 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoneOrderService {
     private final DoneOrderMapper doneOrderMapper;
+    private final AuthenticationFacade authenticationFacade;
 
-    public List<DoneOrderMiniGetRes> getDoneOrderByUserPk(Long userPk) {
+    public List<DoneOrderMiniGetRes> getDoneOrderByUserPk() {
+        long userPk = authenticationFacade.getLoginUserPk();
+
         List<DoneOrderMiniGetRes> result = null;
-        try {
-            result = doneOrderMapper.selectDoneOrderByUserPk(userPk);
-            for (DoneOrderMiniGetRes item : result) {
-                List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
-                item.setMenuInfoDtos(result2);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
+
+        result = doneOrderMapper.selectDoneOrderByUserPk(userPk);
+        for (DoneOrderMiniGetRes item : result) {
+            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
+            item.setMenuInfoDtos(result2);
         }
 
         return result;
     }
 
-    public List<DoneOrderMiniGetRes> getCancelOrderByUserPk(Long userPk) {
+    public List<DoneOrderMiniGetRes> getCancelOrderByUserPk() {
+        long userPk = authenticationFacade.getLoginUserPk();
 
         List<DoneOrderMiniGetRes> result = null;
-        try {
-            result = doneOrderMapper.selectCancelOrderByUserPk(userPk);
-            for (DoneOrderMiniGetRes item : result) {
-                List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
-                item.setMenuInfoDtos(result2);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
+
+        result = doneOrderMapper.selectCancelOrderByUserPk(userPk);
+        for (DoneOrderMiniGetRes item : result) {
+            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
+            item.setMenuInfoDtos(result2);
         }
+
 
         return result;
     }
 
     public List<DoneOrderMiniGetRes> getDoneOrderByResPk(Long resPk) {
         List<DoneOrderMiniGetRes> result = null;
-        try {
-            result = doneOrderMapper.selectDoneOrderByResPk(resPk);
-            for (DoneOrderMiniGetRes item : result) {
-                List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
-                item.setMenuInfoDtos(result2);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
+
+        result = doneOrderMapper.selectDoneOrderByResPk(resPk);
+        for (DoneOrderMiniGetRes item : result) {
+            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
+            item.setMenuInfoDtos(result2);
         }
 
         return result;
@@ -63,14 +60,11 @@ public class DoneOrderService {
 
     public List<DoneOrderMiniGetRes> getCancelOrderByResPk(Long resPk) {
         List<DoneOrderMiniGetRes> result = null;
-        try {
-            result = doneOrderMapper.selectCancelOrderByResPk(resPk);
-            for (DoneOrderMiniGetRes item : result) {
-                List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
-                item.setMenuInfoDtos(result2);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
+
+        result = doneOrderMapper.selectCancelOrderByResPk(resPk);
+        for (DoneOrderMiniGetRes item : result) {
+            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
+            item.setMenuInfoDtos(result2);
         }
 
         return result;
@@ -78,12 +72,9 @@ public class DoneOrderService {
 
     public DoneOrderGetRes getDoneOrderInfo(Long doneOrderPk) {
         DoneOrderGetRes result = null;
-        try {
-            result = doneOrderMapper.getDoneOrderInfo(doneOrderPk);
-            result.setMenuInfoList(doneOrderMapper.selectDoneMenuInfo(doneOrderPk));
-        } catch (Exception e) {
-            throw new RuntimeException("불러오기 오류");
-        }
+
+        result = doneOrderMapper.getDoneOrderInfo(doneOrderPk);
+        result.setMenuInfoList(doneOrderMapper.selectDoneMenuInfo(doneOrderPk));
 
         return result;
     }

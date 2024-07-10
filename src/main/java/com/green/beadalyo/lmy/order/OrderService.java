@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import  static com.green.beadalyo.lmy.order.dataset.ExceptionMsgDataset.*;
+import  static com.green.beadalyo.lmy.dataset.ExceptionMsgDataset.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +21,8 @@ public class OrderService {
 
     @Transactional
     public int postOrder(OrderPostReq p) {
+
+        p.setOrderUserPk(authenticationFacade.getLoginUserPk());
 
         List<Map<String, Object>> menuList = orderMapper.selectMenus(p.getMenuPk());
 

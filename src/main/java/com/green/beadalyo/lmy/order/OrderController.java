@@ -7,6 +7,7 @@ import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-import static com.green.beadalyo.lmy.order.dataset.ExceptionMsgDataset.*;
-import static com.green.beadalyo.lmy.order.dataset.ResponseDataSet.*;
+import static com.green.beadalyo.lmy.dataset.ExceptionMsgDataset.*;
+import static com.green.beadalyo.lmy.dataset.ResponseDataSet.*;
 
 
 
@@ -23,6 +24,7 @@ import static com.green.beadalyo.lmy.order.dataset.ResponseDataSet.*;
 @RequestMapping("api/order/")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "주문 관련 컨트롤러")
 public class OrderController {
     private final OrderService orderService;
     private final OrderMapper orderMapper;
