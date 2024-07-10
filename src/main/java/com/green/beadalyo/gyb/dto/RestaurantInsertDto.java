@@ -10,7 +10,7 @@ public class RestaurantInsertDto
 {
 
     //유저 정보
-    private User user ;
+    private Long user ;
     //가게 이름
     private String name ;
     //사업자 번호

@@ -94,9 +94,8 @@ public class UserControllerImpl implements UserController{
                     .userRole("ROLE_OWNER")
                     .build();
             long userPk = service.postSignUp(pic, req);
-            User user = service.getUserByPk(userPk);
             RestaurantInsertDto dto = new RestaurantInsertDto();
-            dto.setUser(user);
+            dto.setUser(userPk);
             dto.setName(p.getRestaurantName());
             dto.setRegiNum(p.getRegiNum());
             dto.setResAddr(p.getAddr());

@@ -99,7 +99,7 @@ public class Restaurant
 
     public Restaurant(RestaurantInsertDto data)
     {
-        this.user = data.getUser().getUserPk() ;
+        this.user = data.getUser() ;
         this.name = data.getName() ;
         this.address = data.getResAddr() ;
         this.regiNum = data.getRegiNum() ;
