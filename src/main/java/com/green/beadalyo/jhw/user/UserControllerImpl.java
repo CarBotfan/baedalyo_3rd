@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,8 +102,9 @@ public class UserControllerImpl implements UserController{
             dto.setName(p.getRestaurantName());
             dto.setRegiNum(p.getRegiNum());
             dto.setResAddr(p.getAddr());
-            dto.setOpenTime(p.getOpenTime());
-            dto.setCloseTime(p.getCloseTime());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            dto.setOpenTime(LocalTime.parse(p.getOpenTime()));
+            dto.setCloseTime(LocalTime.parse(p.getOpenTime()));
             dto.setResCoorX(p.getCoorX());
             dto.setResCoorY(p.getCoorY());
             restaurantService.insertRestaurantData(dto);
