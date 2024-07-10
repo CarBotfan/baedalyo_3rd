@@ -9,8 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignInRes {
-    @Schema(defaultValue = "1")
-    private long userPk;
     @Schema(defaultValue = "닉네임")
     private String userNickname;
     @Schema(defaultValue = "사진파일 이름")

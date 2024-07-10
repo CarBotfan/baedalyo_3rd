@@ -1,6 +1,9 @@
 package com.green.beadalyo.jhw.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.green.beadalyo.jhw.security.SignInProviderType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -9,6 +12,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserSignUpPostReq {
     @JsonIgnore
     private long userPk;
@@ -29,5 +33,5 @@ public class UserSignUpPostReq {
     @JsonIgnore
     private String userRole;
     @JsonIgnore
-    private int userLoginType;
+    private Integer userLoginType;
 }

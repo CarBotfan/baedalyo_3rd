@@ -1,6 +1,8 @@
 package com.green.beadalyo.jhw.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +11,7 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OwnerSignUpPostReq {
     @JsonIgnore
     private long userPk;
@@ -30,7 +33,7 @@ public class OwnerSignUpPostReq {
     @JsonIgnore
     private int userRole;
     @JsonIgnore
-    private int userLoginType;
+    private Integer userLoginType;
     @Schema(defaultValue = "영업 시작 시간")
     private LocalTime openTime;
     @Schema(defaultValue = "영업 종료 시간")

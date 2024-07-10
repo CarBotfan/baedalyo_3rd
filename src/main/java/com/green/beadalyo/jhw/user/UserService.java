@@ -20,4 +20,5 @@ public interface UserService {
     User getUserByPk() throws Exception;
     User getUserByPk(long signedUserPk) throws Exception;
     int deleteOwner(UserDelReq p);
+    int duplicatedCheck(String userId);
 }

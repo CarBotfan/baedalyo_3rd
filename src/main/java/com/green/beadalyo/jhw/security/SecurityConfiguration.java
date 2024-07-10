@@ -34,9 +34,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(
                                         //회원가입, 로그인 인증이 안 되어 있더라도 사용 가능하게 세팅
-                                        "/api/user/sign-up"
+                                        "/api/user/normal/sign-up"
                                         ,"/api/user/sign-in"
-                                        ,"/api/user/access-token"
+                                        ,"/api/user/owner/sign-up"
+                                        , "api/user/is-duplicated"
 
                                         //swagger 사용할 수 있게 세팅
                                         , "/swagger"
@@ -65,8 +66,8 @@ public class SecurityConfiguration {
                                         ,"/actuator/*"
 
                                 ).permitAll()
-                                .anyRequest().permitAll()
-//                                .anyRequest().authenticated() //로그인이 되어 있어야만 허용
+//                                .anyRequest().permitAll()
+                                .anyRequest().authenticated() //로그인이 되어 있어야만 허용
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint())

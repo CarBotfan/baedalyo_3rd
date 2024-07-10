@@ -7,6 +7,7 @@ import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
+import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
@@ -25,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -38,16 +41,23 @@ public class UserServiceImpl implements UserService{
     private final CookieUtils cookieUtils;
     private final AuthenticationFacade authenticationFacade;
     private final AppProperties appProperties;
-    private final RestaurantService ResService;
+    private final RestaurantService resService;
+
+    private String regexPhone = "^\\d{3}-\\d{4}-\\d{4}$";
+    String regexFileName = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.(jpg|jpeg|png|gif|bmp|tiff|svg)$";
+
+    Pattern phonePattern = Pattern.compile(regexPhone);
+    Pattern filePattern = Pattern.compile(regexFileName);
 
 
     @Override
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
+        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         if(mapper.getUserById(p.getUserId()) != null) {
             throw new DuplicatedIdException();
         }
-        if(p.getUserPw() != p.getUserPwConfirm()) {
+        if(!p.getUserPw().equals(p.getUserPwConfirm())) {
             throw new PwConfirmFailureException();
         }
         String fileName = customFileUtils.makeRandomFileName(pic);
@@ -73,7 +83,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
-        User user = mapper.getUserById(p.getUserId());
+        User user = mapper.signInUser(p);
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
@@ -95,7 +105,6 @@ public class UserServiceImpl implements UserService{
         cookieUtils.setCookie(res, "refresh-token", refreshToken, refreshTokenMaxAge);
 
         return SignInRes.builder()
-                .userPk(user.getUserPk())
                 .userNickname(user.getUserName())
                 .userPic(user.getUserPic())
                 .mainAddr(mainAddr)
@@ -117,6 +126,10 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
+        Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
+        if(!matcher.matches()) {
+            throw new InvalidRegexException();
+        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = customFileUtils.makeRandomFileName(pic);
         p.setPicName("user/" + fileName);
@@ -152,6 +165,10 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int patchUserPhone(UserPhonePatchReq p) throws Exception{
+        Matcher matcher = phonePattern.matcher(p.getUserPhone());
+        if(!matcher.matches()) {
+            throw new InvalidRegexException();
+        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
@@ -172,7 +189,7 @@ public class UserServiceImpl implements UserService{
             throw new UserNotFoundException();
         } else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
-        } else if(p.getNewPw() != p.getNewPwConfirm()) {
+        } else if(!p.getNewPw().equals(p.getNewPwConfirm())) {
             throw new PwConfirmFailureException();
         }
         String hashedPassword = passwordEncoder.encode(p.getNewPw());
@@ -202,7 +219,7 @@ public class UserServiceImpl implements UserService{
             throw new IncorrectPwException();
         }
         int result1 = mapper.deleteUser(p.getSignedUserPk());
-        try { ResService.deleteRestaurantData(p.getSignedUserPk()); }
+        try { resService.deleteRestaurantData(p.getSignedUserPk()); }
         catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
@@ -233,8 +250,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserByPk(long signedUserPk) {
-        User user = mapper.getUserByPk(signedUserPk);
-        return user;
+        return mapper.getUserByPk(signedUserPk);
+
     }
 
     @Override
@@ -242,5 +259,14 @@ public class UserServiceImpl implements UserService{
         long signedUserPk = authenticationFacade.getLoginUserPk();
         User user = mapper.getUserByPk(signedUserPk);
         return user;
+    }
+
+    @Override
+    public int duplicatedCheck(String userId) {
+        User user = mapper.getUserById(userId);
+        if(user != null) {
+            throw new DuplicatedIdException();
+        }
+        return 1;
     }
 }
