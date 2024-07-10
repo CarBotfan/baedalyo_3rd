@@ -76,7 +76,7 @@ public class MenuController {
             "                                       <p> menuState는 ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.</p>"+
                                                     "<p> 1 : 메뉴 리스트 불러오기 완료 </p>"+
                                                     "<p> -1 : 메뉴 리스트 불러오기 실패 </p>"+
-                                                    "<p> -2 :  </p>")
+                                                    )
     public ResultDto<List<GetAllMenuRes>> getAllMenu(@ParameterObject @ModelAttribute GetAllMenuReq p){
         List<GetAllMenuRes> result = null;
 
