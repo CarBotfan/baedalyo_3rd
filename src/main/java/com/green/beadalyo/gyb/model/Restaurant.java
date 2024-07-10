@@ -1,11 +1,9 @@
 package com.green.beadalyo.gyb.model;
 
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
-import com.green.beadalyo.gyb.dto.RestaurantUpdateDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -34,8 +32,7 @@ public class Restaurant
 
     @JoinColumn(name = "res_user_pk")
     @Comment("소유자 정보")
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Long user;
 
     @Column(name = "res_name", nullable = false, length = 50)
     @Comment("음식점 이름")
@@ -102,7 +99,7 @@ public class Restaurant
 
     public Restaurant(RestaurantInsertDto data)
     {
-        this.user = data.getUser() ;
+        this.user = data.getUser().getUserPk() ;
         this.name = data.getName() ;
         this.address = data.getResAddr() ;
         this.regiNum = data.getRegiNum() ;

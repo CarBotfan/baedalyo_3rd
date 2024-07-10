@@ -42,7 +42,7 @@ file:
 
 app:
   jwt:
-    secret: ${JWT.SECRET}
+    secret: ${JWT_SECRET}
 
     header-schema-name: authorization
 
@@ -59,7 +59,7 @@ spring:
     activate:
       on-profile: tdd
   datasource:
-    url: ${TDD.DB.URL}
+    url: ${TDD.DB_URL}
   sql:
     init:
       mode: always

@@ -7,9 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OwnerDelReq {
+public class UserNicknamePatchReq {
     @JsonIgnore
     private long signedUserPk;
-    @Schema(defaultValue = "비밀번호")
-    private String userPw;
+    @Schema(defaultValue = "변경할 닉네임")
+    private String userNickname;
 }

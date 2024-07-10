@@ -14,4 +14,6 @@ public class UserPasswordPatchReq {
     private String userPw;
     @Schema(defaultValue = "변경할 비밀번호")
     private String newPw;
+    @Schema(defaultValue = "변경할 비밀번호 재입력")
+    private String newPwConfirm;
 }

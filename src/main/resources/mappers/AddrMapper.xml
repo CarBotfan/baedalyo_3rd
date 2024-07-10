@@ -10,7 +10,7 @@
         , addr_coor_y = #{addrCoorY}
     </insert>
     <select id="getUserAddrList">
-        SELECT addr1, addr2
+        SELECT addr_pk AS addrPk, addr1, addr2
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
         FROM address

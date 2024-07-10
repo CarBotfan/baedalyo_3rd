@@ -3,6 +3,7 @@ package com.green.beadalyo.jhw.user;
 import com.green.beadalyo.common.AppProperties;
 import com.green.beadalyo.common.CookieUtils;
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
@@ -15,13 +16,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,17 +38,24 @@ public class UserServiceImpl implements UserService{
     private final CookieUtils cookieUtils;
     private final AuthenticationFacade authenticationFacade;
     private final AppProperties appProperties;
+    private final RestaurantService ResService;
 
 
     @Override
     @Transactional
-    public int postSignUp(MultipartFile pic, UserSignUpPostReq p) {
+    public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
+        if(mapper.getUserById(p.getUserId()) != null) {
+            throw new DuplicatedIdException();
+        }
+        if(p.getUserPw() != p.getUserPwConfirm()) {
+            throw new PwConfirmFailureException();
+        }
         String fileName = customFileUtils.makeRandomFileName(pic);
         p.setUserPic(fileName);
-
         String password = passwordEncoder.encode(p.getUserPw());
         p.setUserPw(password);
-        int result = mapper.signUpUser(p);
+        mapper.signUpUser(p);
+        long result = p.getUserPk();
         if(pic == null) {
             return result;
         }
@@ -58,19 +66,19 @@ public class UserServiceImpl implements UserService{
             customFileUtils.transferTo(pic, target);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("파일 업로드 실패");
+            throw new FileUploadFailedException();
         }
         return result;
     }
 
     @Override
-    public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) {
+    public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
         User user = mapper.getUserById(p.getUserId());
         if(user == null || user.getUserState() == 3) {
-            throw new RuntimeException("존재하지 않는 ID");
+            throw new UserNotFoundException();
         }
         if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
-            throw new RuntimeException("비밀번호 불일치");
+            throw new IncorrectPwException();
         }
         UserAddrGetRes mainAddr = mapper.getMainAddr(user.getUserPk());
 
@@ -95,10 +103,12 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserInfoGetRes getUserInfo() {
+    public UserInfoGetRes getUserInfo() throws Exception{
         long userPk = authenticationFacade.getLoginUserPk();
-        //프론트에서 직접 pk 전달 X, 백엔드에서 토큰을 가지고 알아서 처리
         UserInfoGetRes result = mapper.selProfileUserInfo(userPk);
+        if(result == null) {
+            throw new UserNotFoundException();
+        }
         result.setMainAddr(mapper.getMainAddr(userPk));
         return result;
 
@@ -106,18 +116,19 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) {
+    public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = customFileUtils.makeRandomFileName(pic);
-        p.setPicName(fileName);
-        mapper.updProfilePic(p);
-
+        p.setPicName("user/" + fileName);
+        int result = mapper.updProfilePic(p);
+        if(result != 1) {
+            throw new UserPatchFailureException();
+        }
         try {
-            String midPath = String.format("user/%d", p.getSignedUserPk());
-            String delAbsoluteFolderPath = String.format("%s/%s", customFileUtils.uploadPath, midPath);
-            customFileUtils.deleteFolder(delAbsoluteFolderPath);
-            customFileUtils.makeFolder(midPath);
-            String target = String.format("%s/%s", midPath, fileName);
+            String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
+            File file = new File(delAbsoluteFolderPath, fileName);
+            file.delete();
+            String target = String.format("%s",fileName);
             customFileUtils.transferTo(pic, target);
         } catch(Exception e) {
             throw new FileUploadFailedException();
@@ -126,23 +137,43 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int patchUserInfo(UserInfoPatchReq p) {
+    public int patchUserNickname(UserNicknamePatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
-        return mapper.updUserInfo(p);
+        int result = mapper.updUserNickname(p);
+        if(result != 1) {
+            throw new UserPatchFailureException();
+        }
+        return result;
     }
 
     @Override
-    public int patchUserPassword(UserPasswordPatchReq p) {
+    public int patchUserPhone(UserPhonePatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
-        }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
+        }
+        int result = mapper.updUserPhone(p);
+        if(result != 1) {
+            throw new UserPatchFailureException();
+        }
+        return result;
+    }
+
+    @Override
+    public int patchUserPassword(UserPasswordPatchReq p) throws Exception{
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        User user = mapper.getUserByPk(p.getSignedUserPk());
+        if(user == null || user.getUserState() == 3) {
+            throw new UserNotFoundException();
+        } else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
+        } else if(p.getNewPw() != p.getNewPwConfirm()) {
+            throw new PwConfirmFailureException();
         }
         String hashedPassword = passwordEncoder.encode(p.getNewPw());
         p.setNewPw(hashedPassword);
@@ -150,19 +181,37 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int deleteUser(UserDelReq p) {
+    public int deleteUser(UserDelReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
-        }else if(!BCrypt.checkpw(p.getUserPw(), user.getUserPw())) {
+        }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
         }
         return mapper.deleteUser(p.getSignedUserPk());
     }
 
     @Override
-    public Map getAccessToken(HttpServletRequest req) {
+    public int deleteOwner(UserDelReq p) {
+        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        User user = mapper.getUserByPk(p.getSignedUserPk());
+        if(user == null || user.getUserState() == 3) {
+            throw new UserNotFoundException();
+        }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
+            throw new IncorrectPwException();
+        }
+        int result1 = mapper.deleteUser(p.getSignedUserPk());
+        try { ResService.deleteRestaurantData(p.getSignedUserPk()); }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+        return result1;
+    }
+
+    @Override
+    public Map getAccessToken(HttpServletRequest req) throws Exception{
         Cookie cookie = cookieUtils.getCookie(req, "refresh-token");
         if(cookie == null) {
             throw new NullCookieException();
@@ -180,5 +229,18 @@ public class UserServiceImpl implements UserService{
         Map map = new HashMap();
         map.put("accessToken", accessToken);
         return map;
+    }
+
+    @Override
+    public User getUserByPk(long signedUserPk) {
+        User user = mapper.getUserByPk(signedUserPk);
+        return user;
+    }
+
+    @Override
+    public User getUserByPk() {
+        long signedUserPk = authenticationFacade.getLoginUserPk();
+        User user = mapper.getUserByPk(signedUserPk);
+        return user;
     }
 }
