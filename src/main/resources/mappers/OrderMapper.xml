@@ -154,7 +154,7 @@
     <select id="getResUserPkByResPk">
         SELECT res_user_pk
         FROM restaurant
-        WHERE res_pk = resPk;
+        WHERE res_pk = #{resPk};
     </select>
 
     <select id="getOrderState">

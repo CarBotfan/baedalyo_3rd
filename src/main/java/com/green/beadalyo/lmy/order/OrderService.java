@@ -172,6 +172,7 @@ public class OrderService {
     public Integer confirmOrder(Long orderPk) {
 
         long resUserPk = authenticationFacade.getLoginUserPk();
+
         if (resUserPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
             throw new RuntimeException(NO_AUTHENTICATION);
         }
