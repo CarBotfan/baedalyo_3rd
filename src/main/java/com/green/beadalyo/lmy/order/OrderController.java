@@ -72,18 +72,20 @@ public class OrderController {
                             "<p> -3 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
                             "<p> -3 : 주문 취소 실패 </p>"
     )
-    public ResultDto<Integer> cancelOrder(@RequestParam Long orderPk) {
+    public ResultDto<Integer> cancelOrder(@RequestParam("order_pk") Long orderPk) {
         int result = -1;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (orderMapper.getOrderState(orderPk) == 1
-                && (userPk != orderMapper.getResUserPkByOrderPk(orderPk) || userPk != orderMapper.getUserPkByOrderPk(orderPk))){
-            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(NO_NON_CONFIRM_CANCEL_AUTHENTICATION).build();
+        if (orderMapper.getOrderState(orderPk) == 1){
+            if (userPk != orderMapper.getResUserPkByOrderPk(orderPk) && userPk != orderMapper.getUserPkByOrderPk(orderPk)) {
+                return ResultDto.<Integer>builder().statusCode(-1).resultMsg(NO_NON_CONFIRM_CANCEL_AUTHENTICATION).build();
+            }
         }
 
-        if (orderMapper.getOrderState(orderPk) == 2
-                && userPk != orderMapper.getResUserPkByOrderPk(orderPk)){
-            return ResultDto.<Integer>builder().statusCode(-2).resultMsg(NO_CONFIRM_CANCEL_AUTHENTICATION).build();
+        if (orderMapper.getOrderState(orderPk) == 2){
+            if (userPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
+                return ResultDto.<Integer>builder().statusCode(-2).resultMsg(NO_CONFIRM_CANCEL_AUTHENTICATION).build();
+            }
         }
 
         try {
@@ -106,7 +108,7 @@ public class OrderController {
                     "<p> 1 : 주문 완료 성공 </p>"+
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
     )
-    public ResultDto<Integer> completeOrder(@RequestParam Long orderPk) {
+    public ResultDto<Integer> completeOrder(@RequestParam("order_pk") Long orderPk) {
         int result = -1;
 
         try {
@@ -158,7 +160,7 @@ public class OrderController {
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam("res_pk") Long resPk) {
         List<OrderMiniGetRes> result = null;
 
         try {
@@ -186,7 +188,7 @@ public class OrderController {
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam("res_pk") Long resPk) {
         List<OrderMiniGetRes> result = null;
 
         try {
@@ -214,7 +216,7 @@ public class OrderController {
                             "<p> -1 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<OrderGetRes> getOrderInfo(@RequestParam Long orderPk) {
+    public ResultDto<OrderGetRes> getOrderInfo(@RequestParam("order_pk") Long orderPk) {
         OrderGetRes result = null;
 
         try {
@@ -241,7 +243,7 @@ public class OrderController {
                     "<p> 1 : 주문 접수 완료 </p>"+
                             "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
     )
-    public ResultDto<Integer> confirmOrder(@RequestParam Long orderPk){
+    public ResultDto<Integer> confirmOrder(@RequestParam("order_pk") Long orderPk){
         Integer result = -1;
 
         try {

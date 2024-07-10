@@ -58,9 +58,8 @@ public class DoneOrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 유저 취소주문기록 불러오기 완료 </p>"+
-                            "<p> -1 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 주문 취소 실패 </p>"
+                            "<p> -1 : 주문 정보 불러오기 실패 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
     public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByUserPk() {
         List<DoneOrderMiniGetRes> result = null;
@@ -83,11 +82,11 @@ public class DoneOrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 상점 완료주문기록 불러오기 완료 </p>"+
-                            "<p> -1 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 주문 취소 실패 </p>"
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>" +
+                            "<p> -2 : 주문 정보 불러오기 실패 </p>"+
+                            "<p> -3 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByResPk(@RequestParam Long resPk) {
+    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByResPk(@RequestParam("res_pk") Long resPk) {
         List<DoneOrderMiniGetRes> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
@@ -113,11 +112,11 @@ public class DoneOrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 상점 취소주문기록 불러오기 완료 </p>"+
-                            "<p> -1 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 주문 취소 실패 </p>"
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>" +
+                            "<p> -2 : 주문 정보 불러오기 실패 </p>"+
+                            "<p> -3 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByResPk(@RequestParam Long resPk) {
+    public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByResPk(@RequestParam("res_pk") Long resPk) {
         List<DoneOrderMiniGetRes> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
@@ -143,11 +142,9 @@ public class DoneOrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 끝난 주문 상세보기 완료 </p>"+
-                            "<p> -1 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
-                            "<p> -3 : 주문 취소 실패 </p>"
+                            "<p> -1 : 주문 정보 불러오기 실패 </p>"
     )
-    public ResultDto<DoneOrderGetRes> getDoneOrderInfo(@RequestParam Long doneOrderPk) {
+    public ResultDto<DoneOrderGetRes> getDoneOrderInfo(@RequestParam("done_order_pk") Long doneOrderPk) {
         DoneOrderGetRes result = null;
 
         try {
