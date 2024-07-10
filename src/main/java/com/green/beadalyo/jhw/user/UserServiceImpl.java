@@ -84,6 +84,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
         User user = mapper.signInUser(p);
+        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }

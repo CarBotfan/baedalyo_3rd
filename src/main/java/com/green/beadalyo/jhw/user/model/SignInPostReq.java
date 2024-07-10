@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.green.beadalyo.jhw.security.SignInProviderType;
@@ -15,5 +16,6 @@ public class SignInPostReq {
     private String userId;
     @Schema(defaultValue = "비밀번호")
     private String userPw;
+    @JsonIgnore
     private Integer userLoginType;
 }
