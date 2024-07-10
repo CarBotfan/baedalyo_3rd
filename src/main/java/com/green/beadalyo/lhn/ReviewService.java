@@ -1,6 +1,7 @@
 package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lhn.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,22 +18,26 @@ public class ReviewService {
     private final ReviewMapper mapper;
     private final ReviewFilter filter;
     private final CustomFileUtils fileUtils;
+    private final AuthenticationFacade authenticationFacade;
 
     // 리뷰 작성
     @Transactional
     public long postReview(ReviewPostReq p, List<MultipartFile> pics) {
+        p.setUserPk(authenticationFacade.getLoginUserPk());
+
         if (mapper.ReviewExistForOrder(p.getDoneOrderPk())) {
             log.warn("주문에 대한 리뷰가 이미 존재합니다");
-            return -1;
+            throw new IllegalArgumentException("주문에 대한 리뷰가 이미 존재합니다");
         }
 
         for (int i = 0; i < filter.getPROFANITIES().length; i++) {
             if (-1 != toString().indexOf(filter.getPROFANITIES()[i])) {
-                throw new RuntimeException("댓글에 비속어가 존재합니다");
+                throw new ArithmeticException("댓글에 비속어가 존재합니다");
+
             }
         }
         if (pics.size() > 4) {
-            throw new RuntimeException("파일 개수는 4개 까지만 가능합니다");
+            throw new NullPointerException("파일 개수는 4개 까지만 가능합니다");
         }
 
         if (pics == null || pics.isEmpty()) {
@@ -52,7 +57,6 @@ public class ReviewService {
                     fileUtils.transferTo(file, targetPath);
                 } catch (Exception e) {
                     log.error("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);
-                    return -1;
                 }
             }
             p.setReviewPics1(picNames[0]);
@@ -66,8 +70,7 @@ public class ReviewService {
 
 
         mapper.insertReview(p);
-        return p.getUserPk();
-
+        return authenticationFacade.getLoginUserPk();
     }
 
     // 사장님 리뷰 답글
@@ -103,18 +106,19 @@ public class ReviewService {
     public long updReview(ReviewPutReq p, List<MultipartFile> pics) {
 
         long reviewUserPk = mapper.getReviewUserPk(p.getReviewPk());
+        p.setUserPk(authenticationFacade.getLoginUserPk());
 
-        if (reviewUserPk != p.getUserPk()) {
-            throw new RuntimeException("리뷰를 작성한 사용자가 아닙니다");
+        if (reviewUserPk != authenticationFacade.getLoginUserPk()) {
+            throw new IllegalArgumentException("리뷰를 작성한 사용자가 아닙니다");
         }
 
         for (int i = 0; i < filter.getPROFANITIES().length; i++) {
             if (-1 != toString().indexOf(filter.getPROFANITIES()[i])) {
-                throw new RuntimeException("답글에 비속어가 존재합니다");
+                throw new ArithmeticException("댓글에 비속어가 존재합니다");
             }
         }
         if (p.getReviewRating() < 1 || p.getReviewRating() > 5) {
-            throw new RuntimeException("별점은 1에서 5까지가 최대");
+            throw new NullPointerException("별점은 1에서 5까지가 최대");
         }
         if (pics.size() > 4) {
             throw new RuntimeException("파일 개수는 4개 까지만 가능합니다");

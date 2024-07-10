@@ -2,13 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.green.beadalyo.lhn.ReviewMapper">
     <!-- 리뷰작성 -->
-    <insert id="postReview">
+    <insert id="insertReview">
         INSERT INTO review
         SET review_pk = #{reviewPk}
         , done_order_pk = #{doneOrderPk}
         , user_pk = #{userPk}
         , review_contents = #{reviewContents}
         , review_rating = #{reviewRating}
+        , review_pics1 = #{reviewPics1}
+        , review_pics2 = #{reviewPics2}
+        , review_pics3 = #{reviewPics3}
+        , review_pics4 = #{reviewPics4}
     </insert>
 
     <!-- 사장님 답글 -->
@@ -44,7 +48,7 @@
 
     <!-- 리뷰 수정 쿼리 -->
     <update id="putReview">
-        UPDATE reviews
+        UPDATE review
         SET
         review_title = #{reviewTitle},
         review_content = #{reviewContent},
