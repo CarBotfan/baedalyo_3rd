@@ -30,7 +30,7 @@ public class Restaurant
     @Comment("고유 번호")
     private Long seq;
 
-    @JoinColumn(name = "res_user_pk")
+    @Column(name = "res_user_pk")
     @Comment("소유자 정보")
     private Long user;
 
