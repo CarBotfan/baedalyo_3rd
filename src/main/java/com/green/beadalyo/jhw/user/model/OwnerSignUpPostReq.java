@@ -40,6 +40,12 @@ public class OwnerSignUpPostReq {
     private String closeTime;
     @Schema(defaultValue = "가게 주소")
     private String addr;
+    //사업장 설명
+    @Schema(defaultValue = "사업장 설명")
+    private String desc1 ;
+    //리뷰 설명
+    @Schema(defaultValue = "리뷰 설명")
+    private String desc2 ;
     @Schema(defaultValue = "124.014")
     private Double coorX;
     @Schema(defaultValue = "37.017")

@@ -101,6 +101,8 @@ public class UserControllerImpl implements UserController{
             dto.setName(p.getRestaurantName());
             dto.setRegiNum(p.getRegiNum());
             dto.setResAddr(p.getAddr());
+            dto.setDesc1(p.getDesc1());
+            dto.setDesc2(p.getDesc2());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
             dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
             dto.setCloseTime(LocalTime.parse(p.getOpenTime(), formatter));
@@ -236,7 +238,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -1 : 기타 오류 </p>"
     )
     public ResultDto<String> patchProfilePic(@RequestPart(required = false) MultipartFile pic, @RequestPart UserPicPatchReq p) {
-        int statusCode = -1;
+        int statusCode = 1;
         String result = "";
         String msg = "수정 완료";
         try {
@@ -273,7 +275,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -1 : 기타 오류 </p>"
     )
     public ResultDto<Integer> patchUserPassword(@RequestBody UserPasswordPatchReq p) {
-        int statusCode = -1;
+        int statusCode = 1;
         int result = 0;
         String msg = "수정 완료";
         try {

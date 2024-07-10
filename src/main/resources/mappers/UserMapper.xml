@@ -114,6 +114,7 @@
     </update>
     <select id="getMainAddr">
         SELECT
+        addr_pk AS addrPk,
         addr1 , addr2
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
