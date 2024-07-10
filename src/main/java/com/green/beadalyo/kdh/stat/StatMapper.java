@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface StatMapper {
     GetReviewCountRes getReviewCount(GetReviewStatReq p);
+
     GetReviewAvgRes getReviewAvg(GetReviewStatReq p);
+
     GetMonthSaleRes getMonthSales(GetDateReq p);
 
     GetMonthOrderCountRes getMonthOrderCount(GetDateReq p);
@@ -14,4 +16,6 @@ public interface StatMapper {
     GetDailySalesRes getDailySales(GetDateReq p);
 
     GetDailyOrderCountRes getDailyOrderCount(GetDateReq p);
+
+    Long checkResPk(GetDateReq p);
 }

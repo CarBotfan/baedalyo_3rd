@@ -23,16 +23,16 @@ public class MenuController {
             "                                       menuResPk는 메뉴가 등록된 식당의 고유 번호(PK)입니다.\n" +
             "                                       menuState는 ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.")
     public ResultDto<PostMenuRes> postMenu(@RequestPart PostMenuReq p,
-                                           @RequestPart(required = false) MultipartFile menuPic){
+                                           @RequestPart(required = false) MultipartFile pic){
 
             PostMenuRes result = null;
             String msg = "메뉴 등록 완료";
-            int code = 2;
+            int code = 1;
         try {
-            result = service.postMenu(p,menuPic);
+            result = service.postMenu(p,pic);
         } catch (Exception e){
             msg = e.getMessage();
-            code = 4;
+            code = -1;
         }
 
             return ResultDto.<PostMenuRes>builder()
@@ -50,12 +50,12 @@ public class MenuController {
         List<GetAllMenuRes> result = null;
 
         String msg = "메뉴 리스트 불러오기 완료";
-        int code = 2;
+        int code = 1;
         try {
             result = service.getAllMenu(p);
         } catch (Exception e){
             msg = e.getMessage();
-            code = 4;
+            code = -1;
         }
 
         return ResultDto.<List<GetAllMenuRes>>builder()
@@ -72,16 +72,16 @@ public class MenuController {
             "                                       menuResPk는 메뉴가 등록된 식당의 고유 번호(PK)입니다.\n" +
             "                                       menuState는 ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.")
     public ResultDto<PutMenuRes> putMenu(@RequestPart PutMenuReq p,
-                                         @RequestPart(required = false) MultipartFile menuPic){
+                                         @RequestPart(required = false) MultipartFile pic){
         PutMenuRes result = null;
 
         String msg = "메뉴 수정 완료";
-        int code = 2;
+        int code = 1;
         try {
-            result = service.putMenu(menuPic, p);
+            result = service.putMenu(pic, p);
         } catch (Exception e){
             msg = e.getMessage();
-            code = 4;
+            code = -1;
         }
 
         return ResultDto.<PutMenuRes>builder()
@@ -99,12 +99,12 @@ public class MenuController {
         int result = 0;
 
         String msg = "메뉴 삭제 완료";
-        int code = 2;
+        int code = 1;
         try {
             result = service.delMenu(menuPk);
         } catch (Exception e){
             msg = e.getMessage();
-            code = 4;
+            code = -1;
         }
 
         return ResultDto.<Integer>builder()
