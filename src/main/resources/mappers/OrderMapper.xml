@@ -136,4 +136,18 @@
         SET order_state = 2
         WHERE order_pk = #{orderPk}
     </update>
+
+    <select id="getResUserPkByOrderPk">
+        SELECT res_user_pk
+        FROM restaurant
+        WHERE res_pk = (SELECT order_res_pk
+                        FROM `order`
+                        WHERE order_pk = #{orderPk})
+    </select>
+
+    <select id="getResUserPkByResPk">
+        SELECT res_user_pk
+        FROM restaurant
+        WHERE res_pk = resPk;
+    </select>
 </mapper>

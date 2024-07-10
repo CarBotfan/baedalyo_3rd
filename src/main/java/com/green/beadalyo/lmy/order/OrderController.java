@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.validation.Validator;
 import java.util.List;
 
 
@@ -88,16 +87,15 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 주문 완료 실패 </p>"  +
-                            "<p> -3 : 메뉴 찾기 실패 </p>"
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
     )
     public ResultDto<Integer> completeOrder(@RequestParam Long orderPk) {
         int result = -1;
 
         try {
             result = orderService.completeOrder(orderPk);
-        } catch (Exception e) {
-            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(ORDER_COMPLETE_FAIL).build();
+        } catch (RuntimeException e) {
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(e.getMessage()).build();
         }
 
         return ResultDto.<Integer>builder()
@@ -112,16 +110,15 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 결제 미완료 </p>"+
-                            "<p> -2 : 요청사항 양식 오류 </p>" +
-                            "<p> -3 : 메뉴 찾기 실패 </p>"
+                            "<p> -1 : 주문 정보 불러오기 실패 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getUserOrderList(@RequestParam Long userPk) {
+    public ResultDto<List<OrderMiniGetRes>> getUserOrderList() {
         List<OrderMiniGetRes> result = null;
 
         try {
-            result = orderService.getUserOrderList(userPk);
-        } catch (Exception e) {
+            result = orderService.getUserOrderList();
+        } catch (RuntimeException e) {
             return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
         }
 
@@ -141,17 +138,16 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 결제 미완료 </p>"+
-                            "<p> -2 : 요청사항 양식 오류 </p>" +
-                            "<p> -3 : 메뉴 찾기 실패 </p>"
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
     public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam Long resPk) {
         List<OrderMiniGetRes> result = null;
 
         try {
             result = orderService.getResNonConfirmOrderList(resPk);
-        } catch (Exception e) {
-            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+        } catch (RuntimeException e) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(e.getMessage()).build();
         }
 
         if (result == null || result.isEmpty()) {
@@ -170,9 +166,8 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 결제 미완료 </p>"+
-                            "<p> -2 : 요청사항 양식 오류 </p>" +
-                            "<p> -3 : 메뉴 찾기 실패 </p>"
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
     public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam Long resPk) {
         List<OrderMiniGetRes> result = null;
@@ -180,7 +175,7 @@ public class OrderController {
         try {
             result = orderService.getResConfirmOrderList(resPk);
         } catch (Exception e) {
-            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(e.getMessage()).build();
         }
 
         if (result == null || result.isEmpty()) {
@@ -199,8 +194,8 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 결제 미완료 </p>"+
-                            "<p> -2 : 요청사항 양식 오류 </p>"
+                            "<p> -1 : 주문 정보 불러오기 실패 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
     )
     public ResultDto<OrderGetRes> getOrderInfo(@RequestParam Long orderPk) {
         OrderGetRes result = null;
@@ -227,8 +222,7 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 결제 미완료 </p>"+
-                            "<p> -2 : 요청사항 양식 오류 </p>"
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
     )
     public ResultDto<Integer> confirmOrder(@RequestParam Long orderPk){
         Integer result = -1;
@@ -236,7 +230,7 @@ public class OrderController {
         try {
             result = orderService.confirmOrder(orderPk);
         } catch (Exception e) {
-            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(ORDER_CONFIRM_FAIL).build();
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(e.getMessage()).build();
         }
 
         return ResultDto.<Integer>builder()

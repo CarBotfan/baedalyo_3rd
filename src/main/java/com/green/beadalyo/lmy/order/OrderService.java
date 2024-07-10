@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.order;
 
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.order.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderMapper orderMapper;
-
+    private final AuthenticationFacade authenticationFacade;
 
     @Transactional
     public int postOrder(OrderPostReq p) {
@@ -99,6 +100,11 @@ public class OrderService {
     @Transactional
     public int completeOrder(Long orderPk) {
 
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        if (resUserPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
+            throw new RuntimeException(NO_AUTHENTICATION);
+        }
+
         OrderEntity entity = orderMapper.selectOrderById(orderPk);
 
         List<OrderMenuEntity> menuEntities = orderMapper.selectOrderMenusById(orderPk);
@@ -115,7 +121,8 @@ public class OrderService {
         return 1;
     }
 
-    public List<OrderMiniGetRes> getUserOrderList(Long userPk){
+    public List<OrderMiniGetRes> getUserOrderList(){
+        long userPk = authenticationFacade.getLoginUserPk();
         List<OrderMiniGetRes> result = orderMapper.selectOrdersByUserPk(userPk);
 
         for (OrderMiniGetRes item : result) {
@@ -127,6 +134,12 @@ public class OrderService {
     }
 
     public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk){
+
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        if (resUserPk != orderMapper.getResUserPkByResPk(resPk)){
+            throw new RuntimeException(NO_AUTHENTICATION);
+        }
+
         List<OrderMiniGetRes> result = orderMapper.selectNonConfirmOrdersByResPk(resPk);
 
         for (OrderMiniGetRes item : result) {
@@ -138,6 +151,12 @@ public class OrderService {
     }
 
     public List<OrderMiniGetRes> getResConfirmOrderList(Long resPk){
+
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        if (resUserPk != orderMapper.getResUserPkByResPk(resPk)){
+            throw new RuntimeException(NO_AUTHENTICATION);
+        }
+
         List<OrderMiniGetRes> result = orderMapper.selectConfirmOrdersByResPk(resPk);
 
         for (OrderMiniGetRes item : result) {
@@ -149,6 +168,7 @@ public class OrderService {
     }
 
     public OrderGetRes getOrderInfo(Long orderPk) {
+
         OrderGetRes result = orderMapper.getOrderInfo(orderPk);
         result.setMenuInfoList(orderMapper.selectMenuInfo(orderPk));
 
@@ -156,6 +176,12 @@ public class OrderService {
     }
 
     public Integer confirmOrder(Long orderPk) {
+
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        if (resUserPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
+            throw new RuntimeException(NO_AUTHENTICATION);
+        }
+
         orderMapper.confirmOrder(orderPk);
 
         return 1;

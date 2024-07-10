@@ -9,7 +9,6 @@ public interface ExceptionMsgDataset {
     String GET_ORDER_LIST_FAIL = "주문 정보 불러오기 실패";
     String GET_ORDER_LIST_NON = "불러올 주문 정보가 없음";
 
-    String ORDER_COMPLETE_FAIL = "주문 완료 실패";
+    String NO_AUTHENTICATION = "상점 주인의 접근이 아닙니다";
 
-    String ORDER_CONFIRM_FAIL = "주문 접수 실패";
 }
