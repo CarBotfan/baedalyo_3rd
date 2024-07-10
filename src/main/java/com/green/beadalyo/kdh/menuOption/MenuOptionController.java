@@ -3,6 +3,7 @@ package com.green.beadalyo.kdh.menuOption;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.kdh.menuOption.model.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/menu/option")
+@Tag(name = "메뉴에 붙은 옵션입니다 (3차 예정)")
 @RequiredArgsConstructor
 public class MenuOptionController {
     private final MenuOptionService service;
