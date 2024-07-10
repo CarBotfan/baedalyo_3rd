@@ -48,7 +48,7 @@ public class RestaurantManageApiController
     {
         User user = userService.getUserByPk() ;
         RestaurantInsertDto dto = new RestaurantInsertDto() ;
-        dto.setUser(user);
+        dto.setUser(user.getUserPk());
         dto.setRegiNum("123-45-67891");
         dto.setResAddr("대구 북구 대현동");
         dto.setResCoorX(128.59636652);
