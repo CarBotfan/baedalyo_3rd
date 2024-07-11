@@ -1,23 +1,24 @@
 package com.green.beadalyo.jhw.useraddr.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserAddrPostReq {
     @JsonIgnore
     private long addrPk;
     @JsonIgnore
     private long signedUserId;
-    @Schema(defaultValue = "시/군/구")
     private String addr1;
-    @Schema(defaultValue = "상세주소")
     private String addr2;
-    @Schema(defaultValue = "124.014")
-    private float addrCoorX;
-    @Schema(defaultValue = "36.746")
-    private float addrCoorY;
+    private BigDecimal addrCoorX;
+    private BigDecimal addrCoorY;
 }

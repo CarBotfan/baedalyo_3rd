@@ -13,10 +13,12 @@ public interface UserController {
     ResultDto<Integer> postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p);
     ResultDto<SignInRes> postSignIn(HttpServletResponse res, SignInPostReq p);
     ResultDto<String> patchProfilePic(MultipartFile pic, UserPicPatchReq p);
-    ResultDto<Integer> patchUserInfo(UserInfoPatchReq p);
+    ResultDto<Integer> patchUserNickname(UserNicknamePatchReq p);
+    ResultDto<Integer> patchUserPhone(UserPhonePatchReq p);
     ResultDto<Integer> patchUserPassword(UserPasswordPatchReq p);
     ResultDto<Map> getAccessToken(HttpServletRequest req);
     ResultDto<UserInfoGetRes> getUserInfo();
     ResultDto<Integer> deleteUser(UserDelReq p);
-    ResultDto<Integer> deleteOwner(OwnerDelReq p);
+    ResultDto<Integer> deleteOwner(UserDelReq p);
+    ResultDto<Integer> duplicatedCheck(String userId);
 }

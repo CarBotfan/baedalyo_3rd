@@ -1,9 +1,13 @@
 package com.green.beadalyo.lmy.order;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -11,169 +15,246 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
+import static com.green.beadalyo.lmy.dataset.ExceptionMsgDataset.*;
+import static com.green.beadalyo.lmy.dataset.ResponseDataSet.*;
+
+
+
 @RestController
 @RequestMapping("api/order/")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "주문 관련 컨트롤러")
 public class OrderController {
     private final OrderService orderService;
+    private final OrderMapper orderMapper;
+    private final AuthenticationFacade authenticationFacade;
 
     @PostMapping
+    @Operation(summary = "주문하기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 주문하기 성공 </p>"+
+                            "<p> -1 : 결제가 완료되지 않았습니다 </p>"+
+                            "<p> -2 : 글 양식을 맞춰주세요 (글자 수) </p>" +
+                            "<p> -3 : 메뉴를 찾을 수 없습니다 </p>" +
+                            "<p> -4 : 데이터 리스트 생성 실패 </p>"
+    )
     public ResultDto<Integer> postOrder(@RequestBody OrderPostReq p){
-        int code = 2;
-        String msg = "order 업로드 완료";
-        int result = -1;
 
-        try {
-            result = orderService.postOrder(p);
-        } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+
+        if (p.getPaymentMethod() == null) {
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(PAYMENT_METHOD_ERROR).build();
         }
 
-        return ResultDto.<Integer>builder()
-                .statusCode(code)
-                .resultMsg(msg)
-                .resultData(result)
-                .build();
+        if (500 < p.getOrderRequest().length()) {
+            return ResultDto.<Integer>builder().statusCode(-2).resultMsg(STRING_LENGTH_ERROR).build();
+        }
+
+        int result;
+        try {
+            result = orderService.postOrder(p);
+        } catch (NullPointerException e) {
+            return ResultDto.<Integer>builder().statusCode(-3).resultMsg(e.getMessage()).build();
+        } catch (RuntimeException e) {
+            return ResultDto.<Integer>builder().statusCode(-4).resultMsg(e.getMessage()).build();
+        }
+
+        return ResultDto.<Integer>builder().statusCode(SUCCESS_CODE).resultMsg(POST_ORDER_SUCCESS).resultData(result).build();
     }
 
     @PutMapping("cancel")
-    public ResultDto<Integer> cancelOrder(@RequestParam Long orderPk) {
-        int code = 2;
-        String msg = "order 취소 완료";
+    @Operation(summary = "주문취소 하기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 주문 취소 성공 </p>"+
+                            "<p> -1 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
+                            "<p> -3 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
+                            "<p> -3 : 주문 취소 실패 </p>"
+    )
+    public ResultDto<Integer> cancelOrder(@RequestParam("order_pk") Long orderPk) {
         int result = -1;
+
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (orderMapper.getOrderState(orderPk) == 1){
+            if (userPk != orderMapper.getResUserPkByOrderPk(orderPk) && userPk != orderMapper.getUserPkByOrderPk(orderPk)) {
+                return ResultDto.<Integer>builder().statusCode(-1).resultMsg(NO_NON_CONFIRM_CANCEL_AUTHENTICATION).build();
+            }
+        }
+
+        if (orderMapper.getOrderState(orderPk) == 2){
+            if (userPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
+                return ResultDto.<Integer>builder().statusCode(-2).resultMsg(NO_CONFIRM_CANCEL_AUTHENTICATION).build();
+            }
+        }
 
         try {
             result = orderService.cancelOrder(orderPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<Integer>builder().statusCode(-3).resultMsg(ORDER_CANCEL_FAIL).build();
         }
 
         return ResultDto.<Integer>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(CANCEL_ORDER_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @PutMapping("done")
-    public ResultDto<Integer> completeOrder(@RequestParam Long orderPk) {
-        int code = 2;
-        String msg = "order complete 완료";
+    @Operation(summary = "주문완료 하기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 주문 완료 성공 </p>"+
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
+    )
+    public ResultDto<Integer> completeOrder(@RequestParam("order_pk") Long orderPk) {
         int result = -1;
 
         try {
             result = orderService.completeOrder(orderPk);
-        } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+        } catch (RuntimeException e) {
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(e.getMessage()).build();
         }
 
         return ResultDto.<Integer>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(COMPLETE_ORDER_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping("user")
-    public ResultDto<List<OrderMiniGetRes>> getUserOrderList(@RequestParam Long userPk) {
-        int code = 2;
-        String msg = "유저의 진행중인 주문정보 불러오기 완료";
+    @Operation(summary = "유저의 진행중인 주문 불러오기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 유저의 진행중인 주문 불러오기 완료 </p>"+
+                            "<p> -1 : 주문 정보 불러오기 실패 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
+    )
+    public ResultDto<List<OrderMiniGetRes>> getUserOrderList() {
         List<OrderMiniGetRes> result = null;
 
         try {
-            result = orderService.getUserOrderList(userPk);
-        } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            result = orderService.getUserOrderList();
+        } catch (RuntimeException e) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+        }
+
+        if (result == null || result.isEmpty()) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(USER_ORDER_LIST_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping("res/noconfirm")
-    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam Long resPk) {
-        int code = 2;
-        String msg = "상점의 진행중인 주문정보 불러오기 완료";
+    @Operation(summary = "상점의 접수 전 주문정보 불러오기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 상점의 접수 전 주문정보 불러오기 완료 </p>"+
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
+    )
+    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam("res_pk") Long resPk) {
         List<OrderMiniGetRes> result = null;
 
         try {
             result = orderService.getResNonConfirmOrderList(resPk);
-        } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+        } catch (RuntimeException e) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(e.getMessage()).build();
+        }
+
+        if (result == null || result.isEmpty()) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(RES_ORDER_NO_CONFIRM_LIST_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping("res/confirm")
-    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam Long resPk) {
-        int code = 2;
-        String msg = "상점의 진행중인 주문정보 불러오기 완료";
+    @Operation(summary = "상점의 접수 후 주문정보 불러오기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 상점의 접수 후 주문정보 불러오기 완료 </p>"+
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
+    )
+    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam("res_pk") Long resPk) {
         List<OrderMiniGetRes> result = null;
 
         try {
             result = orderService.getResConfirmOrderList(resPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-1).resultMsg(e.getMessage()).build();
+        }
+
+        if (result == null || result.isEmpty()) {
+            return ResultDto.<List<OrderMiniGetRes>>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(RES_ORDER_CONFIRM_LIST_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @GetMapping
-    public ResultDto<OrderGetRes> getOrderInfo(@RequestParam Long orderPk) {
-        int code = 2;
-        String msg = "주문 상세보기 완료";
+    @Operation(summary = "주문정보 상세보기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 주문정보 상세보기 완료 </p>"+
+                            "<p> -1 : 주문 정보 불러오기 실패 </p>"+
+                            "<p> -2 : 불러올 주문 정보가 없음 </p>"
+    )
+    public ResultDto<OrderGetRes> getOrderInfo(@RequestParam("order_pk") Long orderPk) {
         OrderGetRes result = null;
 
         try {
             result = orderService.getOrderInfo(orderPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<OrderGetRes>builder().statusCode(-1).resultMsg(GET_ORDER_LIST_FAIL).build();
+        }
+
+        if (result == null) {
+            return ResultDto.<OrderGetRes>builder().statusCode(-2).resultMsg(GET_ORDER_LIST_NON).build();
         }
 
         return ResultDto.<OrderGetRes>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(ORDER_INFO_SUCCESS)
                 .resultData(result)
                 .build();
     }
 
     @PatchMapping
-    public ResultDto<Integer> confirmOrder(@RequestParam Long orderPk){
-        int code = 2;
-        String msg = "주문 접수 완료";
+    @Operation(summary = "주문 접수하기")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 주문 접수 완료 </p>"+
+                            "<p> -1 : 상점 주인의 접근이 아닙니다 </p>"
+    )
+    public ResultDto<Integer> confirmOrder(@RequestParam("order_pk") Long orderPk){
         Integer result = -1;
 
         try {
             result = orderService.confirmOrder(orderPk);
         } catch (Exception e) {
-            code = 4;
-            msg = e.getMessage();
+            return ResultDto.<Integer>builder().statusCode(-1).resultMsg(e.getMessage()).build();
         }
 
         return ResultDto.<Integer>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(CONFIRM_ORDER_SUCCESS)
                 .resultData(result)
                 .build();
     }

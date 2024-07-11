@@ -1,14 +1,17 @@
 package com.green.beadalyo.kdh.menu.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PutMenuReq {
-
+    @Schema(example = "1" , description = "메뉴 PK", requiredMode = Schema.RequiredMode.REQUIRED)
     private long menuPk;
 
     @Schema(example = "후라이드 치킨" , description = "메뉴 이름", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -26,4 +29,10 @@ public class PutMenuReq {
 
     @Schema(example = "1" , description = "메뉴 상태 ex) 1:판매 중 2: 품절", requiredMode = Schema.RequiredMode.REQUIRED)
     private int menuState;
+
+    @JsonIgnore
+    private long resUserPk;
+
+    @JsonIgnore
+    private long menuResPk;
 }
