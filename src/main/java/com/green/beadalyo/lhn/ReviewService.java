@@ -132,7 +132,7 @@ public class ReviewService {
         if (p.getFiles() != null) {
             String folderPath = String.format("%s/%d", "review", p.getReviewPk());
             fileUtils.makeFolder(folderPath);
-            for (MultipartFile file : p.getFiles()) {
+            for (MultipartFile file : pics) {
                 if (!file.isEmpty()) {
                     try {
                         String targetPath = folderPath + "/" + fileUtils.makeRandomFileName(file);
