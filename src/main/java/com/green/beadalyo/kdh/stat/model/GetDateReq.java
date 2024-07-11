@@ -6,23 +6,20 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.beans.ConstructorProperties;
 
 @Getter
 @Setter
-
+@ToString
 public class GetDateReq {
     private String date;
 
     @JsonIgnore
-    private long resPk;
+    private Long resPk;
 
     @JsonIgnore
     private long resUserPk;
 
-    @ConstructorProperties({"res_pk"})
-    public GetDateReq(long resPk) {
-        this.resPk = resPk;
-    }
 }

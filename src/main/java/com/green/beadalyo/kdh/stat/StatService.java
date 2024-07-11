@@ -3,10 +3,12 @@ package com.green.beadalyo.kdh.stat;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.kdh.stat.model.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StatService {
     private final StatMapper mapper;
     private final AuthenticationFacade authenticationFacade;
@@ -22,9 +24,12 @@ public class StatService {
 
     public GetMonthSaleRes getMonthSales(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkResPk(p);
+        log.info("resUserPk: {}", p.getResUserPk());
+        Long resPk = mapper.checkResPk(p.getResUserPk());
+        log.info("resPk: {}", resPk);
         p.setResPk(resPk);
-        if (resPk == null || resPk == 0 ){
+        log.info("p.getResPk: {}",p.getResPk());
+        if (resPk == 0 ){
             throw new RuntimeException();
         }
         return mapper.getMonthSales(p);
@@ -32,7 +37,7 @@ public class StatService {
 
     public GetMonthOrderCountRes getMonthOrderCount(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkResPk(p);
+        Long resPk = mapper.checkResPk(p.getResUserPk());
         p.setResPk(resPk);
         if (resPk == null || resPk == 0 ){
             throw new RuntimeException();
@@ -42,7 +47,7 @@ public class StatService {
 
     public GetDailySalesRes getDailySales(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkResPk(p);
+        Long resPk = mapper.checkResPk(p.getResUserPk());
         p.setResPk(resPk);
         if (resPk == null || resPk == 0 ){
             throw new RuntimeException();
@@ -52,7 +57,7 @@ public class StatService {
 
     public GetDailyOrderCountRes getDailyOrderCount(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkResPk(p);
+        Long resPk = mapper.checkResPk(p.getResUserPk());
         p.setResPk(resPk);
         if (resPk == null || resPk == 0 ){
             throw new RuntimeException();
