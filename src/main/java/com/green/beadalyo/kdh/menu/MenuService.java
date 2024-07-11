@@ -36,9 +36,9 @@ public class MenuService {
         if (resPk != p.getMenuResPk()){
             throw new RuntimeException();
         }
-        List<String> menuNames = mapper.getMenuName(p.getMenuResPk());
-        for (String menuName : menuNames){
-            if (menuName.equals(p.getMenuName())){
+        List<String> menuName = mapper.getMenuName(p.getMenuResPk());
+        for (String menu : menuName){
+            if (menu.equals(p.getMenuName())){
                 throw new IllegalArgumentException();
             }
         }
@@ -98,9 +98,9 @@ public class MenuService {
                 throw new RuntimeException();
             }
             long menuResPk = mapper.getMenuResPkByMenuPk(p.getMenuPk());
-            List<String> menuNames = mapper.getMenuName(menuResPk);
-            for (String menuName : menuNames){
-                if (menuName.equals(p.getMenuName())){
+            List<String> menuName = mapper.getMenuName(menuResPk);
+            for (String menu : menuName){
+                if (menu.equals(p.getMenuName())){
                     throw new IllegalArgumentException();
                 }
             }
