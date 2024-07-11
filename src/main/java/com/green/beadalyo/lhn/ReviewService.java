@@ -78,6 +78,10 @@ public class ReviewService {
 
     // 사장님 리뷰 답글
     public long postReviewReply(ReviewReplyReq p) {
+        long userPk = mapper.getRestaurantUser(p.getReviewCommentPk());
+        if (userPk != authenticationFacade.getLoginUserPk()){
+            throw new IllegalArgumentException("식당 사장님이 아닙니다");
+        }
         for (int i = 0; i < filter.getPROFANITIES().length; i++) {
             if (-1 != toString().indexOf(filter.getPROFANITIES()[i])) {
                 throw new RuntimeException("답글에 비속어가 존재합니다");
@@ -180,6 +184,8 @@ public class ReviewService {
         }
        mapper.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
     }
+    // 사장님 답글 삭제
+    public void deleteReviewReply()
 }
 
 
