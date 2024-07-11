@@ -2,6 +2,7 @@ package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ public class ReviewService {
     private final ReviewFilter filter;
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
+    private final UserService userService ;
 
     // 리뷰 작성
     @Transactional
@@ -100,6 +102,19 @@ public class ReviewService {
             review.setReply(res);
         }
         return reviews;
+    }
+    // 사장님 답글 수정
+    public void UpdReviewReply(ReviewReplyUpdReq p){
+      long userPk = mapper.getRestaurantUser(p.getReviewCommentPk()) ;
+        if (userPk != authenticationFacade.getLoginUserPk()){
+            throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
+        }
+        for (int i = 0; i < filter.getPROFANITIES().length; i++) {
+            if (-1 != toString().indexOf(filter.getPROFANITIES()[i])) {
+                throw new ArithmeticException("답글에 비속어가 존재합니다");
+            }
+        }
+        mapper.updReviewReply(p);
     }
 
     // 리뷰 업데이트 하기

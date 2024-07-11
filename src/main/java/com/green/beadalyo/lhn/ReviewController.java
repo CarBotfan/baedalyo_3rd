@@ -2,12 +2,14 @@ package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +25,7 @@ import static org.apache.coyote.http11.Constants.a;
 public class ReviewController {
     private final ReviewService service;
     private final AuthenticationFacade facade ;
+    private final UserService userService ;
 
     @PostMapping("api/review")
     @Operation(summary = "고객리뷰작성")
@@ -72,27 +75,35 @@ public class ReviewController {
     @PostMapping("api/comment")
     @Operation(summary = "사장님 답글", description = "")
     public ResultDto<Long> postReviewReply(@RequestBody ReviewReplyReq p) {
+
         int code = 1;
         String msg = "답변 완료";
         long result = 0;
-        try{
+        try {
             result = service.postReviewReply(p);
-        }catch (Exception e){
-            code = 4;
+        } catch (Exception e) {
+            code = -16;
             msg = e.getMessage();
         }
-        return ResultDto.<Long>builder()
-                .statusCode(code)
-                .resultMsg(msg)
-                .resultData(result)
-                .build();
-    }
+            return ResultDto.<Long>builder()
+                    .statusCode(code)
+                    .resultMsg(msg)
+                    .resultData(result)
+                    .build();
+        }
+
     @GetMapping("reviewlist")
     @Operation(summary = "리뷰 리스트 불러오기", description = "")
     public ResultDto<List<ReviewGetRes>> ReviewGetRes(@ModelAttribute ReviewGetReq p){
+        if (facade.getLoginUser() == null)
+            return   ResultDto.<List<ReviewGetRes>>builder()
+                    .statusCode(-13)
+                    .resultMsg("로그인한 유저가 존재하지않음")
+                    .build();
         int code = 1;
         String msg = "불러오기 완료";
         List<ReviewGetRes> result = null;
+
         try{
             result = service.getReviewList(p);
 
@@ -101,6 +112,38 @@ public class ReviewController {
             msg = e.getMessage();
         }
         return ResultDto.<List<ReviewGetRes>>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+    @Transactional
+    @PutMapping("patchreviewreply")
+    @Operation(summary = "사장님 답글 수정")
+    @ApiResponse(description =  "<p> code : 1  => 답글 수정 완료 </p>"+
+            "<p> code : -7  => 리뷰를 작성한 사장님이 아닙니다 </p>" +
+            "<p> code : -2  => 답글에 비속어가 존재합니다 </p>")
+    public ResultDto<Long> updReviewReply(@RequestBody  ReviewReplyUpdReq p){
+        int code = 1;
+        String msg = "답글수정완료";
+        long result = 0;
+        System.out.println(p);
+        try{
+            service.UpdReviewReply(p);
+        }
+        catch (IllegalArgumentException illegalArgumentException){
+            code = -18;
+            msg = illegalArgumentException.getMessage();
+        }
+        catch (ArithmeticException arithmeticException){
+            code = -19;
+            msg = arithmeticException.getMessage();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null ;
+        }
+        return ResultDto.<Long>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
@@ -159,6 +202,11 @@ public class ReviewController {
     )
     public ResultDto<Integer> deleteReview(@RequestParam long reviewPk) {
         facade.getLoginUser() ;
+        if (facade.getLoginUser() == null)
+            return   ResultDto.<Integer>builder()
+                .statusCode(-13)
+                .resultMsg("로그인한 유저가 존재하지않음")
+                .build();
         int code = 1;
         String msg = "삭제 완료";
         try {
