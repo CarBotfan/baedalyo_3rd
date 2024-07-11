@@ -185,7 +185,7 @@ public class ReviewService {
        mapper.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
     }
     // 사장님 답글 삭제
-    public void deleteReviewReply()
+    //*public void deleteReviewReply*/
 }
 
 
