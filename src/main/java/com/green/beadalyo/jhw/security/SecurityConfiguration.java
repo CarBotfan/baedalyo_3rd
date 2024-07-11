@@ -37,6 +37,7 @@ public class SecurityConfiguration {
                                         "/api/user/sign-up"
                                         ,"/api/user/sign-in"
                                         ,"/api/user/access-token"
+                                        ,"/api/rev/api/review"
 
                                         //swagger 사용할 수 있게 세팅
                                         , "/swagger"

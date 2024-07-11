@@ -1,6 +1,7 @@
 package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lhn.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.apache.coyote.http11.Constants.a;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +22,8 @@ import java.util.List;
 @Tag(name = "리뷰 CRUD")
 public class ReviewController {
     private final ReviewService service;
+    private final AuthenticationFacade facade ;
+
     @PostMapping("api/review")
     @Operation(summary = "고객리뷰작성")
     @ApiResponse(
@@ -29,7 +34,9 @@ public class ReviewController {
                     "<p> code : -4  =>  별점은 1에서 5까지가 최대</p>" +
                     "<p> code : -5  =>  파일 저장 중 오류 발생:  + file.getOriginalFilename(), e</p>"
     )
-    public ResultDto<Long> postReview(@RequestPart ReviewPostReq p, @RequestPart(required = false) List<MultipartFile> pics) {
+    public ResultDto<Long> postReview( @RequestPart ReviewPostReq p,
+                                       @RequestPart(required = false) List<MultipartFile> pics) {
+        log.info("list size : {}", pics);
         int code = 1;
         String msg = "작성 완료";
         long result = 0;
@@ -150,11 +157,12 @@ public class ReviewController {
                     "<p> code : -10  => 존재하지 않는 리뷰입니다 </p>" +
                     "<p> code : -11  => 리뷰를 작성한 사용자가 아닙니다 </p>"
     )
-    public ResultDto<Integer> deleteReview(@RequestParam long reviewPk, @RequestParam long userPk) {
+    public ResultDto<Integer> deleteReview(@RequestParam long reviewPk) {
+        facade.getLoginUser() ;
         int code = 1;
         String msg = "삭제 완료";
         try {
-            service.deleteReview(reviewPk, userPk);
+            service.deleteReview(reviewPk);
         } catch (NullPointerException nullPointerException) {
             code = -10;
             msg = nullPointerException.getMessage();

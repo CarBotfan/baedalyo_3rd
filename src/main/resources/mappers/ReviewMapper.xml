@@ -7,12 +7,13 @@
         SET review_pk = #{reviewPk}
         , done_order_pk = #{doneOrderPk}
         , user_pk = #{userPk}
+        , res_pk = #{resPk}
         , review_contents = #{reviewContents}
         , review_rating = #{reviewRating}
-        , review_pics1 = #{reviewPics1}
-        , review_pics2 = #{reviewPics2}
-        , review_pics3 = #{reviewPics3}
-        , review_pics4 = #{reviewPics4}
+        , review_pics_1 = #{reviewPics1}
+        , review_pics_2 = #{reviewPics2}
+        , review_pics_3 = #{reviewPics3}
+        , review_pics_4 = #{reviewPics4}
     </insert>
 
     <!-- 사장님 답글 -->

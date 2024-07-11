@@ -23,8 +23,8 @@ public class ReviewService {
     // 리뷰 작성
     @Transactional
     public long postReview(ReviewPostReq p, List<MultipartFile> pics) {
-        p.setUserPk(authenticationFacade.getLoginUserPk());
-
+//        p.setUserPk(authenticationFacade.getLoginUserPk());
+        p.setUserPk(2);
         if (mapper.ReviewExistForOrder(p.getDoneOrderPk())) {
             log.warn("주문에 대한 리뷰가 이미 존재합니다");
             throw new IllegalArgumentException("주문에 대한 리뷰가 이미 존재합니다");
@@ -70,7 +70,8 @@ public class ReviewService {
 
 
         mapper.insertReview(p);
-        return authenticationFacade.getLoginUserPk();
+//        return authenticationFacade.getLoginUserPk();
+        return 2;
     }
 
     // 사장님 리뷰 답글
@@ -151,13 +152,15 @@ public class ReviewService {
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(long reviewPk, long userPk)  {
+    public void deleteReview(long reviewPk)  {
+
+
         ReviewGetRes review = mapper.getReview(reviewPk);
         long reviewUserPk = ( review == null ? 0 : review.getUserPk());
         if(reviewUserPk == 0) {
             throw new NullPointerException("존재하지 않는 리뷰입니다");
         }
-        if (reviewUserPk != userPk) {
+        if (reviewUserPk != authenticationFacade.getLoginUserPk()) {
             throw new RuntimeException("리뷰를 작성한 사용자가 아닙니다");
         }
        mapper.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
