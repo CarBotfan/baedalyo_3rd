@@ -1,13 +1,12 @@
 package com.green.beadalyo.gyb.restaurant;
 
-import com.green.beadalyo.gyb.common.DistanceUtil;
 import com.green.beadalyo.gyb.common.FileUtils;
 import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.common.exception.DataWrongException;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.model.RestaurantDetailView;
 import com.green.beadalyo.gyb.model.RestaurantListView;
-import com.green.beadalyo.gyb.response.RestaurantListRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -16,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.green.beadalyo.gyb.common.ConstVariable.PAGE_SIZE;
 
@@ -30,7 +26,10 @@ public class RestaurantService
 {
     private final RestaurantRepository repository;
 
-    private final RestaurantListViewRepository viewRepository ;
+    private final RestaurantListViewRepository viewListRepository;
+
+    private final RestaurantDetailViewRepository viewDetailRepository;
+
 
     // 업데이트
     public void save(Restaurant data) throws Exception
@@ -50,9 +49,9 @@ public class RestaurantService
         System.out.println();
         return switch (orderType)
         {
-            case 1 -> viewRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
-            case 2 -> viewRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
-            case 3 -> viewRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
+            case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
+            case 2 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+            case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
             default -> null ;
         } ;
     }
@@ -65,14 +64,17 @@ public class RestaurantService
     }
 
     //음식점 정보 호출(음식점 pk로)
-    public Restaurant getRestaurantDataBySeq(Long seq) throws Exception
+    public RestaurantDetailView getRestaurantDataBySeq(Long seq) throws Exception
     {
-        return repository.findTop1BySeq(seq).orElseThrow(NullPointerException::new);
+        return viewDetailRepository.findTop1ByRestaurantPk(seq).orElseThrow(NullPointerException::new);
     }
 
     //인서트(사업자 회원가입에서 서비스 호출 필요)
     public void insertRestaurantData(RestaurantInsertDto dto) throws Exception
     {
+        String regex = "^\\d{3}-\\d{2}-\\d{5}$";
+        if (!dto.getRegiNum().matches(regex))
+            throw new DataWrongException("사업자 번호는 nnn-nn-nnnnn의 형식으로 들어와야 합니다.") ;
         Restaurant data = new Restaurant(dto);
         repository.save(data) ;
     }
