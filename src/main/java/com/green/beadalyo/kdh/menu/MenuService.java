@@ -53,8 +53,10 @@ public class MenuService {
             }
             String picName = customFileUtils.makeRandomFileName(pic);
             mapper.postMenu(p);
-            String path = String.format("menu/%d",p.getMenuPk());
+            String path = String.format("menu/%d", p.getMenuPk());
             p.setMenuPic(path + "/"+ picName);
+            mapper.postMenuPic(p);
+
 
         try {
 

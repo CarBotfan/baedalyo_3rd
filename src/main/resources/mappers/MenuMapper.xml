@@ -7,9 +7,13 @@
         menu_name    = #{menuName},
         menu_content = #{menuContent},
         menu_price   = #{menuPrice},
-        menu_pic     = #{menuPic},
         menu_state   = #{menuState}
 </insert>
+<update id="postMenuPic">
+    UPDATE menu
+    SET menu_pic = #{menuPic}
+    WHERE menu_pk = #{menuPk}
+</update>
 
 <select id="getAllMenu">
     SELECT  menu_pk AS menuPk,
