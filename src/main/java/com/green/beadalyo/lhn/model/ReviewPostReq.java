@@ -2,12 +2,15 @@ package com.green.beadalyo.lhn.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
+@ToString
 public class ReviewPostReq {
     @JsonIgnore
     @Schema(description = "리뷰의 고유 pk")

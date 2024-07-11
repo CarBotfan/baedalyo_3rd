@@ -66,8 +66,8 @@ public class SecurityConfiguration {
                                         ,"/actuator/*"
 
                                 ).permitAll()
-//                                .anyRequest().permitAll()
-                                .anyRequest().authenticated() //로그인이 되어 있어야만 허용
+                                .anyRequest().permitAll()
+//                                .anyRequest().authenticated() //로그인이 되어 있어야만 허용
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint())

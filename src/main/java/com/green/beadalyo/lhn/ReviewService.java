@@ -2,6 +2,7 @@ package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,13 @@ public class ReviewService {
     private final ReviewFilter filter;
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
+    private final UserService userService ;
 
     // 리뷰 작성
     @Transactional
     public long postReview(ReviewPostReq p, List<MultipartFile> pics) {
-        p.setUserPk(authenticationFacade.getLoginUserPk());
-
+//        p.setUserPk(authenticationFacade.getLoginUserPk());
+        p.setUserPk(2);
         if (mapper.ReviewExistForOrder(p.getDoneOrderPk())) {
             log.warn("주문에 대한 리뷰가 이미 존재합니다");
             throw new IllegalArgumentException("주문에 대한 리뷰가 이미 존재합니다");
@@ -70,11 +72,16 @@ public class ReviewService {
 
 
         mapper.insertReview(p);
-        return authenticationFacade.getLoginUserPk();
+//        return authenticationFacade.getLoginUserPk();
+        return 2;
     }
 
     // 사장님 리뷰 답글
     public long postReviewReply(ReviewReplyReq p) {
+        long userPk = mapper.getRestaurantUser(p.getReviewCommentPk());
+        if (userPk != authenticationFacade.getLoginUserPk()){
+            throw new IllegalArgumentException("식당 사장님이 아닙니다");
+        }
         for (int i = 0; i < filter.getPROFANITIES().length; i++) {
             if (-1 != toString().indexOf(filter.getPROFANITIES()[i])) {
                 throw new RuntimeException("답글에 비속어가 존재합니다");
@@ -99,6 +106,19 @@ public class ReviewService {
             review.setReply(res);
         }
         return reviews;
+    }
+    // 사장님 답글 수정
+    public void UpdReviewReply(ReviewReplyUpdReq p){
+      long userPk = mapper.getRestaurantUser(p.getReviewCommentPk()) ;
+        if (userPk != authenticationFacade.getLoginUserPk()){
+            throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
+        }
+        for (int i = 0; i < filter.getPROFANITIES().length; i++) {
+            if (-1 != toString().indexOf(filter.getPROFANITIES()[i])) {
+                throw new ArithmeticException("답글에 비속어가 존재합니다");
+            }
+        }
+        mapper.updReviewReply(p);
     }
 
     // 리뷰 업데이트 하기
@@ -151,17 +171,21 @@ public class ReviewService {
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(long reviewPk, long userPk)  {
+    public void deleteReview(long reviewPk)  {
+
+
         ReviewGetRes review = mapper.getReview(reviewPk);
         long reviewUserPk = ( review == null ? 0 : review.getUserPk());
         if(reviewUserPk == 0) {
             throw new NullPointerException("존재하지 않는 리뷰입니다");
         }
-        if (reviewUserPk != userPk) {
+        if (reviewUserPk != authenticationFacade.getLoginUserPk()) {
             throw new RuntimeException("리뷰를 작성한 사용자가 아닙니다");
         }
        mapper.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
     }
+    // 사장님 답글 삭제
+    //*public void deleteReviewReply*/
 }
 
 
