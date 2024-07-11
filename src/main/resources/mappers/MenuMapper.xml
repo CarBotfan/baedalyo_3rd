@@ -22,7 +22,7 @@
 </select>
 
 <select id="getMenuResPkByMenuPk">
-    SELECT menu_res_pk
+    SELECT menu_res_pk AS menuResPk
     FROM menu
     WHERE menu_pk = #{menuPk};
 </select>
