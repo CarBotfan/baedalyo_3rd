@@ -25,8 +25,11 @@ public class MenuService {
                                 MultipartFile pic){
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long checkResult = mapper.checkResPk(p.getResUserPk());
-        if (checkResult != p.getMenuResPk()){
+        Long menuResPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
+        p.setMenuResPk(menuResPk);
+
+
+        if (menuResPk != p.getResUserPk()){
             throw new RuntimeException();
         }
 
@@ -78,13 +81,12 @@ public class MenuService {
     @Transactional
     public PutMenuRes putMenu(MultipartFile pic, PutMenuReq p){
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long checkResult = mapper.checkResPk(p.getResUserPk());
-        p.setMenuResPk(checkResult);
-        if (checkResult != p.getMenuResPk()){
-            throw new RuntimeException();
-        }
+            p.setResUserPk(authenticationFacade.getLoginUserPk());
+            Long resUserPk = mapper.checkResUserPkByMenuPk(p.getMenuPk());
 
+            if (resUserPk != p.getResUserPk()){
+                throw new RuntimeException();
+            }
             GetOneMenuReq req = new GetOneMenuReq(p.getMenuPk());
             GetOneMenuRes originalMenu = mapper.getOneMenu(req);
         if (pic == null || pic.isEmpty() ){

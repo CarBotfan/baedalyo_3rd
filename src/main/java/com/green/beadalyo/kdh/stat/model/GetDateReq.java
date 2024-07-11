@@ -15,7 +15,7 @@ import java.beans.ConstructorProperties;
 public class GetDateReq {
     private String date;
 
-    @Schema(name = "res_pk")
+    @JsonIgnore
     private long resPk;
 
     @JsonIgnore

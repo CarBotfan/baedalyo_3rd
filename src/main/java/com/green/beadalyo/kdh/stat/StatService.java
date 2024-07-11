@@ -22,40 +22,40 @@ public class StatService {
 
     public GetMonthSaleRes getMonthSales(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-
-        Long result = mapper.checkResPk(p);
-        if (result == null || result == 0 ){
-            throw new RuntimeException("잘못된 접근입니다.");
+        Long resPk = mapper.checkResPk(p);
+        p.setResPk(resPk);
+        if (resPk == null || resPk == 0 ){
+            throw new RuntimeException();
         }
         return mapper.getMonthSales(p);
     }
 
     public GetMonthOrderCountRes getMonthOrderCount(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-
-        Long result = mapper.checkResPk(p);
-        if (result == null || result == 0 ){
-            throw new RuntimeException("잘못된 접근입니다.");
+        Long resPk = mapper.checkResPk(p);
+        p.setResPk(resPk);
+        if (resPk == null || resPk == 0 ){
+            throw new RuntimeException();
         }
         return mapper.getMonthOrderCount(p);
     }
 
     public GetDailySalesRes getDailySales(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-
-        Long result = mapper.checkResPk(p);
-        if (result == null || result == 0 ){
-            throw new RuntimeException("잘못된 접근입니다.");
+        Long resPk = mapper.checkResPk(p);
+        p.setResPk(resPk);
+        if (resPk == null || resPk == 0 ){
+            throw new RuntimeException();
         }
         return mapper.getDailySales(p);
     }
 
     public GetDailyOrderCountRes getDailyOrderCount(GetDateReq p){
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-
-        Long result = mapper.checkResPk(p);
-        if (result == null || result == 0 ){
-            throw new RuntimeException("잘못된 접근입니다.");
+        Long resPk = mapper.checkResPk(p);
+        p.setResPk(resPk);
+        if (resPk == null || resPk == 0 ){
+            throw new RuntimeException();
         }
         return mapper.getDailyOrderCount(p);
     }

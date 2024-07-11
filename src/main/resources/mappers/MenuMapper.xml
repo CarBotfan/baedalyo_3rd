@@ -78,13 +78,24 @@ WHERE menu_pk = #{menuPk}
     WHERE menu_pk = #{menuPk}
 </delete>
 
-<select id="checkResPk">
-    SELECT menu_pk
+<select id="checkMenuResPkByResUserPk">
+    SELECT menu_res_pk AS menuResPk
     FROM  menu
     WHERE menu_res_pk = (SELECT res_pk
-                        FROM restaurant
-                        WHERE res_user_pk = #{resUserPk}
-                        LIMIT 1)
+                         FROM restaurant
+                         WHERE res_user_pk = #{resUserPk}
+                         LIMIT 1)
     LIMIT 1 ;
+</select>
+
+
+
+
+<select id="checkResUserPkByMenuPk">
+    SELECT res_user_pk AS resUserPk
+    FROM 	restaurant
+    WHERE res_pk = (SELECT menu_res_pk
+                    FROM menu
+                    WHERE menu_pk = #{menuPk} );
 </select>
 </mapper>

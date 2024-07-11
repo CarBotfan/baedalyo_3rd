@@ -33,6 +33,4 @@ public class PutMenuReq {
     @JsonIgnore
     private long resUserPk;
 
-    @JsonIgnore
-    private long menuResPk;
 }
