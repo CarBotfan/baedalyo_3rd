@@ -17,5 +17,5 @@ public interface StatMapper {
 
     GetDailyOrderCountRes getDailyOrderCount(GetDateReq p);
 
-    Long checkResPk(GetDateReq p);
+    Long checkResPk(long resUserPk);
 }

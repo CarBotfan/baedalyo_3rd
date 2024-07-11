@@ -1,12 +1,15 @@
 package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +22,9 @@ import java.util.List;
 @Tag(name = "리뷰 CRUD")
 public class ReviewController {
     private final ReviewService service;
+    private final AuthenticationFacade facade ;
+    private final UserService userService ;
+
     @PostMapping("api/review")
     @Operation(summary = "고객리뷰작성")
     @ApiResponse(
@@ -29,7 +35,9 @@ public class ReviewController {
                     "<p> code : -4  =>  별점은 1에서 5까지가 최대</p>" +
                     "<p> code : -5  =>  파일 저장 중 오류 발생:  + file.getOriginalFilename(), e</p>"
     )
-    public ResultDto<Long> postReview(@RequestPart ReviewPostReq p, @RequestPart(required = false) List<MultipartFile> pics) {
+    public ResultDto<Long> postReview( @RequestPart ReviewPostReq p,
+                                       @RequestPart(required = false) List<MultipartFile> pics) {
+        log.info("list size : {}", pics);
         int code = 1;
         String msg = "작성 완료";
         long result = 0;
@@ -65,27 +73,35 @@ public class ReviewController {
     @PostMapping("api/comment")
     @Operation(summary = "사장님 답글", description = "")
     public ResultDto<Long> postReviewReply(@RequestBody ReviewReplyReq p) {
+
         int code = 1;
         String msg = "답변 완료";
         long result = 0;
-        try{
+        try {
             result = service.postReviewReply(p);
-        }catch (Exception e){
-            code = 4;
+        } catch (Exception e) {
+            code = -16;
             msg = e.getMessage();
         }
-        return ResultDto.<Long>builder()
-                .statusCode(code)
-                .resultMsg(msg)
-                .resultData(result)
-                .build();
-    }
+            return ResultDto.<Long>builder()
+                    .statusCode(code)
+                    .resultMsg(msg)
+                    .resultData(result)
+                    .build();
+        }
+
     @GetMapping("reviewlist")
     @Operation(summary = "리뷰 리스트 불러오기", description = "")
     public ResultDto<List<ReviewGetRes>> ReviewGetRes(@ModelAttribute ReviewGetReq p){
+        if (facade.getLoginUser() == null)
+            return   ResultDto.<List<ReviewGetRes>>builder()
+                    .statusCode(-13)
+                    .resultMsg("로그인한 유저가 존재하지않음")
+                    .build();
         int code = 1;
         String msg = "불러오기 완료";
         List<ReviewGetRes> result = null;
+
         try{
             result = service.getReviewList(p);
 
@@ -94,6 +110,38 @@ public class ReviewController {
             msg = e.getMessage();
         }
         return ResultDto.<List<ReviewGetRes>>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+    @Transactional
+    @PutMapping("patchreviewreply")
+    @Operation(summary = "사장님 답글 수정")
+    @ApiResponse(description =  "<p> code : 1  => 답글 수정 완료 </p>"+
+            "<p> code : -7  => 리뷰를 작성한 사장님이 아닙니다 </p>" +
+            "<p> code : -2  => 답글에 비속어가 존재합니다 </p>")
+    public ResultDto<Long> updReviewReply(@RequestBody  ReviewReplyUpdReq p){
+        int code = 1;
+        String msg = "답글수정완료";
+        long result = 0;
+        System.out.println(p);
+        try{
+            service.UpdReviewReply(p);
+        }
+        catch (IllegalArgumentException illegalArgumentException){
+            code = -18;
+            msg = illegalArgumentException.getMessage();
+        }
+        catch (ArithmeticException arithmeticException){
+            code = -19;
+            msg = arithmeticException.getMessage();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null ;
+        }
+        return ResultDto.<Long>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
@@ -124,16 +172,13 @@ public class ReviewController {
         catch (ArithmeticException arithmeticException){
             code = -2;
             msg = arithmeticException.getMessage();
-        }
-        catch (NullPointerException nullPointerException){
+        } catch (NullPointerException nullPointerException) {
             code = -3;
             msg = nullPointerException.getMessage();
-        }
-        catch (RuntimeException runtimeException){
+        } catch (RuntimeException runtimeException) {
             code = -4;
             msg = runtimeException.getMessage();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             code = -5;
             msg = e.getMessage();
         }
@@ -143,18 +188,25 @@ public class ReviewController {
                 .resultData(result)
                 .build();
     }
+
     @DeleteMapping("delete")
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
     @ApiResponse(
-            description = "<p> code : 1  => 삭제 완료 </p>"+
+            description = "<p> code : 1  => 삭제 완료 </p>" +
                     "<p> code : -10  => 존재하지 않는 리뷰입니다 </p>" +
                     "<p> code : -11  => 리뷰를 작성한 사용자가 아닙니다 </p>"
     )
-    public ResultDto<Integer> deleteReview(@RequestParam long reviewPk, @RequestParam long userPk) {
+    public ResultDto<Integer> deleteReview(@RequestParam long reviewPk) {
+        facade.getLoginUser();
+        if (facade.getLoginUser() == null)
+            return ResultDto.<Integer>builder()
+                    .statusCode(-13)
+                    .resultMsg("로그인한 유저가 존재하지않음")
+                    .build();
         int code = 1;
         String msg = "삭제 완료";
         try {
-            service.deleteReview(reviewPk, userPk);
+            service.deleteReview(reviewPk);
         } catch (NullPointerException nullPointerException) {
             code = -10;
             msg = nullPointerException.getMessage();
@@ -168,4 +220,31 @@ public class ReviewController {
                 .resultMsg(msg)
                 .build();
     }
+
+    @DeleteMapping("deletereply")
+    @Operation(summary = "사장님 답글 삭제", description = "답글을 삭제합니다")
+    public ResultDto<Integer> deleteReviewReply(@RequestParam long reviewCommentPk) {
+        facade.getLoginUser();
+        if (facade.getLoginUser() == null)
+            return ResultDto.<Integer>builder()
+                    .statusCode(-13)
+                    .resultMsg("로그인한 유저가 존재하지않음")
+                    .build();
+        int code = 1;
+        String msg = "삭제 완료";
+        try {
+            service.deleteReviewReply(reviewCommentPk);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            code = -11;
+            msg = illegalArgumentException.getMessage();
+        } catch (Exception e) {
+            code = -200;
+            msg = "박살";
+        }
+      return ResultDto.<Integer>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .build();
+    }
 }
+

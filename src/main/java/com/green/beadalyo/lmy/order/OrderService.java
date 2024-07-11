@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import  static com.green.beadalyo.lmy.dataset.ExceptionMsgDataset.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +42,7 @@ public class OrderService {
             orderMenuList = p.getMenuPk().stream().map(menuPk -> {
                 Map<String, Object> menu = menuList.stream()
                         .filter(m -> m.get("menu_pk").equals(menuPk))
-                        .findFirst().orElseThrow(() -> new NullPointerException(MENU_NOT_FOUND_ERROR));
+                        .findFirst().orElseThrow(() -> new NullPointerException(""));
                 Map<String, Object> orderMenuMap = new HashMap<>();
                 orderMenuMap.put("orderPk", p.getOrderPk());
                 orderMenuMap.put("menuPk", menu.get("menu_pk"));
@@ -53,7 +51,7 @@ public class OrderService {
                 return orderMenuMap;
             }).collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException(DATALIST_FAIL_ERROR);
+            throw new RuntimeException("");
         }
 
         // order_menu 테이블에 배치 삽입
@@ -96,7 +94,7 @@ public class OrderService {
 
         long resUserPk = authenticationFacade.getLoginUserPk();
         if (resUserPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
-            throw new RuntimeException(NO_AUTHENTICATION);
+            throw new RuntimeException("");
         }
 
         OrderEntity entity = orderMapper.selectOrderById(orderPk);
@@ -131,7 +129,7 @@ public class OrderService {
 
         long resUserPk = authenticationFacade.getLoginUserPk();
         if (resUserPk != orderMapper.getResUserPkByResPk(resPk)){
-            throw new RuntimeException(NO_AUTHENTICATION);
+            throw new RuntimeException();
         }
 
         List<OrderMiniGetRes> result = orderMapper.selectNonConfirmOrdersByResPk(resPk);
@@ -148,7 +146,7 @@ public class OrderService {
 
         long resUserPk = authenticationFacade.getLoginUserPk();
         if (resUserPk != orderMapper.getResUserPkByResPk(resPk)){
-            throw new RuntimeException(NO_AUTHENTICATION);
+            throw new RuntimeException("");
         }
 
         List<OrderMiniGetRes> result = orderMapper.selectConfirmOrdersByResPk(resPk);
@@ -174,7 +172,7 @@ public class OrderService {
         long resUserPk = authenticationFacade.getLoginUserPk();
 
         if (resUserPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
-            throw new RuntimeException(NO_AUTHENTICATION);
+            throw new RuntimeException("");
         }
 
         orderMapper.confirmOrder(orderPk);

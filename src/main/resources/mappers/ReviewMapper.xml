@@ -7,21 +7,27 @@
         SET review_pk = #{reviewPk}
         , done_order_pk = #{doneOrderPk}
         , user_pk = #{userPk}
+        , res_pk = #{resPk}
         , review_contents = #{reviewContents}
         , review_rating = #{reviewRating}
-        , review_pics1 = #{reviewPics1}
-        , review_pics2 = #{reviewPics2}
-        , review_pics3 = #{reviewPics3}
-        , review_pics4 = #{reviewPics4}
+        , review_pics_1 = #{reviewPics1}
+        , review_pics_2 = #{reviewPics2}
+        , review_pics_3 = #{reviewPics3}
+        , review_pics_4 = #{reviewPics4}
     </insert>
 
     <!-- 사장님 답글 -->
     <insert id="postReviewReply">
         INSERT INTO review_comment
-        SET review_comment_pk = #{reviewCommentPk}
-        , review_pk = #{reviewPk}
+        SET review_pk = #{reviewPk}
         , comment_content = #{commentContent}
     </insert>
+
+    <delete id="deleteReviewReply">
+        DELETE FROM review_comment
+        WHERE review_comment_pk = #{commentPk}
+    </delete>
+
 
     <!-- 리뷰삭제 -->
     <update id="deleteReview">
@@ -45,6 +51,22 @@
         FROM review_comments
         WHERE review_pk = #{reviewPk} AND review_state = 1;
     </select>
+
+    <!--사장님 레스토랑 조회-->
+    <select id="getRestaurantUser">
+        select c.res_user_pk as userPk
+        from review_comment a join review b on a.review_pk = b.review_pk
+        join restaurant c on b.res_pk = c.res_pk
+        where a.review_comment_pk = #{commentPk} limit 1
+    </select>
+
+    <!-- 사장님 답글 수정 쿼리 -->
+    <update id="updReviewReply">
+        UPDATE review_comment
+        SET
+        comment_content = #{commentContent}
+        WHERE  review_comment_pk = #{reviewCommentPk}
+    </update>
 
     <!-- 리뷰 수정 쿼리 -->
     <update id="putReview">
@@ -80,6 +102,10 @@
         FROM  review
         WHERE review_pk = #{reviewPk} AND review_state = 1;
     </select>
+
+
+
+
 
 
 
