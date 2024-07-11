@@ -11,6 +11,8 @@ import java.util.List;
 public interface MenuMapper {
     int postMenu(PostMenuReq p);
     void postMenuPic(PostMenuReq p);
+    List<String> getMenuName(long menuResPk);
+    long getMenuResPkByMenuPk(long menuPk);
 
     List<GetAllMenuRes> getAllMenu(GetAllMenuReq p);
 
