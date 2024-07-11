@@ -25,8 +25,7 @@ public class ReviewService {
     // 리뷰 작성
     @Transactional
     public long postReview(ReviewPostReq p, List<MultipartFile> pics) {
-//        p.setUserPk(authenticationFacade.getLoginUserPk());
-        p.setUserPk(2);
+     p.setUserPk(authenticationFacade.getLoginUserPk());
         if (mapper.ReviewExistForOrder(p.getDoneOrderPk())) {
             log.warn("주문에 대한 리뷰가 이미 존재합니다");
             throw new IllegalArgumentException("주문에 대한 리뷰가 이미 존재합니다");
@@ -72,8 +71,7 @@ public class ReviewService {
 
 
         mapper.insertReview(p);
-//        return authenticationFacade.getLoginUserPk();
-        return 2;
+      return authenticationFacade.getLoginUserPk();
     }
 
     // 사장님 리뷰 답글
@@ -185,7 +183,13 @@ public class ReviewService {
        mapper.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
     }
     // 사장님 답글 삭제
-    //*public void deleteReviewReply*/
+    public void deleteReviewReply(long reviewCommentPk) {
+        long userPk = mapper.getRestaurantUser(reviewCommentPk);
+        if (userPk != authenticationFacade.getLoginUserPk()) {
+            throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
+        }
+        mapper.deleteReviewReply(reviewCommentPk);
+    }
 }
 
 

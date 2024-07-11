@@ -15,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static org.apache.coyote.http11.Constants.a;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -174,16 +172,13 @@ public class ReviewController {
         catch (ArithmeticException arithmeticException){
             code = -2;
             msg = arithmeticException.getMessage();
-        }
-        catch (NullPointerException nullPointerException){
+        } catch (NullPointerException nullPointerException) {
             code = -3;
             msg = nullPointerException.getMessage();
-        }
-        catch (RuntimeException runtimeException){
+        } catch (RuntimeException runtimeException) {
             code = -4;
             msg = runtimeException.getMessage();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             code = -5;
             msg = e.getMessage();
         }
@@ -193,20 +188,21 @@ public class ReviewController {
                 .resultData(result)
                 .build();
     }
+
     @DeleteMapping("delete")
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
     @ApiResponse(
-            description = "<p> code : 1  => 삭제 완료 </p>"+
+            description = "<p> code : 1  => 삭제 완료 </p>" +
                     "<p> code : -10  => 존재하지 않는 리뷰입니다 </p>" +
                     "<p> code : -11  => 리뷰를 작성한 사용자가 아닙니다 </p>"
     )
     public ResultDto<Integer> deleteReview(@RequestParam long reviewPk) {
-        facade.getLoginUser() ;
+        facade.getLoginUser();
         if (facade.getLoginUser() == null)
-            return   ResultDto.<Integer>builder()
-                .statusCode(-13)
-                .resultMsg("로그인한 유저가 존재하지않음")
-                .build();
+            return ResultDto.<Integer>builder()
+                    .statusCode(-13)
+                    .resultMsg("로그인한 유저가 존재하지않음")
+                    .build();
         int code = 1;
         String msg = "삭제 완료";
         try {
@@ -224,4 +220,31 @@ public class ReviewController {
                 .resultMsg(msg)
                 .build();
     }
+
+    @DeleteMapping("deletereply")
+    @Operation(summary = "사장님 답글 삭제", description = "답글을 삭제합니다")
+    public ResultDto<Integer> deleteReviewReply(@RequestParam long reviewCommentPk) {
+        facade.getLoginUser();
+        if (facade.getLoginUser() == null)
+            return ResultDto.<Integer>builder()
+                    .statusCode(-13)
+                    .resultMsg("로그인한 유저가 존재하지않음")
+                    .build();
+        int code = 1;
+        String msg = "삭제 완료";
+        try {
+            service.deleteReviewReply(reviewCommentPk);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            code = -11;
+            msg = illegalArgumentException.getMessage();
+        } catch (Exception e) {
+            code = -200;
+            msg = "박살";
+        }
+      return ResultDto.<Integer>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .build();
+    }
 }
+
