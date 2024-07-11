@@ -7,6 +7,7 @@ import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuService {
     private final MenuMapper mapper;
     private final CustomFileUtils customFileUtils;
@@ -25,8 +27,13 @@ public class MenuService {
                                 MultipartFile pic){
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long checkResult = mapper.checkResPk(p.getResUserPk());
-        if (checkResult != p.getMenuResPk()){
+        Long menuResPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
+        p.setMenuResPk(menuResPk);
+        Long resPk = mapper.checkResPkByResUserPk(p.getResUserPk());
+        log.info("{}",p);
+        log.info("Long menuResPk : {}",menuResPk);
+
+        if (resPk != p.getMenuResPk()){
             throw new RuntimeException();
         }
 
@@ -78,13 +85,12 @@ public class MenuService {
     @Transactional
     public PutMenuRes putMenu(MultipartFile pic, PutMenuReq p){
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long checkResult = mapper.checkResPk(p.getResUserPk());
-        p.setMenuResPk(checkResult);
-        if (checkResult != p.getMenuResPk()){
-            throw new RuntimeException();
-        }
+            p.setResUserPk(authenticationFacade.getLoginUserPk());
+            Long resUserPk = mapper.checkResUserPkByMenuPk(p.getMenuPk());
 
+            if (resUserPk != p.getResUserPk()){
+                throw new RuntimeException();
+            }
             GetOneMenuReq req = new GetOneMenuReq(p.getMenuPk());
             GetOneMenuRes originalMenu = mapper.getOneMenu(req);
         if (pic == null || pic.isEmpty() ){
@@ -132,7 +138,13 @@ public class MenuService {
     }
 
     public int delMenu(long menuPk){
-        int result = mapper.delMenu(menuPk);
+        Long resUserPk = authenticationFacade.getLoginUserPk();
+        Long menuResPk = mapper.getMenuResPkByResUserPk(resUserPk);
+        int result = mapper.delMenu(menuPk, menuResPk);
+        if (menuResPk == null || menuResPk == 0 || result == 0){
+            throw new RuntimeException();
+        }
+
         return result;
     }
 

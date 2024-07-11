@@ -17,7 +17,13 @@ public interface MenuMapper {
 
     int putMenu(PutMenuReq p);
 
-    int delMenu(long menuPk);
+    int delMenu(long menuPk, long menuResPk);
 
-    Long checkResPk(long resUserPk);
+    Long checkMenuResPkByResUserPk(long resUserPk);
+
+    Long checkResUserPkByMenuPk(long menuPk);
+
+    Long checkResPkByResUserPk(long resUserPk);
+
+    Long getMenuResPkByResUserPk(long resUserPk);
 }

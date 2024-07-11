@@ -49,9 +49,9 @@
     
     
 <select id="checkResPk">
-    SELECT res_pk
+    SELECT res_pk AS resPk
     FROM restaurant
-    WHERE res_pk = #{resPk}
-    AND res_user_pk = #{resUserPk};
+    WHERE res_user_pk = #{resUserPk}
+    LIMIT 1;
 </select>
 </mapper>
