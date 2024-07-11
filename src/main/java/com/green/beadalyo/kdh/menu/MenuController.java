@@ -7,6 +7,7 @@ import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("api/menu")
 @RequiredArgsConstructor
 @Tag(name = "메뉴 관련 컨트롤러입니다.")
+@Slf4j
 public class MenuController {
     private final MenuService service;
 
@@ -35,9 +37,9 @@ public class MenuController {
         String msg = "메뉴 등록 완료";
         int code = 1;
 
-
-        if ((p.getMenuName().length()<=20 && !p.getMenuName().isEmpty())
-            && (p.getMenuContent().length() <= 100 && !p.getMenuContent().isEmpty())) {
+        log.info("", p);
+        if (( !p.getMenuName().isEmpty() && p.getMenuName().length()>=20)
+            && ( !p.getMenuContent().isEmpty()) && p.getMenuContent().length() >= 100 ) {
             return ResultDto.<PostMenuRes>builder()
                     .statusCode(-2)
                     .resultMsg("메뉴 양식이 안맞습니다.")
@@ -112,8 +114,8 @@ public class MenuController {
 
         String msg = "메뉴 수정 완료";
         int code = 1;
-        if ((p.getMenuName().length()<=20 && !p.getMenuName().isEmpty())
-                && (p.getMenuContent().length() <= 100 && !p.getMenuContent().isEmpty())) {
+        if ((!p.getMenuName().isEmpty() && p.getMenuName().length()>=20 )
+                && (!p.getMenuContent().isEmpty() && p.getMenuContent().length() >= 100  )) {
             return ResultDto.<PutMenuRes>builder()
                     .statusCode(-2)
                     .resultMsg("메뉴 양식이 안맞습니다.")

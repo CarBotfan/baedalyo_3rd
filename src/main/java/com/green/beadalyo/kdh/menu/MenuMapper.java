@@ -22,4 +22,6 @@ public interface MenuMapper {
     Long checkMenuResPkByResUserPk(long resUserPk);
 
     Long checkResUserPkByMenuPk(long menuPk);
+
+    Long checkResPkByResUserPk(long resUserPk);
 }

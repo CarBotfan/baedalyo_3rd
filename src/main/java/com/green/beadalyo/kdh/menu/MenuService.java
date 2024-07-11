@@ -7,6 +7,7 @@ import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuService {
     private final MenuMapper mapper;
     private final CustomFileUtils customFileUtils;
@@ -27,9 +29,11 @@ public class MenuService {
         p.setResUserPk(authenticationFacade.getLoginUserPk());
         Long menuResPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
         p.setMenuResPk(menuResPk);
+        Long resPk = mapper.checkResPkByResUserPk(p.getResUserPk());
+        log.info("{}",p);
+        log.info("Long menuResPk : {}",menuResPk);
 
-
-        if (menuResPk != p.getResUserPk()){
+        if (resPk != p.getMenuResPk()){
             throw new RuntimeException();
         }
 

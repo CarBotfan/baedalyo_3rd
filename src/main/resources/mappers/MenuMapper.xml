@@ -98,4 +98,13 @@ WHERE menu_pk = #{menuPk}
                     FROM menu
                     WHERE menu_pk = #{menuPk} );
 </select>
+
+
+<select id="checkResPkByResUserPk">
+    SELECT res_pk AS resPk
+    FROM restaurant
+    WHERE res_user_pk = #{resUserPk}
+    LIMIT 1;
+</select>
+
 </mapper>

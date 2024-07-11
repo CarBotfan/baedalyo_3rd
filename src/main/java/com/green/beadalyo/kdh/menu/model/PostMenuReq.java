@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostMenuReq {
     @JsonIgnore
@@ -16,6 +18,9 @@ public class PostMenuReq {
 
     @JsonIgnore
     private long resUserPk;
+
+    @JsonIgnore
+    private long resPk;
 
     @JsonIgnore
     private long menuResPk;
