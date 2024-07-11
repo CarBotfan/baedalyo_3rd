@@ -141,7 +141,8 @@ public class MenuController {
     @DeleteMapping
     @Operation(summary = "메뉴를 삭제합니다." , description = "menuPk는 등록된 메뉴의 고유 번호(PK)입니다.\n" +
                                                 "<p> 1 : 메뉴 삭제 완료 </p>"+
-                                                "<p> -1 : 메뉴 삭제 실패 </p>"
+                                                "<p> -1 : 메뉴 삭제 실패 </p>"+
+                                                "<p> -2 : 사장님만 메뉴를 삭제 할 수있습니다.</p>"
     )
     public ResultDto<Integer> delMenu(@RequestParam(name = "menu_pk") long menuPk){
         int result = 0;
@@ -150,9 +151,18 @@ public class MenuController {
         int code = 1;
         try {
             result = service.delMenu(menuPk);
+        } catch (RuntimeException e){
+            return ResultDto.<Integer>builder()
+                    .statusCode(-2)
+                    .resultMsg("사장님만 삭제 할 수있습니다.")
+                    .resultData(result)
+                    .build();
         } catch (Exception e){
-            msg = e.getMessage();
-            code = -1;
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("메뉴 삭제 실패")
+                    .resultData(result)
+                    .build();
         }
 
         return ResultDto.<Integer>builder()

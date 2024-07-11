@@ -138,7 +138,13 @@ public class MenuService {
     }
 
     public int delMenu(long menuPk){
-        int result = mapper.delMenu(menuPk);
+        Long resUserPk = authenticationFacade.getLoginUserPk();
+        Long menuResPk = mapper.getMenuResPkByResUserPk(resUserPk);
+        int result = mapper.delMenu(menuPk, menuResPk);
+        if (menuResPk == null || menuResPk == 0 || result == 0){
+            throw new RuntimeException();
+        }
+
         return result;
     }
 
