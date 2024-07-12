@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService{
             dto.setResAddr(p.getAddr());
             dto.setDesc1(p.getDesc1());
             dto.setDesc2(p.getDesc2());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
             dto.setCloseTime(LocalTime.parse(p.getCloseTime(), formatter));
             dto.setResCoorX(p.getCoorX());
