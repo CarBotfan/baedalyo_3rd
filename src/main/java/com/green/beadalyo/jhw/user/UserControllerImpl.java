@@ -1,6 +1,7 @@
 package com.green.beadalyo.jhw.user;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.gyb.common.exception.DataWrongException;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.user.exception.*;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api")
 @RestController
 @Tag(name = " 유저 컨트롤러")
 public class UserControllerImpl implements UserController{
@@ -34,7 +35,7 @@ public class UserControllerImpl implements UserController{
     private final RestaurantService restaurantService;
 
     @Override
-    @PostMapping("/normal/sign-up")
+    @PostMapping("/sign-up")
     @Operation(summary = "일반 유저 회원가입", description = "일반 유저 회원가입을 진행합니다")
     @ApiResponse(
             description =
@@ -272,7 +273,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PatchMapping("update-pw")
+    @PatchMapping("/update-pw")
     @Operation(summary = "비밀번호 수정", description = "비밀번호 수정")
     @ApiResponse(
             description =
@@ -309,7 +310,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @GetMapping("access-token")
+    @GetMapping("/access-token")
     @Operation(summary = "액세스 토큰 발급",description = "액세스 토큰 발급")
     @ApiResponse(
             description =
@@ -341,7 +342,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @GetMapping
+    @GetMapping("/user-info")
     @Operation(summary = "유저 정보 조회", description = "유저 정보 조회")
     @ApiResponse(
             description =
@@ -369,7 +370,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PostMapping("/normal/delete")
+    @PostMapping("/delete")
     @Operation(summary = "일반 회원 탈퇴", description = "일반 회원 탈퇴")
     @ApiResponse(
             description =

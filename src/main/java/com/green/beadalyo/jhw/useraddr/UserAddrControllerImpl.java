@@ -69,8 +69,8 @@ public class UserAddrControllerImpl implements UserAddrController{
     }
 
     @Override
-    @GetMapping("/list/{addrPk}")
-    @Operation(summary = "유저 주소 조회")
+    @GetMapping("/{addrPk}")
+    @Operation(summary = "유저 주소 상세정보 조회")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
