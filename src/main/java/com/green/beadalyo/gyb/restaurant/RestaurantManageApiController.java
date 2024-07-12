@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,8 +31,9 @@ import java.time.LocalTime;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("api/restaurant/manage")
-@Tag(name = "음식점 매니저 컨트롤러")
+@RequestMapping("api/owner/restaurant")
+@Tag(name = "음식점 매니저 컨트롤러(OWNER or ADMIN 권한 필요)")
+@PreAuthorize("hasAnyRole('OWNER','ADMIN')")
 public class RestaurantManageApiController
 {
     private final RestaurantService service;
@@ -42,31 +44,31 @@ public class RestaurantManageApiController
     private final UserServiceImpl userService ;
 
 
-    @GetMapping("test")
-    @Operation(summary = "(테스트) 음식점 추가")
-    public Result putRestaurant()
-    {
-        User user = userService.getUserByPk() ;
-        RestaurantInsertDto dto = new RestaurantInsertDto() ;
-        dto.setUser(user.getUserPk());
-        dto.setRegiNum("123-45-67891");
-        dto.setResAddr("대구 북구 대현동");
-        dto.setResCoorX(128.59636652);
-        dto.setResCoorY(35.87280588);
-        dto.setOpenTime(LocalTime.of(11,0));
-        dto.setCloseTime(LocalTime.of(22,0));
-        dto.setName("레스타우란트");
-        dto.setResPic(null);
-        try {
-            service.insertRestaurantData(dto);
-
-        } catch (Exception e) {
-            log.error("An error occurred: ", e);
-            return ResultError.builder().build();
-        }
-        return ResultDto.builder().build();
-
-    }
+//    @GetMapping("test")
+//    @Operation(summary = "(테스트) 음식점 추가")
+//    public Result putRestaurant()
+//    {
+//        User user = userService.getUserByPk() ;
+//        RestaurantInsertDto dto = new RestaurantInsertDto() ;
+//        dto.setUser(user.getUserPk());
+//        dto.setRegiNum("123-45-67891");
+//        dto.setResAddr("대구 북구 대현동");
+//        dto.setResCoorX(128.59636652);
+//        dto.setResCoorY(35.87280588);
+//        dto.setOpenTime(LocalTime.of(11,0));
+//        dto.setCloseTime(LocalTime.of(22,0));
+//        dto.setName("레스타우란트");
+//        dto.setResPic(null);
+//        try {
+//            service.insertRestaurantData(dto);
+//
+//        } catch (Exception e) {
+//            log.error("An error occurred: ", e);
+//            return ResultError.builder().build();
+//        }
+//        return ResultDto.builder().build();
+//
+//    }
 
     @GetMapping
     @Operation(summary = "로그인한 유저의 음식점 데이터 불러오기")
@@ -81,8 +83,9 @@ public class RestaurantManageApiController
     {
 
         Long seq = authenticationFacade.getLoginUserPk() ;
-
         try {
+            if (seq == 0) throw new DataNotFoundException() ;
+
             Restaurant data = service.getRestaurantData(seq);
 
             RestaurantManageRes res = new RestaurantManageRes(data);
@@ -111,9 +114,10 @@ public class RestaurantManageApiController
     )
     public Result ToggleState()
     {
-        Long seq = authenticationFacade.getLoginUserPk() ;
-
+        long seq = authenticationFacade.getLoginUserPk() ;
+        if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;
         try {
+
             Integer data = service.toggleState(seq);
 
             return ResultDto.builder().statusCode(data).build();
@@ -140,7 +144,9 @@ public class RestaurantManageApiController
     )
     public Result patchManageData(@RequestBody RestaurantManagePatchReq request)
     {
-        Long seq = authenticationFacade.getLoginUserPk() ;
+        long seq = authenticationFacade.getLoginUserPk() ;
+        if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;
+
         //사업자 번호 유효성 검사
         String regex = "^\\d{3}-\\d{2}-\\d{5}$";
         if (!request.getRegiNum().matches(regex))
@@ -178,9 +184,10 @@ public class RestaurantManageApiController
                     "<p> -3 : 음식점 정보 조회 실패 </p>"
 
     )
-    public Result updatePic(@RequestPart MultipartFile file)
+    public Result updatePic(MultipartFile file)
     {
         Long seq = authenticationFacade.getLoginUserPk() ;
+        if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;
 
         try {
             String filename = service.updateRestaurantPic(seq,file);
@@ -211,6 +218,7 @@ public class RestaurantManageApiController
     public Result putRestaurantCategory(@RequestParam Long seq)
     {
         Long userSeq = authenticationFacade.getLoginUserPk() ;
+        if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;
 
         Category cate = null ;
         Restaurant restaurant = null ;
@@ -244,7 +252,7 @@ public class RestaurantManageApiController
 
     }
 
-    @DeleteMapping("category")
+    @DeleteMapping("category/{seq}")
     @Operation(summary = "음식점 카테고리 삭제")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
             description =
@@ -254,9 +262,10 @@ public class RestaurantManageApiController
                     "<p> -3 : 카테고리 정보 조회 실패 </p>" +
                     "<p> -4 : 음식점 정보 조회 실패 </p>"
     )
-    public Result deleteRestaurantCategory(@RequestParam Long seq)
+    public Result deleteRestaurantCategory(@PathVariable Long seq)
     {
         Long userSeq = authenticationFacade.getLoginUserPk() ;
+        if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;
 
         Category cate = null ;
         Restaurant restaurant = null ;
