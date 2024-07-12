@@ -31,6 +31,7 @@ public class MenuService {
         if (menuResPk == null) {
             throw new RuntimeException();
         }
+        p.setMenuResPk(menuResPk);
 
         List<String> menuName = mapper.getMenuName(p.getMenuResPk());
         for (String menu : menuName){
