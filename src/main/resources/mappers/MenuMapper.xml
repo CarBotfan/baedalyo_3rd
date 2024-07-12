@@ -16,7 +16,7 @@
 </update>
 
 <select id="getMenuName">
-    SELECT menu_name AS menuName
+    SELECT menu_name
     FROM menu
     WHERE menu_res_pk = #{menuResPk};
 </select>
