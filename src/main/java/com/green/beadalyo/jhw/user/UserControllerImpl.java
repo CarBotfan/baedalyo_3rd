@@ -138,7 +138,7 @@ public class UserControllerImpl implements UserController{
                     .userPwConfirm(p.getUserPwConfirm())
                     .userName(p.getUserName())
                     .userNickname(p.getUserNickName())
-                    .userPhone(p.getUserNickName())
+                    .userPhone(p.getUserPhone())
                     .userRole("ROLE_OWNER")
                     .build();
             long userPk = service.postSignUp(pic, req);

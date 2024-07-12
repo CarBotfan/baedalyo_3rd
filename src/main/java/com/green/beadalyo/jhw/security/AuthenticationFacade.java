@@ -21,4 +21,6 @@ public class AuthenticationFacade {
         MyUser myUser = getLoginUser();
         return myUser == null ? 0 : myUser.getUserPk();
     }
+
 }
+
