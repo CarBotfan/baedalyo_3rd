@@ -28,14 +28,10 @@ public class MenuService {
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
         Long menuResPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
-        p.setMenuResPk(menuResPk);
-        Long resPk = mapper.checkResPkByResUserPk(p.getResUserPk());
-        log.info("{}",p);
-        log.info("Long menuResPk : {}",menuResPk);
-
-        if (resPk != p.getMenuResPk()){
+        if (menuResPk == null) {
             throw new RuntimeException();
         }
+
         List<String> menuName = mapper.getMenuName(p.getMenuResPk());
         for (String menu : menuName){
             if (menu.equals(p.getMenuName())){
