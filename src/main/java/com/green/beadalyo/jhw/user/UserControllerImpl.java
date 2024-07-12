@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -254,6 +255,8 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("/update-pic")
+//    @PreAuthorize("hasAnyRole('USER', 'OWNER')")
+    @PreAuthorize("authentication()")
     @Operation(summary = "프로필 이미지 수정", description = "프로필 이미지 수정")
     @ApiResponse(
             description =
@@ -263,10 +266,11 @@ public class UserControllerImpl implements UserController{
                             "<p> -6 : 올바르지 않은 파일 형식 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<String> patchProfilePic(@RequestPart(required = false) MultipartFile pic, @RequestPart UserPicPatchReq p) {
+    public ResultDto<String> patchProfilePic(@RequestPart(required = false) MultipartFile pic) {
         int statusCode = 1;
         String result = "";
         String msg = "수정 완료";
+        UserPicPatchReq p = new UserPicPatchReq();
         try {
             result = service.patchProfilePic(pic, p);
         } catch(UserPatchFailureException e) {

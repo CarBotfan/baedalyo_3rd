@@ -12,7 +12,7 @@ public interface UserController {
     ResultDto<Integer> postUserSignUp(MultipartFile pic, UserSignUpPostReq p);
     ResultDto<Integer> postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p);
     ResultDto<SignInRes> postSignIn(HttpServletResponse res, SignInPostReq p);
-    ResultDto<String> patchProfilePic(MultipartFile pic, UserPicPatchReq p);
+    ResultDto<String> patchProfilePic(MultipartFile pic);
     ResultDto<Integer> patchUserNickname(UserNicknamePatchReq p);
     ResultDto<Integer> patchUserPhone(UserPhonePatchReq p);
     ResultDto<Integer> patchUserPassword(UserPasswordPatchReq p);

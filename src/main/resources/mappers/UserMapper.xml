@@ -122,4 +122,9 @@
         WHERE addr_user_pk = #{signedUserPk}
         AND addr_default = #{signedUserPk}
     </select>
+    <select id="getUserPicName">
+        SELECT user_pic AS userPic
+        FROM user
+        WHERE user_pk = #{userPK}
+    </select>
 </mapper>

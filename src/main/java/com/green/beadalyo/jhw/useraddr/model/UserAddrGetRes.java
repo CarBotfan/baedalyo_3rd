@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public class UserAddrGetRes {
     @Schema(defaultValue = "1")
     private long addrPk;
+    private String addrName;
     @Schema(defaultValue = "시/군/구")
     private String addr1;
     @Schema(defaultValue = "상세주소")

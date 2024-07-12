@@ -17,6 +17,7 @@ public class UserAddrPostReq {
     private long addrPk;
     @JsonIgnore
     private long signedUserId;
+    private String addrName;
     private String addr1;
     private String addr2;
     private BigDecimal addrCoorX;

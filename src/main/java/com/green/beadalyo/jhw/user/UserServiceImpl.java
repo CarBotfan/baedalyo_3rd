@@ -55,25 +55,31 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        long result;
         if(mapper.getUserById(p.getUserId()) != null) {
             throw new DuplicatedIdException();
         }
         if(!p.getUserPw().equals(p.getUserPwConfirm())) {
             throw new PwConfirmFailureException();
         }
-        String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
-        p.setUserPic(fileName);
         String password = passwordEncoder.encode(p.getUserPw());
         p.setUserPw(password);
-        mapper.signUpUser(p);
-        long result = p.getUserPk();
+
         if(pic == null) {
+            mapper.signUpUser(p);
+            result = p.getUserPk();
             return result;
         }
         Matcher matcher = filePattern.matcher(Objects.requireNonNull(pic.getOriginalFilename()));
         if(!matcher.matches()) {
             throw new InvalidRegexException();
         }
+
+        String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
+        p.setUserPic(fileName);
+        mapper.signUpUser(p);
+        result = p.getUserPk();
+
         try {
             customFileUtils.transferTo(pic, fileName);
         } catch (Exception e) {
@@ -129,20 +135,22 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
-        Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
-        if(!matcher.matches()) {
-            throw new InvalidRegexException();
-        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
-        p.setPicName(fileName);
+        if(pic != null) {
+            Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
+            if(!matcher.matches()) {
+                throw new InvalidRegexException();
+            }
+            p.setPicName(fileName);
+        }
         int result = mapper.updProfilePic(p);
         if(result != 1) {
             throw new UserPatchFailureException();
         }
         try {
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, p.getOrignalPicName());
+            File file = new File(delAbsoluteFolderPath, mapper.getUserPicName(p.getSignedUserPk()));
             file.delete();
             String target = String.format("%s",fileName);
             customFileUtils.transferTo(pic, target);
