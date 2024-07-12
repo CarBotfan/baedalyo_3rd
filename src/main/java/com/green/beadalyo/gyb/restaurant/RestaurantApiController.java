@@ -1,9 +1,12 @@
 package com.green.beadalyo.gyb.restaurant;
 
+import com.green.beadalyo.gyb.category.CategoryService;
 import com.green.beadalyo.gyb.common.*;
+import com.green.beadalyo.gyb.model.Category;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.RestaurantDetailView;
 import com.green.beadalyo.gyb.model.RestaurantListView;
+import com.green.beadalyo.gyb.response.CategoryRes;
 import com.green.beadalyo.gyb.response.RestaurantDetailRes;
 import com.green.beadalyo.gyb.response.RestaurantListRes;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
@@ -43,6 +46,7 @@ public class RestaurantApiController
 {
 
     private final RestaurantService service;
+    private final CategoryService categoryService ;
     private final MenuService menuService ;
     private final UserAddrServiceImpl userAddrService ;
     private final AuthenticationFacade authenticationFacade;
@@ -126,4 +130,24 @@ public class RestaurantApiController
             return ResultError.builder().build();
         }
     }
+
+    @GetMapping("category")
+    @Operation(summary = "카테고리 리스트 조회")
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)),
+            description =
+                    "<p> 1 : 정상 </p>" +
+                            "<p> -1 : 실패 </p>"
+    )
+    public Result getCategoryList()
+    {
+        try {
+            List<Category> list = categoryService.getCategoryAll() ;
+            List<CategoryRes> reslist = CategoryRes.toCategoryRes(list) ;
+            return ResultDto.builder().resultData(reslist).build() ;
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
+    }
+
 }

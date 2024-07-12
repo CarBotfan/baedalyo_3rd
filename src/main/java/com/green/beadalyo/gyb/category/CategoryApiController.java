@@ -3,6 +3,7 @@ package com.green.beadalyo.gyb.category;
 import com.green.beadalyo.gyb.common.*;
 import com.green.beadalyo.gyb.model.Category;
 import com.green.beadalyo.gyb.response.CategoryRes;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,13 +23,15 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("api/category")
-@Tag(name = "카테고리 컨트롤러")
+@RequestMapping("api/admin/category")
+@Tag(name = "카테고리 컨트롤러(ADMIN권한 필요)")
+@PreAuthorize("hasRole('ADMIN')")
 public class CategoryApiController
 {
 
     private final CategoryService service;
     private final UserServiceImpl userService ;
+    private final AuthenticationFacade authenticationFacade;
 
     @PutMapping
     @Operation(summary = "카테고리 추가")
@@ -98,6 +102,7 @@ public class CategoryApiController
     public Result deleteCategory(@PathVariable Long seq)
     {
         User user = userService.getUserByPk() ;
+        authenticationFacade.getLoginUserPk() ;
         //유효성 검증
         if (user == null)
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
@@ -118,25 +123,5 @@ public class CategoryApiController
             return ResultError.builder().build();
         }
     }
-
-    @GetMapping
-    @Operation(summary = "카테고리 리스트 조회")
-    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)),
-            description =
-                    "<p> 1 : 정상 </p>" +
-                    "<p> -1 : 실패 </p>"
-    )
-    public Result getCategoryList()
-    {
-        try {
-            List<Category> list = service.getCategoryAll() ;
-            List<CategoryRes> reslist = CategoryRes.toCategoryRes(list) ;
-            return ResultDto.builder().resultData(reslist).build() ;
-        } catch (Exception e) {
-            log.error("An error occurred: ", e);
-            return ResultError.builder().build();
-        }
-    }
-
 
 }
