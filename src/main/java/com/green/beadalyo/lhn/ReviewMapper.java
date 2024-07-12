@@ -19,6 +19,7 @@ public interface ReviewMapper {
     int deleteReview(long reviewPk, int reviewState);
     ReviewGetRes getReview(long reviewPk);
     void updReviewReply(ReviewReplyUpdReq commentPk);
-    long getRestaurantUser(long commentPk) ;
+    long getRestaurantUser(long commentPk);
+    void deleteReviewReply(long commentPk);
 
 }

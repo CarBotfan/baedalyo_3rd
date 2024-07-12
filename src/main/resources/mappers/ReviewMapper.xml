@@ -23,6 +23,13 @@
         , comment_content = #{commentContent}
     </insert>
 
+    <!-- 사장님 답글삭제 -->
+    <delete id="deleteReviewReply">
+        DELETE FROM review_comment
+        WHERE review_comment_pk = #{commentPk}
+    </delete>
+
+
     <!-- 리뷰삭제 -->
     <update id="deleteReview">
         UPDATE review
@@ -96,6 +103,9 @@
         FROM  review
         WHERE review_pk = #{reviewPk} AND review_state = 1;
     </select>
+
+
+
 
 
 

@@ -12,9 +12,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -35,9 +37,11 @@ public class UserControllerImpl implements UserController{
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
+                            "<p> -11 : 중복된 닉네임 또는 전화번호 </p>" +
                             "<p> -7 : 중복된 ID </p>" +
-                            "<p> -4 : 파일 업로드 실패 </p>" +
+                            "<p> -6 : 올바르지 않은 파일 확장자 </p>" +
                             "<p> -5 : 비밀번호 재입력 불일치 </p>" +
+                            "<p> -4 : 파일 업로드 실패 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
     public ResultDto<Integer> postUserSignUp(@RequestPart(required = false) MultipartFile pic, @RequestPart UserSignUpPostReq p) {
@@ -51,79 +55,25 @@ public class UserControllerImpl implements UserController{
         } catch (DuplicatedIdException e) {
             statusCode = -7;
             msg = e.getMessage();
-        } catch(FileUploadFailedException e) {
-            statusCode = -4;
+        } catch(InvalidRegexException e) {
             msg = e.getMessage();
-
+            statusCode = -6;
         } catch (PwConfirmFailureException e) {
           statusCode = -5;
           msg = e.getMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
-            statusCode = -1;
-            msg = e.getMessage();
-        }
-
-        return ResultDto.<Integer>builder()
-                .statusCode(statusCode)
-                .resultMsg(msg)
-                .resultData(result).build();
-    }
-
-    @Override
-    @PostMapping("/owner/sign-up")
-    @Operation(summary = "음식점 사장 회원가입", description = "음식점 사장 가입을 진행합니다")
-    @ApiResponse(
-            description =
-                    "<p> 1 : 성공 </p>"+
-                            "<p> -7 : 중복된 ID </p>" +
-                            "<p> -4 : 파일 업로드 실패 </p>" +
-                            "<p> -5 : 비밀번호 재입력 불일치 </p>" +
-                            "<p> -1 : 기타 오류 </p>"
-    )
-    public ResultDto<Integer> postOwnerSignUp(@RequestPart(required = false) MultipartFile pic,@RequestPart OwnerSignUpPostReq p) {
-        int result = 0;
-        String msg = "가입 성공";
-        int statusCode = 1;
-        try {
-            UserSignUpPostReq req = UserSignUpPostReq.builder()
-                    .userId(p.getUserId())
-                    .userPw(p.getUserPw())
-                    .userPwConfirm(p.getUserPwConfirm())
-                    .userName(p.getUserName())
-                    .userNickname(p.getUserNickName())
-                    .userPhone(p.getUserNickName())
-                    .userRole("ROLE_OWNER")
-                    .build();
-            long userPk = service.postSignUp(pic, req);
-            RestaurantInsertDto dto = new RestaurantInsertDto();
-            dto.setUser(userPk);
-            dto.setName(p.getRestaurantName());
-            dto.setRegiNum(p.getRegiNum());
-            dto.setResAddr(p.getAddr());
-            dto.setDesc1(p.getDesc1());
-            dto.setDesc2(p.getDesc2());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
-            dto.setCloseTime(LocalTime.parse(p.getOpenTime(), formatter));
-            dto.setResCoorX(p.getCoorX());
-            dto.setResCoorY(p.getCoorY());
-            restaurantService.insertRestaurantData(dto);
-            result = 1;
-        } catch (DuplicatedIdException e) {
-            statusCode = -7;
-            msg = e.getMessage();
         } catch(FileUploadFailedException e) {
             statusCode = -4;
             msg = e.getMessage();
-        } catch(PwConfirmFailureException e) {
-            statusCode = -5;
-            msg = e.getMessage();
+
+        } catch (DuplicateKeyException e) {
+            statusCode = -11;
+            msg = "중복된 닉네임 또는 전화번호입니다.";
         } catch (Exception e) {
             e.printStackTrace();
             statusCode = -1;
             msg = e.getMessage();
         }
+
         return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
@@ -165,12 +115,81 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
+    @PostMapping("/owner/sign-up")
+    @Operation(summary = "음식점 사장 회원가입", description = "음식점 사장 가입을 진행합니다")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -11 : 중복된 닉네임 또는 전화번호 </p>" +
+                            "<p> -7 : 중복된 ID </p>" +
+                            "<p> -6 : 올바르지 않은 파일 확장자 </p>" +
+                            "<p> -5 : 비밀번호 재입력 불일치 </p>" +
+                            "<p> -4 : 파일 업로드 실패 </p>" +
+                            "<p> -1 : 기타 오류 </p>"
+    )
+    public ResultDto<Integer> postOwnerSignUp(@RequestPart(required = false) MultipartFile pic,@RequestPart OwnerSignUpPostReq p) {
+        int result = 0;
+        String msg = "가입 성공";
+        int statusCode = 1;
+        try {
+            UserSignUpPostReq req = UserSignUpPostReq.builder()
+                    .userId(p.getUserId())
+                    .userPw(p.getUserPw())
+                    .userPwConfirm(p.getUserPwConfirm())
+                    .userName(p.getUserName())
+                    .userNickname(p.getUserNickName())
+                    .userPhone(p.getUserPhone())
+                    .userRole("ROLE_OWNER")
+                    .build();
+            long userPk = service.postSignUp(pic, req);
+            RestaurantInsertDto dto = new RestaurantInsertDto();
+            dto.setUser(userPk);
+            dto.setName(p.getRestaurantName());
+            dto.setRegiNum(p.getRegiNum());
+            dto.setResAddr(p.getAddr());
+            dto.setDesc1(p.getDesc1());
+            dto.setDesc2(p.getDesc2());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
+            dto.setCloseTime(LocalTime.parse(p.getOpenTime(), formatter));
+            dto.setResCoorX(p.getCoorX());
+            dto.setResCoorY(p.getCoorY());
+            restaurantService.insertRestaurantData(dto);
+            result = 1;
+        } catch (DuplicateKeyException e) {
+            statusCode = -11;
+            msg = "중복된 닉네임 또는 전화번호입니다.";
+        } catch (DuplicatedIdException e) {
+            statusCode = -7;
+            msg = e.getMessage();
+        } catch(InvalidRegexException e) {
+            msg = e.getMessage();
+            statusCode = -6;
+        } catch(PwConfirmFailureException e) {
+            statusCode = -5;
+            msg = e.getMessage();
+        } catch(FileUploadFailedException e) {
+            statusCode = -4;
+            msg = e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            statusCode = -1;
+            msg = e.getMessage();
+        }
+        return ResultDto.<Integer>builder()
+                .statusCode(statusCode)
+                .resultMsg(msg)
+                .resultData(result).build();
+    }
+
+    @Override
     @PatchMapping("/update-nickname")
     @Operation(summary = "유저 닉네임 수정", description = "유저 닉네임 수정")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> 0 : 수정 실패 </p>" +
+                            "<p> -11 : 중복된 닉네임 또는 전화번호 </p>" +
+                            "<p> -10 : 수정 실패 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
     public ResultDto<Integer> patchUserNickname(@RequestBody UserNicknamePatchReq p) {
@@ -179,9 +198,12 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         try {
             result = service.patchUserNickname(p);
+        } catch (DuplicateKeyException e) {
+            statusCode = -11;
+            msg = "중복된 닉네임 또는 전화번호입니다.";
         } catch(UserPatchFailureException e) {
             msg = e.getMessage();
-            statusCode = 0;
+            statusCode = -10;
         } catch(Exception e) {
             e.printStackTrace();
             statusCode = -1;
@@ -199,7 +221,8 @@ public class UserControllerImpl implements UserController{
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> 0 : 수정 실패 </p>" +
+                            "<p> -11 : 중복된 닉네임 또는 전화번호 </p>" +
+                            "<p> -10 : 수정 실패 </p>" +
                             "<p> -6 : 올바르지 않은 전화번호 형식 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
@@ -211,7 +234,10 @@ public class UserControllerImpl implements UserController{
             result = service.patchUserPhone(p);
         } catch(UserPatchFailureException e) {
             msg = e.getMessage();
-            statusCode = -5;
+            statusCode = -10;
+        } catch (DuplicateKeyException e) {
+            statusCode = -11;
+            msg = "중복된 닉네임 또는 전화번호입니다.";
         } catch(InvalidRegexException e) {
             msg = e.getMessage();
             statusCode = -6;
@@ -232,7 +258,7 @@ public class UserControllerImpl implements UserController{
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> 0 : 수정 실패 </p>" +
+                            "<p> -10 : 수정 실패 </p>" +
                             "<p> -4 : 파일 업로드 실패 </p>" +
                             "<p> -6 : 올바르지 않은 파일 형식 </p>" +
                             "<p> -1 : 기타 오류 </p>"
@@ -245,7 +271,7 @@ public class UserControllerImpl implements UserController{
             result = service.patchProfilePic(pic, p);
         } catch(UserPatchFailureException e) {
             msg = e.getMessage();
-            statusCode = 0;
+            statusCode = -10;
         } catch(FileUploadFailedException e) {
             msg = e.getMessage();
             statusCode = -4;

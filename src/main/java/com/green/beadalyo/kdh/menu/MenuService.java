@@ -64,7 +64,6 @@ public class MenuService {
 
 
         try {
-
             customFileUtils.makeFolder(path);
             String target = String.format("%s/%s",path,picName);
             customFileUtils.transferTo(pic,target);

@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService{
     private final RestaurantService resService;
 
     private String regexPhone = "^\\d{3}-\\d{4}-\\d{4}$";
-    String regexFileName = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.(jpg|jpeg|png|gif|bmp|tiff|svg)$";
+    String regexFileName = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.(jpg|jpeg|png|gif|bmp|tiff|svg|webp)$";
 
     Pattern phonePattern = Pattern.compile(regexPhone);
     Pattern filePattern = Pattern.compile(regexFileName);
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService{
         if(!p.getUserPw().equals(p.getUserPwConfirm())) {
             throw new PwConfirmFailureException();
         }
-        String fileName = customFileUtils.makeRandomFileName(pic);
+        String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
         p.setUserPic(fileName);
         String password = passwordEncoder.encode(p.getUserPw());
         p.setUserPw(password);
@@ -69,11 +70,12 @@ public class UserServiceImpl implements UserService{
         if(pic == null) {
             return result;
         }
+        Matcher matcher = filePattern.matcher(Objects.requireNonNull(pic.getOriginalFilename()));
+        if(!matcher.matches()) {
+            throw new InvalidRegexException();
+        }
         try {
-            String path = String.format("user/%d", p.getUserPk());
-            customFileUtils.makeFolder(path);
-            String target = String.format("%s/%s", path, fileName);
-            customFileUtils.transferTo(pic, target);
+            customFileUtils.transferTo(pic, fileName);
         } catch (Exception e) {
             e.printStackTrace();
             throw new FileUploadFailedException();
@@ -132,15 +134,15 @@ public class UserServiceImpl implements UserService{
             throw new InvalidRegexException();
         }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        String fileName = customFileUtils.makeRandomFileName(pic);
-        p.setPicName("user/" + fileName);
+        String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
+        p.setPicName(fileName);
         int result = mapper.updProfilePic(p);
         if(result != 1) {
             throw new UserPatchFailureException();
         }
         try {
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, fileName);
+            File file = new File(delAbsoluteFolderPath, p.getOrignalPicName());
             file.delete();
             String target = String.format("%s",fileName);
             customFileUtils.transferTo(pic, target);
