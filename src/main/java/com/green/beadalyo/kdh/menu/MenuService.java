@@ -27,11 +27,11 @@ public class MenuService {
                                 MultipartFile pic){
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long menuResPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
-        if (menuResPk == null) {
+        Long resPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
+        if (resPk == null) {
             throw new RuntimeException();
         }
-        p.setMenuResPk(menuResPk);
+        p.setMenuResPk(resPk);
 
         List<String> menuName = mapper.getMenuName(p.getMenuResPk());
         for (String menu : menuName){
