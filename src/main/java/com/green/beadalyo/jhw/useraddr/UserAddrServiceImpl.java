@@ -32,7 +32,12 @@ public class UserAddrServiceImpl implements UserAddrService{
 
     @Override
     public UserAddrGetRes getUserAddr(long addrPk) throws Exception {
-        return mapper.getUserAddr(authenticationFacade.getLoginUserPk(), addrPk);
+
+        UserAddrGetRes result = mapper.getUserAddr(authenticationFacade.getLoginUserPk(), addrPk);
+        if(result == null) {
+            throw new RuntimeException("존재하지 않는 데이터");
+        }
+        return result;
     }
 
     @Override
