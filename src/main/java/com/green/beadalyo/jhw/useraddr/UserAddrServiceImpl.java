@@ -31,6 +31,11 @@ public class UserAddrServiceImpl implements UserAddrService{
     }
 
     @Override
+    public UserAddrGetRes getUserAddr(long addrPk) throws Exception {
+        return mapper.getUserAddr(authenticationFacade.getLoginUserPk(), addrPk);
+    }
+
+    @Override
     public UserAddrGetRes getMainUserAddr() throws Exception{
         long signedUserPk = authenticationFacade.getLoginUserPk();
         return mapper.getMainUserAddr(signedUserPk);

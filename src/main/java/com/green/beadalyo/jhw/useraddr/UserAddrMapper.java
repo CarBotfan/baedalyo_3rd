@@ -10,7 +10,8 @@ public interface UserAddrMapper {
     long postUserAddr(UserAddrPostReq p);
     List<UserAddrGetRes> getUserAddrList(long signedUserPk);
     UserAddrGetRes getMainUserAddr(long signedUserPk);
-    int patchCurrentMainUserAddr(long signedUserPk);
+    UserAddrGetRes getUserAddr(long signedUserPk, long addrPk);
+    void patchCurrentMainUserAddr(long signedUserPk);
     int patchMainUserAddr(MainUserAddrPatchReq p);
     int updUserAddr(UserAddrPatchReq p);
     int deleteUserAddr(UserAddrDelReq p);

@@ -18,6 +18,14 @@
         WHERE addr_user_pk = #{signedUserPk}
         ORDER BY addr_default DESC
     </select>
+    <select id="getUserAddr">
+        SELECT addr_pk AS addrPk, addr1, addr2
+        , addr_coor_x AS addrCoorX
+        , addr_coor_y AS addrCoorY
+        FROM address
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_pk = #{addrPk}
+    </select>
     <select id="getMainUserAddr">
         SELECT addr_name AS addrName, addr1, addr2 ,
         , addr_coor_x AS addrCoorX

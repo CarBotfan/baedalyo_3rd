@@ -11,4 +11,5 @@ public interface UserAddrService {
     int patchUserAddr(UserAddrPatchReq p) throws Exception;
     int deleteUserAddr(UserAddrDelReq p) throws Exception;
     int patchMainUserAddr(MainUserAddrPatchReq p) throws Exception;
+    UserAddrGetRes getUserAddr(long addrPk) throws Exception;
 }
