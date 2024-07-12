@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -133,30 +134,7 @@ public class UserControllerImpl implements UserController{
         String msg = "가입 성공";
         int statusCode = 1;
         try {
-            UserSignUpPostReq req = UserSignUpPostReq.builder()
-                    .userId(p.getUserId())
-                    .userPw(p.getUserPw())
-                    .userPwConfirm(p.getUserPwConfirm())
-                    .userName(p.getUserName())
-                    .userNickname(p.getUserNickName())
-                    .userPhone(p.getUserPhone())
-                    .userRole("ROLE_OWNER")
-                    .build();
-            long userPk = service.postSignUp(pic, req);
-            RestaurantInsertDto dto = new RestaurantInsertDto();
-            dto.setUser(userPk);
-            dto.setName(p.getRestaurantName());
-            dto.setRegiNum(p.getRegiNum());
-            dto.setResAddr(p.getAddr());
-            dto.setDesc1(p.getDesc1());
-            dto.setDesc2(p.getDesc2());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
-            dto.setCloseTime(LocalTime.parse(p.getOpenTime(), formatter));
-            dto.setResCoorX(p.getCoorX());
-            dto.setResCoorY(p.getCoorY());
-            restaurantService.insertRestaurantData(dto);
-            result = 1;
+            result = service.postOwnerSignUp(pic, p);
         } catch (DuplicateKeyException e) {
             statusCode = -11;
             msg = "중복된 닉네임 또는 전화번호입니다.";

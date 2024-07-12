@@ -3,6 +3,7 @@ package com.green.beadalyo.jhw.user;
 import com.green.beadalyo.common.AppProperties;
 import com.green.beadalyo.common.CookieUtils;
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
@@ -24,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -87,6 +90,41 @@ public class UserServiceImpl implements UserService{
             throw new FileUploadFailedException();
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p) {
+        try {
+            UserSignUpPostReq req = UserSignUpPostReq.builder()
+                    .userId(p.getUserId())
+                    .userPw(p.getUserPw())
+                    .userPwConfirm(p.getUserPwConfirm())
+                    .userName(p.getUserName())
+                    .userNickname(p.getUserNickName())
+                    .userPhone(p.getUserPhone())
+                    .userRole("ROLE_OWNER")
+                    .build();
+            long userPk = postSignUp(pic, req);
+            RestaurantInsertDto dto = new RestaurantInsertDto();
+            dto.setUser(userPk);
+            dto.setName(p.getRestaurantName());
+            dto.setRegiNum(p.getRegiNum());
+            dto.setResAddr(p.getAddr());
+            dto.setDesc1(p.getDesc1());
+            dto.setDesc2(p.getDesc2());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
+            dto.setCloseTime(LocalTime.parse(p.getCloseTime(), formatter));
+            dto.setResCoorX(p.getCoorX());
+            dto.setResCoorY(p.getCoorY());
+            resService.insertRestaurantData(dto);
+        } catch(RuntimeException e){
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return 1;
     }
 
     @Override

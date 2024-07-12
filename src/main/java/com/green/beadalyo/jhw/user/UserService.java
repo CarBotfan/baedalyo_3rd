@@ -9,6 +9,7 @@ import java.util.Map;
 
 public interface UserService {
     long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception;
+    int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p);
     int deleteUser(UserDelReq p) throws Exception;
     int patchUserNickname(UserNicknamePatchReq p) throws Exception;
     int patchUserPhone(UserPhonePatchReq p) throws Exception;
