@@ -29,7 +29,8 @@ public class MenuController {
                                                     "<p> 1 : 메뉴 등록 완료 </p>"+
                                                     "<p> -1 : 메뉴 등록 실패 </p>"+
                                                     "<p> -2 : 등록 양식이 맞지 않음 </p>" +
-                                                    "<p> -3 : 가게 사장님만 메뉴 등록 가능 </p>")
+                                                    "<p> -3 : 가게 사장님만 메뉴 등록 가능 </p>"+
+                                                    "<p> -4 : 메뉴 이름이 중복되는게 있습니다.</p>")
     public ResultDto<PostMenuRes> postMenu(@RequestPart PostMenuReq p,
                                            @RequestPart(required = false) MultipartFile pic){
 
@@ -48,7 +49,14 @@ public class MenuController {
 
         try {
             result = service.postMenu(p,pic);
-        } catch (RuntimeException e){
+        } catch (IllegalArgumentException e){
+            return ResultDto.<PostMenuRes>builder()
+                    .statusCode(-4)
+                    .resultMsg("메뉴 이름 중복")
+                    .resultData(result)
+                    .build();
+        }
+            catch (RuntimeException e){
 
             return ResultDto.<PostMenuRes>builder()
                     .statusCode(-3)
@@ -107,7 +115,8 @@ public class MenuController {
                                                     "<p> 1 : 메뉴 수정 완료 </p>"+
                                                     "<p> -1 : 메뉴 수정 실패 </p>"+
                                                     "<p> -2 : 양식이 맞지 않음 </p>"+
-                                                    "<p> -3 : 양식이 맞지 않음 </p>")
+                                                    "<p> -3 : 사장님만 메뉴를 수정할 수 있습니다. </p>"+
+                                                    "<p> -4 : 메뉴 이름이 중복되는게 있습니다.</p>"   )
     public ResultDto<PutMenuRes> putMenu(@RequestPart PutMenuReq p,
                                          @RequestPart(required = false) MultipartFile pic){
         PutMenuRes result = null;
@@ -123,12 +132,24 @@ public class MenuController {
         }
         try {
             result = service.putMenu(pic, p);
-        } catch (RuntimeException e){
-            msg = "사장님만 메뉴를 수정할 수 있습니다.";
-            code = -3;
+        } catch (IllegalArgumentException e){
+            return ResultDto.<PutMenuRes>builder()
+                    .statusCode(-4)
+                    .resultMsg("메뉴 이름 중복")
+                    .resultData(result)
+                    .build();
+        }catch (RuntimeException e){
+            return ResultDto.<PutMenuRes>builder()
+                    .statusCode(-3)
+                    .resultMsg("사장님만 메뉴를 수정할 수 있습니다.")
+                    .resultData(result)
+                    .build();
         } catch (Exception e){
-            msg = "메뉴 수정 실패";
-            code = -1;
+            return ResultDto.<PutMenuRes>builder()
+                    .statusCode(-1)
+                    .resultMsg("메뉴 수정 실패.")
+                    .resultData(result)
+                    .build();
         }
 
         return ResultDto.<PutMenuRes>builder()
@@ -143,6 +164,7 @@ public class MenuController {
                                                 "<p> 1 : 메뉴 삭제 완료 </p>"+
                                                 "<p> -1 : 메뉴 삭제 실패 </p>"+
                                                 "<p> -2 : 사장님만 메뉴를 삭제 할 수있습니다.</p>"
+
     )
     public ResultDto<Integer> delMenu(@RequestParam(name = "menu_pk") long menuPk){
         int result = 0;
@@ -151,7 +173,7 @@ public class MenuController {
         int code = 1;
         try {
             result = service.delMenu(menuPk);
-        } catch (RuntimeException e){
+        }  catch (RuntimeException e){
             return ResultDto.<Integer>builder()
                     .statusCode(-2)
                     .resultMsg("사장님만 삭제 할 수있습니다.")
@@ -164,7 +186,6 @@ public class MenuController {
                     .resultData(result)
                     .build();
         }
-
         return ResultDto.<Integer>builder()
                 .statusCode(code)
                 .resultMsg(msg)
