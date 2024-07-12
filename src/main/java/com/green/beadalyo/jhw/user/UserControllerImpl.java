@@ -428,7 +428,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 : 비밀번호 불일치 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<Integer> deleteOwner(UserDelReq p) {
+    public ResultDto<Integer> deleteOwner(@RequestBody UserDelReq p) {
         int statusCode = 1;
         int result = 0;
         String msg = "탈퇴 완료";
