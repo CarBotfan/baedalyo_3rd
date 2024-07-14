@@ -80,7 +80,7 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("cancel")
+    @PutMapping("cancel/list/{order_pk}")
     @Operation(summary = "주문취소 하기")
     @ApiResponse(
             description =
@@ -89,7 +89,7 @@ public class OrderController {
                             "<p> -10 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
                             "<p> -5 : 주문 취소 실패 </p>"
     )
-    public ResultDto<Integer> cancelOrder(@RequestParam("order_pk") Long orderPk) {
+    public ResultDto<Integer> cancelOrder(@PathVariable("order_pk") Long orderPk) {
         int result = -1;
 
         long userPk = authenticationFacade.getLoginUserPk();
@@ -125,14 +125,14 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("done")
+    @PutMapping("owner/done/{order_pk}")
     @Operation(summary = "주문완료 하기")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 완료 성공 </p>"+
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"
     )
-    public ResultDto<Integer> completeOrder(@RequestParam("order_pk") Long orderPk) {
+    public ResultDto<Integer> completeOrder(@PathVariable("order_pk") Long orderPk) {
         int result = -1;
 
         try {
@@ -150,7 +150,7 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("user")
+    @GetMapping("user/list")
     @Operation(summary = "유저의 진행중인 주문 불러오기")
     @ApiResponse(
             description =
@@ -182,7 +182,7 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("res/noconfirm")
+    @GetMapping("owner/noconfirm/list/{res_pk}")
     @Operation(summary = "상점의 접수 전 주문정보 불러오기")
     @ApiResponse(
             description =
@@ -190,7 +190,7 @@ public class OrderController {
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam("res_pk") Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@PathVariable("res_pk") Long resPk) {
         List<OrderMiniGetRes> result = null;
 
         try {
@@ -216,7 +216,7 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("res/confirm")
+    @GetMapping("owner/confirm/list/{res_pk}")
     @Operation(summary = "상점의 접수 후 주문정보 불러오기")
     @ApiResponse(
             description =
@@ -224,7 +224,7 @@ public class OrderController {
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam("res_pk") Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@PathVariable("res_pk") Long resPk) {
         List<OrderMiniGetRes> result = null;
 
         try {
@@ -250,7 +250,7 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("{order_pk}")
     @Operation(summary = "주문정보 상세보기")
     @ApiResponse(
             description =
@@ -258,7 +258,7 @@ public class OrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<OrderGetRes> getOrderInfo(@RequestParam("order_pk") Long orderPk) {
+    public ResultDto<OrderGetRes> getOrderInfo(@PathVariable("order_pk") Long orderPk) {
         OrderGetRes result = null;
 
         try {
@@ -284,14 +284,14 @@ public class OrderController {
                 .build();
     }
 
-    @PatchMapping
+    @PatchMapping("owner/confirm/{order_pk}")
     @Operation(summary = "주문 접수하기")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 접수 완료 </p>"+
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"
     )
-    public ResultDto<Integer> confirmOrder(@RequestParam("order_pk") Long orderPk){
+    public ResultDto<Integer> confirmOrder(@PathVariable("order_pk") Long orderPk){
         Integer result = -1;
 
         try {

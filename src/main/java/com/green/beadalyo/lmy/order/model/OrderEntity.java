@@ -11,4 +11,5 @@ public class OrderEntity {
     private String orderRequest;
     private Integer orderState;
     private String paymentMethod;
+    private String canceller;
 }

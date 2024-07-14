@@ -15,6 +15,7 @@ public interface OrderMapper {
     OrderEntity selectOrderById(Long orderPk);
     List<OrderMenuEntity> selectOrderMenusById(Long orderPk);
     void insertDoneOrder(OrderEntity orderEntity);
+    String selectCancellerRole(Long UserPk);
     void insertDoneOrderMenu(List<OrderMenuEntity> orderMenuEntities);
     void deleteOrder(Long orderPk);
 

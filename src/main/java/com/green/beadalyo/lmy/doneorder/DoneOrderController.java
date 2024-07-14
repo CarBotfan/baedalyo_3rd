@@ -28,7 +28,7 @@ public class DoneOrderController {
     private final OrderMapper orderMapper;
     private final AuthenticationFacade authenticationFacade;
 
-    @GetMapping("user/done")
+    @GetMapping("user/done/list")
     @Operation(summary = "유저 완료주문기록 불러오기")
     @ApiResponse(
             description =
@@ -58,7 +58,7 @@ public class DoneOrderController {
         return ResultDto.<List<DoneOrderMiniGetRes>>builder().statusCode(SUCCESS_CODE).resultMsg(GET_DONE_ORDER_BY_USER_PK_SUCCESS).resultData(result).build();
     }
 
-    @GetMapping("user/cancel")
+    @GetMapping("user/cancel/list")
     @Operation(summary = "유저 취소 주문기록 불러오기")
     @ApiResponse(
             description =
@@ -92,7 +92,7 @@ public class DoneOrderController {
                 .build();
     }
 
-    @GetMapping("res/done")
+    @GetMapping("owner/done/list/{res_pk}")
     @Operation(summary = "상점 완료주문기록 불러오기")
     @ApiResponse(
             description =
@@ -101,7 +101,7 @@ public class DoneOrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByResPk(@RequestParam("res_pk") Long resPk) {
+    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByResPk(@PathVariable("res_pk") Long resPk) {
         List<DoneOrderMiniGetRes> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
@@ -135,7 +135,7 @@ public class DoneOrderController {
                 .build();
     }
 
-    @GetMapping("res/cancel")
+    @GetMapping("owner/cancel/list/{res_pk}")
     @Operation(summary = "상점 취소주문기록 불러오기")
     @ApiResponse(
             description =
@@ -144,7 +144,7 @@ public class DoneOrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByResPk(@RequestParam("res_pk") Long resPk) {
+    public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByResPk(@PathVariable("res_pk") Long resPk) {
         List<DoneOrderMiniGetRes> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
@@ -178,14 +178,14 @@ public class DoneOrderController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("{done_order_pk}")
     @Operation(summary = "끝난 주문 상세보기")
     @ApiResponse(
             description =
                     "<p> 1 : 끝난 주문 상세보기 완료 </p>"+
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"
     )
-    public ResultDto<DoneOrderGetRes> getDoneOrderInfo(@RequestParam("done_order_pk") Long doneOrderPk) {
+    public ResultDto<DoneOrderGetRes> getDoneOrderInfo(@PathVariable("done_order_pk") Long doneOrderPk) {
         DoneOrderGetRes result = null;
 
         try {
