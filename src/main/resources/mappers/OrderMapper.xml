@@ -171,4 +171,10 @@
         FROM `order`
         WHERE order_pk = #{orderPk}
     </select>
+
+    <select id="getResPkByUserPk">
+        SELECT res_pk
+        FROM restaurant
+        WHERE res_user_pk = #{userPk}
+    </select>
 </mapper>

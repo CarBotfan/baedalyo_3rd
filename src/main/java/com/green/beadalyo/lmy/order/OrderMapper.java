@@ -34,4 +34,6 @@ public interface OrderMapper {
     Long getResUserPkByResPk(Long resPk);
 
     Long getOrderState(Long orderPk);
+
+    Long getResPkByUserPk(Long userPk);
 }
