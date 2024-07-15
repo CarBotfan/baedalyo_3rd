@@ -33,6 +33,9 @@ public class RestaurantManageRes
     @Schema(description = "리뷰 설명")
     private String reviewDescription ;
 
+    @Schema(description = "영업 상태 1 : 영업중 / 2 : 휴업중")
+    private Integer restaurantState ;
+
 
     public RestaurantManageRes(Restaurant data)
     {
@@ -46,6 +49,7 @@ public class RestaurantManageRes
         this.regiNum = data.getRegiNum();
         this.restaurantDescription = data.getRestaurantDescription() ;
         this.reviewDescription = data.getReviewDescription() ;
+        this.restaurantState = data.getState() ;
 
     }
 }
