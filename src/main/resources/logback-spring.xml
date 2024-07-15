@@ -22,12 +22,20 @@
         </encoder>
     </appender>
 
+    <springProfile name="prod">
+        <logger name="jdbc.sqltiming" level="OFF"/>
+        <logger name="jdbc.resultsettable" level="OFF"/>
+    </springProfile>
+    <!-- 프로필에 따른 로깅 레벨 변경 -->
+    <springProfile name="default">
+        <logger name="jdbc.sqltiming" level="DEBUG"/>
+        <logger name="jdbc.resultsettable" level="DEBUG"/>
+    </springProfile>
+
     <logger name="jdbc" level="OFF"/>
     <logger name="jdbc.sqlonly" level="OFF" />
-    <logger name="jdbc.sqltiming" level="DEBUG" />
     <logger name="jdbc.audit" level="OFF" />
     <logger name="jdbc.resultset" level="OFF" />
-    <logger name="jdbc.resultsettable" level="DEBUG" />
     <logger name="jdbc.connection" level="OFF" />
 
     <root level="INFO">
