@@ -28,7 +28,6 @@ spring:
       host: ${DEFAULT.REDIS.HOST}
 
 
-
 mybatis:
   mapper-locations: mappers/**/*.xml
 
@@ -68,8 +67,6 @@ spring:
   sql:
     init:
       mode: always
-
-
 logging:
   directory: ${DEFAULT.FILE_DIRECTORY}
 

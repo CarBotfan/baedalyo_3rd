@@ -30,13 +30,13 @@ public class FileUtils
     public static boolean checksumExt(List<Ext> exts, MultipartFile file)
     {
         if (file == null || file.isEmpty()) return false ;
-
         String ext = getExt(file) ;
+
         if (ext == null || ext.isEmpty()) return false ;
+
         for (Ext checksum : exts)
         {
-            System.out.println(checksum +  " : " + ext);
-            if(checksum.toString().equals(ext)) {
+            if(checksum.toString().equals(ext.toLowerCase())) {
                 return true;
             }
         }
