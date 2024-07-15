@@ -3,22 +3,18 @@ package com.green.beadalyo.gyb.restaurant;
 import com.green.beadalyo.gyb.category.CategoryService;
 import com.green.beadalyo.gyb.common.*;
 import com.green.beadalyo.gyb.model.Category;
-import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.RestaurantDetailView;
 import com.green.beadalyo.gyb.model.RestaurantListView;
 import com.green.beadalyo.gyb.response.CategoryRes;
 import com.green.beadalyo.gyb.response.RestaurantDetailRes;
 import com.green.beadalyo.gyb.response.RestaurantListRes;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.UserServiceImpl;
-import com.green.beadalyo.jhw.useraddr.UserAddrService;
+
 import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import com.green.beadalyo.kdh.menu.MenuService;
 import com.green.beadalyo.kdh.menu.model.GetAllMenuReq;
-import com.green.beadalyo.lhn.ReviewService;
-import com.green.beadalyo.lhn.model.ReviewGetReq;
-import com.green.beadalyo.lhn.model.ReviewGetRes;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,14 +24,11 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,10 +50,8 @@ public class RestaurantApiController
             description =
                     "<p> 1 : 정상 </p>"+
                             "<p> -1 : 실패 </p>"+
-                            "<p> -2 : 로그인 정보 획득 실패 </p>" +
-                            "<p> -3 : 음식점 정보 획득 실패 </p>" +
-                            "<p> -4 : 사업자 등록 번호 유효성 검사 실패 </p>" +
-                            "<p> -5 : 상호 명 유효성 검사 실패 </p>"
+                            "<p> -2 : 비 로그인시 addrX, addrY값 필수 </p>" +
+                            "<p> -3 : 주소 정보 획득 실패 </p>"
     )
     public Result getRestaurantList(@Nullable @RequestParam("category_id") Long categoryId,
                                     @Nullable @RequestParam Integer page,
@@ -78,7 +69,7 @@ public class RestaurantApiController
         if (orderType == null || orderType < 1)
             orderType = 1;
         if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
-            return ResultError.builder().statusCode(-3).resultMsg("주소의 정보를 획득하지 못하였습니다.\n 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
+            return ResultError.builder().statusCode(-2).resultMsg("위경도의 정보를 획득하지 못하였습니다. 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
 
         try {
             BigDecimal x = null ;
@@ -138,7 +129,7 @@ public class RestaurantApiController
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)),
             description =
                     "<p> 1 : 정상 </p>" +
-                            "<p> -1 : 실패 </p>"
+                    "<p> -1 : 실패 </p>"
     )
     public Result getCategoryList()
     {
