@@ -88,6 +88,7 @@
         `order` o
         WHERE
         o.order_user_pk = #{userPk}
+        ORDER BY o.created_at DESC
     </select>
 
     <!--여기부터 상점 주문 목록 가져오기-->
@@ -101,6 +102,7 @@
         `order` o
         WHERE
         o.order_res_pk = #{resPk} AND o.order_state = 1
+        ORDER BY o.created_at DESC
     </select>
 
     <select id="selectConfirmOrdersByResPk">
@@ -113,6 +115,7 @@
         `order` o
         WHERE
         o.order_res_pk = #{resPk} AND o.order_state = 2
+        ORDER BY o.created_at DESC
     </select>
 
     <select id="selectMenuNames">
