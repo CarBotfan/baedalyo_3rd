@@ -19,7 +19,7 @@
         FROM
         `done_order` o
         WHERE
-        o.user_pk = #{userPk} AND o.done_order_state = 1
+        o.user_pk = #{userPk}
     </select>
 
     <select id="selectCancelOrderByUserPk">
