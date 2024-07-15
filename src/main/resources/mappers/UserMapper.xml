@@ -9,6 +9,7 @@
         , user_nickname = #{userNickname}
         , user_pic = #{userPic}
         , user_phone = #{userPhone}
+        , user_email = #{userEmail}
         , user_role = #{userRole}
         , user_login_type = #{userLoginType}
     </insert>
@@ -21,6 +22,7 @@
         , user_nickname AS userNickname
         , user_pic AS userPic
         , user_phone AS userPhone
+        , user_email AS userEmail
         , user_role AS userRole
         , user_state AS userState
         , user_login_type AS userLoginType
@@ -39,6 +41,7 @@
         , user_nickname AS userNickname
         , user_pic AS userPic
         , user_phone AS userPhone
+        , user_email AS userEmail
         , user_role AS userRole
         , user_state AS userState
         , user_login_type AS userLoginType
@@ -56,6 +59,7 @@
         , user_nickname AS userNickname
         , user_pic AS userPic
         , user_phone AS userPhone
+        , user_email AS userEmail
         , user_role AS userRole
         , user_state AS userState
         , user_login_type AS userLoginType
@@ -71,6 +75,7 @@
         , user_nickname AS userNickname
         , user_pic AS userPic
         , user_phone AS userPhone
+        , user_email AS userEmail
         FROM user
         WHERE user_pk = #{signedUserPk}
     </select>

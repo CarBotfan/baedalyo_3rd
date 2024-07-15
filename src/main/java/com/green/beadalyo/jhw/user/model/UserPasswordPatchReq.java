@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,9 +15,12 @@ public class UserPasswordPatchReq {
     @JsonIgnore
     private long signedUserPk;
     @Schema(defaultValue = "기존 비밀번호")
+    @NotBlank(message = "빈칸일 수 없습니다.")
     private String userPw;
     @Schema(defaultValue = "변경할 비밀번호")
+    @NotBlank(message = "빈칸일 수 없습니다.")
     private String newPw;
     @Schema(defaultValue = "변경할 비밀번호 재입력")
+    @NotBlank(message = "빈칸일 수 없습니다.")
     private String newPwConfirm;
 }

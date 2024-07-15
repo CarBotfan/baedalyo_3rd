@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,8 +14,10 @@ import lombok.Setter;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SignInPostReq {
     @Schema(defaultValue = "ID")
+    @NotBlank(message = "아이디를 입력해주세요.")
     private String userId;
     @Schema(defaultValue = "비밀번호")
+    @NotBlank(message = "비밀번호를 입력해주세요.")
     private String userPw;
     @JsonIgnore
     private Integer userLoginType;

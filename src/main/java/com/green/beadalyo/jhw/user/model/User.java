@@ -23,6 +23,7 @@ public class User {
     private String userNickname ;
     private String userPic;
     private String userPhone;
+    private String userEmail;
     private String userRole;
     private int userState;
     private Integer userLoginType ;

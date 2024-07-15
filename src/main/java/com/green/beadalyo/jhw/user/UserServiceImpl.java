@@ -16,6 +16,7 @@ import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,12 +48,6 @@ public class UserServiceImpl implements UserService{
     private final AppProperties appProperties;
     private final RestaurantService resService;
 
-    private String regexPhone = "^\\d{3}-\\d{4}-\\d{4}$";
-    String regexFileName = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.(jpg|jpeg|png|gif|bmp|tiff|svg|webp)$";
-
-    Pattern phonePattern = Pattern.compile(regexPhone);
-    Pattern filePattern = Pattern.compile(regexFileName);
-
 
     @Override
     @Transactional
@@ -72,9 +67,7 @@ public class UserServiceImpl implements UserService{
             mapper.signUpUser(p);
             result = p.getUserPk();
             return result;
-        }
-        Matcher matcher = filePattern.matcher(Objects.requireNonNull(pic.getOriginalFilename()));
-        if(!matcher.matches()) {
+        } else if (!pic.getContentType().startsWith("image/")) {
             throw new InvalidRegexException();
         }
 
@@ -101,7 +94,7 @@ public class UserServiceImpl implements UserService{
                     .userPw(p.getUserPw())
                     .userPwConfirm(p.getUserPwConfirm())
                     .userName(p.getUserName())
-                    .userNickname(p.getUserNickName())
+                    .userNickname(p.getUserNickname())
                     .userPhone(p.getUserPhone())
                     .userRole("ROLE_OWNER")
                     .build();
@@ -176,10 +169,6 @@ public class UserServiceImpl implements UserService{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
         if(pic != null) {
-            Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
-            if(!matcher.matches()) {
-                throw new InvalidRegexException();
-            }
             p.setPicName(fileName);
         }
         int result = mapper.updProfilePic(p);
@@ -214,10 +203,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int patchUserPhone(UserPhonePatchReq p) throws Exception{
-        Matcher matcher = phonePattern.matcher(p.getUserPhone());
-        if(!matcher.matches()) {
-            throw new InvalidRegexException();
-        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {

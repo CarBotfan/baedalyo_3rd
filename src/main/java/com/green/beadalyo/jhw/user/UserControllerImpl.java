@@ -12,12 +12,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,7 +55,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -4 : 파일 업로드 실패 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<Integer> postUserSignUp(@RequestPart(required = false) MultipartFile pic, @RequestPart UserSignUpPostReq p) {
+    public ResultDto<Integer> postUserSignUp(@RequestPart(required = false) MultipartFile pic, @Valid @RequestPart UserSignUpPostReq p) {
         int statusCode = 1;
         int result = 0;
         String msg = "가입 성공";
@@ -99,7 +101,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 : 비밀번호 불일치 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<SignInRes> postSignIn(HttpServletResponse res, @RequestBody SignInPostReq p) {
+    public ResultDto<SignInRes> postSignIn(HttpServletResponse res, @Valid @RequestBody SignInPostReq p) {
         int statusCode = 1;
         SignInRes result = new SignInRes();
         String msg = "로그인 성공";
@@ -137,7 +139,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -4 : 파일 업로드 실패 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<Integer> postOwnerSignUp(@RequestPart(required = false) MultipartFile pic,@RequestPart OwnerSignUpPostReq p) {
+    public ResultDto<Integer> postOwnerSignUp(@RequestPart(required = false) MultipartFile pic, @Valid @RequestPart OwnerSignUpPostReq p) {
         int result = 0;
         String msg = "가입 성공";
         int statusCode = 1;
@@ -225,7 +227,7 @@ public class UserControllerImpl implements UserController{
         } catch (DuplicateKeyException e) {
             statusCode = -11;
             msg = "중복된 닉네임 또는 전화번호입니다.";
-        } catch(InvalidRegexException e) {
+        } catch(MethodArgumentNotValidException e) {
             msg = e.getMessage();
             statusCode = -6;
         }catch(Exception e) {
@@ -242,7 +244,7 @@ public class UserControllerImpl implements UserController{
     @Override
     @PatchMapping(value = "/update-pic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @PreAuthorize("hasAnyRole('USER', 'OWNER')")
-    @PreAuthorize("authentication()")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "프로필 이미지 수정", description = "프로필 이미지 수정")
     @ApiResponse(
             description =
@@ -256,6 +258,7 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         String result = "";
         String msg = "수정 완료";
+        @Valid
         UserPicPatchReq p = new UserPicPatchReq();
         try {
             result = service.patchProfilePic(pic, p);
@@ -265,7 +268,7 @@ public class UserControllerImpl implements UserController{
         } catch(FileUploadFailedException e) {
             msg = e.getMessage();
             statusCode = -4;
-        } catch(InvalidRegexException e) {
+        } catch(MethodArgumentNotValidException e) {
             msg = e.getMessage();
             statusCode = -6;
         } catch(Exception e) {

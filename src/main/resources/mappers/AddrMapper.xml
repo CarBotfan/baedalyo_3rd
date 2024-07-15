@@ -2,13 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.green.beadalyo.jhw.useraddr.UserAddrMapper">
     <insert id="postUserAddr" keyProperty="addrPk" useGeneratedKeys="true">
-        INSERT INTO address
-        SET addr_user_pk = #{signedUserId}
-        , addr_name = #{addrName}
-        , addr1 = #{addr1}
-        , addr2 = #{addr2}
-        , addr_coor_x = #{addrCoorX}
-        , addr_coor_y = #{addrCoorY}
+        INSERT INTO address (
+        addr_user_pk,
+        addr_name,
+        addr1,
+        addr2,
+        addr_coor_x,
+        addr_coor_y,
+        addr_default
+        )
+        SELECT
+        #{signedUserId},
+        #{addrName},
+        #{addr1},
+        #{addr2},
+        #{addrCoorX},
+        #{addrCoorY},
+        CASE WHEN
+        (SELECT COUNT(*) FROM address WHERE addr_user_pk = #{signedUserId}) = 0
+        THEN #{signedUserId} ELSE NULL END
     </insert>
     <select id="getUserAddrList">
         SELECT addr_pk AS addrPk, addr_name AS addrName, addr1, addr2
