@@ -114,12 +114,17 @@
     </update>
     <select id="getMainAddr">
         SELECT
-        addr_pk AS addrPk,
+        addr_pk AS addrPk, addr_name AS addrName,
         addr1 , addr2
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
         FROM address
         WHERE addr_user_pk = #{signedUserPk}
         AND addr_default = #{signedUserPk}
+    </select>
+    <select id="getUserPicName">
+        SELECT user_pic AS userPic
+        FROM user
+        WHERE user_pk = #{userPK}
     </select>
 </mapper>

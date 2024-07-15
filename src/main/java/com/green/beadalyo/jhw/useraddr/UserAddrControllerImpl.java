@@ -45,7 +45,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     }
 
     @Override
-    @GetMapping
+    @GetMapping("/list")
     @Operation(summary = "유저 주소목록 조회")
     @ApiResponse(
             description =
@@ -63,6 +63,30 @@ public class UserAddrControllerImpl implements UserAddrController{
             statusCode = -1;
         }
         return ResultDto.<List<UserAddrGetRes>>builder()
+                .statusCode(statusCode)
+                .resultMsg(msg)
+                .resultData(result).build();
+    }
+
+    @Override
+    @GetMapping("/{addrPk}")
+    @Operation(summary = "유저 주소 상세정보 조회")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 성공 </p>"+
+                            "<p> -1 : 오류 </p>"
+    )
+    public ResultDto<UserAddrGetRes> getUserAddr(@PathVariable long addrPk) {
+        UserAddrGetRes result = new UserAddrGetRes();
+        String msg = "조회 성공";
+        int statusCode = 1;
+        try { result = service.getUserAddr(addrPk); }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -1;
+        }
+        return ResultDto.<UserAddrGetRes>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
                 .resultData(result).build();

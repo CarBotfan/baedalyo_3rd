@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,7 +93,7 @@ public class ReviewController {
 
     @GetMapping("reviewlist")
     @Operation(summary = "리뷰 리스트 불러오기", description = "")
-    public ResultDto<List<ReviewGetRes>> ReviewGetRes(@ModelAttribute ReviewGetReq p){
+    public ResultDto<List<ReviewGetRes>> ReviewGetRes(@ModelAttribute @ParameterObject ReviewGetReq p){
         if (facade.getLoginUser() == null)
             return   ResultDto.<List<ReviewGetRes>>builder()
                     .statusCode(-13)

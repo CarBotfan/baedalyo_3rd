@@ -17,13 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
-public class SecurityConfiguration
-{
+public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception
-    {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity.sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 ) //시큐리티에서 세션 사용을 하지 않음을 세팅
@@ -36,42 +34,43 @@ public class SecurityConfiguration
                 .csrf(csrf -> csrf.disable()) //CSRF (CORS랑 많이 헷갈려 함)
                 //requestMatchers
                 .authorizeHttpRequests(auth ->
-                                auth.requestMatchers(
-                                                //회원가입, 로그인 인증이 안 되어 있더라도 사용 가능하게 세팅
-                                                "/api/user/normal/sign-up"
-                                                , "/api/user/sign-in"
-                                                , "/api/user/owner/sign-up"
-                                                , "api/user/is-duplicated"
-
-                                                //swagger 사용할 수 있게 세팅
-                                                , "/swagger"
-                                                , "/swagger-ui/**"
-                                                , "/v3/api-docs/**"
-
-                                                //사진
-                                                , "/pic/**"
-                                                , "/fimg/**"
-
-                                                //프론트 화면 보일수 있게 세팅
-                                                , "/"
-                                                , "/index.html"
-                                                , "/css/**"
-                                                , "/js/**"
-                                                , "/static/**"
-
-                                                //프론트에서 사용하는 라우터 주소
-                                                , "/sign-in"
-                                                , "/sign-up"
-                                                , "/profile/*"
-                                                , "/feed"
-
-                                                //actuator
-                                                , "/actuator"
-                                                , "/actuator/*"
-
-                                        ).permitAll()
-                                        .anyRequest().permitAll()
-//                                .anyRequest().authenticated() //로그인이 되어 있어야만 허용
+//                        auth.requestMatchers(
+//                                        //회원가입, 로그인 인증이 안 되어 있더라도 사용 가능하게 세팅
+//                                        "/api/user/normal/sign-up"
+//                                        ,"/api/user/sign-in"
+//                                        ,"/api/user/owner/sign-up"
+//                                        , "api/user/is-duplicated"
+//
+//                                        //swagger 사용할 수 있게 세팅
+//                                        , "/swagger"
+//                                        , "/swagger-ui/**"
+//                                        , "/v3/api-docs/**"
+//
+//                                        //사진
+//                                        , "/pic/**"
+//                                        ,   "/fimg/**"
+//
+//                                        //프론트 화면 보일수 있게 세팅
+//                                        ,"/"
+//                                        ,"/index.html"
+//                                        , "/css/**"
+//                                        , "/js/**"
+//                                        , "/static/**"
+//
+//                                        //프론트에서 사용하는 라우터 주소
+//                                        , "/sign-in"
+//                                        , "/sign-up"
+//                                        , "/profile/*"
+//                                        , "/feed"
+//
+//                                        //actuator
+//                                        ,"/actuator"
+//                                        ,"/actuator/*"
+//
+//                                ).permitAll()
+//                                .requestMatchers("/api/restaurant/*").permitAll()
+//                                .anyRequest().permitAll()
+                                auth.anyRequest().permitAll() //로그인이 되어 있어야만 허용
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint())
@@ -79,10 +78,8 @@ public class SecurityConfiguration
                 )
                 .build();
     }
-
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

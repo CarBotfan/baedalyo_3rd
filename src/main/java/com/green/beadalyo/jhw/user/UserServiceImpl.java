@@ -3,6 +3,7 @@ package com.green.beadalyo.jhw.user;
 import com.green.beadalyo.common.AppProperties;
 import com.green.beadalyo.common.CookieUtils;
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
@@ -24,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -55,25 +58,31 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        long result;
         if(mapper.getUserById(p.getUserId()) != null) {
             throw new DuplicatedIdException();
         }
         if(!p.getUserPw().equals(p.getUserPwConfirm())) {
             throw new PwConfirmFailureException();
         }
-        String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
-        p.setUserPic(fileName);
         String password = passwordEncoder.encode(p.getUserPw());
         p.setUserPw(password);
-        mapper.signUpUser(p);
-        long result = p.getUserPk();
+
         if(pic == null) {
+            mapper.signUpUser(p);
+            result = p.getUserPk();
             return result;
         }
         Matcher matcher = filePattern.matcher(Objects.requireNonNull(pic.getOriginalFilename()));
         if(!matcher.matches()) {
             throw new InvalidRegexException();
         }
+
+        String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
+        p.setUserPic(fileName);
+        mapper.signUpUser(p);
+        result = p.getUserPk();
+
         try {
             customFileUtils.transferTo(pic, fileName);
         } catch (Exception e) {
@@ -81,6 +90,41 @@ public class UserServiceImpl implements UserService{
             throw new FileUploadFailedException();
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p) {
+        try {
+            UserSignUpPostReq req = UserSignUpPostReq.builder()
+                    .userId(p.getUserId())
+                    .userPw(p.getUserPw())
+                    .userPwConfirm(p.getUserPwConfirm())
+                    .userName(p.getUserName())
+                    .userNickname(p.getUserNickName())
+                    .userPhone(p.getUserPhone())
+                    .userRole("ROLE_OWNER")
+                    .build();
+            long userPk = postSignUp(pic, req);
+            RestaurantInsertDto dto = new RestaurantInsertDto();
+            dto.setUser(userPk);
+            dto.setName(p.getRestaurantName());
+            dto.setRegiNum(p.getRegiNum());
+            dto.setResAddr(p.getAddr());
+            dto.setDesc1(p.getDesc1());
+            dto.setDesc2(p.getDesc2());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
+            dto.setCloseTime(LocalTime.parse(p.getCloseTime(), formatter));
+            dto.setResCoorX(p.getCoorX());
+            dto.setResCoorY(p.getCoorY());
+            resService.insertRestaurantData(dto);
+        } catch(RuntimeException e){
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return 1;
     }
 
     @Override
@@ -129,20 +173,22 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
-        Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
-        if(!matcher.matches()) {
-            throw new InvalidRegexException();
-        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
-        p.setPicName(fileName);
+        if(pic != null) {
+            Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
+            if(!matcher.matches()) {
+                throw new InvalidRegexException();
+            }
+            p.setPicName(fileName);
+        }
         int result = mapper.updProfilePic(p);
         if(result != 1) {
             throw new UserPatchFailureException();
         }
         try {
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, p.getOrignalPicName());
+            File file = new File(delAbsoluteFolderPath, mapper.getUserPicName(p.getSignedUserPk()));
             file.delete();
             String target = String.format("%s",fileName);
             customFileUtils.transferTo(pic, target);

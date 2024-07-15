@@ -22,5 +22,10 @@ public class AuthenticationFacade {
         return myUser == null ? 0 : myUser.getUserPk();
     }
 
+    public String getLoginUserRole() {
+        MyUser myUser = getLoginUser();
+        return myUser == null ? "GUEST" : myUser.getRole();
+    }
+
 }
 

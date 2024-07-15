@@ -27,16 +27,18 @@ public class MenuService {
                                 MultipartFile pic){
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long menuResPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
-        p.setMenuResPk(menuResPk);
-        Long resPk = mapper.checkResPkByResUserPk(p.getResUserPk());
-        log.info("{}",p);
-        log.info("Long menuResPk : {}",menuResPk);
-
-        if (resPk != p.getMenuResPk()){
+        Long resPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
+        if (resPk == null) {
             throw new RuntimeException();
         }
+        p.setMenuResPk(resPk);
 
+        List<String> menuName = mapper.getMenuName(p.getMenuResPk());
+        for (String menu : menuName){
+            if (menu.equals(p.getMenuName())){
+                throw new IllegalArgumentException();
+            }
+        }
             if (pic==null || pic.isEmpty()){
                 p.setMenuPic(null);
                 mapper.postMenu(p);
@@ -92,6 +94,14 @@ public class MenuService {
             if (resUserPk != p.getResUserPk()){
                 throw new RuntimeException();
             }
+            long menuResPk = mapper.getMenuResPkByMenuPk(p.getMenuPk());
+            List<String> menuName = mapper.getMenuName(menuResPk);
+            for (String menu : menuName){
+                if (menu.equals(p.getMenuName())){
+                    throw new IllegalArgumentException();
+                }
+            }
+
             GetOneMenuReq req = new GetOneMenuReq(p.getMenuPk());
             GetOneMenuRes originalMenu = mapper.getOneMenu(req);
         if (pic == null || pic.isEmpty() ){

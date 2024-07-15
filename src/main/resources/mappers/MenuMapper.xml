@@ -15,6 +15,18 @@
     WHERE menu_pk = #{menuPk}
 </update>
 
+<select id="getMenuName">
+    SELECT menu_name
+    FROM menu
+    WHERE menu_res_pk = #{menuResPk};
+</select>
+
+<select id="getMenuResPkByMenuPk">
+    SELECT menu_res_pk AS menuResPk
+    FROM menu
+    WHERE menu_pk = #{menuPk};
+</select>
+
 <select id="getAllMenu">
     SELECT  menu_pk AS menuPk,
             menu_res_pk AS menuResPk,
@@ -85,13 +97,10 @@ WHERE menu_pk = #{menuPk}
 </delete>
 
 <select id="checkMenuResPkByResUserPk">
-    SELECT menu_res_pk AS menuResPk
-    FROM  menu
-    WHERE menu_res_pk = (SELECT res_pk
-                         FROM restaurant
-                         WHERE res_user_pk = #{resUserPk}
-                         LIMIT 1)
-    LIMIT 1 ;
+    SELECT res_pk
+    FROM restaurant
+    WHERE res_user_pk = #{resUserPk}
+    LIMIT 1;
 </select>
 
 

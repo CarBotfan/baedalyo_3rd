@@ -13,8 +13,6 @@ import lombok.Setter;
 public class UserPicPatchReq {
     @JsonIgnore
     private long signedUserPk;
-    @Schema(defaultValue = "원래 사진 파일명")
-    private String orignalPicName;
     @JsonIgnore
     private String picName;
 }

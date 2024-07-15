@@ -4,21 +4,30 @@
     <insert id="postUserAddr" keyProperty="addrPk" useGeneratedKeys="true">
         INSERT INTO address
         SET addr_user_pk = #{signedUserId}
+        , addr_name = #{addrName}
         , addr1 = #{addr1}
         , addr2 = #{addr2}
         , addr_coor_x = #{addrCoorX}
         , addr_coor_y = #{addrCoorY}
     </insert>
     <select id="getUserAddrList">
-        SELECT addr_pk AS addrPk, addr1, addr2
+        SELECT addr_pk AS addrPk, addr_name AS addrName, addr1, addr2
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
         FROM address
         WHERE addr_user_pk = #{signedUserPk}
         ORDER BY addr_default DESC
     </select>
+    <select id="getUserAddr">
+        SELECT addr_pk AS addrPk, addr_name AS addrName, addr1, addr2
+        , addr_coor_x AS addrCoorX
+        , addr_coor_y AS addrCoorY
+        FROM address
+        WHERE addr_user_pk = #{signedUserPk}
+        AND addr_pk = #{addrPk}
+    </select>
     <select id="getMainUserAddr">
-        SELECT addr1, addr2
+        SELECT addr_pk AS addrPk, addr_name AS addrName, addr1, addr2
         , addr_coor_x AS addrCoorX
         , addr_coor_y AS addrCoorY
         FROM address
@@ -46,7 +55,8 @@
     </update>
     <update id="updUserAddr">
         UPDATE address
-        SET addr1 = #{addr1}
+        SET addr_name = #{addrName}
+        , addr1 = #{addr1}
         , addr2 = #{addr2}
         , addr_coor_x = #{addrCoorX}
         , addr_coor_y = #{addrCoorY}
