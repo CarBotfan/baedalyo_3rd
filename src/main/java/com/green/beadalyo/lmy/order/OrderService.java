@@ -149,7 +149,7 @@ public class OrderService {
 
         long resUserPk = authenticationFacade.getLoginUserPk();
         if (resUserPk != orderMapper.getResUserPkByResPk(resPk)){
-            throw new RuntimeException("");
+            throw new RuntimeException();
         }
 
         List<OrderMiniGetRes> result = orderMapper.selectConfirmOrdersByResPk(resPk);

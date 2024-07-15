@@ -3,6 +3,7 @@ package com.green.beadalyo.lmy.order;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
+import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
@@ -182,7 +183,7 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("owner/noconfirm/list/{res_pk}")
+    @GetMapping("owner/noconfirm/list")
     @Operation(summary = "상점의 접수 전 주문정보 불러오기")
     @ApiResponse(
             description =
@@ -190,8 +191,18 @@ public class OrderController {
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@PathVariable("res_pk") Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList() {
         List<OrderMiniGetRes> result = null;
+
+        long userPk = authenticationFacade.getLoginUserPk();
+
+        Long resPk = orderMapper.getResPkByUserPk(userPk);
+        if (resPk == null) {
+            return ResultDto.<List<OrderMiniGetRes>>builder()
+                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
+                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
+                    .build();
+        }
 
         try {
             result = orderService.getResNonConfirmOrderList(resPk);
@@ -216,7 +227,7 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("owner/confirm/list/{res_pk}")
+    @GetMapping("owner/confirm/list")
     @Operation(summary = "상점의 접수 후 주문정보 불러오기")
     @ApiResponse(
             description =
@@ -224,8 +235,18 @@ public class OrderController {
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@PathVariable("res_pk") Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList() {
         List<OrderMiniGetRes> result = null;
+
+        long userPk = authenticationFacade.getLoginUserPk();
+
+        Long resPk = orderMapper.getResPkByUserPk(userPk);
+        if (resPk == null) {
+            return ResultDto.<List<OrderMiniGetRes>>builder()
+                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
+                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
+                    .build();
+        }
 
         try {
             result = orderService.getResConfirmOrderList(resPk);

@@ -27,6 +27,7 @@ public class DoneOrderController {
     private final DoneOrderService doneOrderService;
     private final OrderMapper orderMapper;
     private final AuthenticationFacade authenticationFacade;
+    private final DoneOrderMapper doneOrderMapper;
 
     @GetMapping("user/list")
     @Operation(summary = "유저 끝난주문기록 불러오기(완료 = 1, 취소 = 2)")
@@ -92,7 +93,7 @@ public class DoneOrderController {
 //                .build();
 //    }
 
-    @GetMapping("owner/done/list/{res_pk}")
+    @GetMapping("owner/done/list")
     @Operation(summary = "상점 완료주문기록 불러오기")
     @ApiResponse(
             description =
@@ -101,19 +102,13 @@ public class DoneOrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByResPk(@PathVariable("res_pk") Long resPk) {
+    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByResPk() {
         List<DoneOrderMiniGetRes> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderMapper.getResUserPkByResPk(resPk)) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
-        }
 
         try {
-            result = doneOrderService.getDoneOrderByResPk(resPk);
+            result = doneOrderService.getDoneOrderByResPk(userPk);
         } catch (Exception e) {
             return ResultDto.<List<DoneOrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
@@ -135,7 +130,7 @@ public class DoneOrderController {
                 .build();
     }
 
-    @GetMapping("owner/cancel/list/{res_pk}")
+    @GetMapping("owner/cancel/list")
     @Operation(summary = "상점 취소주문기록 불러오기")
     @ApiResponse(
             description =
@@ -144,11 +139,13 @@ public class DoneOrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByResPk(@PathVariable("res_pk") Long resPk) {
+    public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByResPk() {
         List<DoneOrderMiniGetRes> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderMapper.getResUserPkByResPk(resPk)) {
+
+        Long resPk = orderMapper.getResPkByUserPk(userPk);
+        if (resPk == null) {
             return ResultDto.<List<DoneOrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
