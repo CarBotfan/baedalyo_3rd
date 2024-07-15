@@ -6,6 +6,7 @@ import com.green.beadalyo.gyb.response.CategoryRes;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.model.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,7 +34,7 @@ public class CategoryApiController
     private final UserServiceImpl userService ;
     private final AuthenticationFacade authenticationFacade;
 
-    @PutMapping
+    @PostMapping
     @Operation(summary = "카테고리 추가")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)),
             description =
@@ -88,7 +89,7 @@ public class CategoryApiController
         return ResultDto.builder().build();
 
     }
-    
+
     @DeleteMapping("{seq}")
     @Operation(summary = "카테고리 삭제")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)),
@@ -114,7 +115,7 @@ public class CategoryApiController
             Category cate = service.getCategory(seq) ;
             FileUtils.fileDelete(cate.getCategoryPic()) ;
             service.deleteCategory(cate) ;
-            
+
             return ResultDto.builder().build();
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-4).resultMsg("존재하지 않는 카테고리입니다.").build();
