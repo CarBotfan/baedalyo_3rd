@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService{
         cookieUtils.setCookie(res, "refresh-token", refreshToken, refreshTokenMaxAge);
 
         return SignInRes.builder()
-                .userNickname(user.getUserName())
+                .userNickname(user.getUserNickname())
                 .mainAddr(mainAddr)
                 .userRole(user.getUserRole())
                 .accessToken(accessToken).build();

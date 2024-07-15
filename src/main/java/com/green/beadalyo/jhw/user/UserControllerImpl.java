@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -35,7 +38,7 @@ public class UserControllerImpl implements UserController{
     private final RestaurantService restaurantService;
 
     @Override
-    @PostMapping("/sign-up")
+    @PostMapping(value = "/sign-up", consumes = MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "일반 유저 회원가입", description = "일반 유저 회원가입을 진행합니다")
     @ApiResponse(
             description =
@@ -454,6 +457,7 @@ public class UserControllerImpl implements UserController{
         } catch (Exception e) {
             statusCode = -1;
             msg = e.getMessage();
+
 
         }
         return ResultDto.<Integer>builder()
