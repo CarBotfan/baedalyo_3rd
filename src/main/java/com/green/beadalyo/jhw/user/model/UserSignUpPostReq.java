@@ -29,8 +29,10 @@ public class UserSignUpPostReq {
     private String userPw;
     @Schema(defaultValue = "비밀번호 확인")
     private String userPwConfirm;
+    @NotBlank(message = "이름을 입력해주세요.")
     @Schema(defaultValue = "이름")
     private String userName;
+    @NotBlank(message = "닉네임을 입력해주세요.")
     @Schema(defaultValue = "닉네임")
     private String userNickname;
     @JsonIgnore

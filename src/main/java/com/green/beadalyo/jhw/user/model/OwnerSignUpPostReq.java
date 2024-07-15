@@ -28,8 +28,10 @@ public class OwnerSignUpPostReq {
     private String userPw;
     @Schema(defaultValue = "비밀번호 확인")
     private String userPwConfirm;
+    @NotBlank(message = "이름을 입력해주세요.")
     @Schema(defaultValue = "이름")
     private String userName;
+    @NotBlank(message = "닉네임을 입력해주세요.")
     @Schema(defaultValue = "닉네임")
     private String userNickname;
     @JsonIgnore
@@ -51,6 +53,7 @@ public class OwnerSignUpPostReq {
     @Schema(defaultValue = "영업 종료 시간")
     private String closeTime;
     @Schema(defaultValue = "가게 주소")
+    @NotBlank(message = "주소를 입력해주세요.")
     private String addr;
     //사업장 설명
     @Schema(defaultValue = "사업장 설명")
@@ -63,8 +66,10 @@ public class OwnerSignUpPostReq {
     @Schema(defaultValue = "37.017")
     private Double coorY;
     @Schema(defaultValue = "식당 이름")
+    @NotBlank(message = "식당 이름을 입력해주세요.")
     private String restaurantName;
     @Schema(defaultValue = "사업자 등록번호")
+    @NotBlank(message = "사업자 등록번호를 입력해주세요.")
     private String regiNum;
 
 }

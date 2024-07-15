@@ -18,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -118,6 +121,9 @@ public class UserControllerImpl implements UserController{
             e.printStackTrace();
             statusCode = -1;
             msg = e.getMessage();
+        }
+        if(result.getMainAddr() == null) {
+            statusCode = 2;
         }
         return ResultDto.<SignInRes>builder()
                 .statusCode(statusCode)
@@ -471,5 +477,16 @@ public class UserControllerImpl implements UserController{
                 .statusCode(statusCode)
                 .resultMsg(msg)
                 .resultData(result).build();
+    }
+
+    @Override
+    @GetMapping("/sign-out")
+    public ResultDto<String> userLogout(HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+            service.logoutToken(request, response);
+        }
+        return ResultDto.<String>builder().build();
     }
 }

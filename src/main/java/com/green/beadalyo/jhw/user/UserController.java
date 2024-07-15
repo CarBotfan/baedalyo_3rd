@@ -21,4 +21,5 @@ public interface UserController {
     ResultDto<Integer> deleteUser(UserDelReq p);
     ResultDto<Integer> deleteOwner(UserDelReq p);
     ResultDto<Integer> duplicatedCheck(String userId);
+    ResultDto<String> userLogout(HttpServletRequest request, HttpServletResponse response);
 }
