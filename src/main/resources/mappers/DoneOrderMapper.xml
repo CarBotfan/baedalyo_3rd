@@ -15,7 +15,8 @@
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
@@ -28,7 +29,8 @@
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
@@ -40,7 +42,8 @@
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
@@ -53,7 +56,8 @@
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
