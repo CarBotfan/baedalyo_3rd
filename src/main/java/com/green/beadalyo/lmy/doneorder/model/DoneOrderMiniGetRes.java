@@ -11,5 +11,6 @@ public class DoneOrderMiniGetRes {
     private Long resPk;
     private Integer orderPrice;
     private Integer doneOrderState;
+    private String createdAt;
     private List<MenuInfoDto> menuInfoDtos;
 }

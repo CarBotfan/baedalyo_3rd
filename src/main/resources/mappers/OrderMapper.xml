@@ -83,7 +83,8 @@
         o.order_pk AS orderPk,
         o.order_res_pk AS resPk,
         o.order_price AS orderPrice,
-        o.order_state AS orderState
+        o.order_state AS orderState,
+        o.created_at AS createdAt
         FROM
         `order` o
         WHERE
@@ -97,7 +98,8 @@
         o.order_pk AS orderPk,
         o.order_res_pk AS resPk,
         o.order_price AS orderPrice,
-        o.order_state AS orderState
+        o.order_state AS orderState,
+        o.created_at AS createdAt
         FROM
         `order` o
         WHERE
@@ -110,7 +112,8 @@
         o.order_pk AS orderPk,
         o.order_res_pk AS resPk,
         o.order_price AS orderPrice,
-        o.order_state AS orderState
+        o.order_state AS orderState,
+        o.created_at AS createdAt
         FROM
         `order` o
         WHERE

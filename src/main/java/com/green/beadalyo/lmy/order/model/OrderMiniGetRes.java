@@ -10,5 +10,6 @@ public class OrderMiniGetRes {
     private Long resPk;
     private Integer orderPrice;
     private Integer orderState;
+    private String createdAt;
     private List<String> menuName;
 }
