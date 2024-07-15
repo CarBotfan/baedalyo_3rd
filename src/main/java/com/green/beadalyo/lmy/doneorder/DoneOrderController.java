@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class DoneOrderController {
 
     @GetMapping("user/list")
     @Operation(summary = "유저 끝난주문기록 불러오기(완료 = 1, 취소 = 2)")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponse(
             description =
                     "<p> 1 : 유저 끝난주문기록 불러오기 완료 </p>"+
@@ -95,6 +97,7 @@ public class DoneOrderController {
 
     @GetMapping("owner/done/list")
     @Operation(summary = "상점 완료주문기록 불러오기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 상점 완료주문기록 불러오기 완료 </p>"+
@@ -132,6 +135,7 @@ public class DoneOrderController {
 
     @GetMapping("owner/cancel/list")
     @Operation(summary = "상점 취소주문기록 불러오기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 상점 취소주문기록 불러오기 완료 </p>"+

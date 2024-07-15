@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "주문하기")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문하기 성공 </p>"+
@@ -83,6 +85,7 @@ public class OrderController {
 
     @PutMapping("cancel/list/{order_pk}")
     @Operation(summary = "주문취소 하기")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 취소 성공 </p>"+
@@ -128,6 +131,7 @@ public class OrderController {
 
     @PutMapping("owner/done/{order_pk}")
     @Operation(summary = "주문완료 하기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 완료 성공 </p>"+
@@ -153,6 +157,7 @@ public class OrderController {
 
     @GetMapping("user/list")
     @Operation(summary = "유저의 진행중인 주문 불러오기")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponse(
             description =
                     "<p> 1 : 유저의 진행중인 주문 불러오기 완료 </p>"+
@@ -185,6 +190,7 @@ public class OrderController {
 
     @GetMapping("owner/noconfirm/list")
     @Operation(summary = "상점의 접수 전 주문정보 불러오기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 상점의 접수 전 주문정보 불러오기 완료 </p>"+
@@ -229,6 +235,7 @@ public class OrderController {
 
     @GetMapping("owner/confirm/list")
     @Operation(summary = "상점의 접수 후 주문정보 불러오기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 상점의 접수 후 주문정보 불러오기 완료 </p>"+
@@ -307,6 +314,7 @@ public class OrderController {
 
     @PatchMapping("owner/confirm/{order_pk}")
     @Operation(summary = "주문 접수하기")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 접수 완료 </p>"+
