@@ -24,8 +24,8 @@ spring:
       fail-on-unknown-properties: false
   data:
     redis:
-      port: 6379
-      host: localhost
+      port: ${DEFAULT.REDIS.PORT}
+      host: ${DEFAULT.REDIS.HOST}
 
 
 mybatis:
@@ -67,8 +67,6 @@ spring:
   sql:
     init:
       mode: always
-
-
 logging:
   directory: ${DEFAULT.FILE_DIRECTORY}
 
@@ -82,6 +80,10 @@ spring:
     url: ${PROD.DB.URL}
     username: ${PROD.DB.USERNAME}
     password: ${PROD.DB.PASSWORD}
+  data:
+    redis:
+      port: ${PROD.REDIS.PORT}
+      host: ${PROD.REDIS.HOST}
 
 file:
   directory: ${PROD.FILE.DIRECTORY}
