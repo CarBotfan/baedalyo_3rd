@@ -84,6 +84,15 @@ public class MenuService {
         return mapper.getAllMenu(p);
     }
 
+    public List<GetAllMenuRes> getAllMenuByUserPk(){
+        long userPk = authenticationFacade.getLoginUserPk();
+        Long resPk = mapper.checkResPkByResUserPk(userPk);
+        if (resPk == null || resPk == 0 ){
+            throw new NullPointerException();
+        }
+        GetAllMenuReq p = new GetAllMenuReq(resPk);
+        return mapper.getAllMenu(p);
+    }
 
     @Transactional
     public PutMenuRes putMenu(MultipartFile pic, PutMenuReq p){
