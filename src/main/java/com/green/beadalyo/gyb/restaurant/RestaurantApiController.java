@@ -62,7 +62,7 @@ public class RestaurantApiController
                             "<p> -4 : 사업자 등록 번호 유효성 검사 실패 </p>" +
                             "<p> -5 : 상호 명 유효성 검사 실패 </p>"
     )
-    public Result getRestaurantList(@RequestParam("category_id") Long categoryId,
+    public Result getRestaurantList(@Nullable @RequestParam("category_id") Long categoryId,
                                     @Nullable @RequestParam Integer page,
                                     @Nullable @RequestParam("order_type") Integer orderType,
                                     @Nullable @RequestParam String addrX,
@@ -71,24 +71,26 @@ public class RestaurantApiController
 
 
         //유효성 검증
-        if (categoryId == null || categoryId < 1)
-            return ResultError.builder().statusCode(-2).resultMsg("카테고리 유효성 체크 실패").build();
+        if (categoryId == null || categoryId < 0)
+            categoryId = 0L;
         if (page == null || page < 1)
             page = 1;
         if (orderType == null || orderType < 1)
             orderType = 1;
         if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
-            return ResultError.builder().statusCode(-3).resultMsg("주소의 정보를 획득하지 못하였습니다.").build();
+            return ResultError.builder().statusCode(-3).resultMsg("주소의 정보를 획득하지 못하였습니다.\n 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
 
         try {
             BigDecimal x = null ;
             BigDecimal y = null ;
 
-            if (authenticationFacade.getLoginUserPk() == 0 ) {
+            if (addrX != null && addrY != null  ) {
                 x = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrX))); ;
                 y = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrY))); ;
             } else {
                 UserAddrGetRes addr = userAddrService.getMainUserAddr() ;
+                if (addr == null)
+                    return ResultError.builder().resultMsg("메인 주소의 정보 획득을 실패 했습니다.").statusCode(-3).build();
                 x = addr.getAddrCoorX() ;
                 y = addr.getAddrCoorY() ;
             }

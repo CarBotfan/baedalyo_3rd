@@ -1,13 +1,8 @@
-package com.green.beadalyo.gyb.restaurant;
+package com.green.beadalyo.gyb.restaurant.repository;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long>

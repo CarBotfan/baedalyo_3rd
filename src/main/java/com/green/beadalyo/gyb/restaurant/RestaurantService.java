@@ -7,6 +7,9 @@ import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.RestaurantDetailView;
 import com.green.beadalyo.gyb.model.RestaurantListView;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantDetailViewRepository;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantListViewRepository;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -46,7 +49,24 @@ public class RestaurantService
         BigDecimal xMax = x.add(range);
         BigDecimal yMin = y.subtract(range);
         BigDecimal yMax = y.add(range);
-        System.out.println();
+        return switch (orderType)
+        {
+            case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
+            case 2 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+            case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
+            default -> null ;
+        } ;
+    }
+
+    //음식점 카테고리 기준 정보 호출
+    public Page<RestaurantListView> getRestaurantByCategoryAll(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page ) throws Exception
+    {
+        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
         return switch (orderType)
         {
             case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
