@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/stat")
+@RequestMapping("api/owner/stat")
 @RequiredArgsConstructor
 @Tag(name = "가게 통계 컨트롤러입니다.")
 public class StatController {
