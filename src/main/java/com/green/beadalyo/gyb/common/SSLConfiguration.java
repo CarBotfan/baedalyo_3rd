@@ -11,7 +11,7 @@ public class SSLConfiguration
 
     @GetMapping("/.well-known/pki-validation/78601C36A0D31B69288ADD01B62149E7.txt")
     public Resource getValidationFile() {
-        return new FileSystemResource("/78601C36A0D31B69288ADD01B62149E7.txt");
+        return new FileSystemResource("/root/jar/78601C36A0D31B69288ADD01B62149E7.txt");
     }
 
 }
