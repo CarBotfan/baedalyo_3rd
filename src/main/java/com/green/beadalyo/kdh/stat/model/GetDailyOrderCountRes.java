@@ -9,5 +9,6 @@ import lombok.Setter;
 @Setter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GetDailyOrderCountRes {
+    private String createdAt;
     private int dailyOrderCount;
 }

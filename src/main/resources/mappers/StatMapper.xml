@@ -15,35 +15,39 @@
 </select>
     
 <select id="getMonthSales">
-    SELECT SUM(order_price) AS monthSales
+    SELECT DATE_FORMAT(created_at, '%Y-%m') AS createdAt, sum(order_price) AS monthSales
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{date}
+    WHERE DATE_FORMAT(created_at, '%Y') = #{date}
     AND res_pk = #{resPk}
-    AND done_order_state = 1;
+    AND done_order_state = 1
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m');
 </select>
     
 <select id="getMonthOrderCount">
-    SELECT count(res_pk) AS monthOrderCount
+    SELECT DATE_FORMAT(created_at, '%Y-%m') AS createdAt, count(done_order_pk) AS monthOrderCount
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{date}
+    WHERE DATE_FORMAT(created_at, '%Y') = #{date}
     AND res_pk = #{resPk}
-    AND done_order_state = 1;
+    AND done_order_state = 1
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m');
 </select>
     
 <select id="getDailySales">
-    SELECT sum(order_price) AS dailySales
+    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS createdAt, sum(order_price) AS dailySales
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{date}
+    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{date}
     AND res_pk = #{resPk}
-    AND done_order_state = 1;
+    AND done_order_state = 1
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d');
 </select>
 
 <select id="getDailyOrderCount">
-    SELECT count(res_pk) AS dailyOrderCount
+    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS createdAt, COUNT(done_order_pk) AS dailyOrderCount
     FROM done_order
-    WHERE DATE_FORMAT(created_at, '%Y-%m-%d') = #{date}
+    WHERE DATE_FORMAT(created_at, '%Y-%m') = #{date}
     AND res_pk = #{resPk}
-    AND done_order_state = 1;
+    AND done_order_state = 1
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d');
 </select>
     
     
