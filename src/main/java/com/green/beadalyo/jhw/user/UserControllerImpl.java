@@ -7,6 +7,7 @@ import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
@@ -38,7 +40,8 @@ public class UserControllerImpl implements UserController{
     private final RestaurantService restaurantService;
 
     @Override
-    @PostMapping(value = "/sign-up", consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
+            , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "일반 유저 회원가입", description = "일반 유저 회원가입을 진행합니다")
     @ApiResponse(
             description =
@@ -121,7 +124,8 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PostMapping("/owner/sign-up")
+    @PostMapping(value = "/owner/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
+            , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "음식점 사장 회원가입", description = "음식점 사장 가입을 진행합니다")
     @ApiResponse(
             description =
@@ -236,7 +240,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PatchMapping("/update-pic")
+    @PatchMapping(value = "/update-pic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @PreAuthorize("hasAnyRole('USER', 'OWNER')")
     @PreAuthorize("authentication()")
     @Operation(summary = "프로필 이미지 수정", description = "프로필 이미지 수정")
