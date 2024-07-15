@@ -63,9 +63,12 @@ public class OrderService {
     @Transactional
     public int cancelOrder(Long orderPk) {
 
+        long userPk = authenticationFacade.getLoginUserPk();
+
         OrderEntity entity = null;
         try {
             entity = orderMapper.selectOrderById(orderPk);
+            entity.setCanceller(orderMapper.selectCancellerRole(userPk));
         } catch (Exception e) {
             throw new RuntimeException("주문 불러오기 오류");
         }

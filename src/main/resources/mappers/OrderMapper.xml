@@ -52,10 +52,16 @@
 
     <insert id="insertDoneOrder" useGeneratedKeys="true" keyProperty="doneOrderPk">
         INSERT INTO done_order
-        (user_pk, res_pk, order_price, order_request,  done_order_state, payment_method)
+        (user_pk, res_pk, order_price, order_request,  done_order_state, payment_method, canceller)
         VALUES
-        (#{orderUserPk}, #{orderResPk}, #{orderPrice}, #{orderRequest}, #{orderState}, #{paymentMethod})
+        (#{orderUserPk}, #{orderResPk}, #{orderPrice}, #{orderRequest}, #{orderState}, #{paymentMethod}, #{canceller})
     </insert>
+
+    <select id="selectCancellerRole">
+        SELECT user_role
+        FROM user
+        WHERE user_pk = #{UserPk}
+    </select>
 
     <insert id="insertDoneOrderMenu">
         INSERT INTO done_order_menu
