@@ -1,4 +1,4 @@
-package com.green.beadalyo.gyb.restaurant;
+package com.green.beadalyo.gyb.restaurant.repository;
 
 import com.green.beadalyo.gyb.model.RestaurantDetailView;
 import org.springframework.data.jpa.repository.JpaRepository;

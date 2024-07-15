@@ -28,7 +28,6 @@ spring:
       host: ${DEFAULT.REDIS.HOST}
 
 
-
 mybatis:
   mapper-locations: mappers/**/*.xml
 
@@ -68,8 +67,6 @@ spring:
   sql:
     init:
       mode: always
-
-
 logging:
   directory: ${DEFAULT.FILE_DIRECTORY}
 
@@ -87,6 +84,13 @@ spring:
     redis:
       port: ${PROD.REDIS.PORT}
       host: ${PROD.REDIS.HOST}
+
+server:
+  port: ${PROD.SSL.SERVER.PORT}
+  ssl:
+    key-store: ${PROD.SSL.KEY.STORE}
+    key-store-password: ${PROD.SSL.PASSWORD}
+    key-password: ${PROD.SSL.PASSWORD}
 
 file:
   directory: ${PROD.FILE.DIRECTORY}

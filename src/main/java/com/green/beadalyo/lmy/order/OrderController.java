@@ -3,6 +3,7 @@ package com.green.beadalyo.lmy.order;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
+import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +35,7 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "주문하기")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문하기 성공 </p>"+
@@ -80,8 +83,9 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("cancel")
+    @PutMapping("cancel/list/{order_pk}")
     @Operation(summary = "주문취소 하기")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 취소 성공 </p>"+
@@ -89,7 +93,7 @@ public class OrderController {
                             "<p> -10 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
                             "<p> -5 : 주문 취소 실패 </p>"
     )
-    public ResultDto<Integer> cancelOrder(@RequestParam("order_pk") Long orderPk) {
+    public ResultDto<Integer> cancelOrder(@PathVariable("order_pk") Long orderPk) {
         int result = -1;
 
         long userPk = authenticationFacade.getLoginUserPk();
@@ -125,14 +129,15 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("done")
+    @PutMapping("owner/done/{order_pk}")
     @Operation(summary = "주문완료 하기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 완료 성공 </p>"+
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"
     )
-    public ResultDto<Integer> completeOrder(@RequestParam("order_pk") Long orderPk) {
+    public ResultDto<Integer> completeOrder(@PathVariable("order_pk") Long orderPk) {
         int result = -1;
 
         try {
@@ -150,8 +155,9 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("user")
+    @GetMapping("user/list")
     @Operation(summary = "유저의 진행중인 주문 불러오기")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponse(
             description =
                     "<p> 1 : 유저의 진행중인 주문 불러오기 완료 </p>"+
@@ -182,16 +188,27 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("res/noconfirm")
+    @GetMapping("owner/noconfirm/list")
     @Operation(summary = "상점의 접수 전 주문정보 불러오기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 상점의 접수 전 주문정보 불러오기 완료 </p>"+
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList(@RequestParam("res_pk") Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList() {
         List<OrderMiniGetRes> result = null;
+
+        long userPk = authenticationFacade.getLoginUserPk();
+
+        Long resPk = orderMapper.getResPkByUserPk(userPk);
+        if (resPk == null) {
+            return ResultDto.<List<OrderMiniGetRes>>builder()
+                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
+                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
+                    .build();
+        }
 
         try {
             result = orderService.getResNonConfirmOrderList(resPk);
@@ -216,16 +233,27 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("res/confirm")
+    @GetMapping("owner/confirm/list")
     @Operation(summary = "상점의 접수 후 주문정보 불러오기")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 상점의 접수 후 주문정보 불러오기 완료 </p>"+
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList(@RequestParam("res_pk") Long resPk) {
+    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList() {
         List<OrderMiniGetRes> result = null;
+
+        long userPk = authenticationFacade.getLoginUserPk();
+
+        Long resPk = orderMapper.getResPkByUserPk(userPk);
+        if (resPk == null) {
+            return ResultDto.<List<OrderMiniGetRes>>builder()
+                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
+                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
+                    .build();
+        }
 
         try {
             result = orderService.getResConfirmOrderList(resPk);
@@ -250,7 +278,7 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("{order_pk}")
     @Operation(summary = "주문정보 상세보기")
     @ApiResponse(
             description =
@@ -258,7 +286,7 @@ public class OrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<OrderGetRes> getOrderInfo(@RequestParam("order_pk") Long orderPk) {
+    public ResultDto<OrderGetRes> getOrderInfo(@PathVariable("order_pk") Long orderPk) {
         OrderGetRes result = null;
 
         try {
@@ -284,14 +312,15 @@ public class OrderController {
                 .build();
     }
 
-    @PatchMapping
+    @PatchMapping("owner/confirm/{order_pk}")
     @Operation(summary = "주문 접수하기")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     @ApiResponse(
             description =
                     "<p> 1 : 주문 접수 완료 </p>"+
                             "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"
     )
-    public ResultDto<Integer> confirmOrder(@RequestParam("order_pk") Long orderPk){
+    public ResultDto<Integer> confirmOrder(@PathVariable("order_pk") Long orderPk){
         Integer result = -1;
 
         try {

@@ -205,7 +205,7 @@ public class RestaurantManageApiController
 
     }
 
-    @PutMapping("category")
+    @PostMapping("category")
     @Operation(summary = "음식점 카테고리 추가")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
             description =
