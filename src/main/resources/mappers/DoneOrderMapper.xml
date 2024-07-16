@@ -14,6 +14,8 @@
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
         o.done_order_state AS doneOrderState,
         o.created_at AS createdAt
@@ -28,6 +30,8 @@
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
         o.done_order_state AS doneOrderState,
         o.created_at AS createdAt
@@ -41,6 +45,8 @@
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
         o.done_order_state AS doneOrderState,
         o.created_at AS createdAt
@@ -55,6 +61,8 @@
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
         o.done_order_state AS doneOrderState,
         o.created_at AS createdAt

@@ -18,9 +18,9 @@
     <!-- order 테이블에 데이터를 삽입하는 쿼리 -->
     <insert id="postOrderTable" keyProperty="orderPk" useGeneratedKeys="true">
         INSERT INTO `order`
-        (order_user_pk, order_res_pk, order_price, order_request, payment_method)
+        (order_user_pk, order_res_pk, order_price, order_request, payment_method, order_phone, order_address)
         VALUES
-        (#{orderUserPk}, #{orderResPk}, #{orderPrice}, #{orderRequest}, #{paymentMethod})
+        (#{orderUserPk}, #{orderResPk}, #{orderPrice}, #{orderRequest}, #{paymentMethod}, #{orderPhone}, #{orderAddress})
     </insert>
 
     <!-- order_menu에 데이터를 배치로 삽입하는 쿼리 -->
@@ -39,7 +39,8 @@
 
 <!-- 여기부터 주문 완료 및 취소 -->
     <select id="selectOrderById">
-        SELECT order_user_pk AS orderUserPk, order_res_pk AS orderResPk, order_price AS orderPrice, order_request AS orderRequest, payment_method AS paymentMethod
+        SELECT order_user_pk AS orderUserPk, order_res_pk AS orderResPk, order_price AS orderPrice,
+        order_request AS orderRequest, payment_method AS paymentMethod, order_phone AS orderPhone, order_address AS orderAddress
         FROM `order`
         WHERE order_pk = #{orderPk}
     </select>
@@ -52,9 +53,9 @@
 
     <insert id="insertDoneOrder" useGeneratedKeys="true" keyProperty="doneOrderPk">
         INSERT INTO done_order
-        (user_pk, res_pk, order_price, order_request,  done_order_state, payment_method, canceller)
+        (user_pk, res_pk, order_price, order_request,  done_order_state, payment_method, canceller, order_phone, order_address)
         VALUES
-        (#{orderUserPk}, #{orderResPk}, #{orderPrice}, #{orderRequest}, #{orderState}, #{paymentMethod}, #{canceller})
+        (#{orderUserPk}, #{orderResPk}, #{orderPrice}, #{orderRequest}, #{orderState}, #{paymentMethod}, #{canceller}, #{orderPhone}, #{orderAddress})
     </insert>
 
     <select id="selectCancellerRole">
@@ -82,6 +83,8 @@
         SELECT
         o.order_pk AS orderPk,
         o.order_res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
         o.order_state AS orderState,
         o.created_at AS createdAt
@@ -97,6 +100,8 @@
         SELECT
         o.order_pk AS orderPk,
         o.order_res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
         o.order_state AS orderState,
         o.created_at AS createdAt
@@ -111,6 +116,8 @@
         SELECT
         o.order_pk AS orderPk,
         o.order_res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
         o.order_state AS orderState,
         o.created_at AS createdAt
