@@ -22,6 +22,11 @@ public class OrderPostReq {
     private String orderRequest;
     @Schema(example = "결제수단 키")
     private String paymentMethod;
+    @Schema(example = "전화번호")
+    private String orderPhone;
+    @Schema(example = "배달주소")
+    private String orderAddress;
+
     @JsonIgnore
     private Integer orderPrice;  // 총 가격 필드 추가
 
