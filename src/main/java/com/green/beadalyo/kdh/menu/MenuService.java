@@ -104,7 +104,7 @@ public class MenuService {
                 throw new RuntimeException();
             }
             long menuResPk = mapper.getMenuResPkByMenuPk(p.getMenuPk());
-            List<String> menuName = mapper.getMenuName(menuResPk);
+            List<String> menuName = mapper.getMenuNameByPut(menuResPk,p.getMenuPk());
             for (String menu : menuName){
                 if (menu.equals(p.getMenuName())){
                     throw new IllegalArgumentException();
