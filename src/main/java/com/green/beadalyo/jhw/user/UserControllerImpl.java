@@ -179,6 +179,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("/update-nickname")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "유저 닉네임 수정", description = "유저 닉네임 수정")
     @ApiResponse(
             description =
@@ -212,6 +213,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("/update-phone")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "유저 전화번호 수정", description = "유저 전화번호 수정")
     @ApiResponse(
             description =
@@ -290,6 +292,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PatchMapping("/update-pw")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "비밀번호 수정", description = "비밀번호 수정")
     @ApiResponse(
             description =
@@ -359,6 +362,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @GetMapping("/user-info")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "유저 정보 조회", description = "유저 정보 조회")
     @ApiResponse(
             description =
@@ -387,6 +391,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PostMapping("/delete")
+    @PreAuthorize("hasAnyRole('USER')")
     @Operation(summary = "일반 회원 탈퇴", description = "일반 회원 탈퇴")
     @ApiResponse(
             description =
@@ -419,6 +424,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PostMapping("/owner/delete")
+    @PreAuthorize("hasAnyRole('OWNER')")
     @Operation(summary = "음식점 사장 탈퇴", description = "음식점 사장 탈퇴")
     @ApiResponse(
             description =
