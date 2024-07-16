@@ -12,6 +12,7 @@ public interface MenuMapper {
     int postMenu(PostMenuReq p);
     void postMenuPic(PostMenuReq p);
     List<String> getMenuName(long menuResPk);
+    List<String> getMenuNameByPut(long menuResPk, long menuPk);
     long getMenuResPkByMenuPk(long menuPk);
 
     List<GetAllMenuRes> getAllMenu(GetAllMenuReq p);

@@ -15,10 +15,18 @@
     WHERE menu_pk = #{menuPk}
 </update>
 
-<select id="getMenuName">
+<select id="getMenuNameByPut">
     SELECT menu_name
     FROM menu
-    WHERE menu_res_pk = #{menuResPk};
+    WHERE menu_res_pk = #{menuResPk}
+    and menu_pk != #{menuPk};
+</select>
+
+<select id="getMenuName">
+        SELECT menu_name
+        FROM menu
+        WHERE menu_res_pk = #{menuResPk};
+
 </select>
 
 <select id="getMenuResPkByMenuPk">
