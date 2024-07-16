@@ -27,8 +27,8 @@ spring:
       port: ${DEFAULT.REDIS.PORT}
       host: ${DEFAULT.REDIS.HOST}
   mail:
-    username: ${DEFAULT.MAIL.USERNAME}
-    password: ${DEFAULT.MAIL.PASSWORD}
+    username: ${MAIL.USERNAME}
+    password: ${MAIL.PASSWORD}
 
 
 mybatis:
@@ -87,6 +87,9 @@ spring:
     redis:
       port: ${PROD.REDIS.PORT}
       host: ${PROD.REDIS.HOST}
+  mail:
+    username: ${MAIL.USERNAME}
+    password: ${MAIL.PASSWORD}
 
 server:
   port: ${PROD.SSL.SERVER.PORT}
