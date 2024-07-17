@@ -78,6 +78,6 @@
     <delete id="deleteUserAddr">
         DELETE FROM address
         WHERE addr_user_pk = #{signedUserPk}
-        AND addr_Pk = #{addrPk}
+        AND addr_pk = #{addrPk}
     </delete>
 </mapper>

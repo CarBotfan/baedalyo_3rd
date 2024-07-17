@@ -7,12 +7,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.beans.ConstructorProperties;
+
 @Getter
 @Setter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserAddrDelReq {
     @JsonIgnore
     private long signedUserPk;
-    @Schema(name = "addr_pk")
     private long addrPk;
+    @ConstructorProperties("addr_pk")
+    public UserAddrDelReq (long addrPk) {
+        this.addrPk = addrPk;
+    }
 }
