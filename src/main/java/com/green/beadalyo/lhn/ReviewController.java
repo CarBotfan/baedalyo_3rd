@@ -109,9 +109,14 @@ public class ReviewController {
             String userRole = facade.getLoginUserRole();
             if ("OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
                 result = service.getOwnerReviews();
-            } else {
+            }
+            if ("USER".equals(userRole)){
                 result = service.getCustomerReviews();
             }
+            if ("ADMIN".equals(userRole)){
+                throw new RuntimeException("어드민임니다");
+            }
+
         } catch (Exception e) {
             code = -13;
             msg = e.getMessage();
