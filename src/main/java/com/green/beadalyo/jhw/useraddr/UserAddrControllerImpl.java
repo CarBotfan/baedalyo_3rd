@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     @Override
     @PostMapping
     @Operation(summary = "유저 주소 등록")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
@@ -47,6 +49,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     @Override
     @GetMapping("/list")
     @Operation(summary = "유저 주소목록 조회")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
@@ -71,6 +74,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     @Override
     @GetMapping("/{addrPk}")
     @Operation(summary = "유저 주소 상세정보 조회")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
@@ -95,6 +99,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     @Override
     @GetMapping("/main-address")
     @Operation(summary = "유저 메인 주소 조회")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
@@ -119,6 +124,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     @Override
     @PatchMapping
     @Operation(summary = "유저 주소 수정")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
@@ -143,6 +149,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     @Override
     @PatchMapping("/main-address")
     @Operation(summary = "유저 메인 주소 변경")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
@@ -167,6 +174,7 @@ public class UserAddrControllerImpl implements UserAddrController{
     @Override
     @DeleteMapping
     @Operation(summary = "유저 주소 삭제")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
