@@ -53,9 +53,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
-        if(pic.getSize() > IMAGE_SIZE_LIMIT) {
-            throw new RuntimeException("파일은 3MB 이하여야 합니다.");
-        }
+
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         long result;
         if(mapper.getUserById(p.getUserId()) != null) {
@@ -73,6 +71,9 @@ public class UserServiceImpl implements UserService{
             return result;
         } else if (!pic.getContentType().startsWith("image/")) {
             throw new InvalidRegexException();
+        }
+        if(pic.getSize() > IMAGE_SIZE_LIMIT) {
+            throw new RuntimeException("파일은 3MB 이하여야 합니다.");
         }
         customFileUtils.makeFolder("user");
         String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
@@ -170,9 +171,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
-        if(pic.getSize() > IMAGE_SIZE_LIMIT) {
-            throw new RuntimeException("파일은 3MB 이하여야 합니다.");
-        }
+
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String originalFileName = mapper.getUserPicName(p.getSignedUserPk());
         if(originalFileName != null) {
@@ -186,6 +185,9 @@ public class UserServiceImpl implements UserService{
         }
         String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
         if(pic != null) {
+            if(pic.getSize() > IMAGE_SIZE_LIMIT) {
+                throw new RuntimeException("파일은 3MB 이하여야 합니다.");
+            }
             p.setPicName(fileName);
         }
         int result = mapper.updProfilePic(p);
