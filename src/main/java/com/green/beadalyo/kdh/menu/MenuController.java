@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/owner/menu")
 @RequiredArgsConstructor
-@Tag(name = "메뉴 관련 컨트롤러입니다.(사장님 전용")
+@Tag(name = "메뉴 관련 컨트롤러입니다.(사장님 전용)")
 @Slf4j
 public class MenuController {
     private final MenuService service;
@@ -34,7 +34,8 @@ public class MenuController {
                                                     "<p> -1 : 메뉴 등록 실패 </p>"+
                                                     "<p> -2 : 등록 양식이 맞지 않음 </p>" +
                                                     "<p> -3 : 가게 사장님만 메뉴 등록 가능 </p>"+
-                                                    "<p> -4 : 메뉴 이름이 중복되는게 있습니다.</p>")
+                                                    "<p> -4 : 메뉴 이름이 중복되는게 있습니다.</p>"+
+                                                    "<p> -5 : 파일 사이즈는 3mb이하만 됩니다.</p>")
     public ResultDto<PostMenuRes> postMenu(@RequestPart PostMenuReq p,
                                            @RequestPart(required = false) MultipartFile pic){
 
@@ -53,14 +54,21 @@ public class MenuController {
 
         try {
             result = service.postMenu(p,pic);
-        } catch (IllegalArgumentException e){
+        } catch (ArithmeticException e){
+
+            return ResultDto.<PostMenuRes>builder()
+                    .statusCode(-5)
+                    .resultMsg("파일 사이즈는 3mb이하만 됩니다.")
+                    .resultData(result)
+                    .build();
+
+        }catch (IllegalArgumentException e){
             return ResultDto.<PostMenuRes>builder()
                     .statusCode(-4)
                     .resultMsg("메뉴 이름 중복")
                     .resultData(result)
                     .build();
-        }
-            catch (RuntimeException e){
+        } catch (RuntimeException e){
 
             return ResultDto.<PostMenuRes>builder()
                     .statusCode(-3)
@@ -151,7 +159,15 @@ public class MenuController {
         }
         try {
             result = service.putMenu(pic, p);
-        } catch (IllegalArgumentException e){
+        } catch (ArithmeticException e){
+
+            return ResultDto.<PutMenuRes>builder()
+                    .statusCode(-5)
+                    .resultMsg("파일 사이즈는 3mb이하만 됩니다.")
+                    .resultData(result)
+                    .build();
+
+        }catch (IllegalArgumentException e){
             return ResultDto.<PutMenuRes>builder()
                     .statusCode(-4)
                     .resultMsg("메뉴 이름 중복")
