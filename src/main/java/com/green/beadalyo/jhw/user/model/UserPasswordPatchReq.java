@@ -23,5 +23,7 @@ public class UserPasswordPatchReq {
             , message = "비밀번호는 특수문자와 숫자를 포함한 8자 이상이어야 합니다.")
     private String newPw;
     @Schema(defaultValue = "변경할 비밀번호 재입력")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[!@#$%^&*()-_=+\\\\\\\\|\\\\[{\\\\]};:'\\\",<.>/?]).{8,}$"
+            , message = "비밀번호는 특수문자와 숫자를 포함한 8자 이상이어야 합니다.")
     private String newPwConfirm;
 }

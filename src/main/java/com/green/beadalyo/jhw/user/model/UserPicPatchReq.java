@@ -15,6 +15,5 @@ public class UserPicPatchReq {
     @JsonIgnore
     private long signedUserPk;
     @JsonIgnore
-    @Pattern(regexp = "^[a-zA-Z0-9_.-]+(\\.[a-zA-Z0-9_.-]+)*\\.(?i)(jpg|jpeg|png|gif|bmp|tiff|svg|webp)$")
     private String picName;
 }

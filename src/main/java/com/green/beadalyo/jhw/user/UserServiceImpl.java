@@ -187,6 +187,8 @@ public class UserServiceImpl implements UserService{
         }
         if(pic == null) {
             return null;
+        } else if (!pic.getContentType().startsWith("image/")) {
+            throw new InvalidRegexException();
         }
         try {
             customFileUtils.makeFolder("user");
