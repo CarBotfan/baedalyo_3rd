@@ -21,6 +21,7 @@ public interface ReviewMapper {
     void updReviewReply(ReviewReplyUpdReq commentPk);
     long getRestaurantUser(long commentPk);
     void deleteReviewReply(long commentPk);
+    long getResPkByUserPk(long userPk);
     List<ReviewGetRes> getReviewsRestaurant(long resPk);
     List<ReviewGetRes> getReviewsUser(long userPk);
     String getUserRole(long userPk);

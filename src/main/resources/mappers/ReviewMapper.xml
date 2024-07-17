@@ -112,7 +112,7 @@
     </select>
 
     <!-- 사용자 레스토랑 조회 쿼리 -->
-    <select id="getReviewsRestaurant">
+    <select id="getResPkByUserPk">
         SELECT res_pk
         FROM restaurant
         WHERE user_pk = #{userPk}
