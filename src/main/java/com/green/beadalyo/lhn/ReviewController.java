@@ -93,29 +93,38 @@ public class ReviewController {
 
     @GetMapping("reviewlist")
     @Operation(summary = "리뷰 리스트 불러오기", description = "")
-    public ResultDto<List<ReviewGetRes>> ReviewGetRes(@ModelAttribute @ParameterObject ReviewGetReq p){
-        if (facade.getLoginUser() == null)
-            return   ResultDto.<List<ReviewGetRes>>builder()
+    public ResultDto<List<ReviewGetRes>> getReviewList() {
+        if (facade.getLoginUser() == null) {
+            return ResultDto.<List<ReviewGetRes>>builder()
                     .statusCode(-13)
-                    .resultMsg("로그인한 유저가 존재하지않음")
+                    .resultMsg("로그인한 유저가 존재하지 않음")
                     .build();
+        }
+
         int code = 1;
         String msg = "불러오기 완료";
         List<ReviewGetRes> result = null;
 
-        try{
-            result = service.getReviewList(p);
-
-        }catch (Exception e){
+        try {
+            // 로그인된 사용자의 역할에 따라 다른 메서드를 호출
+            String userRole = facade.getLoginUserRole();
+            if ("OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
+                result = service.getOwnerReviews();
+            } else {
+                result = service.getCustomerReviews();
+            }
+        } catch (Exception e) {
             code = -13;
             msg = e.getMessage();
         }
+
         return ResultDto.<List<ReviewGetRes>>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
                 .build();
     }
+}
     @Transactional
     @PutMapping("patchreviewreply")
     @Operation(summary = "사장님 답글 수정")
