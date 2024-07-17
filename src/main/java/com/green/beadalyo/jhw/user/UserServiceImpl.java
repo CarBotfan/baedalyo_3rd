@@ -101,6 +101,7 @@ public class UserServiceImpl implements UserService{
                     .userName(p.getUserName())
                     .userNickname(p.getUserNickname())
                     .userPhone(p.getUserPhone())
+                    .userEmail(p.getUserEmail())
                     .userRole("ROLE_OWNER")
                     .build();
             long userPk = postSignUp(pic, req);

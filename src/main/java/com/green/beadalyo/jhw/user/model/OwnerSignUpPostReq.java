@@ -35,7 +35,6 @@ public class OwnerSignUpPostReq {
     @Schema(defaultValue = "닉네임")
     private String userNickname;
     @JsonIgnore
-    @Pattern(regexp = "^[a-zA-Z0-9_.-]+(\\.[a-zA-Z0-9_.-]+)*\\.(?i)(jpg|jpeg|png|gif|bmp|tiff|svg|webp)$")
     private String userPic;
     @Schema(defaultValue = "전화번호")
     @Pattern(regexp = "^\\d{3}-\\d{4}-\\d{4}$", message = "올바르지 않은 형식의 전화번호입니다.")
