@@ -84,7 +84,9 @@ public class UserAddrControllerImpl implements UserAddrController{
         UserAddrGetRes result = new UserAddrGetRes();
         String msg = "조회 성공";
         int statusCode = 1;
-        try { result = service.getUserAddr(addrPk); }
+        try {
+            result = service.getUserAddr(addrPk);
+        }
         catch (Exception e) {
             e.printStackTrace();
             msg = e.getMessage();
@@ -103,13 +105,20 @@ public class UserAddrControllerImpl implements UserAddrController{
     @ApiResponse(
             description =
                     "<p> 1 : 성공 </p>"+
-                            "<p> -1 : 오류 </p>"
+                            "<p> -1 : 오류 </p>"+
+                            "<p> -2 : 등록된 주소 없음 </p>"
     )
     public ResultDto<UserAddrGetRes> getMainUserAddr() {
         UserAddrGetRes result = new UserAddrGetRes();
         String msg = "조회 성공";
         int statusCode = 1;
-        try { result = service.getMainUserAddr(); }
+        try {
+            result = service.getMainUserAddr();
+            if(result == null) {
+                statusCode = -2;
+                msg = "등록된 메인 주소가 없음";
+            }
+        }
         catch (Exception e) {
             e.printStackTrace();
             msg = e.getMessage();
