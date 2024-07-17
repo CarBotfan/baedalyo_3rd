@@ -104,6 +104,38 @@
         WHERE review_pk = #{reviewPk} AND review_state = 1;
     </select>
 
+    <!-- 사용자 권한 조회 쿼리 -->
+    <select id="getUserRole">
+        SELECT user_role
+        FROM user
+        WHERE user_pk = #{userPk}
+    </select>
+
+    <!-- 사용자 레스토랑 조회 쿼리 -->
+    <select id="getReviewsRestaurant">
+        SELECT res_pk
+        FROM restaurant
+        WHERE user_pk = #{userPk}
+    </select>
+
+    <select id="getReviewsRestaurant">
+        SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
+        , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
+        , review_pics1 = reviewPics1, review_pics2 = reviewPics2,
+        review_pics3 = reviewPics3, review_pics4 = reviewPics4
+        FROM review
+        WHERE res_pk = #{resPk}
+    </select>
+
+    <select id="getReviewsUser">
+        SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
+        , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
+        , review_pics1 = reviewPics1, review_pics2 = reviewPics2,
+        review_pics3 = reviewPics3, review_pics4 = reviewPics4
+        FROM review
+        WHERE user_pk = #{userPk}
+    </select>
+
 
 
 

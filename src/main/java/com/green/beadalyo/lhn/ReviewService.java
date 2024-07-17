@@ -91,14 +91,24 @@ public class ReviewService {
 
 
     }
-    public ReviewGetRes getReview(long reviewPk) {
-        return mapper.getReview(reviewPk);
+
+    // 사장이 보는 자기 가게의 리뷰와 답글들
+    public List<ReviewGetRes> getOwnerReviews() {
+        long userPk = authenticationFacade.getLoginUserPk();
+        long resPk = mapper.getRestaurantUser(userPk);
+        List<ReviewGetRes> reviews = mapper.getReviewsRestaurant(resPk);
+        for (ReviewGetRes review : reviews) {
+            ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
+            review.setReply(res);
+        }
+        return reviews;
     }
 
 
-    //  리뷰 불러오기
-    public List<ReviewGetRes> getReviewList(ReviewGetReq req) {
-        List<ReviewGetRes> reviews = mapper.getReviewList(req);
+    // 손님이 보는 자기가 쓴 리뷰
+    public List<ReviewGetRes> getCustomerReviews() {
+        long userPk = authenticationFacade.getLoginUserPk();
+        List<ReviewGetRes> reviews = mapper.getReviewsUser(userPk);
         for (ReviewGetRes review : reviews) {
             ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
             review.setReply(res);
