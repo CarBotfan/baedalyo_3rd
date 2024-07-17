@@ -1,5 +1,6 @@
 package com.green.beadalyo.lhn.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,4 +38,17 @@ public class ReviewGetRes {
 
     @Schema(example = "감사" ,description = "사장님의 리뷰에 대한 답변")
     private ReviewReplyRes reply;
+
+    @JsonIgnore
+    private String reviewPics1;
+
+    @JsonIgnore
+    private String reviewPics2;
+
+    @JsonIgnore
+    private String reviewPics3;
+
+    @JsonIgnore
+    private String reviewPics4;
+
 }

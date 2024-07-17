@@ -102,9 +102,14 @@ public class ReviewService {
         long resPk = mapper.getRestaurantUser(userPk);
         List<ReviewGetRes> reviews = mapper.getReviewsRestaurant(resPk);
         for (ReviewGetRes review : reviews) {
+            review.getPics().add(review.getReviewPics1());
+            review.getPics().add(review.getReviewPics2());
+            review.getPics().add(review.getReviewPics3());
+            review.getPics().add(review.getReviewPics4());
             ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
             review.setReply(res);
         }
+
         return reviews;
     }
 
