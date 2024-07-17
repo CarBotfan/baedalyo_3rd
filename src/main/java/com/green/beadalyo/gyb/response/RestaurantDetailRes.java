@@ -23,6 +23,8 @@ public class RestaurantDetailRes
     private String restaurantDesc ;
     @Schema(description = "리뷰 공지")
     private String reviewDesc ;
+    @Schema(description = "음식점 메뉴 토탈 수")
+    private Integer totalMenu ;
     @Schema(description = "음식점 총 리뷰 수")
     private Integer reviewTotalElements ;
     @Schema(description = "음식점 주소")
