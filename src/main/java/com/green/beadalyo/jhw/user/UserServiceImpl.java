@@ -152,6 +152,7 @@ public class UserServiceImpl implements UserService{
         return SignInRes.builder()
                 .userNickname(user.getUserNickname())
                 .mainAddr(mainAddr)
+                .userPhone(user.getUserPhone())
                 .userRole(user.getUserRole())
                 .accessToken(accessToken).build();
     }
