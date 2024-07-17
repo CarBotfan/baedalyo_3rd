@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService{
         } else if (!pic.getContentType().startsWith("image/")) {
             throw new InvalidRegexException();
         }
-
+        customFileUtils.makeFolder("user");
         String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
         p.setUserPic(fileName);
         mapper.signUpUser(p);
@@ -167,6 +167,16 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        String originalFileName = mapper.getUserPicName(p.getSignedUserPk());
+        if(originalFileName != null) {
+            try {
+                String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
+                File file = new File(delAbsoluteFolderPath, originalFileName);
+                file.delete();
+            } catch (Exception e) {
+                throw new FileUploadFailedException();
+            }
+        }
         String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
         if(pic != null) {
             p.setPicName(fileName);
@@ -175,10 +185,11 @@ public class UserServiceImpl implements UserService{
         if(result != 1) {
             throw new UserPatchFailureException();
         }
+        if(pic == null) {
+            return null;
+        }
         try {
-            String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, mapper.getUserPicName(p.getSignedUserPk()));
-            file.delete();
+            customFileUtils.makeFolder("user");
             String target = String.format("%s",fileName);
             customFileUtils.transferTo(pic, target);
         } catch(Exception e) {
