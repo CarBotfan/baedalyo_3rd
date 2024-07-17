@@ -158,7 +158,6 @@ public class ReviewController {
         return ResultDto.<Long>builder()
                 .statusCode(code)
                 .resultMsg(msg)
-                .resultData(result)
                 .build();
     }
 
@@ -238,12 +237,7 @@ public class ReviewController {
     @DeleteMapping("deletereply")
     @Operation(summary = "사장님 답글 삭제", description = "답글을 삭제합니다")
     public ResultDto<Integer> deleteReviewReply(@RequestParam long reviewCommentPk) {
-        facade.getLoginUser();
-        if (facade.getLoginUser() == null)
-            return ResultDto.<Integer>builder()
-                    .statusCode(-13)
-                    .resultMsg("로그인한 유저가 존재하지않음")
-                    .build();
+        long userPk = facade.getLoginUserPk();
         int code = 1;
         String msg = "삭제 완료";
         try {
@@ -251,9 +245,6 @@ public class ReviewController {
         } catch (IllegalArgumentException illegalArgumentException) {
             code = -11;
             msg = illegalArgumentException.getMessage();
-        } catch (Exception e) {
-            code = -200;
-            msg = "박살";
         }
       return ResultDto.<Integer>builder()
                 .statusCode(code)

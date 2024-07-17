@@ -17,7 +17,7 @@
     </insert>
 
     <!-- 사장님 답글 -->
-    <insert id="postReviewReply">
+    <insert id="postReviewReply" keyProperty="reviewCommentPk" useGeneratedKeys="true">
         INSERT INTO review_comment
         SET review_pk = #{reviewPk}
         , comment_content = #{commentContent}
@@ -55,10 +55,29 @@
 
     <!--사장님 레스토랑 조회-->
     <select id="getRestaurantUser">
-        select c.res_user_pk as userPk
-        from review_comment a join review b on a.review_pk = b.review_pk
-        join restaurant c on b.res_pk = c.res_pk
-        where a.review_comment_pk = #{commentPk} limit 1
+        select res_user_pk
+        from restaurant
+        where res_pk = (
+                        select res_pk
+                        from review
+                        where review_pk = #{reviewPk}
+                        )
+    </select>
+    
+    <select id="getResPkByUserPk">
+        select res_pk
+        from restaurant
+        where res_user_pk = #{userPk}
+    </select>
+
+    <select id="getResPkByReviewCommentPk">
+        select res_pk
+        from review
+        where review_pk = (
+                            select review_pk
+                            from review_comment
+                            where review_comment_pk = #{reviewCommentPk}
+                            )
     </select>
 
     <!-- 사장님 답글 수정 쿼리 -->
@@ -98,7 +117,7 @@
     </select>
 
     <select id="getReview">
-        SELECT review_pk AS reviewPk , user_pk AS userPk , review_content AS reviewContents
+        SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
         , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
         FROM  review
         WHERE review_pk = #{reviewPk} AND review_state = 1;
@@ -112,28 +131,23 @@
     </select>
 
     <!-- 사용자 레스토랑 조회 쿼리 -->
-    <select id="getResPkByUserPk">
-        SELECT res_pk
-        FROM restaurant
-        WHERE user_pk = #{userPk}
-    </select>
 
     <select id="getReviewsRestaurant">
         SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
-        , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
+        , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt, created_at AS createdAt
         , review_pics_1 AS reviewPics1, review_pics_2 AS reviewPics2,
         review_pics_3 AS reviewPics3, review_pics_4 AS reviewPics4
         FROM review
-        WHERE res_pk = #{resPk}
+        WHERE res_pk = #{resPk} and review_state = 1
     </select>
 
     <select id="getReviewsUser">
         SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
-        , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
+        , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt, created_at AS createdAt
         , review_pics_1 AS reviewPics1, review_pics_2 AS reviewPics2,
         review_pics_3 AS reviewPics3, review_pics_4 AS reviewPics4
         FROM review
-        WHERE user_pk = #{userPk}
+        WHERE user_pk = #{userPk} and review_state = 1
     </select>
 
 

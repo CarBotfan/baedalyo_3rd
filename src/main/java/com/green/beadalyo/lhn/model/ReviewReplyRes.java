@@ -16,7 +16,4 @@ public class ReviewReplyRes {
 
     @Schema(description = "댓글 내용", example = "감사")
     private String commentContents;
-
-    @Schema(description = "사용자의 고유 pk", example = "3")
-    private long userPk;
 }

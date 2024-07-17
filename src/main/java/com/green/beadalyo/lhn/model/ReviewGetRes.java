@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,7 +26,7 @@ public class ReviewGetRes {
 
 
     @Schema(description = "리뷰 이미지 파일 경로 목록")
-    private List<String> pics;
+    private List<String> pics = new ArrayList<>();
 
     @Schema(example = "1",description = "리뷰 상태")
     private int reviewState;

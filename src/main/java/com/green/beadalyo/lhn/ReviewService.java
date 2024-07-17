@@ -80,7 +80,7 @@ public class ReviewService {
 
     // 사장님 리뷰 답글
     public long postReviewReply(ReviewReplyReq p) {
-        long userPk = mapper.getRestaurantUser(p.getReviewCommentPk());
+        long userPk = mapper.getRestaurantUser(p.getReviewPk());
         if (userPk != authenticationFacade.getLoginUserPk()){
             throw new IllegalArgumentException("식당 사장님이 아닙니다");
         }
@@ -102,10 +102,10 @@ public class ReviewService {
         long resPk = mapper.getRestaurantUser(userPk);
         List<ReviewGetRes> reviews = mapper.getReviewsRestaurant(resPk);
         for (ReviewGetRes review : reviews) {
-            review.getPics().add(review.getReviewPics1());
-            review.getPics().add(review.getReviewPics2());
-            review.getPics().add(review.getReviewPics3());
-            review.getPics().add(review.getReviewPics4());
+            if (review.getReviewPics1() != null) review.getPics().add(review.getReviewPics1());
+            if (review.getReviewPics2() != null) review.getPics().add(review.getReviewPics2());
+            if (review.getReviewPics3() != null) review.getPics().add(review.getReviewPics3());
+            if (review.getReviewPics4() != null) review.getPics().add(review.getReviewPics4());
             ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
             review.setReply(res);
         }
@@ -119,10 +119,10 @@ public class ReviewService {
         long userPk = authenticationFacade.getLoginUserPk();
         List<ReviewGetRes> reviews = mapper.getReviewsUser(userPk);
         for (ReviewGetRes review : reviews) {
-            review.getPics().add(review.getReviewPics1());
-            review.getPics().add(review.getReviewPics2());
-            review.getPics().add(review.getReviewPics3());
-            review.getPics().add(review.getReviewPics4());
+            if (review.getReviewPics1() != null) review.getPics().add(review.getReviewPics1());
+            if (review.getReviewPics2() != null) review.getPics().add(review.getReviewPics2());
+            if (review.getReviewPics3() != null) review.getPics().add(review.getReviewPics3());
+            if (review.getReviewPics4() != null) review.getPics().add(review.getReviewPics4());
             ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
             review.setReply(res);
         }
@@ -130,8 +130,9 @@ public class ReviewService {
     }
     // 사장님 답글 수정
     public void UpdReviewReply(ReviewReplyUpdReq p){
-      long userPk = mapper.getRestaurantUser(p.getReviewCommentPk()) ;
-        if (userPk != authenticationFacade.getLoginUserPk()){
+        long resPk = mapper.getResPkByReviewCommentPk(p.getReviewCommentPk()) ;
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (resPk != mapper.getResPkByUserPk(userPk)){
             throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
         }
         for (int i = 0; i < filter.getPROFANITIES().length; i++) {
@@ -207,8 +208,9 @@ public class ReviewService {
     }
     // 사장님 답글 삭제
     public void deleteReviewReply(long reviewCommentPk) {
-        long userPk = mapper.getRestaurantUser(reviewCommentPk);
-        if (userPk != authenticationFacade.getLoginUserPk()) {
+        long userPk = authenticationFacade.getLoginUserPk();
+        long resPk = mapper.getResPkByUserPk(userPk);
+        if (resPk != mapper.getResPkByReviewCommentPk(reviewCommentPk)) {
             throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
         }
         mapper.deleteReviewReply(reviewCommentPk);

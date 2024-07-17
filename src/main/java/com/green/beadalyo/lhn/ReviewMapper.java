@@ -19,11 +19,13 @@ public interface ReviewMapper {
     int deleteReview(long reviewPk, int reviewState);
     ReviewGetRes getReview(long reviewPk);
     void updReviewReply(ReviewReplyUpdReq commentPk);
-    long getRestaurantUser(long commentPk);
+    long getRestaurantUser(long reviewPk);
     void deleteReviewReply(long commentPk);
+    //long getResPkByUserPk(long userPk);
     long getResPkByUserPk(long userPk);
+    long getResPkByReviewCommentPk(long reviewCommentPk);
     List<ReviewGetRes> getReviewsRestaurant(long resPk);
     List<ReviewGetRes> getReviewsUser(long userPk);
-    String getUserRole(long userPk);
+    //String getUserRole(long userPk);
 
 }
