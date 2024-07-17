@@ -6,11 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -22,7 +19,7 @@ public class FileUtils
 
     public FileUtils(@Value("file.dir") String dir)
     {
-        this.absolutePath = dir;
+        absolutePath = dir;
     }
 
     public static String getRandomName()
