@@ -81,7 +81,7 @@
         SELECT done_order_pk AS doneOrderPk, user_pk AS userPk, res_pk AS resPk, order_price AS orderPrice
         , order_request AS orderRequest, done_order_state AS doneOrderState, payment_method AS paymentMethod
         , created_at AS createdAt,
-        order_address AS orderAddress
+        order_address AS orderAddress, order_phone AS orderPhone
         FROM `done_order`
         WHERE done_order_pk = #{doneOrderPk}
     </select>
