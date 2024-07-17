@@ -1,6 +1,7 @@
 package com.green.beadalyo.gyb.common;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -17,7 +18,12 @@ import java.util.UUID;
 public class FileUtils
 {
 
-    private final static String absolutePath = "D:/Students/FirstProject/BackEnd/media/baedalyo" ;
+    private static String absolutePath  ;
+
+    public FileUtils(@Value("file.dir") String dir)
+    {
+        this.absolutePath = dir;
+    }
 
     public static String getRandomName()
     {
