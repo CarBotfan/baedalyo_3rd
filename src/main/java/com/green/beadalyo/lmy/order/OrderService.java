@@ -56,8 +56,6 @@ public class OrderService {
 
         // order_menu 테이블에 배치 삽입
         orderMapper.insertOrderMenuBatch(orderMenuList);
-
-        return 1;
     }
 
     @Transactional
