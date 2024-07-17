@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
                                     throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken(request);
-        log.info("JwtAuthenticationFilter-Token: {}", token);
+        log.debug("JwtAuthenticationFilter-Token: {}", token);
 
         if(token != null && jwtTokenProvider.isValidateToken(token)) {
             Authentication auth = jwtTokenProvider.getAuthentication(token);
