@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -124,7 +123,6 @@ public class ReviewController {
                 .resultData(result)
                 .build();
     }
-}
     @Transactional
     @PutMapping("patchreviewreply")
     @Operation(summary = "사장님 답글 수정")
