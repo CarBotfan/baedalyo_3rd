@@ -139,6 +139,7 @@
         review_pics_3 AS reviewPics3, review_pics_4 AS reviewPics4
         FROM review
         WHERE res_pk = #{resPk} and review_state = 1
+        ORDER BY created_at DESC
     </select>
 
     <select id="getReviewsUser">
@@ -150,6 +151,7 @@
         LEFT JOIN restaurant B
         ON A.res_pk = B.res_pk
         WHERE user_pk = #{userPk} and review_state = 1
+        ORDER BY A.created_at DESC
     </select>
 
 
