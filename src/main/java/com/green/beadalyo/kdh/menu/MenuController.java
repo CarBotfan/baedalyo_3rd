@@ -15,9 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/menu")
+@RequestMapping("api/owner/menu")
 @RequiredArgsConstructor
-@Tag(name = "메뉴 관련 컨트롤러입니다.")
+@Tag(name = "메뉴 관련 컨트롤러입니다.(사장님 전용")
 @Slf4j
 public class MenuController {
     private final MenuService service;
@@ -85,18 +85,30 @@ public class MenuController {
             "                                       menuResPk는 메뉴가 등록된 식당의 고유 번호(PK)입니다.\n" +
             "                                       <p> menuState는 ex)1이면 판매 중 2면 품절과 같은 판매상태입니다.</p>"+
                                                     "<p> 1 : 메뉴 리스트 불러오기 완료 </p>"+
-                                                    "<p> -1 : 메뉴 리스트 불러오기 실패 </p>"
+                                                    "<p> -1 : 메뉴 리스트 불러오기 실패 </p>" +
+                                                    "<p> -2 : 소유한 가게가 없음 </p>"
                                                     )
-    public ResultDto<List<GetAllMenuRes>> getAllMenu(@ParameterObject @ModelAttribute GetAllMenuReq p){
+    public ResultDto<List<GetAllMenuRes>> getAllMenu(){
         List<GetAllMenuRes> result = null;
 
         String msg = "메뉴 리스트 불러오기 완료";
         int code = 1;
         try {
-            result = service.getAllMenu(p);
+            result = service.getAllMenuByUserPk();
+        } catch (NullPointerException e){
+
+            return ResultDto.<List<GetAllMenuRes>>builder()
+                    .statusCode(-2)
+                    .resultMsg("소유한 가게가 없음")
+                    .resultData(result)
+                    .build();
         } catch (Exception e){
-            msg = e.getMessage();
-            code = -1;
+
+            return ResultDto.<List<GetAllMenuRes>>builder()
+                    .statusCode(-1)
+                    .resultMsg("메뉴 리스트 불러오기 실패")
+                    .resultData(result)
+                    .build();
         }
 
         return ResultDto.<List<GetAllMenuRes>>builder()

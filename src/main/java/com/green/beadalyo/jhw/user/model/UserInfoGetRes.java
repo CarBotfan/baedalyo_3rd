@@ -20,6 +20,8 @@ public class UserInfoGetRes {
     @Schema(defaultValue = "전화번호")
     @Pattern(regexp = "^\\d{3}-\\d{4}-\\d{4}$")
     private String userPhone;
+    @Schema(defaultValue = "이메일")
+    private String userEmail;
     @Schema(defaultValue = "메인 주소")
     private UserAddrGetRes mainAddr;
 }

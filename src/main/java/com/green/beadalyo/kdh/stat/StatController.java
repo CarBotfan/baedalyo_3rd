@@ -10,8 +10,10 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("api/stat")
+@RequestMapping("api/owner/stat")
 @RequiredArgsConstructor
 @Tag(name = "가게 통계 컨트롤러입니다.")
 public class StatController {
@@ -64,19 +66,19 @@ public class StatController {
     }
 
     @GetMapping("month_sales")
-    @Operation(summary = "가게의 월 매출을 불러옵니다." , description = "date의 양식은 2024-06 입니다.\n" +
+    @Operation(summary = "가게의 월 매출을 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
                                                                     "<p> 1 : 월 매출 불러오기 완료 </p>"+
                                                                     "<p> -1 : 월 매출 불러오기 실패 </p>"+
                                                                     "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<GetMonthSaleRes> getMonthSales(@ParameterObject @ModelAttribute GetDateReq p){
-        GetMonthSaleRes result = null;
+    public ResultDto<List<GetMonthSaleRes>> getMonthSales(@ParameterObject @ModelAttribute GetDateReq p){
+        List<GetMonthSaleRes> result = null;
 
         String msg = "가게 월 매출 불러오기 완료";
         int code = 1;
         try {
             result = service.getMonthSales(p);
         } catch (RuntimeException e){
-            return ResultDto.<GetMonthSaleRes>builder()
+            return ResultDto.<List<GetMonthSaleRes>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다")
                     .resultData(result)
@@ -84,13 +86,13 @@ public class StatController {
         }
             catch (Exception e){
 
-            return ResultDto.<GetMonthSaleRes>builder()
+            return ResultDto.<List<GetMonthSaleRes>>builder()
                     .statusCode(-1)
                     .resultMsg("가게 월 매출 불러오기 실패")
                     .resultData(result)
                     .build();
         }
-        return ResultDto.<GetMonthSaleRes>builder()
+        return ResultDto.<List<GetMonthSaleRes>>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
@@ -99,12 +101,12 @@ public class StatController {
     }
 
     @GetMapping("month_order_count")
-    @Operation(summary = "가게의 월 주문수를 불러옵니다." , description = "date의 양식은 2024-06 입니다.\n" +
+    @Operation(summary = "가게의 월 주문수를 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
                                                                         "<p> 1 : 월 주문 수 불러오기 완료 </p>"+
                                                                         "<p> -1 : 월 주문 수 불러오기 실패 </p>"+
                                                                         "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<GetMonthOrderCountRes> getMonthOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
-        GetMonthOrderCountRes result = null;
+    public ResultDto<List<GetMonthOrderCountRes>> getMonthOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
+        List<GetMonthOrderCountRes> result = null;
 
         String msg = "가게 월 주문수 불러오기 완료";
         int code = 1;
@@ -112,21 +114,21 @@ public class StatController {
             result = service.getMonthOrderCount(p);
         } catch (RuntimeException e){
 
-            return ResultDto.<GetMonthOrderCountRes>builder()
+            return ResultDto.<List<GetMonthOrderCountRes>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다")
                     .resultData(result)
                     .build();
         }
          catch (Exception e){
-             return ResultDto.<GetMonthOrderCountRes>builder()
+             return ResultDto.<List<GetMonthOrderCountRes>>builder()
                      .statusCode(-1)
                      .resultMsg("가게 월 주문수 불러오기 실패")
                      .resultData(result)
                      .build();
         }
 
-        return ResultDto.<GetMonthOrderCountRes>builder()
+        return ResultDto.<List<GetMonthOrderCountRes>>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
@@ -134,12 +136,12 @@ public class StatController {
     }
 
     @GetMapping("daily_sales")
-    @Operation(summary = "가게의 일일 매출을 불러옵니다." , description = "date의 양식은 2024-07-07 입니다.\n" +
+    @Operation(summary = "가게의 일일 매출을 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
                                                                         "<p> 1 : 일일 매출 불러오기 완료 </p>"+
                                                                         "<p> -1 : 일일 매출 불러오기 실패 </p>"+
                                                                         "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<GetDailySalesRes> getDailySales(@ParameterObject @ModelAttribute GetDateReq p){
-        GetDailySalesRes result = null;
+    public ResultDto<List<GetDailySalesRes>> getDailySales(@ParameterObject @ModelAttribute GetDateReq p){
+        List<GetDailySalesRes> result = null;
 
         String msg = "가게 일일 매출 불러오기 완료";
         int code = 1;
@@ -147,21 +149,21 @@ public class StatController {
             result = service.getDailySales(p);
         } catch (RuntimeException e){
 
-            return ResultDto.<GetDailySalesRes>builder()
+            return ResultDto.<List<GetDailySalesRes>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다.")
                     .resultData(result)
                     .build();
         } catch (Exception e){
 
-            return ResultDto.<GetDailySalesRes>builder()
+            return ResultDto.<List<GetDailySalesRes>>builder()
                     .statusCode(-1)
                     .resultMsg("가게 일일 매출 불러오기 실패")
                     .resultData(result)
                     .build();
         }
 
-        return ResultDto.<GetDailySalesRes>builder()
+        return ResultDto.<List<GetDailySalesRes>>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
@@ -169,12 +171,12 @@ public class StatController {
     }
 
     @GetMapping("daily_order_count")
-    @Operation(summary = "가게의 일일 주문 수를 불러옵니다." , description = "date의 양식은 2024-07-07 입니다.\n" +
+    @Operation(summary = "가게의 일일 주문 수를 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
                                                                         "<p> 1 : 일일 주문 수 불러오기 완료 </p>"+
                                                                         "<p> -1 : 일일 주문 수 불러오기 실패 </p>"+
                                                                         "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<GetDailyOrderCountRes> getdailyOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
-        GetDailyOrderCountRes result = null;
+    public ResultDto<List<GetDailyOrderCountRes>> getDailyOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
+        List<GetDailyOrderCountRes> result = service.getDailyOrderCount(p);
 
         String msg = "가게 일일 주문 수 불러오기 완료";
         int code = 1;
@@ -182,21 +184,21 @@ public class StatController {
             result = service.getDailyOrderCount(p);
         } catch (RuntimeException e){
 
-            return ResultDto.<GetDailyOrderCountRes>builder()
+            return ResultDto.<List<GetDailyOrderCountRes>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다.")
                     .resultData(result)
                     .build();
         } catch (Exception e){
 
-            return ResultDto.<GetDailyOrderCountRes>builder()
+            return ResultDto.<List<GetDailyOrderCountRes>>builder()
                     .statusCode(-1)
                     .resultMsg("가게 일일 주문수 불러오기 실패")
                     .resultData(result)
                     .build();
         }
 
-        return ResultDto.<GetDailyOrderCountRes>builder()
+        return ResultDto.<List<GetDailyOrderCountRes>>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)

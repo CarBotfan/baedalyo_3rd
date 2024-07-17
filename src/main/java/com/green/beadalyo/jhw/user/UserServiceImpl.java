@@ -13,9 +13,12 @@ import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.JsonObject;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,9 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,12 +47,6 @@ public class UserServiceImpl implements UserService{
     private final AuthenticationFacade authenticationFacade;
     private final AppProperties appProperties;
     private final RestaurantService resService;
-
-    private String regexPhone = "^\\d{3}-\\d{4}-\\d{4}$";
-    String regexFileName = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.(jpg|jpeg|png|gif|bmp|tiff|svg|webp)$";
-
-    Pattern phonePattern = Pattern.compile(regexPhone);
-    Pattern filePattern = Pattern.compile(regexFileName);
 
 
     @Override
@@ -72,9 +67,7 @@ public class UserServiceImpl implements UserService{
             mapper.signUpUser(p);
             result = p.getUserPk();
             return result;
-        }
-        Matcher matcher = filePattern.matcher(Objects.requireNonNull(pic.getOriginalFilename()));
-        if(!matcher.matches()) {
+        } else if (!pic.getContentType().startsWith("image/")) {
             throw new InvalidRegexException();
         }
 
@@ -101,7 +94,7 @@ public class UserServiceImpl implements UserService{
                     .userPw(p.getUserPw())
                     .userPwConfirm(p.getUserPwConfirm())
                     .userName(p.getUserName())
-                    .userNickname(p.getUserNickName())
+                    .userNickname(p.getUserNickname())
                     .userPhone(p.getUserPhone())
                     .userRole("ROLE_OWNER")
                     .build();
@@ -176,10 +169,6 @@ public class UserServiceImpl implements UserService{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
         if(pic != null) {
-            Matcher matcher = filePattern.matcher(pic.getOriginalFilename());
-            if(!matcher.matches()) {
-                throw new InvalidRegexException();
-            }
             p.setPicName(fileName);
         }
         int result = mapper.updProfilePic(p);
@@ -214,10 +203,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int patchUserPhone(UserPhonePatchReq p) throws Exception{
-        Matcher matcher = phonePattern.matcher(p.getUserPhone());
-        if(!matcher.matches()) {
-            throw new InvalidRegexException();
-        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         User user = mapper.getUserByPk(p.getSignedUserPk());
         if(user == null || user.getUserState() == 3) {
@@ -312,10 +297,41 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int duplicatedCheck(String userId) {
+        if(userId.length() < 8) {
+            throw new RuntimeException("Id는 8자 이상이어야 합니다.");
+        }
         User user = mapper.getUserById(userId);
         if(user != null) {
             throw new DuplicatedIdException();
         }
         return 1;
     }
+
+    public void logoutToken(HttpServletRequest request, HttpServletResponse response) {
+
+//        String token = jwtTokenProvider.resolveToken(request);
+
+//        Base64.Decoder decoder = Base64.getDecoder();
+//        final String[] splitJwt = Objects.requireNonNull(token).split("\\.");
+//        final String payloadStr = new String(decoder.decode(splitJwt[1].replace('-', '+' )
+//                .replace('_', '/' ).getBytes()));
+        //base 64의 경우 "-"와 "_"가 없기 때문에 illegal base64 character 5f 에러 발생
+//        Long userId = getUserIdFromToken(payloadStr);
+//        Date expirationDate = getDateExpFromToken(payloadStr);
+        cookieUtils.deleteCookie(response, "refresh-token");
+    }
+//
+//    public Long getUserIdFromToken(String payloadStr) {
+//        JsonObject jsonObject = new Gson().fromJson(payloadStr, JsonObject.class);
+//        return jsonObject.get("id").getAsLong();
+//    }
+//
+//    public Date getDateExpFromToken(String payloadStr) {
+//        JsonObject jsonObject = new Gson().fromJson(payloadStr, JsonObject.class);
+//        long exp = jsonObject.get("exp").getAsLong();
+//        return new Date(exp * 1000);
+//    }
+
+
+
 }

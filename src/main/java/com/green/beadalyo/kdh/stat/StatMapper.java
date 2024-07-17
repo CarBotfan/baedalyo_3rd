@@ -3,19 +3,21 @@ package com.green.beadalyo.kdh.stat;
 import com.green.beadalyo.kdh.stat.model.*;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface StatMapper {
     GetReviewCountRes getReviewCount(GetReviewStatReq p);
 
     GetReviewAvgRes getReviewAvg(GetReviewStatReq p);
 
-    GetMonthSaleRes getMonthSales(GetDateReq p);
+    List<GetMonthSaleRes> getMonthSales(GetDateReq p);
 
-    GetMonthOrderCountRes getMonthOrderCount(GetDateReq p);
+    List<GetMonthOrderCountRes> getMonthOrderCount(GetDateReq p);
 
-    GetDailySalesRes getDailySales(GetDateReq p);
+    List<GetDailySalesRes> getDailySales(GetDateReq p);
 
-    GetDailyOrderCountRes getDailyOrderCount(GetDateReq p);
+    List<GetDailyOrderCountRes> getDailyOrderCount(GetDateReq p);
 
     Long checkResPk(long resUserPk);
 }

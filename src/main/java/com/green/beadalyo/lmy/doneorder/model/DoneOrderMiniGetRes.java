@@ -9,7 +9,10 @@ import java.util.List;
 public class DoneOrderMiniGetRes {
     private Long doneOrderPk;
     private Long resPk;
+    private String resPic;
+    private String resName;
     private Integer orderPrice;
     private Integer doneOrderState;
+    private String createdAt;
     private List<MenuInfoDto> menuInfoDtos;
 }

@@ -79,6 +79,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             signUpParam.setUserId(oAuth2UserInfo.getId());
             signUpParam.setUserName(oAuth2UserInfo.getName());
             signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
+            signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
             int result = mapper.signUpUser(signUpParam);
             user = new User( signUpParam.getUserPk()
                            , null
@@ -88,6 +89,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
                             , signUpParam.getUserPic()
                            , null
                            , null
+                            , signUpParam.getUserEmail()
                             , 1
                             , signUpParam.getUserLoginType()
                             , null

@@ -8,7 +8,10 @@ import java.util.List;
 public class OrderMiniGetRes {
     private Long orderPk;
     private Long resPk;
+    private String resPic;
+    private String resName;
     private Integer orderPrice;
     private Integer orderState;
+    private String createdAt;
     private List<String> menuName;
 }

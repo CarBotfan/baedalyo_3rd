@@ -14,20 +14,27 @@
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
-        o.user_pk = #{userPk} AND o.done_order_state = 1
+        o.user_pk = #{userPk}
+        ORDER BY o.created_at DESC
     </select>
 
     <select id="selectCancelOrderByUserPk">
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
@@ -38,24 +45,32 @@
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
         o.res_pk = #{resPk} AND o.done_order_state = 1
+        ORDER BY o.created_at DESC
     </select>
 
     <select id="selectCancelOrderByResPk">
         SELECT
         o.done_order_pk AS doneOrderPk,
         o.res_pk AS resPk,
+        (select res_pic from restaurant where res_pk = resPk) as resPic,
+        (select res_name from restaurant where res_pk = resPk) as resName,
         o.order_price AS orderPrice,
-        o.done_order_state AS doneOrderState
+        o.done_order_state AS doneOrderState,
+        o.created_at AS createdAt
         FROM
         `done_order` o
         WHERE
         o.res_pk = #{resPk} AND o.done_order_state = 2
+        ORDER BY o.created_at DESC
     </select>
 
     <select id="getDoneOrderInfo">
