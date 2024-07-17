@@ -7,7 +7,9 @@
         SET review_pk = #{reviewPk}
         , done_order_pk = #{doneOrderPk}
         , user_pk = #{userPk}
-        , res_pk = #{resPk}
+        , res_pk = (select res_pk
+                    from done_order
+                    where done_order_pk = #{doneOrderPk})
         , review_contents = #{reviewContents}
         , review_rating = #{reviewRating}
         , review_pics_1 = #{reviewPics1}

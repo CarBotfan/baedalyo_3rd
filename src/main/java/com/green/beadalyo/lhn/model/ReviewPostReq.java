@@ -26,8 +26,8 @@ public class ReviewPostReq {
     @Schema(example = "3",description = "사용자의 고유 Pk")
     private long userPk;
 
-    @Schema(example = "2", description = "식당의 고유 Pk")
-    private long resPk;
+//    @Schema(example = "2", description = "식당의 고유 Pk")
+//    private long resPk;
 
     @Schema(example = "음식이 아주 맛있었어요!", description = "리뷰 내용")
     private String reviewContents;
