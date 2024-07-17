@@ -107,13 +107,13 @@ public class ReviewController {
         try {
             // 로그인된 사용자의 역할에 따라 다른 메서드를 호출
             String userRole = facade.getLoginUserRole();
-            if ("OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
+            if ("ROLE_OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
                 result = service.getOwnerReviews();
             }
-            if ("USER".equals(userRole)){
+            if ("ROLE_USER".equals(userRole)){
                 result = service.getCustomerReviews();
             }
-            if ("ADMIN".equals(userRole)){
+            if ("ROLE_ADMIN".equals(userRole)){
                 throw new RuntimeException("어드민임니다");
             }
 

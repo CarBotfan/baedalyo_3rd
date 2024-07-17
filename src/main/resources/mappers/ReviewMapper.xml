@@ -48,9 +48,9 @@
     <!-- 리뷰 답글 가져오기 쿼리 -->
     <select id="getReviewComment">
         SELECT review_pk AS reviewPk , review_comment_pk AS reviewCommentPk
-        , comment_contents AS commentContents , user_pk AS userPk
-        FROM review_comments
-        WHERE review_pk = #{reviewPk} AND review_state = 1;
+        , comment_content AS commentContents
+        FROM review_comment
+        WHERE review_pk = #{reviewPk};
     </select>
 
     <!--사장님 레스토랑 조회-->
@@ -98,7 +98,7 @@
     </select>
 
     <select id="getReview">
-        SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
+        SELECT review_pk AS reviewPk , user_pk AS userPk , review_content AS reviewContents
         , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
         FROM  review
         WHERE review_pk = #{reviewPk} AND review_state = 1;
@@ -121,8 +121,8 @@
     <select id="getReviewsRestaurant">
         SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
         , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
-        , review_pics1 = reviewPics1, review_pics2 = reviewPics2,
-        review_pics3 = reviewPics3, review_pics4 = reviewPics4
+        , review_pics_1 AS reviewPics1, review_pics_2 AS reviewPics2,
+        review_pics_3 AS reviewPics3, review_pics_4 AS reviewPics4
         FROM review
         WHERE res_pk = #{resPk}
     </select>
@@ -130,8 +130,8 @@
     <select id="getReviewsUser">
         SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
         , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt
-        , review_pics1 = reviewPics1, review_pics2 = reviewPics2,
-        review_pics3 = reviewPics3, review_pics4 = reviewPics4
+        , review_pics_1 AS reviewPics1, review_pics_2 AS reviewPics2,
+        review_pics_3 AS reviewPics3, review_pics_4 AS reviewPics4
         FROM review
         WHERE user_pk = #{userPk}
     </select>
