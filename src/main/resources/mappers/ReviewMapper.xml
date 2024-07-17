@@ -142,11 +142,13 @@
     </select>
 
     <select id="getReviewsUser">
-        SELECT review_pk AS reviewPk , user_pk AS userPk , review_contents AS reviewContents
-        , review_rating AS reviewRating , review_state AS reviewState , updated_at AS updatedAt, created_at AS createdAt
-        , review_pics_1 AS reviewPics1, review_pics_2 AS reviewPics2,
-        review_pics_3 AS reviewPics3, review_pics_4 AS reviewPics4
-        FROM review
+        SELECT A.review_pk AS reviewPk , A.user_pk AS userPk , A.review_contents AS reviewContents
+        , A.review_rating AS reviewRating , A.review_state AS reviewState , A.updated_at AS updatedAt, A.created_at AS createdAt
+        , A.review_pics_1 AS reviewPics1, A.review_pics_2 AS reviewPics2,
+        A.review_pics_3 AS reviewPics3, A.review_pics_4 AS reviewPics4, B.res_name AS resName
+        FROM review A
+        LEFT JOIN restaurant B
+        ON A.res_pk = B.res_pk
         WHERE user_pk = #{userPk} and review_state = 1
     </select>
 
