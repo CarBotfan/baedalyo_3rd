@@ -99,5 +99,5 @@ server:
     key-password: ${PROD.SSL.PASSWORD}
 
 file:
-  directory: ${PROD.FILE.DIRECTORY}
+  dir: ${PROD.FILE.DIRECTORY}
 
