@@ -13,5 +13,6 @@ import lombok.Setter;
 public class UserAddrDelReq {
     @JsonIgnore
     private long signedUserPk;
-    private long userAddrPk;
+    @Schema(name = "addr_pk")
+    private long addrPk;
 }
