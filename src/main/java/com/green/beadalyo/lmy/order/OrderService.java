@@ -18,7 +18,7 @@ public class OrderService {
     private final AuthenticationFacade authenticationFacade;
 
     @Transactional
-    public int postOrder(OrderPostReq p) {
+    public void postOrder(OrderPostReq p) {
 
         p.setOrderUserPk(authenticationFacade.getLoginUserPk());
 
