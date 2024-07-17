@@ -48,10 +48,14 @@ public class UserServiceImpl implements UserService{
     private final AppProperties appProperties;
     private final RestaurantService resService;
 
+    private static int IMAGE_SIZE_LIMIT = 3145728;
 
     @Override
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
+        if(pic.getSize() > IMAGE_SIZE_LIMIT) {
+            throw new RuntimeException("파일은 3MB 이하여야 합니다.");
+        }
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         long result;
         if(mapper.getUserById(p.getUserId()) != null) {
@@ -166,6 +170,9 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
+        if(pic.getSize() > IMAGE_SIZE_LIMIT) {
+            throw new RuntimeException("파일은 3MB 이하여야 합니다.");
+        }
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         String originalFileName = mapper.getUserPicName(p.getSignedUserPk());
         if(originalFileName != null) {
