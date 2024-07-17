@@ -119,6 +119,10 @@ public class ReviewService {
         long userPk = authenticationFacade.getLoginUserPk();
         List<ReviewGetRes> reviews = mapper.getReviewsUser(userPk);
         for (ReviewGetRes review : reviews) {
+            review.getPics().add(review.getReviewPics1());
+            review.getPics().add(review.getReviewPics2());
+            review.getPics().add(review.getReviewPics3());
+            review.getPics().add(review.getReviewPics4());
             ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
             review.setReply(res);
         }
