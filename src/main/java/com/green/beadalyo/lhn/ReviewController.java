@@ -72,7 +72,7 @@ public class ReviewController {
                 .build();
     }
     @PostMapping("owner/comment")
-    @Operation(summary = "사장님 답글", description = "")
+    @Operation(summary = "사장님 답글작성", description = "")
     public ResultDto<Long> postReviewReply(@RequestBody ReviewReplyReq p) {
 
         int code = 1;
@@ -130,19 +130,19 @@ public class ReviewController {
                 .build();
     }
 
-    @GetMapping("noauth")
+    @GetMapping("noauth/{res_pk}")
     @Operation(summary = "비회원 리뷰 리스트 불러오기", description = "")
-    public ResultDto<List<ReviewGetRes>> getReviewListByResPk() {
+    public ResultDto<List<ReviewGetRes>> getReviewListByResPk(@PathVariable("res_pk") long resPk) {
 
         int code = 1;
         String msg = "불러오기 완료";
         List<ReviewGetRes> result = null;
 
         try {
-
+            result = service.getReviewListByResPk(resPk);
         } catch (Exception e) {
             code = -13;
-            msg = e.getMessage();
+            msg = "유효하지 않은 상점 pk입니다.";
         }
 
         return ResultDto.<List<ReviewGetRes>>builder()
