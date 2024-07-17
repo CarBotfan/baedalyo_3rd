@@ -109,9 +109,10 @@ public class DoneOrderController {
         List<DoneOrderMiniGetRes> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
+        Long resPk = orderMapper.getResPkByUserPk(userPk);
 
         try {
-            result = doneOrderService.getDoneOrderByResPk(userPk);
+            result = doneOrderService.getDoneOrderByResPk(resPk);
         } catch (Exception e) {
             return ResultDto.<List<DoneOrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
