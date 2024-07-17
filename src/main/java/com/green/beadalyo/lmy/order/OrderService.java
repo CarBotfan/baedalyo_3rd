@@ -18,7 +18,7 @@ public class OrderService {
     private final AuthenticationFacade authenticationFacade;
 
     @Transactional
-    public int postOrder(OrderPostReq p) {
+    public void postOrder(OrderPostReq p) {
 
         p.setOrderUserPk(authenticationFacade.getLoginUserPk());
 
@@ -56,8 +56,6 @@ public class OrderService {
 
         // order_menu 테이블에 배치 삽입
         orderMapper.insertOrderMenuBatch(orderMenuList);
-
-        return 1;
     }
 
     @Transactional

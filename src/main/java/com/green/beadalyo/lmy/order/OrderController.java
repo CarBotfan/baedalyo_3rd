@@ -44,42 +44,41 @@ public class OrderController {
                             "<p> -3 : 메뉴를 찾을 수 없습니다 </p>" +
                             "<p> -4 : 데이터 리스트 생성 실패 </p>"
     )
-    public ResultDto<Integer> postOrder(@RequestBody OrderPostReq p){
+    public ResultDto<Long> postOrder(@RequestBody OrderPostReq p){
 
 
         if (p.getPaymentMethod() == null) {
-            return ResultDto.<Integer>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getMessage())
                     .build();
         }
 
         if (500 < p.getOrderRequest().length()) {
-            return ResultDto.<Integer>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getMessage())
                     .build();
         }
 
-        int result;
         try {
-            result = orderService.postOrder(p);
+            orderService.postOrder(p);
         } catch (NullPointerException e) {
-            return ResultDto.<Integer>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getMessage())
                     .build();
         } catch (RuntimeException e) {
-            return ResultDto.<Integer>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getMessage())
                     .build();
         }
 
-        return ResultDto.<Integer>builder()
+        return ResultDto.<Long>builder()
                 .statusCode(SUCCESS_CODE)
                 .resultMsg(POST_ORDER_SUCCESS)
-                .resultData(result)
+                .resultData(p.getOrderPk())
                 .build();
     }
 

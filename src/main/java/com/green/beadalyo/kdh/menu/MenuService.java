@@ -21,7 +21,7 @@ public class MenuService {
     private final MenuMapper mapper;
     private final CustomFileUtils customFileUtils;
     private final AuthenticationFacade authenticationFacade;
-
+    private final long maxSize = 3145728;
     @Transactional
     public PostMenuRes postMenu(PostMenuReq p,
                                 MultipartFile pic){
@@ -32,7 +32,9 @@ public class MenuService {
             throw new RuntimeException();
         }
         p.setMenuResPk(resPk);
-
+        if(pic.getSize() > maxSize){
+            throw new ArithmeticException();
+        }
         List<String> menuName = mapper.getMenuName(p.getMenuResPk());
         for (String menu : menuName){
             if (menu.equals(p.getMenuName())){
@@ -102,6 +104,9 @@ public class MenuService {
 
             if (resUserPk != p.getResUserPk()){
                 throw new RuntimeException();
+            }
+            if(pic.getSize() > maxSize){
+                throw new ArithmeticException();
             }
             long menuResPk = mapper.getMenuResPkByMenuPk(p.getMenuPk());
             List<String> menuName = mapper.getMenuNameByPut(menuResPk,p.getMenuPk());

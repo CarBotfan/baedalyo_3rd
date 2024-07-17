@@ -182,8 +182,9 @@ public class UserAddrControllerImpl implements UserAddrController{
     )
     public ResultDto<Integer> deleteUserAddr(@ModelAttribute @ParameterObject UserAddrDelReq p) {
         int result = 0;
-        String msg = "등록 완료";
+        String msg = "삭제 완료";
         int statusCode = 1;
+        log.info("{}", p.getAddrPk());
         try { result = service.deleteUserAddr(p); }
         catch (Exception e) {
             e.printStackTrace();

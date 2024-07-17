@@ -18,7 +18,8 @@ spring:
     password: ${DEFAULT.DB_PASSWORD}
   servlet:
     multipart:
-      max-file-size: 5MB
+      max-file-size: 20MB
+      max-request-size: 20MB
   jackson:
     deserialization:
       fail-on-unknown-properties: false
@@ -99,5 +100,5 @@ server:
     key-password: ${PROD.SSL.PASSWORD}
 
 file:
-  directory: ${PROD.FILE.DIRECTORY}
+  dir: ${PROD.FILE.DIRECTORY}
 

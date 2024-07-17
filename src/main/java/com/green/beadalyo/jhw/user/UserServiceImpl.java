@@ -48,10 +48,12 @@ public class UserServiceImpl implements UserService{
     private final AppProperties appProperties;
     private final RestaurantService resService;
 
+    private static int IMAGE_SIZE_LIMIT = 3145728;
 
     @Override
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
+
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         long result;
         if(mapper.getUserById(p.getUserId()) != null) {
@@ -70,7 +72,10 @@ public class UserServiceImpl implements UserService{
         } else if (!pic.getContentType().startsWith("image/")) {
             throw new InvalidRegexException();
         }
-
+        if(pic.getSize() > IMAGE_SIZE_LIMIT) {
+            throw new RuntimeException("파일은 3MB 이하여야 합니다.");
+        }
+        customFileUtils.makeFolder("user");
         String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
         p.setUserPic(fileName);
         mapper.signUpUser(p);
@@ -96,6 +101,7 @@ public class UserServiceImpl implements UserService{
                     .userName(p.getUserName())
                     .userNickname(p.getUserNickname())
                     .userPhone(p.getUserPhone())
+                    .userEmail(p.getUserEmail())
                     .userRole("ROLE_OWNER")
                     .build();
             long userPk = postSignUp(pic, req);
@@ -147,6 +153,7 @@ public class UserServiceImpl implements UserService{
         return SignInRes.builder()
                 .userNickname(user.getUserNickname())
                 .mainAddr(mainAddr)
+                .userPhone(user.getUserPhone())
                 .userRole(user.getUserRole())
                 .accessToken(accessToken).build();
     }
@@ -166,19 +173,36 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
+
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
+        String originalFileName = mapper.getUserPicName(p.getSignedUserPk());
+        if(originalFileName != null) {
+            try {
+                String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
+                File file = new File(delAbsoluteFolderPath, originalFileName);
+                file.delete();
+            } catch (Exception e) {
+                throw new FileUploadFailedException();
+            }
+        }
         String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
         if(pic != null) {
+            if(pic.getSize() > IMAGE_SIZE_LIMIT) {
+                throw new RuntimeException("파일은 3MB 이하여야 합니다.");
+            }
             p.setPicName(fileName);
         }
         int result = mapper.updProfilePic(p);
         if(result != 1) {
             throw new UserPatchFailureException();
         }
+        if(pic == null) {
+            return null;
+        } else if (!pic.getContentType().startsWith("image/")) {
+            throw new InvalidRegexException();
+        }
         try {
-            String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, mapper.getUserPicName(p.getSignedUserPk()));
-            file.delete();
+            customFileUtils.makeFolder("user");
             String target = String.format("%s",fileName);
             customFileUtils.transferTo(pic, target);
         } catch(Exception e) {
