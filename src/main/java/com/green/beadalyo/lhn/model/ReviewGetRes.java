@@ -52,4 +52,6 @@ public class ReviewGetRes {
     @JsonIgnore
     private String reviewPics4;
 
+    private String resName;
+
 }
