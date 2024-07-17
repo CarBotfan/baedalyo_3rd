@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
@@ -51,10 +52,13 @@ public class ReviewService {
             for (int i = 0; i < pics.size(); i++) {
                 MultipartFile file = pics.get(i);
                 String picName = fileUtils.makeRandomFileName(file.getOriginalFilename());
-                picNames[i] = picName;
+                picNames[i] = "reviews/"+ picName;
                 try {
                     String folderPath = fileUtils.makeFolder("reviews");
-                    String targetPath = folderPath + "/" + picName;
+                    System.out.println(folderPath);
+                    System.out.println(picName);
+
+                    String targetPath =  "/reviews/" + picName;
                     fileUtils.transferTo(file, targetPath);
                 } catch (Exception e) {
                     log.error("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);

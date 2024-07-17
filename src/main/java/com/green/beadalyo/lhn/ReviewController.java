@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ public class ReviewController {
     private final AuthenticationFacade facade ;
     private final UserService userService ;
 
-    @PostMapping("api/review")
+    @PostMapping(value = "api/review", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "고객리뷰작성")
     @ApiResponse(
             description = "<p> code : 1  => 리뷰 작성 완료 </p>"+
