@@ -99,7 +99,7 @@ public class ReviewService {
     // 사장이 보는 자기 가게의 리뷰와 답글들
     public List<ReviewGetRes> getOwnerReviews() {
         long userPk = authenticationFacade.getLoginUserPk();
-        long resPk = mapper.getRestaurantUser(userPk);
+        long resPk = mapper.getResPkByUserPk(userPk);
         List<ReviewGetRes> reviews = mapper.getReviewsRestaurant(resPk);
         for (ReviewGetRes review : reviews) {
             if (review.getReviewPics1() != null) review.getPics().add(review.getReviewPics1());
