@@ -129,6 +129,29 @@ public class ReviewController {
                 .resultData(result)
                 .build();
     }
+
+    @GetMapping("noauth")
+    @Operation(summary = "비회원 리뷰 리스트 불러오기", description = "")
+    public ResultDto<List<ReviewGetRes>> getReviewListByResPk() {
+
+        int code = 1;
+        String msg = "불러오기 완료";
+        List<ReviewGetRes> result = null;
+
+        try {
+
+        } catch (Exception e) {
+            code = -13;
+            msg = e.getMessage();
+        }
+
+        return ResultDto.<List<ReviewGetRes>>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+
     @Transactional
     @PutMapping("owner/comment")
     @Operation(summary = "사장님 답글 수정")

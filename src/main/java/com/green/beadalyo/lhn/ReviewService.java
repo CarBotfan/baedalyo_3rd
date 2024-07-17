@@ -38,9 +38,7 @@ public class ReviewService {
 
             }
         }
-        if (pics.size() > 4) {
-            throw new NullPointerException("파일 개수는 4개 까지만 가능합니다");
-        }
+
 
         if (pics == null || pics.isEmpty()) {
             p.setReviewPics1(null);
@@ -48,6 +46,9 @@ public class ReviewService {
             p.setReviewPics3(null);
             p.setReviewPics4(null);
         } else {
+            if (pics.size() > 4) {
+                throw new NullPointerException("파일 개수는 4개 까지만 가능합니다");
+            }
             String[] picNames = new String[4];
             for (int i = 0; i < pics.size(); i++) {
                 MultipartFile file = pics.get(i);
@@ -127,6 +128,10 @@ public class ReviewService {
             review.setReply(res);
         }
         return reviews;
+    }
+
+    public List<ReviewGetRes> getReviewListByResPk() {
+        return null;
     }
     // 사장님 답글 수정
     public void UpdReviewReply(ReviewReplyUpdReq p){
