@@ -26,7 +26,7 @@ public class ReviewController {
     private final AuthenticationFacade facade ;
     private final UserService userService ;
 
-    @PostMapping(value = "api/review", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "고객리뷰작성")
     @ApiResponse(
             description = "<p> code : 1  => 리뷰 작성 완료 </p>"+
@@ -71,7 +71,7 @@ public class ReviewController {
                 .resultData(result)
                 .build();
     }
-    @PostMapping("api/comment")
+    @PostMapping("owner/comment")
     @Operation(summary = "사장님 답글", description = "")
     public ResultDto<Long> postReviewReply(@RequestBody ReviewReplyReq p) {
 
@@ -91,7 +91,7 @@ public class ReviewController {
                     .build();
         }
 
-    @GetMapping("reviewlist")
+    @GetMapping("list")
     @Operation(summary = "리뷰 리스트 불러오기", description = "")
     public ResultDto<List<ReviewGetRes>> getReviewList() {
         if (facade.getLoginUser() == null) {
@@ -130,7 +130,7 @@ public class ReviewController {
                 .build();
     }
     @Transactional
-    @PutMapping("patchreviewreply")
+    @PutMapping("owner/comment")
     @Operation(summary = "사장님 답글 수정")
     @ApiResponse(description =  "<p> code : 1  => 답글 수정 완료 </p>"+
             "<p> code : -7  => 리뷰를 작성한 사장님이 아닙니다 </p>" +
@@ -161,7 +161,7 @@ public class ReviewController {
                 .build();
     }
 
-    @PutMapping("patchreview")
+    @PutMapping()
     @Operation(summary = "리뷰수정" , description = "")
     @ApiResponse(
             description = "<p> code : 1  => 리뷰 수정 완료 </p>"+
@@ -202,14 +202,14 @@ public class ReviewController {
                 .build();
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("{review_pk}")
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
     @ApiResponse(
             description = "<p> code : 1  => 삭제 완료 </p>" +
                     "<p> code : -10  => 존재하지 않는 리뷰입니다 </p>" +
                     "<p> code : -11  => 리뷰를 작성한 사용자가 아닙니다 </p>"
     )
-    public ResultDto<Integer> deleteReview(@RequestParam long reviewPk) {
+    public ResultDto<Integer> deleteReview(@PathVariable("review_pk") long reviewPk) {
         facade.getLoginUser();
         if (facade.getLoginUser() == null)
             return ResultDto.<Integer>builder()
@@ -234,9 +234,9 @@ public class ReviewController {
                 .build();
     }
 
-    @DeleteMapping("deletereply")
+    @DeleteMapping("owner/comment/{review_comment_pk}")
     @Operation(summary = "사장님 답글 삭제", description = "답글을 삭제합니다")
-    public ResultDto<Integer> deleteReviewReply(@RequestParam long reviewCommentPk) {
+    public ResultDto<Integer> deleteReviewReply(@PathVariable("review_comment_pk") long reviewCommentPk) {
         long userPk = facade.getLoginUserPk();
         int code = 1;
         String msg = "삭제 완료";
