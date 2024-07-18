@@ -198,6 +198,7 @@ public class RestaurantManageApiController
 
             return ResultDto.builder().build();
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return ResultError.builder().statusCode(-3).resultMsg("음식점 정보 조회 실패").build();
         } catch (Exception e) {
             log.error("An error occurred: ", e);

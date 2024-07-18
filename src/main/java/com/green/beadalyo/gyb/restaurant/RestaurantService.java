@@ -33,6 +33,8 @@ public class RestaurantService
 
     private final RestaurantDetailViewRepository viewDetailRepository;
 
+    private final FileUtils fileUtils ;
+
 
     // 업데이트
     public void save(Restaurant data) throws Exception
@@ -126,8 +128,8 @@ public class RestaurantService
     {
         Restaurant data = repository.findTop1ByUser(userSeq).orElseThrow(NullPointerException::new);
 
-        if (data.getPic() != null) FileUtils.fileDelete(data.getPic()) ;
-        return FileUtils.fileInput(data.getSeq().toString(),file) ;
+        if (data.getPic() != null) fileUtils.fileDelete(data.getPic()) ;
+        return fileUtils.fileInput(data.getSeq().toString(),file) ;
 
 
     }
