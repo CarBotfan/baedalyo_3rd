@@ -5,6 +5,7 @@ import com.green.beadalyo.jhw.email.model.EmailCheckDto;
 import com.green.beadalyo.jhw.email.model.EmailRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/mail")
+@Tag(name = "메일 컨트롤러")
 public class MailController {
     private final MailService mailService;
     @PostMapping("/send")
