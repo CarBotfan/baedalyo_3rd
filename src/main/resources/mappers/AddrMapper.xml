@@ -28,7 +28,7 @@
         , addr_coor_y AS addrCoorY
         FROM address
         WHERE addr_user_pk = #{signedUserPk}
-        ORDER BY addr_default DESC
+        ORDER BY addr_default DESC, created_at DESC
     </select>
     <select id="getUserAddr">
         SELECT addr_pk AS addrPk, addr_name AS addrName, addr1, addr2
