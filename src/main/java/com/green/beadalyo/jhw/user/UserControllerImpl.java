@@ -266,7 +266,6 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         String result = "";
         String msg = "수정 완료";
-        @Valid
         UserPicPatchReq p = new UserPicPatchReq();
         try {
             result = service.patchProfilePic(pic, p);
