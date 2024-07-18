@@ -1,5 +1,6 @@
 package com.green.beadalyo.gyb.response;
 
+import com.green.beadalyo.gyb.model.Category;
 import com.green.beadalyo.gyb.model.Restaurant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -36,6 +38,9 @@ public class RestaurantManageRes
     @Schema(description = "영업 상태 1 : 영업중 / 2 : 휴업중")
     private Integer restaurantState ;
 
+    @Schema(description = "카테고리 리스트")
+    private List<CategoryRes> categories ;
+
 
     public RestaurantManageRes(Restaurant data)
     {
@@ -50,6 +55,11 @@ public class RestaurantManageRes
         this.restaurantDescription = data.getRestaurantDescription() ;
         this.reviewDescription = data.getReviewDescription() ;
         this.restaurantState = data.getState() ;
+
+        List<Category> categorys = data.getCategories();
+        List<CategoryRes> res = new ArrayList<>();
+        categorys.forEach(category -> {res.add(new CategoryRes(category));}) ;
+        this.categories = res ;
 
     }
 }
