@@ -2,6 +2,7 @@ package com.green.beadalyo.gyb.common;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -12,17 +13,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@Component
 public class FileUtils
 {
 
-    private static String absolutePath  ;
+    private final String absolutePath  ;
 
-    public FileUtils(@Value("file.dir") String dir)
+    public FileUtils(@Value("${file.dir}") String dir)
     {
-        absolutePath = dir;
+        absolutePath = dir ;
     }
 
-    public static String getRandomName()
+    public String getRandomName()
     {
         String time = String.valueOf(System.currentTimeMillis()) ;
         UUID uuid = UUID.randomUUID();
@@ -30,7 +32,7 @@ public class FileUtils
 
     }
 
-    public static boolean checksumExt(List<Ext> exts, MultipartFile file)
+    public boolean checksumExt(List<Ext> exts, MultipartFile file)
     {
         if (file == null || file.isEmpty()) return false ;
         String ext = getExt(file) ;
@@ -46,7 +48,7 @@ public class FileUtils
         return false ;
     }
 
-    public static String getExt(MultipartFile file)
+    public String getExt(MultipartFile file)
     {
         if (file == null || file.isEmpty()) return null ;
 
@@ -58,7 +60,7 @@ public class FileUtils
         }
     }
 
-    public static String getExt(String fileName)
+    public String getExt(String fileName)
     {
         if (fileName == null || fileName.lastIndexOf(".") < 0) return null ;
 
@@ -70,11 +72,13 @@ public class FileUtils
     }
 
     @SuppressWarnings("all")
-    public static String fileInput(String path, MultipartFile file) throws IOException
+    public String fileInput(String path, MultipartFile file) throws IOException
     {
 
         String filename = getRandomName();
         filename += getExt(file);
+        System.out.println(absolutePath + "/" + filename);
+
         Path directoryPath = Paths.get(absolutePath, path);
         File directory = directoryPath.toFile();
 
@@ -97,7 +101,7 @@ public class FileUtils
     }
 
     @SuppressWarnings("all")
-    public static Boolean fileDelete(String fileName) throws Exception
+    public Boolean fileDelete(String fileName) throws Exception
     {
         try {
             // 경로 조합
@@ -125,7 +129,7 @@ public class FileUtils
         }
     }
 
-    public static Integer fileDeleteList(String path, List<File> files) throws Exception
+    public Integer fileDeleteList(String path, List<File> files) throws Exception
     {
         int result = 0;
 
@@ -158,7 +162,7 @@ public class FileUtils
     }
 
     //    @SuppressWarnings("all")
-    public static Boolean deleteDirectory(String forder) throws Exception
+    public Boolean deleteDirectory(String forder) throws Exception
     {
         Path paths = Paths.get(absolutePath, forder);
         File directory = paths.toFile() ;

@@ -33,6 +33,7 @@ public class CategoryApiController
     private final CategoryService service;
     private final UserServiceImpl userService ;
     private final AuthenticationFacade authenticationFacade;
+    private final FileUtils fileUtils;
 
     @PostMapping
     @Operation(summary = "카테고리 추가")
@@ -60,10 +61,10 @@ public class CategoryApiController
         {
             //파일 확장자 유효성 검증
             try {
-                if (!FileUtils.checksumExt(List.of(Ext.GIF,Ext.PNG,Ext.JPG,Ext.JPEG) ,file))
+                if (!fileUtils.checksumExt(List.of(Ext.GIF,Ext.PNG,Ext.JPG,Ext.JPEG) ,file))
                     return ResultError.builder().statusCode(-4).resultMsg("파일은 jpg, gif, png 만 허용됩니다.").build();
 
-                filename = FileUtils.fileInput("category",file) ;
+                filename = fileUtils.fileInput("category",file) ;
             } catch (Exception e) {
                 log.error("An error occurred: ", e);
                 return ResultError.builder().build();
@@ -75,13 +76,13 @@ public class CategoryApiController
             service.InsertCategory(str, filename);
         } catch (DuplicateKeyException e) {
             try {
-                FileUtils.fileDelete(filename) ;
+                fileUtils.fileDelete(filename) ;
             } catch (Exception e1) {log.error(e1.toString());}
             return ResultError.builder().statusCode(-5).resultMsg("이미 만들어져있는 카테고리 입니다.").build() ;
         } catch (Exception e) {
             log.error("An error occurred: ", e);
             try {
-                FileUtils.fileDelete(filename) ;
+                fileUtils.fileDelete(filename) ;
             } catch (Exception e1) {log.error(e1.toString());}
             return ResultError.builder().build();
         }
@@ -113,7 +114,7 @@ public class CategoryApiController
 
         try {
             Category cate = service.getCategory(seq) ;
-            FileUtils.fileDelete(cate.getCategoryPic()) ;
+            fileUtils.fileDelete(cate.getCategoryPic()) ;
             service.deleteCategory(cate) ;
 
             return ResultDto.builder().build();
