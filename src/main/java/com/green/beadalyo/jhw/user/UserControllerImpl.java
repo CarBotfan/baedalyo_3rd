@@ -486,13 +486,34 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/sign-out")
-    public ResultDto<String> userLogout(HttpServletRequest request, HttpServletResponse response) {
+    @Operation(summary = "로그아웃")
+    @ApiResponse(
+            description =
+                    "<p> 1 : 로그아웃 완료 </p>"+
+                            "<p> -20 : 인증 정보 없음 </p>" +
+                            "<p> -1 : 기타 오류 </p>"
+    )
+    public ResultDto<Integer> userLogout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String msg = "인증 정보 없음";
+        int result = -20;
         if (authentication != null) {
-            new SecurityContextLogoutHandler().logout(request, response, authentication);
-            service.logoutToken(request, response);
+            try {
+                new SecurityContextLogoutHandler().logout(request, response, authentication);
+                service.logoutToken(request, response);
+                msg = "로그아웃 완료";
+                result = 1;
+            } catch (Exception e) {
+                msg = e.getMessage();
+                result = -1;
+            }
         }
-        return ResultDto.<String>builder().build();
+        return ResultDto.<Integer>builder()
+                .statusCode(result)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
     }
 }
