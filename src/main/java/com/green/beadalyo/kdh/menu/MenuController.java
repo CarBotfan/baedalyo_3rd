@@ -150,12 +150,22 @@ public class MenuController {
 
         String msg = "메뉴 수정 완료";
         int code = 1;
-        if ((!p.getMenuName().isEmpty() && p.getMenuName().length()>=20 )
-                && (!p.getMenuContent().isEmpty() && p.getMenuContent().length() >= 100  )) {
-            return ResultDto.<PutMenuRes>builder()
-                    .statusCode(-2)
-                    .resultMsg("메뉴 양식이 안맞습니다.")
-                    .build();
+        log.info("p : {}", p);
+        if (p.getMenuName()!= null ) {
+            if ( p.getMenuName().length()>=20 ) {
+                return ResultDto.<PutMenuRes>builder()
+                        .statusCode(-2)
+                        .resultMsg("메뉴 양식이 안맞습니다.")
+                        .build();
+            }
+        }
+        if (p.getMenuContent() != null) {
+            if ( p.getMenuContent().length()>=100 ) {
+                return ResultDto.<PutMenuRes>builder()
+                        .statusCode(-2)
+                        .resultMsg("메뉴 양식이 안맞습니다.")
+                        .build();
+            }
         }
         try {
             result = service.putMenu(pic, p);

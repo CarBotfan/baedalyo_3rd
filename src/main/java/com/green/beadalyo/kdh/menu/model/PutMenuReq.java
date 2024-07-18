@@ -6,28 +6,30 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PutMenuReq {
     @Schema(example = "1" , description = "메뉴 PK", requiredMode = Schema.RequiredMode.REQUIRED)
     private long menuPk;
 
-    @Schema(example = "후라이드 치킨" , description = "메뉴 이름", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "후라이드 치킨" , description = "메뉴 이름", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String menuName;
 
-    @Schema(example = "바삭바삭한 후라이드" , description = "메뉴 설명", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "바삭바삭한 후라이드" , description = "메뉴 설명", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String menuContent;
 
-    @Schema(example = "10000" , description = "메뉴 가격", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "10000" , description = "메뉴 가격", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private int menuPrice;
 
     @JsonIgnore
-    @Schema(example = "asdkfmlksad.jpg" , description = "메뉴 사진", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "asdkfmlksad.jpg" , description = "메뉴 사진", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String menuPic;
 
-    @Schema(example = "1" , description = "메뉴 상태 ex) 1:판매 중 2: 품절", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "1" , description = "메뉴 상태 ex) 1:판매 중 2: 품절", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private int menuState;
 
     @JsonIgnore

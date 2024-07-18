@@ -99,15 +99,15 @@ public class MenuService {
     @Transactional
     public PutMenuRes putMenu(MultipartFile pic, PutMenuReq p){
 
-            p.setResUserPk(authenticationFacade.getLoginUserPk());
+            long userPk = authenticationFacade.getLoginUserPk();
             Long resUserPk = mapper.checkResUserPkByMenuPk(p.getMenuPk());
+            log.info("asdfasdf : {}", userPk);
+            log.info("asdfasdf : {}", resUserPk);
 
-            if (resUserPk != p.getResUserPk()){
+            if (resUserPk != userPk){
                 throw new RuntimeException();
             }
-            if(pic.getSize() > maxSize){
-                throw new ArithmeticException();
-            }
+
             long menuResPk = mapper.getMenuResPkByMenuPk(p.getMenuPk());
             List<String> menuName = mapper.getMenuNameByPut(menuResPk,p.getMenuPk());
             for (String menu : menuName){
@@ -134,6 +134,9 @@ public class MenuService {
                     .updatedAt(afterMenu.getUpdatedAt())
                     .build();
             return result;
+        }
+        if(pic.getSize() > maxSize){
+            throw new ArithmeticException();
         }
         try {
             String path = String.format("menu/%d",p.getMenuPk());

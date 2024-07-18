@@ -115,7 +115,7 @@ WHERE menu_pk = #{menuPk}
 
 
 <select id="checkResUserPkByMenuPk">
-    SELECT res_user_pk AS resUserPk
+    SELECT res_user_pk
     FROM 	restaurant
     WHERE res_pk = (SELECT menu_res_pk
                     FROM menu
