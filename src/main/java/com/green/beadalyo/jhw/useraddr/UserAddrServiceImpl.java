@@ -20,7 +20,8 @@ public class UserAddrServiceImpl implements UserAddrService{
     @Override
     public long postUserAddr(UserAddrPostReq p) throws Exception{
         p.setSignedUserId(authenticationFacade.getLoginUserPk());
-        return mapper.postUserAddr(p);
+        mapper.postUserAddr(p);
+        return p.getAddrPk();
     }
 
     @Override
