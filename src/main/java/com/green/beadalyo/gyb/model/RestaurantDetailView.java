@@ -22,6 +22,7 @@ public class RestaurantDetailView
     private String restaurantDesc ;
     private String reviewDesc ;
     private String regiNum ;
+    private Integer totalMenu ;
     private LocalTime openTime ;
     private LocalTime closeTime ;
     private String restaurantAddr ;

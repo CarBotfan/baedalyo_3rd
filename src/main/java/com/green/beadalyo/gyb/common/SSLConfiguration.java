@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class SSLConfiguration
 {
 
-    @GetMapping("/.well-known/pki-validation/78601C36A0D31B69288ADD01B62149E7.txt")
+    @GetMapping("/.well-known/pki-validation/E294CC5CE7D911F481E08B0D2705C54F.txt")
     public Resource getValidationFile() {
-        return new FileSystemResource("/root/jar/78601C36A0D31B69288ADD01B62149E7.txt");
+        return new FileSystemResource("/root/jar/E294CC5CE7D911F481E08B0D2705C54F.txt");
     }
 
 }

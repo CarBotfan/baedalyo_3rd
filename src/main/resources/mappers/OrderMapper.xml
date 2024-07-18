@@ -138,7 +138,7 @@
     <select id="getOrderInfo">
         SELECT order_pk AS orderPk, order_user_pk AS userPk, order_res_pk AS resPk, order_price AS orderPrice
                 , order_request AS orderRequest, order_state AS orderState, payment_method AS paymentMethod
-                , created_at AS createdAt, order_address AS orderAddress
+                , created_at AS createdAt, order_address AS orderAddress, order_phone AS orderPhone
         FROM `order`
         WHERE order_pk = #{orderPk}
     </select>

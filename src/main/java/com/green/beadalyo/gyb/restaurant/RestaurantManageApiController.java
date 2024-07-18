@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -174,7 +175,7 @@ public class RestaurantManageApiController
 
     }
 
-    @PostMapping("pic")
+    @PostMapping(value = "pic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "음식점 사진 수정하기")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
             description =
@@ -184,7 +185,7 @@ public class RestaurantManageApiController
                     "<p> -3 : 음식점 정보 조회 실패 </p>"
 
     )
-    public Result updatePic(MultipartFile file)
+    public Result updatePic(@RequestPart MultipartFile file)
     {
         Long seq = authenticationFacade.getLoginUserPk() ;
         if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;

@@ -130,8 +130,18 @@ public class ReviewService {
         return reviews;
     }
 
-    public List<ReviewGetRes> getReviewListByResPk() {
-        return null;
+    public List<ReviewGetRes> getReviewListByResPk(long resPk) {
+        List<ReviewGetRes> reviews = mapper.getReviewsRestaurant(resPk);
+        for (ReviewGetRes review : reviews) {
+            if (review.getReviewPics1() != null) review.getPics().add(review.getReviewPics1());
+            if (review.getReviewPics2() != null) review.getPics().add(review.getReviewPics2());
+            if (review.getReviewPics3() != null) review.getPics().add(review.getReviewPics3());
+            if (review.getReviewPics4() != null) review.getPics().add(review.getReviewPics4());
+            ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
+            review.setReply(res);
+        }
+
+        return reviews;
     }
     // 사장님 답글 수정
     public void UpdReviewReply(ReviewReplyUpdReq p){
