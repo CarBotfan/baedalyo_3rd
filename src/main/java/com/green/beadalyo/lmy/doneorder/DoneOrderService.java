@@ -62,8 +62,9 @@ public class DoneOrderService {
     public Map<String, Object> getDoneOrderByResPk(Long resPk, Paging p) {
         List<DoneOrderMiniGetRes> result = null;
 
-        Integer totalElements = doneOrderMapper.selectTotalElementsByResPk(resPk);
-        Integer totalPage = (totalElements / p.getSize()) + 1;
+        Integer totalElements = doneOrderMapper.selectDoneTotalElementsByResPk(resPk);
+        Integer totalPage = totalElements % p.getSize() == 0 ?
+                totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
 
         DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
                 .page(p.getPage())
@@ -88,8 +89,9 @@ public class DoneOrderService {
     public Map<String, Object> getCancelOrderByResPk(Long resPk, Paging p) {
         List<DoneOrderMiniGetRes> result = null;
 
-        Integer totalElements = doneOrderMapper.selectTotalElementsByResPk(resPk);
-        Integer totalPage = (totalElements / p.getSize()) + 1;
+        Integer totalElements = doneOrderMapper.selectCancelTotalElementsByResPk(resPk);
+        Integer totalPage = totalElements % p.getSize() == 0 ?
+                totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
 
         DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
                 .page(p.getPage())

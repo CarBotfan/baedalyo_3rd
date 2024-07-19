@@ -13,7 +13,8 @@ import java.util.List;
 public interface DoneOrderMapper {
     List<MenuInfoDto> selectDoneMenuInfo(Long doneOrderPk);
     Integer selectTotalElementsByUserPk(Long userPk);
-    Integer selectTotalElementsByResPk(Long resPk);
+    Integer selectCancelTotalElementsByResPk(Long resPk);
+    Integer selectDoneTotalElementsByResPk(Long resPk);
     List<DoneOrderMiniGetRes> selectDoneOrderByUserPk(DoneOrderByUserPkDto dto);
 //    List<DoneOrderMiniGetRes> selectCancelOrderByUserPk(Long userPk);
     List<DoneOrderMiniGetRes> selectDoneOrderByResPk(DoneOrderByResPkDto dto);

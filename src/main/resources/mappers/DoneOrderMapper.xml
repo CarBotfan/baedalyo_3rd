@@ -16,10 +16,16 @@
         WHERE user_pk = #{userPk}
     </select>
 
-    <select id="selectTotalElementsByResPk">
+    <select id="selectCancelTotalElementsByResPk">
         select count(*)
         from `done_order`
-        WHERE res_pk = #{resPk}
+        WHERE res_pk = #{resPk} AND done_order_state = 2
+    </select>
+
+    <select id="selectDoneTotalElementsByResPk">
+        select count(*)
+        from `done_order`
+        WHERE res_pk = #{resPk} AND done_order_state = 1
     </select>
 
     <select id="selectDoneOrderByUserPk">
