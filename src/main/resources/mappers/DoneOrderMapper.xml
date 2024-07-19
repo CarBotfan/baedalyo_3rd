@@ -37,7 +37,7 @@
         WHERE
         o.user_pk = #{userPk}
         ORDER BY o.created_at DESC
-        LIMIT #{startIndex}, #{page} * #{size}
+        LIMIT #{startIndex}, #{size}
     </select>
 
     <select id="selectCancelOrderByUserPk">
@@ -71,7 +71,7 @@
         WHERE
         o.res_pk = #{resPk} AND o.done_order_state = 1
         ORDER BY o.created_at DESC
-        LIMIT #{startIndex}, #{page} * #{size}
+        LIMIT #{startIndex}, #{size}
     </select>
 
     <select id="selectCancelOrderByResPk">
@@ -89,7 +89,7 @@
         WHERE
         o.res_pk = #{resPk} AND o.done_order_state = 2
         ORDER BY o.created_at DESC
-        LIMIT #{startIndex}, #{page} * #{size}
+        LIMIT #{startIndex}, #{size}
     </select>
 
     <select id="getDoneOrderInfo">
