@@ -38,6 +38,9 @@ public class RestaurantManageRes
     @Schema(description = "영업 상태 1 : 영업중 / 2 : 휴업중")
     private Integer restaurantState ;
 
+    @Schema(description = "음식점 사진 링크")
+    private String restaurantPic ;
+
     @Schema(description = "카테고리 리스트")
     private List<CategoryRes> categories ;
 
@@ -55,7 +58,7 @@ public class RestaurantManageRes
         this.restaurantDescription = data.getRestaurantDescription() ;
         this.reviewDescription = data.getReviewDescription() ;
         this.restaurantState = data.getState() ;
-
+        this.restaurantPic = data.getPic();
         List<Category> categorys = data.getCategories();
         List<CategoryRes> res = new ArrayList<>();
         categorys.forEach(category -> {res.add(new CategoryRes(category));}) ;

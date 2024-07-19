@@ -129,7 +129,7 @@ public class RestaurantService
         Restaurant data = repository.findTop1ByUser(userSeq).orElseThrow(NullPointerException::new);
 
         if (data.getPic() != null) fileUtils.fileDelete(data.getPic()) ;
-        return fileUtils.fileInput(data.getSeq().toString(),file) ;
+        return fileUtils.fileInput("restaurant/" + data.getSeq().toString(),file) ;
 
 
     }
