@@ -32,34 +32,35 @@ public class MenuService {
             throw new RuntimeException();
         }
         p.setMenuResPk(resPk);
-        if(pic.getSize() > maxSize){
-            throw new ArithmeticException();
-        }
+
         List<String> menuName = mapper.getMenuName(p.getMenuResPk());
         for (String menu : menuName){
             if (menu.equals(p.getMenuName())){
                 throw new IllegalArgumentException();
             }
         }
-            if (pic==null || pic.isEmpty()){
-                p.setMenuPic(null);
-                mapper.postMenu(p);
-                PostMenuRes result = PostMenuRes.builder()
-                        .menuPk(p.getMenuPk())
-                        .menuResPk(p.getMenuResPk())
-                        .menuName(p.getMenuName())
-                        .menuContent(p.getMenuContent())
-                        .menuPrice(p.getMenuPrice())
-                        .menuPic(null)
-                        .menuState(p.getMenuState())
-                        .build();
-                return result;
-            }
-            String picName = customFileUtils.makeRandomFileName(pic);
+        if (pic==null || pic.isEmpty()){
+            p.setMenuPic(null);
             mapper.postMenu(p);
-            String path = String.format("menu/%d", p.getMenuPk());
-            p.setMenuPic(path + "/"+ picName);
-            mapper.postMenuPic(p);
+            PostMenuRes result = PostMenuRes.builder()
+                    .menuPk(p.getMenuPk())
+                    .menuResPk(p.getMenuResPk())
+                    .menuName(p.getMenuName())
+                    .menuContent(p.getMenuContent())
+                    .menuPrice(p.getMenuPrice())
+                    .menuPic(null)
+                    .menuState(p.getMenuState())
+                    .build();
+            return result;
+        }
+        if(pic.getSize() > maxSize){
+            throw new ArithmeticException();
+        }
+        String picName = customFileUtils.makeRandomFileName(pic);
+        mapper.postMenu(p);
+        String path = String.format("menu/%d", p.getMenuPk());
+        p.setMenuPic(path + "/"+ picName);
+        mapper.postMenuPic(p);
 
 
         try {
