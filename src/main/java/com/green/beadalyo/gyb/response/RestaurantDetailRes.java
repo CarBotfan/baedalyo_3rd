@@ -45,6 +45,7 @@ public class RestaurantDetailRes
     {
         this.restaurantPk = data.getRestaurantPk() ;
         this.restaurantName = data.getRestaurantName() ;
+        this.restaurantPic = data.getRestaurantPic() ;
         this.restaurantAddr = data.getRestaurantAddr() ;
         this.regiNum = data.getRegiNum() ;
         this.restaurantDesc = data.getRestaurantDesc() ;
