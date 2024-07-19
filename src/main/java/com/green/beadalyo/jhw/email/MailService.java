@@ -53,8 +53,6 @@ public class MailService {
     //mail을 어디서 보내는지, 어디로 보내는지 , 인증 번호를 html 형식으로 어떻게 보내는지 작성합니다.
     public String joinEmail(String email) {
         UserEntityEmail userEntityEmail = mapper.getUserByEmail(email);
-        log.info("{}", email);
-        log.info("{}", userEntityEmail.getEmail());
         if (userEntityEmail != null) {
             return "이미 등록된 메일입니다!";
         } else try {
