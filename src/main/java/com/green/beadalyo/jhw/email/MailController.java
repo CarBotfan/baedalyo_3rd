@@ -25,6 +25,7 @@ public class MailController {
     @PostMapping("/send")
     @Operation(summary = "인증번호 메일 발송")
     public ResultDto<String> mailSend(@RequestBody @Valid EmailRequestDto emailDto) {
+
         String result = mailService.joinEmail(emailDto.getEmail());
         return ResultDto.<String>builder()
                 .statusCode(1)
