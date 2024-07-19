@@ -28,4 +28,6 @@ public interface ReviewMapper {
     List<ReviewGetRes> getReviewsUser(long userPk);
     //String getUserRole(long userPk);
 
+    String selectUserNickName(long userPk);
+
 }

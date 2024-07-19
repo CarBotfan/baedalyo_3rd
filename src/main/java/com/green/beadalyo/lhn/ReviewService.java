@@ -109,6 +109,8 @@ public class ReviewService {
             if (review.getReviewPics4() != null) review.getPics().add(review.getReviewPics4());
             ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
             review.setReply(res);
+
+            review.setNickName(mapper.selectUserNickName(review.getUserPk()));
         }
 
         return reviews;
@@ -139,6 +141,8 @@ public class ReviewService {
             if (review.getReviewPics4() != null) review.getPics().add(review.getReviewPics4());
             ReviewReplyRes res = mapper.getReviewComment(review.getReviewPk());
             review.setReply(res);
+
+            review.setNickName(mapper.selectUserNickName(review.getUserPk()));
         }
 
         return reviews;

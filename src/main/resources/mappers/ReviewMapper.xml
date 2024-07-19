@@ -156,6 +156,11 @@
         ORDER BY A.created_at DESC
     </select>
 
+    <select id="selectUserNickName">
+        select user_nickname
+        from user
+        where user_pk = #{userPk}
+    </select>
 
 
 
