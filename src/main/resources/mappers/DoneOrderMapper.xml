@@ -10,6 +10,18 @@
         WHERE done_order_pk = #{doneOrderPk}
     </select>
 
+    <select id="selectTotalElementsByUserPk">
+        select count(*)
+        from `done_order`
+        WHERE user_pk = #{userPk}
+    </select>
+
+    <select id="selectTotalElementsByResPk">
+        select count(*)
+        from `done_order`
+        WHERE res_pk = #{resPk}
+    </select>
+
     <select id="selectDoneOrderByUserPk">
         SELECT
         o.done_order_pk AS doneOrderPk,
@@ -25,6 +37,7 @@
         WHERE
         o.user_pk = #{userPk}
         ORDER BY o.created_at DESC
+        LIMIT #{startIndex}, #{size}
     </select>
 
     <select id="selectCancelOrderByUserPk">
@@ -58,6 +71,7 @@
         WHERE
         o.res_pk = #{resPk} AND o.done_order_state = 1
         ORDER BY o.created_at DESC
+        LIMIT #{startIndex}, #{size}
     </select>
 
     <select id="selectCancelOrderByResPk">
@@ -75,6 +89,7 @@
         WHERE
         o.res_pk = #{resPk} AND o.done_order_state = 2
         ORDER BY o.created_at DESC
+        LIMIT #{startIndex}, #{size}
     </select>
 
     <select id="getDoneOrderInfo">

@@ -5,16 +5,19 @@ import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderGetRes;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
+import com.green.beadalyo.lmy.doneorder.model.Paging;
 import com.green.beadalyo.lmy.order.OrderMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.green.beadalyo.lmy.dataset.ResponseDataSet.*;
 
@@ -39,26 +42,26 @@ public class DoneOrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByUserPk() {
-        List<DoneOrderMiniGetRes> result = null;
+    public ResultDto<Map<String, Object>> getDoneOrderByUserPk(@ParameterObject @ModelAttribute Paging p) {
+        Map<String, Object> result = null;
 
         try {
-            result = doneOrderService.getDoneOrderByUserPk();
+            result = doneOrderService.getDoneOrderByUserPk(p);
         } catch (Exception e) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+            return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
                     .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getMessage())
                     .build();
         }
 
         if (result == null || result.isEmpty()) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+            return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getCode())
                     .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getMessage())
                     .build();
         }
 
-        return ResultDto.<List<DoneOrderMiniGetRes>>builder().statusCode(SUCCESS_CODE).resultMsg(GET_DONE_ORDER_BY_USER_PK_SUCCESS).resultData(result).build();
+        return ResultDto.<Map<String, Object>>builder().statusCode(SUCCESS_CODE).resultMsg(GET_DONE_ORDER_BY_USER_PK_SUCCESS).resultData(result).build();
     }
 
 //    @GetMapping("user/cancel/list")
@@ -105,29 +108,29 @@ public class DoneOrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getDoneOrderByResPk() {
-        List<DoneOrderMiniGetRes> result = null;
+    public ResultDto<Map<String, Object>> getDoneOrderByResPk(@ParameterObject @ModelAttribute Paging p) {
+        Map<String, Object> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
         Long resPk = orderMapper.getResPkByUserPk(userPk);
 
         try {
-            result = doneOrderService.getDoneOrderByResPk(resPk);
+            result = doneOrderService.getDoneOrderByResPk(resPk, p);
         } catch (Exception e) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+            return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
                     .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getMessage())
                     .build();
         }
 
         if (result == null || result.isEmpty()) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+            return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getCode())
                     .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getMessage())
                     .build();
         }
 
-        return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+        return ResultDto.<Map<String, Object>>builder()
                 .statusCode(SUCCESS_CODE)
                 .resultMsg(GET_DONE_ORDER_BY_RES_PK_SUCCESS)
                 .resultData(result)
@@ -144,36 +147,36 @@ public class DoneOrderController {
                             "<p> -6 : 주문 정보 불러오기 실패 </p>"+
                             "<p> -7 : 불러올 주문 정보가 없음 </p>"
     )
-    public ResultDto<List<DoneOrderMiniGetRes>> getCancelOrderByResPk() {
-        List<DoneOrderMiniGetRes> result = null;
+    public ResultDto<Map<String, Object>> getCancelOrderByResPk(@ParameterObject @ModelAttribute Paging p) {
+        Map<String, Object> result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
 
         Long resPk = orderMapper.getResPkByUserPk(userPk);
         if (resPk == null) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+            return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
                     .build();
         }
 
         try {
-            result = doneOrderService.getCancelOrderByResPk(resPk);
+            result = doneOrderService.getCancelOrderByResPk(resPk, p);
         } catch (Exception e) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+            return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
                     .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getMessage())
                     .build();
         }
 
         if (result == null || result.isEmpty()) {
-            return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+            return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getCode())
                     .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getMessage())
                     .build();
         }
 
-        return ResultDto.<List<DoneOrderMiniGetRes>>builder()
+        return ResultDto.<Map<String, Object>>builder()
                 .statusCode(SUCCESS_CODE)
                 .resultMsg(GET_CANCEL_ORDER_BY_RES_PK_SUCCESS)
                 .resultData(result)
