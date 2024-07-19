@@ -46,6 +46,12 @@
         LIMIT #{startIndex}, #{size}
     </select>
 
+    <select id="selectReviewState">
+        select count(*)
+        from review
+        where done_order_pk = #{doneOrderPk}
+    </select>
+
     <select id="selectCancelOrderByUserPk">
         SELECT
         o.done_order_pk AS doneOrderPk,

@@ -19,7 +19,7 @@ public class DoneOrderService {
     public Map<String, Object> getDoneOrderByUserPk(Paging p) {
         long userPk = authenticationFacade.getLoginUserPk();
 
-        List<DoneOrderMiniGetRes> result = null;
+        List<DoneOrderMiniGetResUser> result = null;
 
         Integer totalElements = doneOrderMapper.selectTotalElementsByUserPk(userPk);
         Integer totalPage = (totalElements / p.getSize()) + 1;
@@ -32,7 +32,8 @@ public class DoneOrderService {
                 .build();
 
         result = doneOrderMapper.selectDoneOrderByUserPk(dto);
-        for (DoneOrderMiniGetRes item : result) {
+        for (DoneOrderMiniGetResUser item : result) {
+            item.setReviewState(doneOrderMapper.selectReviewState(item.getDoneOrderPk()) == 0 ? 0 : 1);
             List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
