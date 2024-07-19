@@ -6,5 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserEntityEmail {
+    private String userNickname;
     private String email;
 }
