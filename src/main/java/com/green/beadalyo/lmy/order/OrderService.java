@@ -162,6 +162,12 @@ public class OrderService {
 
     public OrderGetRes getOrderInfo(Long orderPk) {
 
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != orderMapper.getOrderResUser(orderPk)
+        && userPk != orderMapper.getOrderUser(orderPk)) {
+            throw new IllegalArgumentException("주문과 관련된 유저만 열람 가능합니다.");
+        }
+
         OrderGetRes result = orderMapper.getOrderInfo(orderPk);
         result.setMenuInfoList(orderMapper.selectMenuInfo(orderPk));
 

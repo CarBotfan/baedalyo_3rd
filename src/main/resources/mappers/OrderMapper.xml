@@ -143,6 +143,20 @@
         WHERE order_pk = #{orderPk}
     </select>
 
+    <select id="getOrderResUser">
+        SELECT res_user_pk
+        FROM restaurant r
+        WHERE res_pk = (select order_res_pk
+                        from `order`
+                        where order_pk = #{orderPk})
+    </select>
+
+    <select id="getOrderUser">
+        SELECT order_user_pk
+        FROM `order`
+        WHERE order_pk = #{orderPk}
+    </select>
+
     <select id="selectMenuInfo">
         SELECT menu_name AS MenuName, menu_price AS MenuPrice
         FROM order_menu

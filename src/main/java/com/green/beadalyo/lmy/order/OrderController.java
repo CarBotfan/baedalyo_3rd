@@ -288,8 +288,15 @@ public class OrderController {
     public ResultDto<OrderGetRes> getOrderInfo(@PathVariable("order_pk") Long orderPk) {
         OrderGetRes result = null;
 
+
+
         try {
             result = orderService.getOrderInfo(orderPk);
+        } catch (IllegalArgumentException e) {
+            return ResultDto.<OrderGetRes>builder()
+                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
+                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
+                    .build();
         } catch (Exception e) {
             return ResultDto.<OrderGetRes>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
