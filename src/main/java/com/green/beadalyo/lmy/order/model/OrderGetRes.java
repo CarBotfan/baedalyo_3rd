@@ -9,6 +9,7 @@ public class OrderGetRes {
     private Long orderPk;
     private Long userPk;
     private Long resPk;
+    private String resName;
     private String orderAddress;
     private String orderPhone;
     private Integer orderPrice;

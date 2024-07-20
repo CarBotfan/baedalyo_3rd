@@ -147,6 +147,8 @@ public class ReviewService {
 
         return reviews;
     }
+
+
     // 사장님 답글 수정
     public void UpdReviewReply(ReviewReplyUpdReq p){
         long resPk = mapper.getResPkByReviewCommentPk(p.getReviewCommentPk()) ;
