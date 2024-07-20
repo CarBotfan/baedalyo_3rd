@@ -10,6 +10,7 @@ public class DoneOrderGetRes {
     private Long doneOrderPk;
     private Long userPk;
     private Long resPk;
+    private String resName;
     private String orderAddress;
     private String orderPhone;
     private Integer orderPrice;

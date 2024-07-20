@@ -117,6 +117,12 @@ public class DoneOrderService {
     public DoneOrderGetRes getDoneOrderInfo(Long doneOrderPk) {
         DoneOrderGetRes result = null;
 
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != doneOrderMapper.getDoneOrderResUser(doneOrderPk)
+                && userPk != doneOrderMapper.getDoneOrderUser(doneOrderPk)) {
+            throw new IllegalArgumentException("주문과 관련된 유저만 열람 가능합니다.");
+        }
+
         result = doneOrderMapper.getDoneOrderInfo(doneOrderPk);
         result.setMenuInfoList(doneOrderMapper.selectDoneMenuInfo(doneOrderPk));
 
