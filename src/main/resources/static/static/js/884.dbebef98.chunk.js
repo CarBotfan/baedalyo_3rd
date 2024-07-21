@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkJumuniyo=self.webpackChunkJumuniyo||[]).push([[884],{3884:(s,a,e)=>{e.r(a),e.d(a,{default:()=>u});e(5043);var l=e(579);const u=s=>{let{src:a,alt:e,className:u}=s;return(0,l.jsx)("img",{src:a,alt:e,className:u,loading:"lazy"})}}}]);
+//# sourceMappingURL=884.dbebef98.chunk.js.map
