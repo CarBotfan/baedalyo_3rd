@@ -57,7 +57,7 @@ public class MailService {
             return "이미 등록된 메일입니다!";
         } else try {
             makeRandomNumber();
-            String setFrom = "ehdgusok93@gmail.com"; // email-config에 설정한 자신의 이메일 주소를 입력
+            String setFrom = "redismailsender@gmail.com"; // email-config에 설정한 자신의 이메일 주소를 입력
             String toMail = email;
             String title = "회원 가입 인증 이메일 입니다."; // 이메일 제목
             String content =
@@ -65,7 +65,7 @@ public class MailService {
                             "<br><br>" +
                             "인증 번호는 " + authNumber + "입니다." +
                             "<br>" +
-                            "유효시간 안에 입력해주세요."; //이메일 내용 삽입
+                            "유효시간 5분 안에 입력해주세요."; //이메일 내용 삽입
             mailSend(setFrom, toMail, title, content);
             return "메일이 발송되었습니다.";
 

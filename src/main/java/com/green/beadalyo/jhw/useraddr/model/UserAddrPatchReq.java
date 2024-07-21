@@ -22,9 +22,7 @@ public class UserAddrPatchReq {
     private String addr1;
     @NotBlank(message = "상세 주소를 입력해주세요.")
     private String addr2;
-    @NotBlank(message = "위도를 입력해주세요.")
     private BigDecimal addrCoorX;
-    @NotBlank(message = "경도를 입력해주세요.")
     private BigDecimal addrCoorY;
 
 }

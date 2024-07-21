@@ -5,6 +5,7 @@ import com.green.beadalyo.jhw.useraddr.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -30,7 +31,7 @@ public class UserAddrControllerImpl implements UserAddrController{
                     "<p> 1 : 성공 </p>"+
                             "<p> -1 : 오류 </p>"
     )
-    public ResultDto<Long> postUserAddr(@RequestBody UserAddrPostReq p) {
+    public ResultDto<Long> postUserAddr(@RequestBody @Valid UserAddrPostReq p) {
         long result = 0;
         String msg = "등록 완료";
         int statusCode = 1;
@@ -139,7 +140,7 @@ public class UserAddrControllerImpl implements UserAddrController{
                     "<p> 1 : 성공 </p>"+
                             "<p> -1 : 오류 </p>"
     )
-    public ResultDto<Integer> patchUserAddr(@RequestBody UserAddrPatchReq p) {
+    public ResultDto<Integer> patchUserAddr(@RequestBody @Valid UserAddrPatchReq p) {
         int result = 0;
         String msg = "수정 완료";
         int statusCode = 1;

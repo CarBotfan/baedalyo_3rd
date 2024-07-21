@@ -188,7 +188,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -10 : 수정 실패 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<Integer> patchUserNickname(@RequestBody UserNicknamePatchReq p) {
+    public ResultDto<Integer> patchUserNickname(@RequestBody @Valid UserNicknamePatchReq p) {
         int statusCode = 1;
         String msg = "변경 완료";
         int result = 0;
@@ -223,7 +223,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -6 : 올바르지 않은 전화번호 형식 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<Integer> patchUserPhone(@RequestBody UserPhonePatchReq p) {
+    public ResultDto<Integer> patchUserPhone(@RequestBody @Valid UserPhonePatchReq p) {
         int statusCode = 1;
         String msg = "변경 완료";
         int result = 0;
@@ -301,7 +301,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -5 : 비밀번호 재입력 불일치 </p>" +
                             "<p> -1 : 기타 오류 </p>"
     )
-    public ResultDto<Integer> patchUserPassword(@RequestBody UserPasswordPatchReq p) {
+    public ResultDto<Integer> patchUserPassword(@RequestBody @Valid UserPasswordPatchReq p) {
         int statusCode = 1;
         int result = 0;
         String msg = "수정 완료";
