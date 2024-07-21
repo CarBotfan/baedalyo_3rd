@@ -21,6 +21,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.exceptions.PersistenceException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -67,7 +71,18 @@ public class UserServiceImpl implements UserService{
         p.setUserPw(password);
 
         if(pic == null) {
-            mapper.signUpUser(p);
+            try {
+                mapper.signUpUser(p);
+            } catch (Exception e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof SQLIntegrityConstraintViolationException) {
+                    String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+                    throw new DuplicatedInfoException(errorMessage);
+                } else {
+                    // 기타 예외 처리
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
             result = p.getUserPk();
             return result;
         } else if (!pic.getContentType().startsWith("image/")) {
@@ -220,7 +235,20 @@ public class UserServiceImpl implements UserService{
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
-        int result = mapper.updUserNickname(p);
+        int result = 0;
+        try {
+            result = mapper.updUserNickname(p);
+        } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+                throw new DuplicatedInfoException(errorMessage);
+            } else {
+                // 기타 예외 처리
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+
         if(result != 1) {
             throw new UserPatchFailureException();
         }
@@ -234,7 +262,19 @@ public class UserServiceImpl implements UserService{
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
-        int result = mapper.updUserPhone(p);
+        int result = 0;
+        try {
+            result = mapper.updUserPhone(p);
+        } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+                throw new DuplicatedInfoException(errorMessage);
+            } else {
+                // 기타 예외 처리
+                throw new RuntimeException(e.getMessage());
+            }
+        }
         if(result != 1) {
             throw new UserPatchFailureException();
         }
@@ -358,7 +398,29 @@ public class UserServiceImpl implements UserService{
 //        long exp = jsonObject.get("exp").getAsLong();
 //        return new Date(exp * 1000);
 //    }
+    private String handleSQLException(SQLException sqlEx) {
+        String sqlState = sqlEx.getSQLState();
+        int errorCode = sqlEx.getErrorCode();
+        String message = sqlEx.getMessage();
+        String key = extractDuplicatedKey(message);
+        if (key != null) {
+            if(key.equals("user_nickname")) {
+                return "닉네임";
+            } else if(key.equals("user_phone")) {
+                return "전화번호";
+            }
+        }
+        return key;
+    }
 
-
-
+    private String extractDuplicatedKey(String message) {
+        // MySQL 패턴
+        Pattern mysqlPattern = Pattern.compile("for key '(.+?)'");
+        Matcher mysqlMatcher = mysqlPattern.matcher(message);
+        if (mysqlMatcher.find()) {
+            return mysqlMatcher.group(1);
+        }
+        return null;
+    }
 }
+

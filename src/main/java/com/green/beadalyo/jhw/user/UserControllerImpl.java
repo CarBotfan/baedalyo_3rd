@@ -73,15 +73,15 @@ public class UserControllerImpl implements UserController{
             msg = e.getMessage();
             statusCode = -6;
         } catch (PwConfirmFailureException e) {
-          statusCode = -5;
-          msg = e.getMessage();
+            statusCode = -5;
+            msg = e.getMessage();
         } catch(FileUploadFailedException e) {
             statusCode = -4;
             msg = e.getMessage();
 
-        } catch (DuplicateKeyException e) {
+        } catch (DuplicatedInfoException e) {
             statusCode = -11;
-            msg = "중복된 닉네임 또는 전화번호입니다.";
+            msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
             statusCode = -1;
@@ -151,9 +151,9 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         try {
             result = service.postOwnerSignUp(pic, p);
-        } catch (DuplicateKeyException e) {
+        } catch (DuplicatedInfoException e) {
             statusCode = -11;
-            msg = "중복된 닉네임 또는 전화번호입니다.";
+            msg = e.getMessage();
         } catch (DuplicatedIdException e) {
             statusCode = -7;
             msg = e.getMessage();
@@ -194,9 +194,9 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         try {
             result = service.patchUserNickname(p);
-        } catch (DuplicateKeyException e) {
+        } catch (DuplicatedInfoException e) {
             statusCode = -11;
-            msg = "중복된 닉네임 또는 전화번호입니다.";
+            msg = e.getMessage();
         } catch(UserPatchFailureException e) {
             msg = e.getMessage();
             statusCode = -10;
@@ -232,9 +232,9 @@ public class UserControllerImpl implements UserController{
         } catch(UserPatchFailureException e) {
             msg = e.getMessage();
             statusCode = -10;
-        } catch (DuplicateKeyException e) {
+        } catch (DuplicatedInfoException e) {
             statusCode = -11;
-            msg = "중복된 닉네임 또는 전화번호입니다.";
+            msg = e.getMessage();
         } catch(MethodArgumentNotValidException e) {
             msg = e.getMessage();
             statusCode = -6;

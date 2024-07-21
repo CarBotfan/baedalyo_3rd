@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface UserAddrMapper {
-    long postUserAddr(UserAddrPostReq p);
+    long postUserAddr(UserAddrPostReq p) ;
     List<UserAddrGetRes> getUserAddrList(long signedUserPk);
     UserAddrGetRes getMainUserAddr(long signedUserPk);
     UserAddrGetRes getUserAddr(long signedUserPk, long addrPk);
