@@ -1,8 +1,10 @@
 package com.green.beadalyo.jhw.useraddr;
 
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository2;
 import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import com.green.beadalyo.jhw.useraddr.model.*;
+import com.green.beadalyo.jhw.useraddr.repository.UserAddrRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,13 +19,16 @@ import java.util.List;
 public class UserAddrServiceImpl implements UserAddrService{
     private final UserAddrMapper mapper;
     private final AuthenticationFacade authenticationFacade;
+    private final UserAddrRepository repository;
+    private final UserRepository2 userRepository;
 
     @Override
     public long postUserAddr(UserAddrPostReq p) throws Exception{
         p.setSignedUserId(authenticationFacade.getLoginUserPk());
-        UserAddr userAddr = new UserAddr();
-        mapper.postUserAddr(p);
-        return p.getAddrPk();
+        UserAddr userAddr = new UserAddr(p);
+        userAddr.setUserEntity(userRepository.findByUserPk(authenticationFacade.getLoginUserPk()));
+        repository.save(userAddr);
+        return userAddr.getAddrPk();
     }
 
     @Override
