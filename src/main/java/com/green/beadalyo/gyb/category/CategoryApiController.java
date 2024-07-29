@@ -47,7 +47,7 @@ public class CategoryApiController
     )
     public Result putCategory(@RequestPart String str, @RequestPart MultipartFile file)
     {
-//        User user = new User().Admin();
+//        UserEntity user = new UserEntity().Admin();
         User user = userService.getUserByPk() ;
         //유효성 검증
         if (user == null)
