@@ -45,40 +45,38 @@ public class OrderController {
                             "<p> -4 : 데이터 리스트 생성 실패 </p>"
     )
     public ResultDto<Long> postOrder(@RequestBody OrderPostReq p){
-
+        int statusCode = SUCCESS_CODE;
+        String resultMsg = POST_ORDER_SUCCESS;
+        Long resultData = p.getOrderPk();
 
         if (p.getPaymentMethod() == null) {
-            return ResultDto.<Long>builder()
-                    .statusCode(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getCode())
-                    .resultMsg(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getMessage())
-                    .build();
+            statusCode = ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getCode();
+            resultMsg = ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getMessage();
+            resultData = null;
         }
 
         if (500 < p.getOrderRequest().length()) {
-            return ResultDto.<Long>builder()
-                    .statusCode(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getCode())
-                    .resultMsg(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getMessage())
-                    .build();
+            statusCode = ExceptionMsgDataSet.STRING_LENGTH_ERROR.getCode();
+            resultMsg = ExceptionMsgDataSet.STRING_LENGTH_ERROR.getMessage();
+            resultData = null;
         }
 
         try {
             orderService.postOrder(p);
         } catch (NullPointerException e) {
-            return ResultDto.<Long>builder()
-                    .statusCode(ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getCode())
-                    .resultMsg(ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getMessage())
-                    .build();
+            statusCode = ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getCode();
+            resultMsg = ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getMessage();
+            resultData = null;
         } catch (RuntimeException e) {
-            return ResultDto.<Long>builder()
-                    .statusCode(ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getCode())
-                    .resultMsg(ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getMessage())
-                    .build();
+            statusCode = ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getCode();
+            resultMsg = ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getMessage();
+            resultData = null;
         }
 
         return ResultDto.<Long>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(POST_ORDER_SUCCESS)
-                .resultData(p.getOrderPk())
+                .statusCode(statusCode)
+                .resultMsg(resultMsg)
+                .resultData(resultData)
                 .build();
     }
 

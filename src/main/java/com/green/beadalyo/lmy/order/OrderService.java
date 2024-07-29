@@ -21,8 +21,9 @@ public class OrderService {
     public void postOrder(OrderPostReq p) {
 
         p.setOrderUserPk(authenticationFacade.getLoginUserPk());
-
         List<Map<String, Object>> menuList = orderMapper.selectMenus(p.getMenuPk());
+
+        List<Map<String, Object>>
 
         // 총 가격 계산
         int totalPrice = p.getMenuPk().stream()
