@@ -1,6 +1,7 @@
 package com.green.beadalyo.jhw.useraddr;
 
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import com.green.beadalyo.jhw.useraddr.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class UserAddrServiceImpl implements UserAddrService{
     @Override
     public long postUserAddr(UserAddrPostReq p) throws Exception{
         p.setSignedUserId(authenticationFacade.getLoginUserPk());
+        UserAddr userAddr = new UserAddr();
         mapper.postUserAddr(p);
         return p.getAddrPk();
     }

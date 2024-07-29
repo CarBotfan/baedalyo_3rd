@@ -193,11 +193,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserInfoGetRes getUserInfo() throws Exception{
         long userPk = authenticationFacade.getLoginUserPk();
-        UserInfoGetRes result = mapper.selProfileUserInfo(userPk);
+        UserInfoGetRes result = repository.findUserInfoByUserPk(userPk);
         if(result == null) {
             throw new UserNotFoundException();
         }
-        result.setMainAddr(mapper.getMainAddr(userPk));
+        result.setMainAddr(userAddrRepository.findMainUserAddr(userPk));
         return result;
 
     }
@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService{
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
 
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        String originalFileName = mapper.getUserPicName(p.getSignedUserPk());
+        String originalFileName = repository.findUserPicByUserPk(authenticationFacade.getLoginUserPk());
         if(originalFileName != null) {
             try {
                 String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
@@ -224,7 +224,7 @@ public class UserServiceImpl implements UserService{
             }
             p.setPicName(fileName);
         }
-        int result = mapper.updProfilePic(p);
+        int result = repository.updateUserPic(p.getPicName(), p.getSignedUserPk());
         if(result != 1) {
             throw new UserPatchFailureException();
         }
@@ -246,13 +246,13 @@ public class UserServiceImpl implements UserService{
     @Override
     public int patchUserNickname(UserNicknamePatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUserByPk(p.getSignedUserPk());
+        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
         int result = 0;
         try {
-            result = mapper.updUserNickname(p);
+            result = repository.updateUserNickname(p.getUserNickname(), p.getSignedUserPk());
         } catch (Exception e) {
             Throwable cause = e.getCause();
             if (cause instanceof SQLIntegrityConstraintViolationException) {
@@ -299,7 +299,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public int patchUserPassword(UserPasswordPatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUserByPk(p.getSignedUserPk());
+        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         } else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
@@ -309,37 +309,37 @@ public class UserServiceImpl implements UserService{
         }
         String hashedPassword = passwordEncoder.encode(p.getNewPw());
         p.setNewPw(hashedPassword);
-        return mapper.updUserPassword(p);
+        return repository.updateUserPassword(p.getNewPw(), authenticationFacade.getLoginUserPk());
     }
 
     @Override
     public int deleteUser(UserDelReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUserByPk(p.getSignedUserPk());
+        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
         }
-        return mapper.deleteUser(p.getSignedUserPk());
+        return repository.deleteUser(authenticationFacade.getLoginUserPk());
     }
 
     @Override
     public int deleteOwner(UserDelReq p) {
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUserByPk(p.getSignedUserPk());
+        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
         }
-        int result1 = mapper.deleteUser(p.getSignedUserPk());
+        int result = repository.deleteUser(authenticationFacade.getLoginUserPk());
         try { resService.deleteRestaurantData(p.getSignedUserPk()); }
         catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
-        return result1;
+        return result;
     }
 
     @Override
