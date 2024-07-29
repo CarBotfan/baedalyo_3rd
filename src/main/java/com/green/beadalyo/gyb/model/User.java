@@ -44,7 +44,7 @@ public class User
     @Column(name = "updated_at")
     private LocalDateTime updatedAt ;
 
-//    public User()
+//    public UserEntity()
 //    {
 //        this.seq = 1L ;
 //        this.userId = "gsb7080" ;
@@ -58,7 +58,7 @@ public class User
 //        this.userLoginType = 1 ;
 //    }
 //
-//    public User Admin()
+//    public UserEntity Admin()
 //    {
 //        this.seq = 2L ;
 //        this.userId = "gsb7080" ;

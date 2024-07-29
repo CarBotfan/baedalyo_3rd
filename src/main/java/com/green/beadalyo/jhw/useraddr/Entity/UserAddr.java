@@ -1,6 +1,6 @@
 package com.green.beadalyo.jhw.useraddr.Entity;
 
-import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ public class UserAddr {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "addr_user_pk", nullable = false)
-    private User user;
+    private UserEntity userEntity;
 
     @Column(nullable = false)
     private String addrName;
@@ -31,7 +31,7 @@ public class UserAddr {
     @Column(length = 50, nullable = false)
     private String addr2;
 
-    private Long addr_default;
+    private Long addrDefault;
 
     @Column(nullable = false)
     private BigDecimal addrCoorX;

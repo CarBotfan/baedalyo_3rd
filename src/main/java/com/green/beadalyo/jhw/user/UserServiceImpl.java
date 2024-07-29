@@ -10,9 +10,13 @@ import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
+import com.green.beadalyo.jhw.user.entity.UserEntity;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
+import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
+import com.green.beadalyo.jhw.useraddr.repository.UserAddrRepository;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import jakarta.servlet.http.Cookie;
@@ -52,6 +56,8 @@ public class UserServiceImpl implements UserService{
     private final AuthenticationFacade authenticationFacade;
     private final AppProperties appProperties;
     private final RestaurantService resService;
+    private final UserRepository2 repository;
+    private final UserAddrRepository userAddrRepository;
 
     private static int IMAGE_SIZE_LIMIT = 3145728;
 
@@ -59,9 +65,8 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
 
-        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         long result;
-        if(mapper.getUserById(p.getUserId()) != null) {
+        if(repository.findUserByUserId(p.getUserId()) != null) {
             throw new DuplicatedIdException();
         }
         if(!p.getUserPw().equals(p.getUserPwConfirm())) {
@@ -70,9 +75,19 @@ public class UserServiceImpl implements UserService{
         String password = passwordEncoder.encode(p.getUserPw());
         p.setUserPw(password);
 
+        UserEntity user = new UserEntity();
+        user.setUserId(p.getUserId());
+        user.setUserPw(p.getUserPw());
+        user.setUserName(p.getUserName());
+        user.setUserPhone(p.getUserPhone());
+        user.setUserEmail(p.getUserEmail());
+        user.setUserRole(p.getUserRole());
+        user.setUserLoginType(SignInProviderType.LOCAL.getValue());
+
+
         if(pic == null) {
             try {
-                mapper.signUpUser(p);
+                repository.save(user);
             } catch (Exception e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof SQLIntegrityConstraintViolationException) {
@@ -83,7 +98,7 @@ public class UserServiceImpl implements UserService{
                     throw new RuntimeException(e.getMessage());
                 }
             }
-            result = p.getUserPk();
+            result = user.getUserPk();
             return result;
         } else if (!pic.getContentType().startsWith("image/")) {
             throw new InvalidRegexException();
@@ -93,9 +108,9 @@ public class UserServiceImpl implements UserService{
         }
         customFileUtils.makeFolder("user");
         String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
-        p.setUserPic(fileName);
-        mapper.signUpUser(p);
-        result = p.getUserPk();
+        user.setUserPic(fileName);
+        repository.save(user);
+        result = user.getUserPk();
 
         try {
             customFileUtils.transferTo(pic, fileName);
@@ -145,15 +160,15 @@ public class UserServiceImpl implements UserService{
     @Override
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
-        User user = mapper.signInUser(p);
+        UserEntity user = repository.findUserByUserId(p.getUserId());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
         if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
         }
-        UserAddrGetRes mainAddr = mapper.getMainAddr(user.getUserPk());
-
+        UserAddr mainAddr = userAddrRepository.findMainUserAddr(user.getUserPk());
+        UserAddrGetRes addrGetRes = new UserAddrGetRes();
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
                 .role(user.getUserRole())

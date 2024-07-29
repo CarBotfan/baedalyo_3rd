@@ -2,7 +2,7 @@
 //
 //import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 //import com.green.beadalyo.gyb.model.Restaurant;
-//import com.green.beadalyo.gyb.model.User;
+//import com.green.beadalyo.gyb.model.UserEntity;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +31,7 @@
 //    @DisplayName("세이브 테스트")
 //    void save() throws Exception
 //    {
-//        User user = getTestUser() ;
+//        UserEntity user = getTestUser() ;
 //        RestaurantInsertDto dto = getTestRestaurantDto(user) ;
 //
 //        Restaurant rest = new Restaurant(dto);
@@ -48,7 +48,7 @@
 //    @DisplayName("레스토랑 상세조회 테스트")
 //    void getRestaurantData() throws Exception
 //    {
-//        User user = new User();
+//        UserEntity user = new UserEntity();
 //        RestaurantInsertDto dto = getTestRestaurantDto(user) ;
 //        given(repository.findTop1ByUser(user)).willReturn(Optional.of(new Restaurant(dto))) ;
 //        Restaurant rest = service.getRestaurantData(user);
@@ -97,7 +97,7 @@
 //    @DisplayName("토글 테스트")
 //    void toggleState() throws Exception
 //    {
-//        User user = getTestUser();
+//        UserEntity user = getTestUser();
 //        RestaurantInsertDto dto = getTestRestaurantDto(user);
 //        Restaurant rest = new Restaurant(dto) ;
 //        rest.setState(2);
@@ -112,7 +112,7 @@
 ////    @DisplayName("음식점 사진 변경 서비스 테스트")
 ////    void updateRestaurantPic() throws Exception
 ////    {
-////        User user = getTestUser();
+////        UserEntity user = getTestUser();
 ////        RestaurantInsertDto dto = getTestRestaurantDto(user);
 ////        Restaurant rest = new Restaurant(dto);
 ////        rest.setPic("asdf");
@@ -125,15 +125,15 @@
 //
 //
 //
-//    private User getTestUser()
+//    private UserEntity getTestUser()
 //    {
-//        return new User() ;
+//        return new UserEntity() ;
 //    }
 //
-//    private RestaurantInsertDto getTestRestaurantDto(User user)
+//    private RestaurantInsertDto getTestRestaurantDto(UserEntity user)
 //    {
 //        RestaurantInsertDto dto = new RestaurantInsertDto() ;
-//        dto.setUser(user);
+//        dto.setUserEntity(user);
 //        dto.setName("맛있는 식당") ;
 //        dto.setCloseTime(LocalTime.of(23, 0));
 //        dto.setOpenTime(LocalTime.of(8,0));
