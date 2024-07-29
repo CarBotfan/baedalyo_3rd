@@ -1,6 +1,7 @@
 package com.green.beadalyo.lmy.doneorder.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.jhw.user.entity.User;
 import io.micrometer.core.annotation.Counted;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

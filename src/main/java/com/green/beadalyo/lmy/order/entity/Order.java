@@ -1,6 +1,7 @@
 package com.green.beadalyo.lmy.order.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
