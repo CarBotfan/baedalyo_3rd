@@ -101,47 +101,7 @@ public class OrderService {
     }
 
 
-
-
-    @Transactional
-    public void postOrder(OrderPostReq p) {
-
-        p.setOrderUserPk(authenticationFacade.getLoginUserPk());
-        List<Map<String, Object>> menuList = orderMapper.selectMenus(p.getMenuPk());
-
-        // 총 가격 계산
-        int totalPrice = p.getMenuPk().stream()
-                .mapToInt(menuPk -> menuList.stream()
-                        .filter(menu -> menuPk.equals(menu.get("menu_pk")))
-                        .mapToInt(menu -> (Integer) menu.get("menu_price"))
-                        .sum())
-                .sum();
-
-        p.setOrderPrice(totalPrice);
-
-        orderMapper.postOrderTable(p);
-
-        // order_menu에 삽입할 데이터 리스트 생성
-        List<Map<String, Object>> orderMenuList = null;
-        try {
-            orderMenuList = p.getMenuPk().stream().map(menuPk -> {
-                Map<String, Object> menu = menuList.stream()
-                        .filter(m -> m.get("menu_pk").equals(menuPk))
-                        .findFirst().orElseThrow(() -> new NullPointerException(""));
-                Map<String, Object> orderMenuMap = new HashMap<>();
-                orderMenuMap.put("orderPk", p.getOrderPk());
-                orderMenuMap.put("menuPk", menu.get("menu_pk"));
-                orderMenuMap.put("menuName", menu.get("menu_name"));
-                orderMenuMap.put("menuPrice", menu.get("menu_price"));
-                return orderMenuMap;
-            }).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeException("");
-        }
-
-        // order_menu 테이블에 배치 삽입
-        orderMapper.insertOrderMenuBatch(orderMenuList);
-    }
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Cancel Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
     @Transactional
     public int cancelOrder(Long orderPk) {
