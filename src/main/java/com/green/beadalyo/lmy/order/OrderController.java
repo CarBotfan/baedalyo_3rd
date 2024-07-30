@@ -4,6 +4,7 @@ import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
+import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
@@ -13,10 +14,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import java.util.Map;
 
 
 import static com.green.beadalyo.lmy.dataset.ResponseDataSet.*;
@@ -44,39 +46,38 @@ public class OrderController {
                             "<p> -3 : 메뉴를 찾을 수 없습니다 </p>" +
                             "<p> -4 : 데이터 리스트 생성 실패 </p>"
     )
+    @Transactional
     public ResultDto<Long> postOrder(@RequestBody OrderPostReq p){
-        int statusCode = SUCCESS_CODE;
-        String resultMsg = POST_ORDER_SUCCESS;
-        Long resultData = p.getOrderPk();
 
         if (p.getPaymentMethod() == null) {
-            statusCode = ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getCode();
-            resultMsg = ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getMessage();
-            resultData = null;
+            return ResultDto.<Long>builder()
+                    .statusCode(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getCode())
+                    .resultMsg(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getMessage())
+                    .build();
         }
 
         if (500 < p.getOrderRequest().length()) {
-            statusCode = ExceptionMsgDataSet.STRING_LENGTH_ERROR.getCode();
-            resultMsg = ExceptionMsgDataSet.STRING_LENGTH_ERROR.getMessage();
-            resultData = null;
+            return ResultDto.<Long>builder()
+                    .statusCode(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getCode())
+                    .resultMsg(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getMessage())
+                    .build();
         }
 
-        try {
-            orderService.postOrder(p);
-        } catch (NullPointerException e) {
-            statusCode = ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getCode();
-            resultMsg = ExceptionMsgDataSet.MENU_NOT_FOUND_ERROR.getMessage();
-            resultData = null;
-        } catch (RuntimeException e) {
-            statusCode = ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getCode();
-            resultMsg = ExceptionMsgDataSet.DATALIST_FAIL_ERROR.getMessage();
-            resultData = null;
-        }
+        List<Map<String, Object>> menuList = orderService.getMenuDetails(p.getMenuPk());
+        p.setOrderUserPk(authenticationFacade.getLoginUserPk());
+        int totalPrice = orderService.calculateTotalPrice(p.getMenuPk());
+        p.setOrderPrice(totalPrice);
+
+        Order order = orderService.saveOrder(p);
+
+        List<Map<String, Object>> orderMenuList = orderService.createOrderMenuList(p, menuList);
+
+        orderService.saveOrderMenuBatch(orderMenuList, order);
 
         return ResultDto.<Long>builder()
-                .statusCode(statusCode)
-                .resultMsg(resultMsg)
-                .resultData(resultData)
+                .statusCode(SUCCESS_CODE)
+                .resultMsg(POST_ORDER_SUCCESS)
+                .resultData(order.getOrderPk())
                 .build();
     }
 
