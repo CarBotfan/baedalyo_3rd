@@ -6,4 +6,9 @@ import lombok.Data;
 public class MenuInfoDto {
     private String MenuName;
     private Integer MenuPrice;
+
+    public MenuInfoDto(String menuName, Integer menuPrice) {
+        this.MenuName = menuName;
+        this.MenuPrice = menuPrice;
+    }
 }

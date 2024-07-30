@@ -18,6 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 public class DoneOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "done_order_pk")
     private Long doneOrderPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,27 +29,32 @@ public class DoneOrder {
     @JoinColumn(name = "res_pk", nullable = false)
     private Restaurant resPk;
 
-    @Column(nullable = false)
+    @Column(name = "order_price", nullable = false)
     private Integer orderPrice;
 
-    @Column(length = 500)
+    @Column(name = "order_request", length = 500)
     private String orderRequest;
 
-    @Column(length = 50)
+    @Column(name = "order_phone", length = 50)
     private String orderPhone;
 
-    @Column(length = 50)
+    @Column(name = "order_address", length = 50)
     private String orderAddress;
 
+    @Column(name = "payment_method")
     private String paymentMethod;
 
     @ColumnDefault("0")
+    @Column(name = "order_method")
     private Integer orderMethod;
 
+    @Column(name = "done_order_state")
     private Integer doneOrderState;
 
+    @Column(name = "canceller")
     private String canceller;
 
+    @Column(name = "created_at")
     @CreationTimestamp
     private String createdAt;
 }
