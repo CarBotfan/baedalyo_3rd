@@ -31,12 +31,12 @@ public class MenuService {
     private final UserRepository2 userRepository;
     private final RestaurantRepository restaurantRepository;
     @Transactional
-    public MenuEntity postMenu(PostMenuReq p,
+    public long postMenu(PostMenuReq p,
                                 MultipartFile pic){
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
-//        Long resPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
+
         if (restaurant == null) {
             throw new RuntimeException();
         }
@@ -49,8 +49,8 @@ public class MenuService {
             }
         }
 
+        MenuEntity menuEntity = new MenuEntity();
         if (pic==null || pic.isEmpty()){
-            MenuEntity menuEntity = new MenuEntity();
             menuEntity.setMenuPic(null);
             menuEntity.setMenuResPk(restaurant);
             menuEntity.setMenuContent(p.getMenuContent());
@@ -58,29 +58,24 @@ public class MenuService {
             menuEntity.setMenuPrice(p.getMenuPrice());
             menuEntity.setMenuState(p.getMenuState());
             MenuEntity menuEntity1 =  menuRepository.save(menuEntity);
-//            p.setMenuPic(null);
-//            mapper.postMenu(p);
-//            PostMenuRes result = PostMenuRes.builder()
-//                    .menuPk(p.getMenuPk())
-//                    .menuResPk(p.getMenuResPk())
-//                    .menuName(p.getMenuName())
-//                    .menuContent(p.getMenuContent())
-//                    .menuPrice(p.getMenuPrice())
-//                    .menuPic(null)
-//                    .menuState(p.getMenuState())
-//                    .build();
-//            return result;
-            return menuEntity1;
+
+            return menuEntity1.getMenuPk();
         }
         if(pic.getSize() > maxSize){
             throw new ArithmeticException();
         }
         String picName = customFileUtils.makeRandomFileName(pic);
-        mapper.postMenu(p);
-        String path = String.format("menu/%d", p.getMenuPk());
+        menuEntity.setMenuPic(picName);
+        menuEntity.setMenuResPk(restaurant);
+        menuEntity.setMenuContent(p.getMenuContent());
+        menuEntity.setMenuName(p.getMenuName());
+        menuEntity.setMenuPrice(p.getMenuPrice());
+        menuEntity.setMenuState(p.getMenuState());
+        MenuEntity menuEntity1 =  menuRepository.save(menuEntity);
+        String path = String.format("menu/%d", menuEntity1.getMenuPk());
         p.setMenuPic(path + "/"+ picName);
-        mapper.postMenuPic(p);
-
+        menuRepository.updateMenuPic(p.getMenuPic(), menuEntity1.getMenuPk());
+        menuEntity1.setMenuPic(p.getMenuPic());
 
         try {
             customFileUtils.makeFolder(path);
@@ -90,16 +85,7 @@ public class MenuService {
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
         }
 
-        PostMenuRes result = PostMenuRes.builder()
-                .menuPk(p.getMenuPk())
-                .menuResPk(p.getMenuResPk())
-                .menuName(p.getMenuName())
-                .menuContent(p.getMenuContent())
-                .menuPrice(p.getMenuPrice())
-                .menuPic(p.getMenuPic())
-                .menuState(p.getMenuState())
-                .build();
-        return result;
+        return menuEntity1.getMenuPk();
     }
 
     public List<GetAllMenuRes> getAllMenu(GetAllMenuReq p){
@@ -117,14 +103,13 @@ public class MenuService {
     }
 
     @Transactional
-    public PutMenuRes putMenu(MultipartFile pic, PutMenuReq p){
+    public long putMenu(MultipartFile pic, PutMenuReq p){
 
             long userPk = authenticationFacade.getLoginUserPk();
-            Long resUserPk = mapper.checkResUserPkByMenuPk(p.getMenuPk());
-            log.info("asdfasdf : {}", userPk);
-            log.info("asdfasdf : {}", resUserPk);
+            Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(userPk));
+            MenuEntity menuEntity = menuRepository.getReferenceById(p.getMenuPk());
 
-            if (resUserPk != userPk){
+            if (restaurant.getSeq() != menuEntity.getMenuResPk().getSeq()){
                 throw new RuntimeException();
             }
 
@@ -136,28 +121,20 @@ public class MenuService {
                 }
             }
 
-            GetOneMenuReq req = new GetOneMenuReq(p.getMenuPk());
-            GetOneMenuRes originalMenu = mapper.getOneMenu(req);
         if (pic == null || pic.isEmpty() ){
-            p.setMenuPic(originalMenu.getMenuPic());
-            mapper.putMenu(p);
-            GetOneMenuRes afterMenu = mapper.getOneMenu(req);
-            PutMenuRes result = PutMenuRes.builder()
-                    .menuPk(afterMenu.getMenuPk())
-                    .menuResPk(afterMenu.getMenuResPk())
-                    .menuName(afterMenu.getMenuName())
-                    .menuContent(afterMenu.getMenuContent())
-                    .menuPrice(afterMenu.getMenuPrice())
-                    .menuPic(originalMenu.getMenuPic())
-                    .menuState(afterMenu.getMenuState())
-                    .createdAt(afterMenu.getCreatedAt())
-                    .updatedAt(afterMenu.getUpdatedAt())
-                    .build();
-            return result;
+            menuEntity.setMenuContent(p.getMenuContent());
+            menuEntity.setMenuName(p.getMenuName());
+            menuEntity.setMenuPrice(p.getMenuPrice());
+            menuEntity.setMenuState(p.getMenuState());
+            menuEntity.setMenuPic(null);
+            MenuEntity result = menuRepository.save(menuEntity);
+
+            return result.getMenuPk();
         }
         if(pic.getSize() > maxSize){
             throw new ArithmeticException();
         }
+        MenuEntity result = null;
         try {
             String path = String.format("menu/%d",p.getMenuPk());
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
@@ -166,34 +143,29 @@ public class MenuService {
             String target = String.format("%s/%s",path,picName);
             customFileUtils.transferTo(pic,target);
             p.setMenuPic(path + "/" + picName);
-            mapper.putMenu(p);
+            menuEntity.setMenuContent(p.getMenuContent());
+            menuEntity.setMenuName(p.getMenuName());
+            menuEntity.setMenuPrice(p.getMenuPrice());
+            menuEntity.setMenuState(p.getMenuState());
+            menuEntity.setMenuPic(p.getMenuPic());
+            result = menuRepository.save(menuEntity);
         } catch (Exception e){
             throw new RuntimeException("");
         }
-        GetOneMenuRes afterMenu = mapper.getOneMenu(req);
-        PutMenuRes result = PutMenuRes.builder()
-                .menuPk(afterMenu.getMenuPk())
-                .menuResPk(afterMenu.getMenuResPk())
-                .menuName(afterMenu.getMenuName())
-                .menuContent(afterMenu.getMenuContent())
-                .menuPrice(afterMenu.getMenuPrice())
-                .menuPic(afterMenu.getMenuPic())
-                .menuState(afterMenu.getMenuState())
-                .createdAt(afterMenu.getCreatedAt())
-                .updatedAt(afterMenu.getUpdatedAt())
-                .build();
-        return result;
+
+        return result.getMenuPk();
     }
 
     public int delMenu(long menuPk){
         Long resUserPk = authenticationFacade.getLoginUserPk();
-        Long menuResPk = mapper.getMenuResPkByResUserPk(resUserPk);
-        int result = mapper.delMenu(menuPk, menuResPk);
-        if (menuResPk == null || menuResPk == 0 || result == 0){
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+        MenuEntity menuEntity = menuRepository.getReferenceById(menuPk);
+
+        if (restaurant.getSeq() != menuEntity.getMenuResPk().getSeq()){
             throw new RuntimeException();
         }
-
-        return result;
+        menuRepository.delete(menuEntity);
+        return 1;
     }
 
 }

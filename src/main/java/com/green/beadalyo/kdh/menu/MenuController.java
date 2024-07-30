@@ -37,17 +37,17 @@ public class MenuController {
                                                     "<p> -3 : 가게 사장님만 메뉴 등록 가능 </p>"+
                                                     "<p> -4 : 메뉴 이름이 중복되는게 있습니다.</p>"+
                                                     "<p> -5 : 파일 사이즈는 3mb이하만 됩니다.</p>")
-    public ResultDto<MenuEntity> postMenu(@RequestPart PostMenuReq p,
+    public ResultDto<Long> postMenu(@RequestPart PostMenuReq p,
                                           @RequestPart(required = false) MultipartFile pic){
 
-        MenuEntity result = null;
+        Long result = null;
         String msg = "메뉴 등록 완료";
         int code = 1;
 
         log.info("", p);
         if (( !p.getMenuName().isEmpty() && p.getMenuName().length()>=20)
             && ( !p.getMenuContent().isEmpty()) && p.getMenuContent().length() >= 100 ) {
-            return ResultDto.<MenuEntity>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-2)
                     .resultMsg("메뉴 양식이 안맞습니다.")
                     .build();
@@ -57,21 +57,21 @@ public class MenuController {
             result = service.postMenu(p,pic);
         } catch (ArithmeticException e){
 
-            return ResultDto.<MenuEntity>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-5)
                     .resultMsg("파일 사이즈는 3mb이하만 됩니다.")
                     .resultData(result)
                     .build();
 
         }catch (IllegalArgumentException e){
-            return ResultDto.<MenuEntity>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-4)
                     .resultMsg("메뉴 이름 중복")
                     .resultData(result)
                     .build();
         } catch (RuntimeException e){
 
-            return ResultDto.<MenuEntity>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-3)
                     .resultMsg("가게 사장님만 메뉴를 등록할 수 있습니다.")
                     .resultData(result)
@@ -79,14 +79,14 @@ public class MenuController {
 
         } catch (Exception e){
 
-            return ResultDto.<MenuEntity>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-1)
                     .resultMsg(e.getMessage())
                     .resultData(result)
                     .build();
         }
 
-        return ResultDto.<MenuEntity>builder()
+        return ResultDto.<Long>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
@@ -145,16 +145,16 @@ public class MenuController {
                                                     "<p> -2 : 양식이 맞지 않음 </p>"+
                                                     "<p> -3 : 사장님만 메뉴를 수정할 수 있습니다. </p>"+
                                                     "<p> -4 : 메뉴 이름이 중복되는게 있습니다.</p>"   )
-    public ResultDto<PutMenuRes> putMenu(@RequestPart PutMenuReq p,
+    public ResultDto<Long> putMenu(@RequestPart PutMenuReq p,
                                          @RequestPart(required = false) MultipartFile pic){
-        PutMenuRes result = null;
+        Long result = null;
 
         String msg = "메뉴 수정 완료";
         int code = 1;
         log.info("p : {}", p);
         if (p.getMenuName()!= null ) {
             if ( p.getMenuName().length()>=20 ) {
-                return ResultDto.<PutMenuRes>builder()
+                return ResultDto.<Long>builder()
                         .statusCode(-2)
                         .resultMsg("메뉴 양식이 안맞습니다.")
                         .build();
@@ -162,7 +162,7 @@ public class MenuController {
         }
         if (p.getMenuContent() != null) {
             if ( p.getMenuContent().length()>=100 ) {
-                return ResultDto.<PutMenuRes>builder()
+                return ResultDto.<Long>builder()
                         .statusCode(-2)
                         .resultMsg("메뉴 양식이 안맞습니다.")
                         .build();
@@ -172,33 +172,33 @@ public class MenuController {
             result = service.putMenu(pic, p);
         } catch (ArithmeticException e){
 
-            return ResultDto.<PutMenuRes>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-5)
                     .resultMsg("파일 사이즈는 3mb이하만 됩니다.")
                     .resultData(result)
                     .build();
 
         }catch (IllegalArgumentException e){
-            return ResultDto.<PutMenuRes>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-4)
                     .resultMsg("메뉴 이름 중복")
                     .resultData(result)
                     .build();
         }catch (RuntimeException e){
-            return ResultDto.<PutMenuRes>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-3)
                     .resultMsg("사장님만 메뉴를 수정할 수 있습니다.")
                     .resultData(result)
                     .build();
         } catch (Exception e){
-            return ResultDto.<PutMenuRes>builder()
+            return ResultDto.<Long>builder()
                     .statusCode(-1)
                     .resultMsg("메뉴 수정 실패.")
                     .resultData(result)
                     .build();
         }
 
-        return ResultDto.<PutMenuRes>builder()
+        return ResultDto.<Long>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
