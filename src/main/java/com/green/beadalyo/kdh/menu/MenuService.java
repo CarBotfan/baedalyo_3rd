@@ -2,8 +2,11 @@ package com.green.beadalyo.kdh.menu;
 
 
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
@@ -25,17 +28,19 @@ public class MenuService {
     private final AuthenticationFacade authenticationFacade;
     private final long maxSize = 3145728;
     private final MenuRepository menuRepository;
+    private final UserRepository2 userRepository;
     private final RestaurantRepository restaurantRepository;
     @Transactional
-    public PostMenuRes postMenu(PostMenuReq p,
+    public MenuEntity postMenu(PostMenuReq p,
                                 MultipartFile pic){
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
-        if (resPk == null) {
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
+//        Long resPk = mapper.checkMenuResPkByResUserPk(p.getResUserPk());
+        if (restaurant == null) {
             throw new RuntimeException();
         }
-        p.setMenuResPk(resPk);
+        p.setMenuResPk(restaurant.getSeq());
 
         List<String> menuName = mapper.getMenuName(p.getMenuResPk());
         for (String menu : menuName){
@@ -43,19 +48,29 @@ public class MenuService {
                 throw new IllegalArgumentException();
             }
         }
+
         if (pic==null || pic.isEmpty()){
-            p.setMenuPic(null);
-            mapper.postMenu(p);
-            PostMenuRes result = PostMenuRes.builder()
-                    .menuPk(p.getMenuPk())
-                    .menuResPk(p.getMenuResPk())
-                    .menuName(p.getMenuName())
-                    .menuContent(p.getMenuContent())
-                    .menuPrice(p.getMenuPrice())
-                    .menuPic(null)
-                    .menuState(p.getMenuState())
-                    .build();
-            return result;
+            MenuEntity menuEntity = new MenuEntity();
+            menuEntity.setMenuPic(null);
+            menuEntity.setMenuResPk(restaurant);
+            menuEntity.setMenuContent(p.getMenuContent());
+            menuEntity.setMenuName(p.getMenuName());
+            menuEntity.setMenuPrice(p.getMenuPrice());
+            menuEntity.setMenuState(p.getMenuState());
+            MenuEntity menuEntity1 =  menuRepository.save(menuEntity);
+//            p.setMenuPic(null);
+//            mapper.postMenu(p);
+//            PostMenuRes result = PostMenuRes.builder()
+//                    .menuPk(p.getMenuPk())
+//                    .menuResPk(p.getMenuResPk())
+//                    .menuName(p.getMenuName())
+//                    .menuContent(p.getMenuContent())
+//                    .menuPrice(p.getMenuPrice())
+//                    .menuPic(null)
+//                    .menuState(p.getMenuState())
+//                    .build();
+//            return result;
+            return menuEntity1;
         }
         if(pic.getSize() > maxSize){
             throw new ArithmeticException();
