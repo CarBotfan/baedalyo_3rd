@@ -1,6 +1,7 @@
 package com.green.beadalyo.jhw.useraddr.Entity;
 
 import com.green.beadalyo.jhw.user.entity.UserEntity;
+import com.green.beadalyo.jhw.useraddr.model.UserAddrPostReq;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,5 +45,13 @@ public class UserAddr {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public UserAddr(UserAddrPostReq p) {
+        this.addrName = p.getAddrName();
+        this.addr1 = p.getAddr1();
+        this.addr2 = p.getAddr2();
+        this.addrCoorX = p.getAddrCoorX();
+        this.addrCoorY = p.getAddrCoorY();
+    }
 
 }
