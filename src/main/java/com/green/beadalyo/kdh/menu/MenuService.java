@@ -2,8 +2,10 @@ package com.green.beadalyo.kdh.menu;
 
 
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.kdh.menu.model.*;
+import com.green.beadalyo.kdh.menu.repository.MenuRepository;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
 import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,8 @@ public class MenuService {
     private final CustomFileUtils customFileUtils;
     private final AuthenticationFacade authenticationFacade;
     private final long maxSize = 3145728;
+    private final MenuRepository menuRepository;
+    private final RestaurantRepository restaurantRepository;
     @Transactional
     public PostMenuRes postMenu(PostMenuReq p,
                                 MultipartFile pic){
