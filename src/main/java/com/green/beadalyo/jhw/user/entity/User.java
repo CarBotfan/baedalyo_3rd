@@ -16,44 +16,51 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_pk")
     private Long userPk;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false, unique = true)
     private String userId;
 
+    @Column(name = "user_pw")
     private String userPw;
 
+    @Column(name = "user_name")
     private String userName;
 
-    @Column(unique = true)
+    @Column(name = "user_nickname" ,unique = true)
     private String userNickname;
 
+    @Column(name = "user_pic")
     private String userPic;
 
-    @Column(length = 30, unique = true)
+    @Column(name = "user_phone" ,length = 30, unique = true)
     private String userPhone;
 
-    @Column(length = 50, unique = true)
+    @Column(name = "user_email", length = 50, unique = true)
     private String userEmail;
 
-    @Column(length = 20, nullable = false)
+    @Column(name = "user_role", length = 20, nullable = false)
     private String userRole;
 
     @ColumnDefault("1")
-    @Column(nullable = false)
+    @Column(name = "user_state", nullable = false)
     private int userState;
 
     @ColumnDefault("1")
-    @Column(nullable = false)
+    @Column(name = "user_login_type",nullable = false)
     private Integer userLoginType ;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public User(UserSignUpPostReq p) {
