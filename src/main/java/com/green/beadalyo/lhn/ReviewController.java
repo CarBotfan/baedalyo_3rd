@@ -164,7 +164,7 @@ public class ReviewController {
         long result = 0;
         System.out.println(p);
         try{
-            service.UpdReviewReply(p);
+            service.updReviewReply(p);
         }
         catch (IllegalArgumentException illegalArgumentException){
             code = -18;
