@@ -149,6 +149,7 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "가입 성공";
         int statusCode = 1;
+        p.setUserRole("ROLE_OWNER");
         try {
             result = service.postOwnerSignUp(pic, p);
         } catch (DuplicatedInfoException e) {

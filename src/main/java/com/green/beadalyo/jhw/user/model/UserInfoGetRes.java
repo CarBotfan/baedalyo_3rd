@@ -26,7 +26,7 @@ public class UserInfoGetRes {
     @Schema(defaultValue = "이메일")
     private String userEmail;
     @Schema(defaultValue = "메인 주소")
-    private UserAddr mainAddr;
+    private UserAddrGetRes mainAddr;
     public UserInfoGetRes(String userId, String userName
             , String userNickname, String userPic
             , String userPhone, String userEmail) {

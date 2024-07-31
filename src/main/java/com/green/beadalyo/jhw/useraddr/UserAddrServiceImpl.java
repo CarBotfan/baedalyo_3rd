@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -28,21 +29,31 @@ public class UserAddrServiceImpl implements UserAddrService{
         UserAddr userAddr = new UserAddr(p);
         userAddr.setUserEntity(userRepository.findByUserPk(authenticationFacade.getLoginUserPk()));
         repository.save(userAddr);
+        if(repository.findAllByUserPk(p.getSignedUserId()).size() == 1) {
+            repository.setMainUserAddr(userAddr.getAddrPk(), p.getSignedUserId());
+        }
         return userAddr.getAddrPk();
     }
 
     @Override
     public List<UserAddrGetRes> getUserAddrList() throws Exception{
         long signedUserPk = authenticationFacade.getLoginUserPk();
-        return mapper.getUserAddrList(signedUserPk);
+        List<UserAddr> list = repository.findAllByUserPk(signedUserPk);
+        List<UserAddrGetRes> result = new ArrayList<>();
+        for(UserAddr userAddr : list) {
+            UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddr);
+            result.add(addrGetRes);
+        }
+
+        return result;
 
     }
 
     @Override
     public UserAddrGetRes getUserAddr(long addrPk) throws Exception {
 
-        UserAddrGetRes result = mapper.getUserAddr(authenticationFacade.getLoginUserPk(), addrPk);
-        if(result == null) {
+        UserAddrGetRes result = new UserAddrGetRes(repository.findUserAddrByUserPkAnAndAddrPk(addrPk, authenticationFacade.getLoginUserPk()));
+        if(result.getAddrPk() == 0) {
             throw new RuntimeException("존재하지 않는 데이터");
         }
         return result;
@@ -50,8 +61,8 @@ public class UserAddrServiceImpl implements UserAddrService{
 
     @Override
     public UserAddrGetRes getMainUserAddr() throws Exception{
-        long signedUserPk = authenticationFacade.getLoginUserPk();
-        return mapper.getMainUserAddr(signedUserPk);
+        UserAddr addr = repository.findMainUserAddr(authenticationFacade.getLoginUserPk());
+        return new UserAddrGetRes(addr);
     }
 
     @Override
@@ -63,8 +74,8 @@ public class UserAddrServiceImpl implements UserAddrService{
     @Override
     public int patchMainUserAddr(MainUserAddrPatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        mapper.patchCurrentMainUserAddr(p.getSignedUserPk());
-        return mapper.patchMainUserAddr(p);
+        repository.removeMainUserAddr(p.getSignedUserPk());
+        return repository.setMainUserAddr(p.getChangeAddrPk(), p.getSignedUserPk());
     }
 
     @Override
