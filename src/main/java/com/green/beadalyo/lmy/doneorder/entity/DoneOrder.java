@@ -1,7 +1,7 @@
 package com.green.beadalyo.lmy.doneorder.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.user.entity.UserEntity;
+import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +26,7 @@ public class DoneOrder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_pk", nullable = false)
-    private UserEntity userPk;
+    private User userPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_pk", nullable = false)

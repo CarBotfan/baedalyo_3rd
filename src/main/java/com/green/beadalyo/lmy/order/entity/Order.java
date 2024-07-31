@@ -1,7 +1,7 @@
 package com.green.beadalyo.lmy.order.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.user.entity.UserEntity;
+import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
@@ -20,7 +20,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_user_pk", nullable = false)
-    private UserEntity orderUserPk;
+    private User orderUserPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_res_pk", nullable = false)
