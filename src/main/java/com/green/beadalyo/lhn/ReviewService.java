@@ -4,6 +4,7 @@ import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.model.*;
+import com.green.beadalyo.lhn.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class ReviewService {
-    private final ReviewMapper mapper;
+    private final ReviewRepository mapper;
     private final ReviewFilter filter;
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
