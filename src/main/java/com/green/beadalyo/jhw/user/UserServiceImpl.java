@@ -15,10 +15,13 @@ import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import com.green.beadalyo.jhw.user.repository.UserRepository2;
 import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
+import com.green.beadalyo.jhw.useraddr.UserAddrService;
+import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import com.green.beadalyo.jhw.useraddr.repository.UserAddrRepository;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.JsonObject;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,13 +61,14 @@ public class UserServiceImpl implements UserService{
     private final RestaurantService resService;
     private final UserRepository2 repository;
     private final UserAddrRepository userAddrRepository;
+    private final UserAddrServiceImpl userAddrService;
 
     private static int IMAGE_SIZE_LIMIT = 3145728;
 
     @Override
     @Transactional
     public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
-
+        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         long result;
         if(repository.findUserByUserId(p.getUserId()) != null) {
             throw new DuplicatedIdException();
@@ -75,15 +79,7 @@ public class UserServiceImpl implements UserService{
         String password = passwordEncoder.encode(p.getUserPw());
         p.setUserPw(password);
 
-        UserEntity user = new UserEntity();
-        user.setUserId(p.getUserId());
-        user.setUserPw(p.getUserPw());
-        user.setUserName(p.getUserName());
-        user.setUserPhone(p.getUserPhone());
-        user.setUserEmail(p.getUserEmail());
-        user.setUserRole(p.getUserRole());
-        user.setUserLoginType(SignInProviderType.LOCAL.getValue());
-
+        UserEntity user = new UserEntity(p);
 
         if(pic == null) {
             try {
@@ -125,16 +121,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p) {
         try {
-            UserSignUpPostReq req = UserSignUpPostReq.builder()
-                    .userId(p.getUserId())
-                    .userPw(p.getUserPw())
-                    .userPwConfirm(p.getUserPwConfirm())
-                    .userName(p.getUserName())
-                    .userNickname(p.getUserNickname())
-                    .userPhone(p.getUserPhone())
-                    .userEmail(p.getUserEmail())
-                    .userRole("ROLE_OWNER")
-                    .build();
+            UserSignUpPostReq req = new UserSignUpPostReq(p);
             long userPk = postSignUp(pic, req);
             RestaurantInsertDto dto = new RestaurantInsertDto();
             dto.setUser(userPk);
@@ -197,7 +184,7 @@ public class UserServiceImpl implements UserService{
         if(result == null) {
             throw new UserNotFoundException();
         }
-        result.setMainAddr(userAddrRepository.findMainUserAddr(userPk));
+        result.setMainAddr(userAddrService.getMainUserAddr());
         return result;
 
     }
@@ -206,8 +193,8 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
 
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        String originalFileName = repository.findUserPicByUserPk(authenticationFacade.getLoginUserPk());
+        UserEntity user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        String originalFileName = user.getUserPic();
         if(originalFileName != null) {
             try {
                 String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
@@ -224,8 +211,10 @@ public class UserServiceImpl implements UserService{
             }
             p.setPicName(fileName);
         }
-        int result = repository.updateUserPic(p.getPicName(), p.getSignedUserPk());
-        if(result != 1) {
+
+        try {
+            user.setUserPic(p.getPicName());
+        } catch(Exception e) {
             throw new UserPatchFailureException();
         }
         if(pic == null) {
@@ -246,14 +235,21 @@ public class UserServiceImpl implements UserService{
     @Override
     public int patchUserNickname(UserNicknamePatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
-        if(user == null || user.getUserState() == 3) {
+        UserEntity user;
+        try {
+            user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        } catch(EntityNotFoundException e) {
+            throw new UserNotFoundException();
+        }
+        if(user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
         int result = 0;
         try {
-            result = repository.updateUserNickname(p.getUserNickname(), p.getSignedUserPk());
+            user.setUserNickname(p.getUserNickname());
+            result = 1;
         } catch (Exception e) {
+            e.printStackTrace();
             Throwable cause = e.getCause();
             if (cause instanceof SQLIntegrityConstraintViolationException) {
                 String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
@@ -262,10 +258,6 @@ public class UserServiceImpl implements UserService{
                 // 기타 예외 처리
                 throw new RuntimeException(e.getMessage());
             }
-        }
-
-        if(result != 1) {
-            throw new UserPatchFailureException();
         }
         return result;
     }
@@ -273,13 +265,16 @@ public class UserServiceImpl implements UserService{
     @Override
     public int patchUserPhone(UserPhonePatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user = mapper.getUserByPk(p.getSignedUserPk());
-        if(user == null || user.getUserState() == 3) {
+        UserEntity user;
+        try {
+            user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        } catch(EntityNotFoundException e) {
             throw new UserNotFoundException();
         }
         int result = 0;
         try {
-            result = mapper.updUserPhone(p);
+            user.setUserPhone(p.getUserPhone());
+            result = 1;
         } catch (Exception e) {
             Throwable cause = e.getCause();
             if (cause instanceof SQLIntegrityConstraintViolationException) {
@@ -287,29 +282,37 @@ public class UserServiceImpl implements UserService{
                 throw new DuplicatedInfoException(errorMessage);
             } else {
                 // 기타 예외 처리
+
                 throw new RuntimeException(e.getMessage());
             }
-        }
-        if(result != 1) {
-            throw new UserPatchFailureException();
         }
         return result;
     }
 
     @Override
     public int patchUserPassword(UserPasswordPatchReq p) throws Exception{
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
-        if(user == null || user.getUserState() == 3) {
+        UserEntity user;
+        int result = 0;
+        try {
+            user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        } catch(EntityNotFoundException e) {
+            throw new UserNotFoundException();
+        }
+        if(user.getUserState() == 3) {
             throw new UserNotFoundException();
         } else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
         } else if(!p.getNewPw().equals(p.getNewPwConfirm())) {
             throw new PwConfirmFailureException();
         }
-        String hashedPassword = passwordEncoder.encode(p.getNewPw());
-        p.setNewPw(hashedPassword);
-        return repository.updateUserPassword(p.getNewPw(), authenticationFacade.getLoginUserPk());
+        try {
+            user.setUserPw(p.getNewPw());
+            result = 1;
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+        return result;
     }
 
     @Override
