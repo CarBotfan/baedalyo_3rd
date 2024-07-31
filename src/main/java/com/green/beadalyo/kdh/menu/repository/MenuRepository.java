@@ -2,6 +2,7 @@ package com.green.beadalyo.kdh.menu.repository;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.kdh.menu.model.GetAllMenuNames;
 import com.green.beadalyo.kdh.menu.model.GetAllMenuResInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,5 +24,13 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
             "       WHERE mn.menu_Res_Pk = :menuResPk",nativeQuery = true)
     List<GetAllMenuResInterface> findAllByMenuResPk(Long menuResPk);
 
+    @Query(value = "select   mn.menu_name as menuName" +
+            "      FROM menu mn" +
+            "       WHERE mn.menu_Res_Pk = :menuResPk",nativeQuery = true)
+    List<GetAllMenuNames> findMenuNameByMenuResPk(Long MenuResPk);
 
+    @Query(value = "select   mn.menu_name as menuName" +
+            "      FROM menu mn" +
+            "       WHERE mn.menu_Res_Pk = :menuResPk and mn.menu_pk != :menuPk",nativeQuery = true)
+    List<GetAllMenuNames> findMenuNameByMenuResPkAndMenuPk(Long MenuResPk, Long menuPk);
 }
