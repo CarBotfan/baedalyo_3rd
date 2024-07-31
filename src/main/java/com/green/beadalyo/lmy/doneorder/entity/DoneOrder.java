@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Builder
@@ -57,5 +59,5 @@ public class DoneOrder {
 
     @Column(name = "created_at")
     @CreationTimestamp
-    private String createdAt;
+    private LocalDateTime createdAt;
 }

@@ -36,8 +36,12 @@ public class OrderService {
     private final RestaurantRepository restaurantRepository;
     private final AuthenticationFacade authenticationFacade;
 
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡValidation 전용ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    public Order getOrderByOrderPk(long orderPk){
+        return orderRepository.getReferenceById(orderPk);
+    }
 
-//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Post Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡPost Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
     public List<Map<String, Object>> getMenuDetails(List<Long> menuPkList) {
         List<Menu2> menus = menuRepository.findByMenuPkIn(menuPkList);
@@ -216,6 +220,10 @@ public class OrderService {
         result.setMenuInfoList(menuInfoList);
 
         return result;
+    }
+
+    public int confirmOrder(long orderPk) {
+        return orderRepository.confirmOrder(orderPk);
     }
 
 }
