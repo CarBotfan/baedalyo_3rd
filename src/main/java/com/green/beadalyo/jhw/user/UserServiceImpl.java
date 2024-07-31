@@ -3,7 +3,6 @@ package com.green.beadalyo.jhw.user;
 import com.green.beadalyo.common.AppProperties;
 import com.green.beadalyo.common.CookieUtils;
 import com.green.beadalyo.common.CustomFileUtils;
-import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
@@ -14,7 +13,6 @@ import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
-import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import com.green.beadalyo.jhw.useraddr.repository.UserAddrRepository;
@@ -30,13 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.Multipart;
 import java.io.File;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,8 +57,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public long postSignUp(UserSignUpPostReq p) throws Exception{
-        User user = new User(p);
+    public long saveUser(User user) throws Exception{
         repository.save(user);
         return user.getUserPk();
     }
@@ -104,27 +98,27 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p) {
-        try {
-            UserSignUpPostReq req = new UserSignUpPostReq(p);
-            long userPk = postSignUp(req);
-            RestaurantInsertDto dto = new RestaurantInsertDto();
-            dto.setUser(userPk);
-            dto.setName(p.getRestaurantName());
-            dto.setRegiNum(p.getRegiNum());
-            dto.setResAddr(p.getAddr());
-            dto.setDesc1(p.getDesc1());
-            dto.setDesc2(p.getDesc2());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
-            dto.setCloseTime(LocalTime.parse(p.getCloseTime(), formatter));
-            dto.setResCoorX(p.getCoorX());
-            dto.setResCoorY(p.getCoorY());
-            resService.insertRestaurantData(dto);
-        } catch(RuntimeException e){
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            UserSignUpPostReq req = new UserSignUpPostReq(p);
+//            long userPk = postSignUp(req);
+//            RestaurantInsertDto dto = new RestaurantInsertDto();
+//            dto.setUser(userPk);
+//            dto.setName(p.getRestaurantName());
+//            dto.setRegiNum(p.getRegiNum());
+//            dto.setResAddr(p.getAddr());
+//            dto.setDesc1(p.getDesc1());
+//            dto.setDesc2(p.getDesc2());
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+//            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
+//            dto.setCloseTime(LocalTime.parse(p.getCloseTime(), formatter));
+//            dto.setResCoorX(p.getCoorX());
+//            dto.setResCoorY(p.getCoorY());
+//            resService.insertRestaurantData(dto);
+//        } catch(RuntimeException e){
+//            throw e;
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
         return 1;
     }
 
@@ -174,44 +168,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
+    public String patchProfilePic(String fileName) throws Exception{
 
-        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
-        String originalFileName = user.getUserPic();
-        if(originalFileName != null) {
-            try {
-                String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-                File file = new File(delAbsoluteFolderPath, originalFileName);
-                file.delete();
-            } catch (Exception e) {
-                throw new FileUploadFailedException();
-            }
-        }
-        String fileName = "user/" + customFileUtils.makeRandomFileName(pic);
-        if(pic != null) {
-            if(pic.getSize() > IMAGE_SIZE_LIMIT) {
-                throw new RuntimeException("파일은 3MB 이하여야 합니다.");
-            }
-            p.setPicName(fileName);
-        }
-
-        try {
-            user.setUserPic(p.getPicName());
-        } catch(Exception e) {
-            throw new UserPatchFailureException();
-        }
-        if(pic == null) {
-            return null;
-        } else if (!pic.getContentType().startsWith("image/")) {
-            throw new InvalidRegexException();
-        }
-        try {
-            customFileUtils.makeFolder("user");
-            String target = String.format("%s",fileName);
-            customFileUtils.transferTo(pic, target);
-        } catch(Exception e) {
-            throw new FileUploadFailedException();
-        }
         return fileName;
     }
 
@@ -308,7 +266,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public boolean checkPassword(String password1, String password2) {
-        return passwordEncoder.matches(password1, password2);
+        return !passwordEncoder.matches(password1, password2);
     }
 
     public User getUser(Long userPk) {

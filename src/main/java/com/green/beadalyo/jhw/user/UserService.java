@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 public interface UserService {
-    long postSignUp(UserSignUpPostReq p) throws Exception;
+    long saveUser(User user) throws Exception;
     int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p);
     int deleteUser(User user) throws Exception;
     int patchUserNickname(UserNicknamePatchReq p) throws Exception;
@@ -17,7 +17,7 @@ public interface UserService {
     int patchUserPassword(UserPasswordPatchReq p) throws Exception;
     SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception;
     UserInfoGetRes getUserInfo() throws Exception;
-    String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception;
+    String patchProfilePic(String fileName) throws Exception;
     Map getAccessToken(HttpServletRequest req) throws Exception;
     UserGetRes getUserByPk() throws Exception;
     UserGetRes getUserByPk(long signedUserPk) throws Exception;
