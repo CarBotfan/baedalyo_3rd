@@ -1,6 +1,7 @@
 package com.green.beadalyo.jhw.useraddr.Entity;
 
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.useraddr.model.UserAddrPatchReq;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrPostReq;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -59,6 +60,24 @@ public class UserAddr {
         this.addr2 = p.getAddr2();
         this.addrCoorX = p.getAddrCoorX();
         this.addrCoorY = p.getAddrCoorY();
+    }
+
+    public void update(UserAddrPatchReq p) {
+        if(p.getAddr1() != null && !p.getAddr1().isEmpty()) {
+            this.addr1 = p.getAddr1();
+        }
+        if(p.getAddr2() != null && !p.getAddr2().isEmpty()) {
+            this.addr2 = p.getAddr2();
+        }
+        if(p.getAddrName() != null && !p.getAddrName().isEmpty()) {
+            this.addrName = p.getAddrName();
+        }
+        if(p.getAddrCoorX() != null ) {
+            this.addrCoorX = p.getAddrCoorX();
+        }
+        if(p.getAddrCoorY() != null ) {
+            this.addrCoorY = p.getAddrCoorY();
+        }
     }
 
 }
