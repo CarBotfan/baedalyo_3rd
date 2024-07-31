@@ -1,6 +1,5 @@
 package com.green.beadalyo.gyb.dto;
 
-import com.green.beadalyo.jhw.user.model.User;
 import lombok.Data;
 
 import java.time.LocalTime;

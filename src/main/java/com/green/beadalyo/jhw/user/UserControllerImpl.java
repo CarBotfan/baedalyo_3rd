@@ -4,6 +4,9 @@ import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.common.exception.DataWrongException;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.security.SignInProviderType;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,6 +47,8 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class UserControllerImpl implements UserController{
     private final UserServiceImpl service;
     private final RestaurantService restaurantService;
+    private final AuthenticationFacade authenticationFacade;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
@@ -63,8 +69,17 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "가입 성공";
         p.setUserRole("ROLE_USER");
+        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         try {
-            service.postSignUp(pic, p);
+            if(!p.getUserPw().equals(p.getUserPwConfirm())) {
+                throw new PwConfirmFailureException();
+            }
+            service.duplicatedCheck(p.getUserId());
+            if(pic != null) {
+                p.setUserPic(service.uploadProfileImage(pic));
+            }
+            p.setUserPw(passwordEncoder.encode(p.getUserPw()));
+            service.postSignUp(p);
             result = 1;
         } catch (DuplicatedIdException e) {
             statusCode = -7;
@@ -405,7 +420,11 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "탈퇴 완료";
         try {
-            result = service.deleteUser(p);
+            User user = service.getUser(authenticationFacade.getLoginUserPk());
+            if(!service.checkPassword(p.getUserPw(), user.getUserPw())) {
+                throw new IncorrectPwException();
+            }
+            result = service.deleteUser(user);
         } catch (UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();
@@ -438,7 +457,13 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "탈퇴 완료";
         try {
-            result = service.deleteOwner(p);
+            User user = service.getUser(authenticationFacade.getLoginUserPk());
+            if(!service.checkPassword(p.getUserPw(), user.getUserPw())) {
+                throw new IncorrectPwException();
+            }
+            result = service.deleteUser(user);
+            restaurantService.deleteRestaurantData(user.getUserPk());
+
         } catch (UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();

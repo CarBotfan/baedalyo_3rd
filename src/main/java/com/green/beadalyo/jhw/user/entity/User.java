@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userPk;
@@ -56,7 +56,7 @@ public class UserEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public UserEntity(UserSignUpPostReq p) {
+    public User(UserSignUpPostReq p) {
         this.userId = p.getUserId();
         this.userPw = p.getUserPw();
         this.userName = p.getUserName();

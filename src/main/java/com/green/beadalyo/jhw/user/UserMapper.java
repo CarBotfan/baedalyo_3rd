@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserMapper {
     int signUpUser(UserSignUpPostReq p);
-    User signInUser(SignInPostReq p);
-    User getUserById(String userId);
-    User getUserByPk(long userPk);
+    UserGetRes signInUser(SignInPostReq p);
+    UserGetRes getUserById(String userId);
+    UserGetRes getUserByPk(long userPk);
     UserInfoGetRes selProfileUserInfo(long signedUserPk) throws Exception;
     int updProfilePic(UserPicPatchReq p) throws Exception;
     int updUserNickname(UserNicknamePatchReq p) throws Exception;

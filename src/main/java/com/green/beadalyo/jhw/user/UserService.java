@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.user;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.model.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,9 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 public interface UserService {
-    long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception;
+    long postSignUp(UserSignUpPostReq p) throws Exception;
     int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p);
-    int deleteUser(UserDelReq p) throws Exception;
+    int deleteUser(User user) throws Exception;
     int patchUserNickname(UserNicknamePatchReq p) throws Exception;
     int patchUserPhone(UserPhonePatchReq p) throws Exception;
     int patchUserPassword(UserPasswordPatchReq p) throws Exception;
@@ -18,8 +19,8 @@ public interface UserService {
     UserInfoGetRes getUserInfo() throws Exception;
     String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception;
     Map getAccessToken(HttpServletRequest req) throws Exception;
-    User getUserByPk() throws Exception;
-    User getUserByPk(long signedUserPk) throws Exception;
-    int deleteOwner(UserDelReq p);
+    UserGetRes getUserByPk() throws Exception;
+    UserGetRes getUserByPk(long signedUserPk) throws Exception;
+    int deleteOwner(User user);
     int duplicatedCheck(String userId);
 }

@@ -10,32 +10,27 @@ import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
-import com.green.beadalyo.jhw.user.entity.UserEntity;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
-import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
-import com.green.beadalyo.jhw.useraddr.UserAddrService;
 import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import com.green.beadalyo.jhw.useraddr.repository.UserAddrRepository;
-import com.nimbusds.jose.shaded.gson.Gson;
-import com.nimbusds.jose.shaded.gson.JsonObject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.exceptions.PersistenceException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
 import java.io.File;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -59,7 +54,7 @@ public class UserServiceImpl implements UserService{
     private final AuthenticationFacade authenticationFacade;
     private final AppProperties appProperties;
     private final RestaurantService resService;
-    private final UserRepository2 repository;
+    private final UserRepository repository;
     private final UserAddrRepository userAddrRepository;
     private final UserAddrServiceImpl userAddrService;
 
@@ -67,36 +62,16 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public long postSignUp(MultipartFile pic, UserSignUpPostReq p) throws Exception{
-        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
-        long result;
-        if(repository.findUserByUserId(p.getUserId()) != null) {
-            throw new DuplicatedIdException();
-        }
-        if(!p.getUserPw().equals(p.getUserPwConfirm())) {
-            throw new PwConfirmFailureException();
-        }
-        String password = passwordEncoder.encode(p.getUserPw());
-        p.setUserPw(password);
+    public long postSignUp(UserSignUpPostReq p) throws Exception{
+        User user = new User(p);
+        repository.save(user);
+        return user.getUserPk();
+    }
 
-        UserEntity user = new UserEntity(p);
 
-        if(pic == null) {
-            try {
-                repository.save(user);
-            } catch (Exception e) {
-                Throwable cause = e.getCause();
-                if (cause instanceof SQLIntegrityConstraintViolationException) {
-                    String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
-                    throw new DuplicatedInfoException(errorMessage);
-                } else {
-                    // 기타 예외 처리
-                    throw new RuntimeException(e.getMessage());
-                }
-            }
-            result = user.getUserPk();
-            return result;
-        } else if (!pic.getContentType().startsWith("image/")) {
+    @Transactional
+    public String uploadProfileImage(MultipartFile pic) {
+        if (!Objects.requireNonNull(pic.getContentType()).startsWith("image/")) {
             throw new InvalidRegexException();
         }
         if(pic.getSize() > IMAGE_SIZE_LIMIT) {
@@ -104,9 +79,6 @@ public class UserServiceImpl implements UserService{
         }
         customFileUtils.makeFolder("user");
         String fileName = String.format("user/%s", customFileUtils.makeRandomFileName(pic));
-        user.setUserPic(fileName);
-        repository.save(user);
-        result = user.getUserPk();
 
         try {
             customFileUtils.transferTo(pic, fileName);
@@ -114,7 +86,19 @@ public class UserServiceImpl implements UserService{
             e.printStackTrace();
             throw new FileUploadFailedException();
         }
-        return result;
+        return fileName;
+    }
+
+    @Transactional
+    public void deleteProfileImage(User user) {
+        String originalFileName = user.getUserPic();
+        try {
+            String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
+            File file = new File(delAbsoluteFolderPath, originalFileName);
+            file.delete();
+        } catch (Exception e) {
+            throw new FileUploadFailedException();
+        }
     }
 
     @Override
@@ -122,7 +106,7 @@ public class UserServiceImpl implements UserService{
     public int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p) {
         try {
             UserSignUpPostReq req = new UserSignUpPostReq(p);
-            long userPk = postSignUp(pic, req);
+            long userPk = postSignUp(req);
             RestaurantInsertDto dto = new RestaurantInsertDto();
             dto.setUser(userPk);
             dto.setName(p.getRestaurantName());
@@ -147,15 +131,14 @@ public class UserServiceImpl implements UserService{
     @Override
     public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
-        UserEntity user = repository.findUserByUserId(p.getUserId());
+        User user = repository.findUserByUserId(p.getUserId());
         if(user == null || user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
         if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
             throw new IncorrectPwException();
         }
-        UserAddr mainAddr = userAddrRepository.findMainUserAddr(user.getUserPk());
-        UserAddrGetRes addrGetRes = new UserAddrGetRes();
+        UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
                 .role(user.getUserRole())
@@ -170,7 +153,7 @@ public class UserServiceImpl implements UserService{
 
         return SignInRes.builder()
                 .userNickname(user.getUserNickname())
-                .mainAddr(mainAddr)
+                .mainAddr(addrGetRes)
                 .userPhone(user.getUserPhone())
                 .userRole(user.getUserRole())
                 .accessToken(accessToken)
@@ -193,7 +176,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public String patchProfilePic(MultipartFile pic, UserPicPatchReq p) throws Exception{
 
-        UserEntity user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         String originalFileName = user.getUserPic();
         if(originalFileName != null) {
             try {
@@ -235,7 +218,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public int patchUserNickname(UserNicknamePatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        UserEntity user;
+        User user;
         try {
             user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         } catch(EntityNotFoundException e) {
@@ -265,7 +248,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public int patchUserPhone(UserPhonePatchReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        UserEntity user;
+        User user;
         try {
             user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         } catch(EntityNotFoundException e) {
@@ -291,7 +274,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int patchUserPassword(UserPasswordPatchReq p) throws Exception{
-        UserEntity user;
+        User user;
         int result = 0;
         try {
             user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
@@ -316,33 +299,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int deleteUser(UserDelReq p) throws Exception{
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
-        if(user == null || user.getUserState() == 3) {
+    public int deleteUser(User user) throws Exception{
+        if(user.getUserState() == 3) {
             throw new UserNotFoundException();
-        }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
-            throw new IncorrectPwException();
         }
-        return repository.deleteUser(authenticationFacade.getLoginUserPk());
+        user.setUserState(3);
+        return 1;
+    }
+
+    public boolean checkPassword(String password1, String password2) {
+        return passwordEncoder.matches(password1, password2);
+    }
+
+    public User getUser(Long userPk) {
+        return repository.getReferenceById(userPk);
     }
 
     @Override
-    public int deleteOwner(UserDelReq p) {
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        UserEntity user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
-        if(user == null || user.getUserState() == 3) {
-            throw new UserNotFoundException();
-        }else if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
-            throw new IncorrectPwException();
-        }
-        int result = repository.deleteUser(authenticationFacade.getLoginUserPk());
-        try { resService.deleteRestaurantData(p.getSignedUserPk()); }
-        catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
-        return result;
+    public int deleteOwner(User user) {
+        user.setUserState(3);
+        return 1;
     }
 
     @Override
@@ -368,16 +344,16 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getUserByPk(long signedUserPk) {
+    public UserGetRes getUserByPk(long signedUserPk) {
         return mapper.getUserByPk(signedUserPk);
 
     }
 
     @Override
-    public User getUserByPk() {
+    public UserGetRes getUserByPk() {
         long signedUserPk = authenticationFacade.getLoginUserPk();
-        User user = mapper.getUserByPk(signedUserPk);
-        return user;
+        UserGetRes userGetRes = mapper.getUserByPk(signedUserPk);
+        return userGetRes;
     }
 
     @Override
@@ -385,8 +361,8 @@ public class UserServiceImpl implements UserService{
         if(userId.length() < 8) {
             throw new RuntimeException("Id는 8자 이상이어야 합니다.");
         }
-        User user = mapper.getUserById(userId);
-        if(user != null) {
+        UserGetRes userGetRes = mapper.getUserById(userId);
+        if(userGetRes != null) {
             throw new DuplicatedIdException();
         }
         return 1;

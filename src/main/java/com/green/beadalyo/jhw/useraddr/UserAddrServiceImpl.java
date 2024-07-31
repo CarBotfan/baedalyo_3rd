@@ -1,7 +1,7 @@
 package com.green.beadalyo.jhw.useraddr;
 
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import com.green.beadalyo.jhw.useraddr.model.*;
 import com.green.beadalyo.jhw.useraddr.repository.UserAddrRepository;
@@ -21,15 +21,15 @@ public class UserAddrServiceImpl implements UserAddrService{
     private final UserAddrMapper mapper;
     private final AuthenticationFacade authenticationFacade;
     private final UserAddrRepository repository;
-    private final UserRepository2 userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public long postUserAddr(UserAddrPostReq p) throws Exception{
         p.setSignedUserId(authenticationFacade.getLoginUserPk());
         UserAddr userAddr = new UserAddr(p);
-        userAddr.setUserEntity(userRepository.findByUserPk(authenticationFacade.getLoginUserPk()));
+        userAddr.setUser(userRepository.findByUserPk(authenticationFacade.getLoginUserPk()));
         repository.save(userAddr);
-        if(repository.findAllByUserPk(p.getSignedUserId()).size() == 1) {
+        if(repository.findAllByUserPkOrderByAddrDefaultDesc(p.getSignedUserId()).size() == 1) {
             repository.setMainUserAddr(userAddr.getAddrPk(), p.getSignedUserId());
         }
         return userAddr.getAddrPk();
@@ -38,7 +38,7 @@ public class UserAddrServiceImpl implements UserAddrService{
     @Override
     public List<UserAddrGetRes> getUserAddrList() throws Exception{
         long signedUserPk = authenticationFacade.getLoginUserPk();
-        List<UserAddr> list = repository.findAllByUserPk(signedUserPk);
+        List<UserAddr> list = repository.findAllByUserPkOrderByAddrDefaultDesc(signedUserPk);
         List<UserAddrGetRes> result = new ArrayList<>();
         for(UserAddr userAddr : list) {
             UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddr);

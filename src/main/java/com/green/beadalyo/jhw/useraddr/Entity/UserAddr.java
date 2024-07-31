@@ -1,6 +1,6 @@
 package com.green.beadalyo.jhw.useraddr.Entity;
 
-import com.green.beadalyo.jhw.user.entity.UserEntity;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrPostReq;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class UserAddr {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "addr_user_pk", nullable = false)
-    private UserEntity userEntity;
+    private User user;
 
     @Column(nullable = false)
     private String addrName;
