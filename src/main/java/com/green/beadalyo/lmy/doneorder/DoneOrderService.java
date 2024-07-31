@@ -7,6 +7,10 @@ import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import com.green.beadalyo.lmy.order.model.MenuInfoDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +30,12 @@ public class DoneOrderService {
     public Map<String, Object> getDoneOrderByUserPk(Paging p) {
         long userPk = authenticationFacade.getLoginUserPk();
 
-        Integer totalElements = doneOrderRepository.countByUserPk(userPk);
-        Integer totalPage = (totalElements / p.getSize()) + 1;
+//        Integer totalElements = doneOrderRepository.countByUserPk(userPk);
+//        Integer totalPage = (totalElements / p.getSize()) + 1;
 
-        List<DoneOrderMiniGetResUser> result = doneOrderRepository.findDoneOrdersByUserPk(userPk, p.getStartIndex(), p.getSize());
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<DoneOrderMiniGetResUser> result = doneOrderRepository.findDoneOrdersByUserPk(userPk, pageable);
 
         for (DoneOrderMiniGetResUser item : result) {
             item.setReviewState(doneOrderRepository.countReviewsByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 0 : 1);
@@ -38,16 +44,16 @@ public class DoneOrderService {
         }
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("maxPage", totalPage);
-        resultMap.put("contents", result);
+        resultMap.put("maxPage", result.getTotalPages());
+        resultMap.put("contents", result.getTotalElements());
 
         return resultMap;
     }
 
     @Transactional
     public Map<String, Object> getDoneOrderByResPk(Long resPk, Paging p) {
-        Integer totalElements = doneOrderRepository.countByResPk(resPk);
-        Integer totalPage = totalElements % p.getSize() == 0 ? totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
+//        Integer totalElements = doneOrderRepository.countByResPk(resPk);
+//        Integer totalPage = totalElements % p.getSize() == 0 ? totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
 
         DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
                 .resPk(resPk)
@@ -56,24 +62,26 @@ public class DoneOrderService {
                 .startIndex(p.getStartIndex())
                 .build();
 
-        List<DoneOrderMiniGetRes> result = doneOrderRepository.findDoneOrdersByResPk(dto.getResPk(), dto.getStartIndex(), dto.getSize());
+        Pageable pageable = PageRequest.of(p.getPage(), dto.getSize(), Sort.by(Sort.Direction.DESC,"createdAt"));
 
-        for (DoneOrderMiniGetRes item : result) {
+        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findDoneOrdersByResPk(dto.getResPk(), pageable);
+
+        for (DoneOrderMiniGetRes item : result.toList()) {
             List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("maxPage", totalPage);
-        resultMap.put("contents", result);
+        resultMap.put("maxPage", result.getTotalPages());
+        resultMap.put("contents", result.getTotalElements());
 
         return resultMap;
     }
 
     @Transactional
     public Map<String, Object> getCancelOrderByResPk(Long resPk, Paging p) {
-        Integer totalElements = doneOrderRepository.countCancelOrdersByResPk(resPk);
-        Integer totalPage = totalElements % p.getSize() == 0 ? totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
+//        Integer totalElements = doneOrderRepository.countCancelOrdersByResPk(resPk);
+//        Integer totalPage = totalElements % p.getSize() == 0 ? totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
 
         DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
                 .resPk(resPk)
@@ -82,16 +90,18 @@ public class DoneOrderService {
                 .startIndex(p.getStartIndex())
                 .build();
 
-        List<DoneOrderMiniGetRes> result = doneOrderRepository.findCancelOrdersByResPk(dto.getResPk(), dto.getStartIndex(), dto.getSize());
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        for (DoneOrderMiniGetRes item : result) {
+        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findCancelOrdersByResPk(dto.getResPk(), pageable);
+
+        for (DoneOrderMiniGetRes item : result.toList()) {
             List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("maxPage", totalPage);
-        resultMap.put("contents", result);
+        resultMap.put("maxPage", result.getTotalPages());
+        resultMap.put("contents", result.getTotalElements());
 
         return resultMap;
     }
