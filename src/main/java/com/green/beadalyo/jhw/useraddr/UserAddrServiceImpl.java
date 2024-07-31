@@ -67,8 +67,10 @@ public class UserAddrServiceImpl implements UserAddrService{
 
     @Override
     public int patchUserAddr(UserAddrPatchReq p) throws Exception{
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        return mapper.updUserAddr(p);
+        UserAddr addr = repository.getReferenceById(p.getAddrPk());
+        addr.update(p);
+        repository.save(addr);
+        return 1;
     }
 
     @Override
