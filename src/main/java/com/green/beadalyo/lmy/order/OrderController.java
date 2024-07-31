@@ -1,13 +1,18 @@
 package com.green.beadalyo.lmy.order;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.RestaurantService;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
-import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.order.entity.Order;
+import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
+import com.green.beadalyo.lmy.order.repository.OrderRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,8 +37,9 @@ import static com.green.beadalyo.lmy.dataset.ResponseDataSet.*;
 @Tag(name = "주문 관련 컨트롤러")
 public class OrderController {
     private final OrderService orderService;
-    private final OrderMapper orderMapper;
+    private final RestaurantService restaurantService;
     private final AuthenticationFacade authenticationFacade;
+
 
     @PostMapping
     @Operation(summary = "주문하기")
@@ -91,12 +97,14 @@ public class OrderController {
                             "<p> -10 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
                             "<p> -5 : 주문 취소 실패 </p>"
     )
+    @Transactional
     public ResultDto<Integer> cancelOrder(@PathVariable("order_pk") Long orderPk) {
-        int result = -1;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (orderMapper.getOrderState(orderPk) == 1){
-            if (userPk != orderMapper.getResUserPkByOrderPk(orderPk) && userPk != orderMapper.getUserPkByOrderPk(orderPk)) {
+
+        if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 1){
+            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()
+                    && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
                 return ResultDto.<Integer>builder()
                         .statusCode(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getCode())
                         .resultMsg(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getMessage())
@@ -104,26 +112,26 @@ public class OrderController {
             }
         }
 
-        if (orderMapper.getOrderState(orderPk) == 2){
-            if (userPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
+        if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 2){
+            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()) {
                 return ResultDto.<Integer>builder()
                         .statusCode(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getCode())
                         .resultMsg(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getMessage()).build();
             }
         }
 
-        try {
-            result = orderService.cancelOrder(orderPk);
-        } catch (Exception e) {
-            return ResultDto.<Integer>builder()
-                    .statusCode(ExceptionMsgDataSet.ORDER_CANCEL_FAIL.getCode())
-                    .resultMsg(ExceptionMsgDataSet.ORDER_CANCEL_FAIL.getMessage()).build();
-        }
+        Order order = orderService.getOrderEntity(orderPk);
+        DoneOrder doneOrder = orderService.saveDoneOrder(order, userPk,2);
+
+        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
+        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
+
+        orderService.deleteOrder(orderPk);
 
         return ResultDto.<Integer>builder()
                 .statusCode(SUCCESS_CODE)
                 .resultMsg(CANCEL_ORDER_SUCCESS)
-                .resultData(result)
+                .resultData(1)
                 .build();
     }
 
@@ -138,13 +146,21 @@ public class OrderController {
     public ResultDto<Integer> completeOrder(@PathVariable("order_pk") Long orderPk) {
         int result = -1;
 
-        try {
-            result = orderService.completeOrder(orderPk);
-        } catch (RuntimeException e) {
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()) {
             return ResultDto.<Integer>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage()).build();
         }
+
+        Order order = orderService.getOrderEntity(orderPk);
+        DoneOrder doneOrder = orderService.saveDoneOrder(order, userPk,1);
+
+        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
+        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
+
+        orderService.deleteOrder(orderPk);
+
 
         return ResultDto.<Integer>builder()
                 .statusCode(SUCCESS_CODE)
@@ -200,22 +216,25 @@ public class OrderController {
 
         long userPk = authenticationFacade.getLoginUserPk();
 
-        Long resPk = orderMapper.getResPkByUserPk(userPk);
-        if (resPk == null) {
+        Restaurant resPk = null;
+        try {
+            resPk = restaurantService.getRestaurantData(userPk);
+        } catch (Exception e) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
                     .build();
         }
 
-        try {
-            result = orderService.getResNonConfirmOrderList(resPk);
-        } catch (RuntimeException e) {
+        if (userPk != resPk.getUser()){
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
                     .build();
         }
+
+        result = orderService.getResNonConfirmOrderList(resPk.getSeq());
+
 
         if (result == null || result.isEmpty()) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
@@ -245,22 +264,24 @@ public class OrderController {
 
         long userPk = authenticationFacade.getLoginUserPk();
 
-        Long resPk = orderMapper.getResPkByUserPk(userPk);
-        if (resPk == null) {
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
-        }
-
+        Restaurant resPk = null;
         try {
-            result = orderService.getResConfirmOrderList(resPk);
+            resPk = restaurantService.getRestaurantData(userPk);
         } catch (Exception e) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
                     .build();
         }
+
+        if (userPk != resPk.getUser()){
+            return ResultDto.<List<OrderMiniGetRes>>builder()
+                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
+                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
+                    .build();
+        }
+
+            result = orderService.getResConfirmOrderList(resPk.getSeq());
 
         if (result == null || result.isEmpty()) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
@@ -287,21 +308,16 @@ public class OrderController {
     public ResultDto<OrderGetRes> getOrderInfo(@PathVariable("order_pk") Long orderPk) {
         OrderGetRes result = null;
 
-
-
-        try {
-            result = orderService.getOrderInfo(orderPk);
-        } catch (IllegalArgumentException e) {
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()
+                && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
             return ResultDto.<OrderGetRes>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
                     .build();
-        } catch (Exception e) {
-            return ResultDto.<OrderGetRes>builder()
-                    .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
-                    .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getMessage())
-                    .build();
         }
+
+        result = orderService.getOrderInfo(orderPk);
 
         if (result == null) {
             return ResultDto.<OrderGetRes>builder()
@@ -328,14 +344,15 @@ public class OrderController {
     public ResultDto<Integer> confirmOrder(@PathVariable("order_pk") Long orderPk){
         Integer result = -1;
 
-        try {
-            result = orderService.confirmOrder(orderPk);
-        } catch (Exception e) {
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        if (resUserPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()) {
             return ResultDto.<Integer>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
                     .build();
         }
+
+        result = orderService.confirmOrder(orderPk);
 
         return ResultDto.<Integer>builder()
                 .statusCode(SUCCESS_CODE)
