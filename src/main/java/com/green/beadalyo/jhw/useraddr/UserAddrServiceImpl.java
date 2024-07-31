@@ -81,7 +81,8 @@ public class UserAddrServiceImpl implements UserAddrService{
     @Override
     public int deleteUserAddr(UserAddrDelReq p) throws Exception{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        int result =  mapper.deleteUserAddr(p);
+        UserAddr userAddr = repository.getReferenceById(p.getAddrPk());
+        repository.delete(userAddr);
         if(getMainUserAddr() == null) {
             List<UserAddrGetRes> list = getUserAddrList();
             if(!list.isEmpty()) {
@@ -91,7 +92,7 @@ public class UserAddrServiceImpl implements UserAddrService{
                 patchMainUserAddr(req);
             }
         }
-        return result;
+        return 1;
     }
 
 
