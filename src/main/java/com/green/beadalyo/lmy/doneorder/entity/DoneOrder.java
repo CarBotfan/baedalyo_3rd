@@ -15,6 +15,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "done_order")
 public class DoneOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

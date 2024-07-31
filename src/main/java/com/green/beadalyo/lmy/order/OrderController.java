@@ -346,7 +346,7 @@ public class OrderController {
                     .build();
         }
 
-        result = orderService.confirmOrder(orderPk);
+        result = orderRepository.confirmOrder(orderPk);
 
         return ResultDto.<Integer>builder()
                 .statusCode(SUCCESS_CODE)

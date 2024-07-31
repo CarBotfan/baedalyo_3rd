@@ -211,7 +211,6 @@ public class OrderService {
     }
 
     public OrderGetRes getOrderInfo(Long orderPk) {
-
         OrderGetRes result = orderRepository.getOrderInfo(orderPk);
         List<MenuInfoDto> menuInfoList = orderMenuRepository.findMenuInfoByOrderPk(orderPk);
         result.setMenuInfoList(menuInfoList);
@@ -219,10 +218,4 @@ public class OrderService {
         return result;
     }
 
-    public Integer confirmOrder(Long orderPk) {
-
-        orderRepository.confirmOrder(orderPk);
-
-        return 1;
-    }
 }
