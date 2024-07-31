@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class UserAddrServiceImpl implements UserAddrService{
-    private final UserAddrMapper mapper;
     private final AuthenticationFacade authenticationFacade;
     private final UserAddrRepository repository;
     private final UserRepository userRepository;

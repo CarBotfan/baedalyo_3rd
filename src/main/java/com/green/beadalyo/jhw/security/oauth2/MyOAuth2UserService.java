@@ -3,7 +3,6 @@ package com.green.beadalyo.jhw.security.oauth2;
 import com.green.beadalyo.jhw.security.MyUserDetails;
 import com.green.beadalyo.jhw.security.MyUserOAuth2Vo;
 import com.green.beadalyo.jhw.security.oauth2.userinfo.OAuth2UserInfoFactory;
-import com.green.beadalyo.jhw.user.UserMapper;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.oauth2.userinfo.OAuth2UserInfo;
 import com.green.beadalyo.jhw.user.entity.User;
@@ -41,7 +40,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MyOAuth2UserService extends DefaultOAuth2UserService {
-    private final UserMapper mapper;
     private final UserRepository repository;
     private final OAuth2UserInfoFactory oAuth2UserInfoFactory;
 
@@ -72,7 +70,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         SignInPostReq signInParam = new SignInPostReq();
         signInParam.setUserId(oAuth2UserInfo.getId()); //플랫폼에서 넘어오는 유니크값(항상 같은 값이며 다른 사용자와 구별되는 유니크 값)
         signInParam.setUserLoginType(signInProviderType.getValue());
-        UserGetRes userGetRes = mapper.getUserById(signInParam.getUserId());
+        UserGetRes userGetRes = new UserGetRes(repository.findUserByUserId(signInParam.getUserId()));
 
         if(userGetRes == null) { //회원가입 처리
             UserSignUpPostReq signUpParam = new UserSignUpPostReq();

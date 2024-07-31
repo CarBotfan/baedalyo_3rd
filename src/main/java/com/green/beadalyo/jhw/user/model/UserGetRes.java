@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.user.model;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -24,4 +25,19 @@ public class UserGetRes {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public UserGetRes(User user) {
+        this.userPk = user.getUserPk();
+        this.userId = user.getUserId();
+        this.userPw = user.getUserPw();
+        this.userName = user.getUserName();
+        this.userNickname = user.getUserNickname();
+        this.userPic = user.getUserPic();
+        this.userPhone = user.getUserPhone();
+        this.userEmail = user.getUserEmail();
+        this.userRole = user.getUserRole();
+        this.userState = user.getUserState();
+        this.userLoginType = user.getUserLoginType();
+        this.createdAt = user.getCreatedAt();
+        this.updatedAt = user.getUpdatedAt();
+    }
 }

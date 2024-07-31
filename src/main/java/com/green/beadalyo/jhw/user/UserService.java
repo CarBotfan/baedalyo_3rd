@@ -19,8 +19,6 @@ public interface UserService {
     UserInfoGetRes getUserInfo() throws Exception;
     String patchProfilePic(String fileName) throws Exception;
     Map getAccessToken(HttpServletRequest req) throws Exception;
-    UserGetRes getUserByPk() throws Exception;
-    UserGetRes getUserByPk(long signedUserPk) throws Exception;
     int deleteOwner(User user);
     int duplicatedCheck(String userId);
 }
