@@ -28,7 +28,7 @@ public class UserAddr {
     @JoinColumn(name = "addr_user_pk", nullable = false)
     private User user;
 
-    @Column(name = "addr_name" ,nullable = false)
+    @Column(name = "addr_name")
     private String addrName;
 
     @Column(name = "addr1", length = 50, nullable = false)
