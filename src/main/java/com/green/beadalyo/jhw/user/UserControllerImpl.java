@@ -8,6 +8,7 @@ import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
+import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,6 +42,7 @@ public class UserControllerImpl implements UserController{
     private final RestaurantService restaurantService;
     private final AuthenticationFacade authenticationFacade;
     private final PasswordEncoder passwordEncoder;
+    private final UserAddrServiceImpl userAddrService;
 
     @Override
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
@@ -72,9 +74,8 @@ public class UserControllerImpl implements UserController{
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
             User user = new User(p);
 
-            if(pic != null) {
-                user.setUserPic(service.uploadProfileImage(pic));
-            }
+            user.setUserPic(service.uploadProfileImage(pic));
+
             service.saveUser(user);
 
             result = 1;
@@ -122,7 +123,14 @@ public class UserControllerImpl implements UserController{
         String msg = "로그인 성공";
 
         try {
-            result = service.postSignIn(res, p);
+            User user = service.getUserById(p.getUserId());
+            if(user.getUserState() == 3) {
+                throw new UserNotFoundException();
+            }
+            if(service.checkPassword(p.getUserPw(), user. getUserPw())) {
+                throw new IncorrectPwException();
+            }
+            result = service.postSignIn(res, user);
         } catch(UserNotFoundException e) {
            statusCode = -2;
            msg = e.getMessage();
@@ -174,9 +182,8 @@ public class UserControllerImpl implements UserController{
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
             User user = new User(req);
 
-            if(pic != null) {
-                user.setUserPic(service.uploadProfileImage(pic));
-            }
+            user.setUserPic(service.uploadProfileImage(pic));
+
 
             long userPk = service.saveUser(user);
 

@@ -64,6 +64,9 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     public String uploadProfileImage(MultipartFile pic) {
+        if(pic == null) {
+            return null;
+        }
         if (!Objects.requireNonNull(pic.getContentType()).startsWith("image/")) {
             throw new InvalidRegexException();
         }
@@ -122,15 +125,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
-        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
-        User user = repository.findUserByUserId(p.getUserId());
-        if(user == null || user.getUserState() == 3) {
-            throw new UserNotFoundException();
-        }
-        if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
-            throw new IncorrectPwException();
-        }
+    public SignInRes postSignIn(HttpServletResponse res, User user) throws Exception{
         UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
@@ -270,7 +265,11 @@ public class UserServiceImpl implements UserService{
     }
 
     public User getUser(Long userPk) {
+        try {
         return repository.getReferenceById(userPk);
+        } catch(EntityNotFoundException e) {
+            throw new UserNotFoundException();
+        }
     }
 
     @Override
@@ -305,6 +304,14 @@ public class UserServiceImpl implements UserService{
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         return new UserGetRes(user);
 
+    }
+
+    public User getUserById(String userId)  {
+        try {
+            return repository.findUserByUserId(userId);
+        } catch (EntityNotFoundException e) {
+            throw new UserNotFoundException();
+        }
     }
 
     @Override
