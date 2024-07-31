@@ -2,19 +2,17 @@ package com.green.beadalyo.gyb.restaurant;
 
 import com.green.beadalyo.gyb.category.CategoryService;
 import com.green.beadalyo.gyb.common.Result;
-import com.green.beadalyo.gyb.common.UserRepository;
 import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.common.ResultDto;
 import com.green.beadalyo.gyb.common.ResultError;
 import com.green.beadalyo.gyb.common.exception.DataWrongException;
-import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.model.Category;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import com.green.beadalyo.gyb.response.RestaurantManageRes;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
-import com.green.beadalyo.jhw.user.model.User;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,8 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalTime;
 
 @RestController
 @Slf4j
@@ -49,9 +45,9 @@ public class RestaurantManageApiController
 //    @Operation(summary = "(테스트) 음식점 추가")
 //    public Result putRestaurant()
 //    {
-//        UserEntity user = userService.getUserByPk() ;
+//        User user = userService.getUserByPk() ;
 //        RestaurantInsertDto dto = new RestaurantInsertDto() ;
-//        dto.setUserEntity(user.getUserPk());
+//        dto.setUser(user.getUserPk());
 //        dto.setRegiNum("123-45-67891");
 //        dto.setResAddr("대구 북구 대현동");
 //        dto.setResCoorX(128.59636652);

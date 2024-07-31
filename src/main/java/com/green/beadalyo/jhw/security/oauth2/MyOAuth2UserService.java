@@ -6,9 +6,11 @@ import com.green.beadalyo.jhw.security.oauth2.userinfo.OAuth2UserInfoFactory;
 import com.green.beadalyo.jhw.user.UserMapper;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.oauth2.userinfo.OAuth2UserInfo;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.model.SignInPostReq;
-import com.green.beadalyo.jhw.user.model.User;
+import com.green.beadalyo.jhw.user.model.UserGetRes;
 import com.green.beadalyo.jhw.user.model.UserSignUpPostReq;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -18,8 +20,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 /*
     MyOAuth2UserService:
@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class MyOAuth2UserService extends DefaultOAuth2UserService {
     private final UserMapper mapper;
+    private final UserRepository repository;
     private final OAuth2UserInfoFactory oAuth2UserInfoFactory;
 
     @Override
@@ -71,17 +72,18 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         SignInPostReq signInParam = new SignInPostReq();
         signInParam.setUserId(oAuth2UserInfo.getId()); //플랫폼에서 넘어오는 유니크값(항상 같은 값이며 다른 사용자와 구별되는 유니크 값)
         signInParam.setUserLoginType(signInProviderType.getValue());
-        User user = mapper.getUserById(signInParam.getUserId());
+        UserGetRes userGetRes = mapper.getUserById(signInParam.getUserId());
 
-        if(user == null) { //회원가입 처리
+        if(userGetRes == null) { //회원가입 처리
             UserSignUpPostReq signUpParam = new UserSignUpPostReq();
             signUpParam.setUserLoginType(signInProviderType.getValue());
             signUpParam.setUserId(oAuth2UserInfo.getId());
             signUpParam.setUserName(oAuth2UserInfo.getName());
             signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
             signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
-            int result = mapper.signUpUser(signUpParam);
-            user = new User( signUpParam.getUserPk()
+            User user = new User(signUpParam);
+            repository.save(user);
+            userGetRes = new UserGetRes( signUpParam.getUserPk()
                            , null
                            , null
                            , signUpParam.getUserName()
@@ -95,12 +97,12 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
                             , null
                             , null);
         } else { //이미 회원가입 되어 있었음
-            if(user.getUserPic() == null || (user.getUserPic().startsWith("http") && !user.getUserPic().equals(oAuth2UserInfo.getProfilePicUrl()))) { //프로필 값이 변경이 되었다면
+            if(userGetRes.getUserPic() == null || (userGetRes.getUserPic().startsWith("http") && !userGetRes.getUserPic().equals(oAuth2UserInfo.getProfilePicUrl()))) { //프로필 값이 변경이 되었다면
                 //프로필 사진 변경처리(update)
             }
         }
         MyUserOAuth2Vo myUserOAuth2Vo
-                = new MyUserOAuth2Vo(user.getUserPk(), "ROLE_USER", user.getUserName(), user.getUserPic());
+                = new MyUserOAuth2Vo(userGetRes.getUserPk(), "ROLE_USER", userGetRes.getUserName(), userGetRes.getUserPic());
 
         MyUserDetails signInUser = new MyUserDetails();
         signInUser.setMyUser(myUserOAuth2Vo);

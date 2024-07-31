@@ -1,13 +1,14 @@
 package com.green.beadalyo.jhw.user;
 
 import com.green.beadalyo.common.model.ResultDto;
-import com.green.beadalyo.gyb.common.exception.DataWrongException;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.security.SignInProviderType;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,25 +16,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,6 +39,8 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class UserControllerImpl implements UserController{
     private final UserServiceImpl service;
     private final RestaurantService restaurantService;
+    private final AuthenticationFacade authenticationFacade;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
@@ -63,8 +61,22 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "가입 성공";
         p.setUserRole("ROLE_USER");
+        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         try {
-            service.postSignUp(pic, p);
+            if(!p.getUserPw().equals(p.getUserPwConfirm())) {
+                throw new PwConfirmFailureException();
+            }
+
+            service.duplicatedCheck(p.getUserId());
+
+            p.setUserPw(passwordEncoder.encode(p.getUserPw()));
+            User user = new User(p);
+
+            if(pic != null) {
+                user.setUserPic(service.uploadProfileImage(pic));
+            }
+            service.saveUser(user);
+
             result = 1;
         } catch (DuplicatedIdException e) {
             statusCode = -7;
@@ -149,8 +161,40 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "가입 성공";
         int statusCode = 1;
+        p.setUserRole("ROLE_OWNER");
+        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
         try {
-            result = service.postOwnerSignUp(pic, p);
+            UserSignUpPostReq req = new UserSignUpPostReq(p);
+
+            if(!p.getUserPw().equals(p.getUserPwConfirm())) {
+                throw new PwConfirmFailureException();
+            }
+
+            service.duplicatedCheck(p.getUserId());
+            p.setUserPw(passwordEncoder.encode(p.getUserPw()));
+            User user = new User(req);
+
+            if(pic != null) {
+                user.setUserPic(service.uploadProfileImage(pic));
+            }
+
+            long userPk = service.saveUser(user);
+
+            RestaurantInsertDto dto = new RestaurantInsertDto();
+            dto.setUser(userPk);
+            dto.setName(p.getRestaurantName());
+            dto.setRegiNum(p.getRegiNum());
+            dto.setResAddr(p.getAddr());
+            dto.setDesc1(p.getDesc1());
+            dto.setDesc2(p.getDesc2());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
+            dto.setCloseTime(LocalTime.parse(p.getCloseTime(), formatter));
+            dto.setResCoorX(p.getCoorX());
+            dto.setResCoorY(p.getCoorY());
+
+            restaurantService.insertRestaurantData(dto);
+            result = 1;
         } catch (DuplicatedInfoException e) {
             statusCode = -11;
             msg = e.getMessage();
@@ -266,9 +310,12 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         String result = "";
         String msg = "수정 완료";
-        UserPicPatchReq p = new UserPicPatchReq();
         try {
-            result = service.patchProfilePic(pic, p);
+            User user = service.getUser(authenticationFacade.getLoginUserPk());
+            service.deleteProfileImage(user);
+            user.setUserPic(service.uploadProfileImage(pic));
+            service.saveUser(user);
+            result = user.getUserPic();
         } catch(UserPatchFailureException e) {
             msg = e.getMessage();
             statusCode = -10;
@@ -404,7 +451,11 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "탈퇴 완료";
         try {
-            result = service.deleteUser(p);
+            User user = service.getUser(authenticationFacade.getLoginUserPk());
+            if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
+                throw new IncorrectPwException();
+            }
+            result = service.deleteUser(user);
         } catch (UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();
@@ -437,7 +488,13 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "탈퇴 완료";
         try {
-            result = service.deleteOwner(p);
+            User user = service.getUser(authenticationFacade.getLoginUserPk());
+            if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
+                throw new IncorrectPwException();
+            }
+            result = service.deleteUser(user);
+            restaurantService.deleteRestaurantData(user.getUserPk());
+
         } catch (UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.green.beadalyo.jhw.user.UserMapper">
+<mapper namespace="com.green.beadalyo.jhw.userGetRes.UserMapper">
     <insert id="signUpUser" keyProperty="userPk" useGeneratedKeys="true">
-        INSERT into user
+        INSERT into userGetRes
         SET user_id = #{userId}
         , user_pw = #{userPw}
         , user_name = #{userName}
@@ -28,7 +28,7 @@
         , user_login_type AS userLoginType
         , created_at AS createdAt
         , updated_at AS updatedAt
-        FROM user
+        FROM userGetRes
         WHERE user_id = #{userId}
         AND user_login_type = #{userLoginType}
     </select>
@@ -47,7 +47,7 @@
         , user_login_type AS userLoginType
         , created_at AS createdAt
         , updated_at AS updatedAt
-        FROM user
+        FROM userGetRes
         WHERE user_id = #{userId}
     </select>
     <select id="getUserByPk">
@@ -65,7 +65,7 @@
         , user_login_type AS userLoginType
         , created_at AS createdAt
         , updated_at AS updatedAt
-        FROM user
+        FROM userGetRes
         WHERE user_pk = #{userPk}
     </select>
     <select id="selProfileUserInfo">
@@ -76,16 +76,16 @@
         , user_pic AS userPic
         , user_phone AS userPhone
         , user_email AS userEmail
-        FROM user
+        FROM userGetRes
         WHERE user_pk = #{signedUserPk}
     </select>
     <update id="updProfilePic">
-        UPDATE user
+        UPDATE userGetRes
         SET user_pic = #{picName}
         WHERE user_pk = #{signedUserPk}
     </update>
     <update id="updUserNickname">
-        UPDATE user
+        UPDATE userGetRes
         <set>
             <if test="userNickname != null and !userNickname.equals('')">
                 user_nickname = #{userNickname}
@@ -94,7 +94,7 @@
         WHERE user_pk = #{signedUserPk}
     </update>
     <update id="updUserPhone">
-        UPDATE user
+        UPDATE userGetRes
         <set>
             <if test = "userPhone != null and !userPhone.equals('')">
                 user_phone = #{userPhone}
@@ -103,12 +103,12 @@
         WHERE user_pk = #{signedUserPk}
     </update>
     <update id="updUserPassword">
-        UPDATE user
+        UPDATE userGetRes
         SET user_pw = #{newPw}
         WHERE user_pk = #{signedUserPk}
     </update>
     <update id="deleteUser">
-        UPDATE user
+        UPDATE userGetRes
         SET user_state = 3
         WHERE user_pk = #{userPk}
     </update>
@@ -129,7 +129,7 @@
     </select>
     <select id="getUserPicName">
         SELECT user_pic AS userPic
-        FROM user
+        FROM userGetRes
         WHERE user_pk = #{userPK}
     </select>
 </mapper>

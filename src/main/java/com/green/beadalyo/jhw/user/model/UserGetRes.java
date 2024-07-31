@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @EqualsAndHashCode
 @NoArgsConstructor
-public class User {
+public class UserGetRes {
     private long userPk;
     private String userId;
     private String userPw;

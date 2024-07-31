@@ -1,7 +1,9 @@
 package com.green.beadalyo.jhw.user.entity;
 
+import com.green.beadalyo.jhw.user.model.UserSignUpPostReq;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,7 +15,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class UserEntity {
+@NoArgsConstructor
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userPk;
@@ -52,5 +55,16 @@ public class UserEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public User(UserSignUpPostReq p) {
+        this.userId = p.getUserId();
+        this.userPw = p.getUserPw();
+        this.userName = p.getUserName();
+        this.userNickname = p.getUserNickname();
+        this.userPhone = p.getUserPhone();
+        this.userEmail = p.getUserEmail();
+        this.userRole = p.getUserRole();
+        this.userLoginType = p.getUserLoginType();
+    }
 
 }
