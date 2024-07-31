@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.user.model;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,14 +28,12 @@ public class UserInfoGetRes {
     private String userEmail;
     @Schema(defaultValue = "메인 주소")
     private UserAddrGetRes mainAddr;
-    public UserInfoGetRes(String userId, String userName
-            , String userNickname, String userPic
-            , String userPhone, String userEmail) {
-        this.userId = userId;
-        this.userName = userName;
-        this.userNickname = userNickname;
-        this.userPic = userPic;
-        this.userPhone = userPhone;
-        this.userEmail = userEmail;
+    public UserInfoGetRes(User user) {
+        this.userId = user.getUserId();
+        this.userName = user.getUserName();
+        this.userNickname = user.getUserNickname();
+        this.userPic = user.getUserPic();
+        this.userPhone = user.getUserPhone();
+        this.userEmail = user.getUserEmail();
     }
 }

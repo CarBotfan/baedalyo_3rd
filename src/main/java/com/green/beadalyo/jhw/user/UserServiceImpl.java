@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService{
-    private final UserMapper mapper;
     private final CustomFileUtils customFileUtils;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -157,7 +156,8 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserInfoGetRes getUserInfo() throws Exception{
         long userPk = authenticationFacade.getLoginUserPk();
-        UserInfoGetRes result = repository.findUserInfoByUserPk(userPk);
+        User user = repository.getReferenceById(userPk);
+        UserInfoGetRes result = new UserInfoGetRes(user);
         if(result == null) {
             throw new UserNotFoundException();
         }
@@ -301,17 +301,10 @@ public class UserServiceImpl implements UserService{
         return map;
     }
 
-    @Override
-    public UserGetRes getUserByPk(long signedUserPk) {
-        return mapper.getUserByPk(signedUserPk);
-
-    }
-
-    @Override
     public UserGetRes getUserByPk() {
-        long signedUserPk = authenticationFacade.getLoginUserPk();
-        UserGetRes userGetRes = mapper.getUserByPk(signedUserPk);
-        return userGetRes;
+        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        return new UserGetRes(user);
+
     }
 
     @Override
@@ -319,8 +312,9 @@ public class UserServiceImpl implements UserService{
         if(userId.length() < 8) {
             throw new RuntimeException("Id는 8자 이상이어야 합니다.");
         }
-        UserGetRes userGetRes = mapper.getUserById(userId);
-        if(userGetRes != null) {
+        User user = repository.findUserByUserId(userId);
+        UserInfoGetRes result = new UserInfoGetRes(user);
+        if(result.getUserId().equals(userId)) {
             throw new DuplicatedIdException();
         }
         return 1;
