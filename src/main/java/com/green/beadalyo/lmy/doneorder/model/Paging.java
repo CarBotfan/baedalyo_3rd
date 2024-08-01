@@ -9,8 +9,6 @@ import java.beans.ConstructorProperties;
 public class Paging {
     private Integer size;
     private Integer page;
-    @JsonIgnore
-    private Integer startIndex;
 
     @ConstructorProperties({"size", "page"})
     public Paging(Integer size, Integer page) {
@@ -21,11 +19,9 @@ public class Paging {
         }
 
         if (page == null || page < 1) {
-            this.page = 1;
+            this.page = 0;
         } else {
             this.page = page;
         }
-
-        this.startIndex = this.size * (this.page - 1);
     }
 }

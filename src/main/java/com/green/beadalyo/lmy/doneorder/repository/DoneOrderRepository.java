@@ -14,8 +14,7 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query(value = "SELECT " +
             "o.doneOrderPk , r.seq as resPK, r.pic as resPic, r.name as resName, o.orderPrice as orderPrice, o.doneOrderState as doneOrderState, o.createdAt as reatedAt, NULL " +
             "FROM DoneOrder o JOIN o.resPk r " +
-            "WHERE o.userPk.userPk = :userPk",
-            countQuery = "SELECT COUNT(o) FROM DoneOrder o WHERE o.userPk.userPk = :userPk")
+            "WHERE o.userPk.userPk = :userPk")
     Page<DoneOrderMiniGetResUser> findDoneOrdersByUserPk(@Param("userPk") Long userPk, Pageable pageable);
 
     @Query("SELECT COUNT(o) FROM DoneOrder o WHERE o.userPk.userPk = :userPk")
