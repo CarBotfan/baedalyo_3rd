@@ -11,9 +11,7 @@ import lombok.*;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserSignUpPostReq {
     @JsonIgnore
@@ -47,4 +45,16 @@ public class UserSignUpPostReq {
     private String userRole;
     @JsonIgnore
     private Integer userLoginType;
+
+    public UserSignUpPostReq(OwnerSignUpPostReq p) {
+        this.userId = p.getUserId();
+        this.userPw = p.getUserPw();
+        this.userPwConfirm = p.getUserPwConfirm();
+        this.userName = p.getUserName();
+        this.userNickname = p.getUserNickname();
+        this.userPhone = p.getUserPhone();
+        this.userEmail = p.getUserEmail();
+        this.userRole = p.getUserRole();
+    }
+
 }

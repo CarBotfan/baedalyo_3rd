@@ -24,7 +24,7 @@ public class ExceptionAdvisor {
             sb.append("\n");
         }
         return ResultDto.<String>builder()
-                .statusCode(-1)
+                .statusCode(-6)
                 .resultMsg(ErrorMessage)
                 .resultData(sb.toString()).build();
     }

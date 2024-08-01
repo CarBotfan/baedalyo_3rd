@@ -3,7 +3,7 @@
 <mapper namespace="com.green.beadalyo.jhw.email.MailMapper">
     <select id="getUserByEmail">
         SELECT user_nickname AS userNickname, user_email AS email
-        FROM user
+        FROM userGetRes
         WHERE user_email = #{email}
     </select>
 </mapper>

@@ -1,13 +1,16 @@
 package com.green.beadalyo.jhw.useraddr.model;
 
+import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserAddrGetRes {
     @Schema(defaultValue = "1")
     private long addrPk;
@@ -21,4 +24,13 @@ public class UserAddrGetRes {
     private BigDecimal addrCoorX;
     @Schema(defaultValue = "36.746")
     private BigDecimal addrCoorY;
+
+    public UserAddrGetRes(UserAddr userAddr) {
+        this.addrPk = userAddr.getAddrPk();
+        this.addrName = userAddr.getAddrName();
+        this.addr1 = userAddr.getAddr1();
+        this.addr2 = userAddr.getAddr2();
+        this.addrCoorX = userAddr.getAddrCoorX();
+        this.addrCoorY = userAddr.getAddrCoorY();
+    }
 }
