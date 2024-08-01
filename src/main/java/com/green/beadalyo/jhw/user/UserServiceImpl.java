@@ -167,7 +167,19 @@ public class UserServiceImpl implements UserService{
     public int patchUserInfo(UserInfoPatchDto dto) {
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         user.update(dto);
-        repository.save(user);
+        try {
+            repository.save(user);
+        } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+                throw new DuplicatedInfoException(errorMessage);
+            } else {
+                // 기타 예외 처리
+
+                throw new RuntimeException(e.getMessage());
+            }
+        }
         return 1;
     }
 
