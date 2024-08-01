@@ -16,7 +16,7 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
 
     @Modifying
     @Query("update MenuEntity me set me.menuPic = :menuPic where me.menuPk = :menuPk")
-    MenuEntity updateMenuPic(@Param("menuPic")String menuPic,@Param("menuPk") Long menuPk);
+    void updateMenuPic(@Param("menuPic")String menuPic,@Param("menuPk") Long menuPk);
 
     @Query(value = "select   mn.menu_pk as menuPk, mn.menu_name as menuName, mn.menu_content as menuContent, " +
             "                mn.menu_price as menu_price, mn.menu_pic as menuPic, "+
@@ -29,6 +29,8 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
             "      FROM menu mn" +
             "       WHERE mn.menu_res_Pk = :menuResPk",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPk(@Param("menuResPk")Long MenuResPk);
+
+    Boolean existsByMenuNameAndMenuResPk(String MenuName, Restaurant restaurant) ;
 
     @Query(value = "select   mn.menu_name as menuName" +
             "      FROM menu mn" +

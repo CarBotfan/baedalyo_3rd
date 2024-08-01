@@ -39,23 +39,42 @@ public class MenuService {
             menuEntity.setMenuPic(filename);
         }
         MenuEntity menuEntity1 =  menuRepository.save(menuEntity);
+
         return menuEntity1.getMenuPk();
     }
     //사진 등록하기
     @Transactional
     public void postPic(MenuEntity menuEntity, MultipartFile pic){
-
         String path = String.format("menu/%d", menuEntity.getMenuPk());
         menuEntity.setMenuPic(path + "/"+ menuEntity.getMenuPic());
+
         menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
         try {
             customFileUtils.makeFolder(path);
-            String target = String.format("%s/%s",path,menuEntity.getMenuPic());
-            customFileUtils.transferTo(pic,target);
+            customFileUtils.transferTo(pic,menuEntity.getMenuPic());
         } catch (Exception e){
+            e.printStackTrace();
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
         }
     }
+    //사진 수정하기
+    @Transactional
+    public void putPic(MenuEntity menuEntity, MultipartFile pic){
+        String path = String.format("menu/%d", menuEntity.getMenuPk());
+        menuEntity.setMenuPic(path + "/"+ menuEntity.getMenuPic());
+
+        menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
+        try {
+            customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
+            customFileUtils.makeFolder(path);
+            customFileUtils.transferTo(pic,menuEntity.getMenuPic());
+        } catch (Exception e){
+            e.printStackTrace();
+            customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
+        }
+    }
+
+
 
     //메뉴 전부 불러오기
     public List<GetAllMenuResInterface> getAllMenuByUserPk(Long menuResPk){

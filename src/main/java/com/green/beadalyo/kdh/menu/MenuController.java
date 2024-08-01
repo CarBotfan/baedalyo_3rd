@@ -54,10 +54,10 @@ public class MenuController {
         Long result = null;
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
-        log.info("ResUserPk: {}", p.getResUserPk());
+
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
 
-        log.info("restaurant: {}", restaurant);
+
         if (restaurant == null) {
             return ResultDto.<Long>builder()
                     .statusCode(-3)
@@ -66,16 +66,13 @@ public class MenuController {
                     .build();
         }
 
-        List<GetAllMenuNames> menuName = menuRepository.findMenuNameByMenuResPk(restaurant.getSeq());
-        for (GetAllMenuNames menu : menuName){
-            if (menu.equals(p.getMenuName())){
-                return ResultDto.<Long>builder()
-                        .statusCode(-4)
-                        .resultMsg("메뉴 이름 중복")
-                        .resultData(result)
-                        .build();
-            }
-        }
+         if  (menuRepository.existsByMenuNameAndMenuResPk(p.getMenuName(), restaurant)){
+             return ResultDto.<Long>builder()
+                     .statusCode(-4)
+                     .resultMsg("메뉴 이름 중복")
+                     .resultData(result)
+                     .build();
+         }
 
         if (( !p.getMenuName().isEmpty() && p.getMenuName().length()>=20)
             && ( !p.getMenuContent().isEmpty()) && p.getMenuContent().length() >= 100 ) {
@@ -105,9 +102,9 @@ public class MenuController {
                             .build();
                 }
                 filename = customFileUtils.makeRandomFileName(pic);
+                result = service.postMenu(menuEntity,filename);
                 service.postPic(menuEntity, pic);
             }
-              result = service.postMenu(menuEntity,filename);
 
 
             return ResultDto.<Long>builder()
@@ -117,7 +114,7 @@ public class MenuController {
                     .build();
 
         }  catch (Exception e){
-
+            e.printStackTrace();
             return ResultDto.<Long>builder()
                     .statusCode(-1)
                     .resultMsg(e.getMessage())
@@ -223,6 +220,7 @@ public class MenuController {
         }
         try {
             MenuEntity menuEntity = new MenuEntity();
+            menuEntity.setMenuPk(p.getMenuPk());
             menuEntity.setMenuResPk(restaurant);
             menuEntity.setMenuContent(p.getMenuContent());
             menuEntity.setMenuName(p.getMenuName());
@@ -239,9 +237,9 @@ public class MenuController {
                             .build();
                 }
                 filename = customFileUtils.makeRandomFileName(pic);
-                service.postPic(menuEntity, pic);
             }
             result = service.postMenu(menuEntity, filename);
+                service.putPic(menuEntity, pic);
 
 
             return ResultDto.<Long>builder()
