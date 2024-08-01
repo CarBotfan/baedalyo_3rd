@@ -20,8 +20,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -184,11 +186,11 @@ public class UserServiceImpl implements UserService{
         } catch (Exception e) {
             Throwable cause = e.getCause();
             if (cause instanceof SQLIntegrityConstraintViolationException) {
-                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException)cause.getCause().getCause());
                 throw new DuplicatedInfoException(errorMessage);
             } else {
                 // 기타 예외 처리
-
+                e.printStackTrace();
                 throw new RuntimeException(e.getMessage());
             }
         }
@@ -240,8 +242,8 @@ public class UserServiceImpl implements UserService{
             result = 1;
         } catch (Exception e) {
             Throwable cause = e.getCause();
-            if (cause instanceof SQLIntegrityConstraintViolationException) {
-                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+            if (cause instanceof DataIntegrityViolationException) {
+                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException)cause.getCause());
                 throw new DuplicatedInfoException(errorMessage);
             } else {
                 // 기타 예외 처리
@@ -269,6 +271,7 @@ public class UserServiceImpl implements UserService{
             throw new PwConfirmFailureException();
         }
         try {
+            p.setNewPw(passwordEncoder.encode(p.getNewPw()));
             user.setUserPw(p.getNewPw());
             result = 1;
         } catch(Exception e) {
