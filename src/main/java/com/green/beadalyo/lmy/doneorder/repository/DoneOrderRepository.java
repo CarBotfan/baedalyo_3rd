@@ -9,32 +9,26 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
-    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetResUser(o.doneOrderPk, r.seq, r.pic, r.name, o.orderPrice, o.doneOrderState, o.createdAt, NULL) " +
-            "FROM DoneOrder o JOIN Restaurant r ON o.resPk.seq = r.seq WHERE o.userPk.userPk = :userPk")
+    @Query(value = "SELECT " +
+            "o.doneOrderPk , r.seq as resPK, r.pic as resPic, r.name as resName, o.orderPrice as orderPrice, o.doneOrderState as doneOrderState, o.createdAt as reatedAt, NULL " +
+            "FROM DoneOrder o JOIN o.resPk r " +
+            "WHERE o.userPk.userPk = :userPk",
+            countQuery = "SELECT COUNT(o) FROM DoneOrder o WHERE o.userPk.userPk = :userPk")
     Page<DoneOrderMiniGetResUser> findDoneOrdersByUserPk(@Param("userPk") Long userPk, Pageable pageable);
-
-    @Query("SELECT COUNT(o) FROM DoneOrder o WHERE o.userPk.userPk = :userPk")
-    Integer countByUserPk(@Param("userPk") Long userPk);
 
     @Query("SELECT COUNT(r) FROM Review r WHERE r.doneOrderPk = :doneOrderPk")
     Integer countReviewsByDoneOrderPk(@Param("doneOrderPk") Long doneOrderPk);
 
-    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes(o.doneOrderPk, r.seq, r.pic, r.name, o.orderPrice, o.doneOrderState, o.createdAt) " +
-            "FROM DoneOrder o JOIN Restaurant r ON o.resPk.seq = r.seq WHERE o.resPk.seq = :resPk AND o.doneOrderState = 1")
+    @Query(value = "SELECT new com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes(o.doneOrderPk, r.seq, r.pic, r.name, o.orderPrice, o.doneOrderState, o.createdAt) " +
+            "FROM DoneOrder o JOIN Restaurant r ON o.resPk.seq = r.seq WHERE o.resPk.seq = :resPk AND o.doneOrderState = 1",
+            countQuery = "SELECT COUNT(o) FROM DoneOrder o WHERE o.resPk.seq = :resPk AND o.doneOrderState = 1")
     Page<DoneOrderMiniGetRes> findDoneOrdersByResPk(@Param("resPk") Long resPk, Pageable pageable);
 
-    @Query("SELECT COUNT(o) FROM DoneOrder o WHERE o.resPk.seq = :resPk AND o.doneOrderState = 1")
-    Integer countByResPk(@Param("resPk") Long resPk);
-
-    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes(o.doneOrderPk, r.seq, r.pic, r.name, o.orderPrice, o.doneOrderState, o.createdAt) " +
-            "FROM DoneOrder o JOIN Restaurant r ON o.resPk.seq = r.seq WHERE o.resPk.seq = :resPk AND o.doneOrderState = 2")
+    @Query(value = "SELECT new com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes(o.doneOrderPk, r.seq, r.pic, r.name, o.orderPrice, o.doneOrderState, o.createdAt) " +
+            "FROM DoneOrder o JOIN Restaurant r ON o.resPk.seq = r.seq WHERE o.resPk.seq = :resPk AND o.doneOrderState = 2",
+            countQuery = "SELECT COUNT(o) FROM DoneOrder o WHERE o.resPk.seq = :resPk AND o.doneOrderState = 2")
     Page<DoneOrderMiniGetRes> findCancelOrdersByResPk(@Param("resPk") Long resPk, Pageable pageable);
-
-    @Query("SELECT COUNT(o) FROM DoneOrder o WHERE o.resPk.seq = :resPk AND o.doneOrderState = 2")
-    Integer countCancelOrdersByResPk(@Param("resPk") Long resPk);
 
     @Query("SELECT o FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk")
     DoneOrder findByDoneOrderPk(@Param("doneOrderPk") Long doneOrderPk);

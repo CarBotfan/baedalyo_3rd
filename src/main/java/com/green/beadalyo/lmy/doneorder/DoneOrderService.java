@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +29,7 @@ public class DoneOrderService {
     public Map<String, Object> getDoneOrderByUserPk(Paging p) {
         long userPk = authenticationFacade.getLoginUserPk();
 
-//        Integer totalElements = doneOrderRepository.countByUserPk(userPk);
-//        Integer totalPage = (totalElements / p.getSize()) + 1;
-
         Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
-
         Page<DoneOrderMiniGetResUser> result = doneOrderRepository.findDoneOrdersByUserPk(userPk, pageable);
 
         for (DoneOrderMiniGetResUser item : result) {
@@ -45,63 +40,43 @@ public class DoneOrderService {
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("maxPage", result.getTotalPages());
-        resultMap.put("contents", result.getTotalElements());
+        resultMap.put("contents", result.getContent());
 
         return resultMap;
     }
 
     @Transactional
     public Map<String, Object> getDoneOrderByResPk(Long resPk, Paging p) {
-//        Integer totalElements = doneOrderRepository.countByResPk(resPk);
-//        Integer totalPage = totalElements % p.getSize() == 0 ? totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
-                .resPk(resPk)
-                .page(p.getPage())
-                .size(p.getSize())
-                .startIndex(p.getStartIndex())
-                .build();
+        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findDoneOrdersByResPk(resPk, pageable);
 
-        Pageable pageable = PageRequest.of(p.getPage(), dto.getSize(), Sort.by(Sort.Direction.DESC,"createdAt"));
-
-        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findDoneOrdersByResPk(dto.getResPk(), pageable);
-
-        for (DoneOrderMiniGetRes item : result.toList()) {
+        for (DoneOrderMiniGetRes item : result.getContent()) {
             List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("maxPage", result.getTotalPages());
-        resultMap.put("contents", result.getTotalElements());
+        resultMap.put("contents", result.getContent());
 
         return resultMap;
     }
 
     @Transactional
     public Map<String, Object> getCancelOrderByResPk(Long resPk, Paging p) {
-//        Integer totalElements = doneOrderRepository.countCancelOrdersByResPk(resPk);
-//        Integer totalPage = totalElements % p.getSize() == 0 ? totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
-
-        DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
-                .resPk(resPk)
-                .page(p.getPage())
-                .size(p.getSize())
-                .startIndex(p.getStartIndex())
-                .build();
-
         Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findCancelOrdersByResPk(dto.getResPk(), pageable);
+        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findCancelOrdersByResPk(resPk, pageable);
 
-        for (DoneOrderMiniGetRes item : result.toList()) {
+        for (DoneOrderMiniGetRes item : result.getContent()) {
             List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("maxPage", result.getTotalPages());
-        resultMap.put("contents", result.getTotalElements());
+        resultMap.put("contents", result.getContent());
 
         return resultMap;
     }
@@ -140,5 +115,4 @@ public class DoneOrderService {
 
         return result;
     }
-
 }

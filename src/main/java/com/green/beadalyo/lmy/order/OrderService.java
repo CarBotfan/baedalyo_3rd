@@ -75,7 +75,9 @@ public class OrderService {
         order.setOrderPhone(p.getOrderPhone());
         order.setOrderAddress(p.getOrderAddress());
         order.setOrderPrice(p.getOrderPrice());
-        order.setCreatedAt(LocalDateTime.now());
+        order.setOrderState(1);
+        //이거는 포장주문이면 1들어갈 수 있도록 바꿔야함.
+        order.setOrderMethod(0);
         return orderRepository.save(order);
     }
 

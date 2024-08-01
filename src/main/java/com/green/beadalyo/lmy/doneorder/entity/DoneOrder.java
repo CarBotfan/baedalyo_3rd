@@ -25,11 +25,11 @@ public class DoneOrder {
     private Long doneOrderPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_pk", nullable = false)
+    @JoinColumn(name = "user_pk", nullable = false, referencedColumnName = "user_pk")
     private User userPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "res_pk", nullable = false)
+    @JoinColumn(name = "res_pk", nullable = false, referencedColumnName = "res_pk")
     private Restaurant resPk;
 
     @Column(name = "order_price", nullable = false)
