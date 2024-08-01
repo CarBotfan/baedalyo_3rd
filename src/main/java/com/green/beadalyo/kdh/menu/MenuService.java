@@ -5,7 +5,7 @@ import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
@@ -28,7 +28,7 @@ public class MenuService {
     private final AuthenticationFacade authenticationFacade;
 
     private final MenuRepository menuRepository;
-    private final UserRepository2 userRepository;
+    private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
 
 

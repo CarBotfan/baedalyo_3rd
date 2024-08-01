@@ -2,6 +2,11 @@ package com.green.beadalyo.kdh.stat;
 
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.kdh.stat.model.*;
+import com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto;
+import com.green.beadalyo.lmy.doneorder.model.DailySalesDto;
+import com.green.beadalyo.lmy.doneorder.model.MonthOrderCountDto;
+import com.green.beadalyo.lmy.doneorder.model.MonthSalesDto;
+import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class StatService {
     private final StatMapper mapper;
-    private final AuthenticationFacade authenticationFacade;
+    private final DoneOrderRepository doneOrderRepository;
 
 
     public GetReviewCountRes getReviewCount(GetReviewStatReq p){
@@ -26,53 +31,24 @@ public class StatService {
         return mapper.getReviewAvg(p);
     }
 
-    public List<GetMonthSaleRes> getMonthSales(GetDateReq p){
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        log.info("resUserPk: {}", p.getResUserPk());
-        Long resPk = mapper.checkResPk(p.getResUserPk());
-        log.info("resPk: {}", resPk);
-        p.setResPk(resPk);
-        log.info("p.getResPk: {}",p.getResPk());
-        if (resPk == 0 ){
-            throw new RuntimeException();
-        }
-        List<GetMonthSaleRes> list = mapper.getMonthSales(p);
+    public List<MonthSalesDto> getMonthSales(GetDateReq p){
+
+        List<MonthSalesDto> list = doneOrderRepository.getMonthSales(p.getDate(), p.getResPk());
         return list;
     }
 
-    public List<GetMonthOrderCountRes> getMonthOrderCount(GetDateReq p){
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkResPk(p.getResUserPk());
-        p.setResPk(resPk);
-        if (resPk == null || resPk == 0 ){
-            throw new RuntimeException();
-        }
-        List<GetMonthOrderCountRes> list = mapper.getMonthOrderCount(p);
+    public List<MonthOrderCountDto> getMonthOrderCount(GetDateReq p){
+        List<MonthOrderCountDto> list = doneOrderRepository.getMonthOrderCount(p.getDate(),p.getResPk());
         return list;
     }
 
-    public List<GetDailySalesRes> getDailySales(GetDateReq p){
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkResPk(p.getResUserPk());
-        p.setResPk(resPk);
-        if (resPk == null || resPk == 0 ){
-            throw new RuntimeException();
-        }
-        List<GetDailySalesRes> list = mapper.getDailySales(p);
+    public List<DailySalesDto> getDailySales(GetDateReq p){
+        List<DailySalesDto> list = doneOrderRepository.getDailySales(p.getDate(), p.getResPk());
         return list;
     }
 
-    public List<GetDailyOrderCountRes> getDailyOrderCount(GetDateReq p){
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Long resPk = mapper.checkResPk(p.getResUserPk());
-
-        p.setResPk(resPk);
-        if (resPk == null || resPk == 0 ){
-            throw new RuntimeException();
-        }
-
-        List<GetDailyOrderCountRes> list = mapper.getDailyOrderCount(p);
-
+    public List<DailyOrderCountDto> getDailyOrderCount(GetDateReq p){
+        List<DailyOrderCountDto> list = doneOrderRepository.getDailyOrderCount(p.getDate(),p.getResPk());
         return list;
     }
 }

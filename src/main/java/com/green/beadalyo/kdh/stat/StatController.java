@@ -1,8 +1,16 @@
 package com.green.beadalyo.kdh.stat;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.stat.StatService;
 import com.green.beadalyo.kdh.stat.model.*;
+import com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto;
+import com.green.beadalyo.lmy.doneorder.model.DailySalesDto;
+import com.green.beadalyo.lmy.doneorder.model.MonthOrderCountDto;
+import com.green.beadalyo.lmy.doneorder.model.MonthSalesDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +26,9 @@ import java.util.List;
 @Tag(name = "가게 통계 컨트롤러입니다.")
 public class StatController {
     private final StatService service;
-
+    private final AuthenticationFacade authenticationFacade;
+    private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
     @GetMapping("review_count")
     @Operation(summary = "가게의 리뷰 갯수를 불러옵니다.." , description = "<p>res_pk는 가게의 PK(고유번호)입니다.</p>"+
                                                                             "<p> 1 : 리뷰 갯수 불러오기 완료 </p>"+
@@ -70,31 +80,35 @@ public class StatController {
                                                                     "<p> 1 : 월 매출 불러오기 완료 </p>"+
                                                                     "<p> -1 : 월 매출 불러오기 실패 </p>"+
                                                                     "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<List<GetMonthSaleRes>> getMonthSales(@ParameterObject @ModelAttribute GetDateReq p){
-        List<GetMonthSaleRes> result = null;
+    public ResultDto<List<MonthSalesDto>> getMonthSales(@ParameterObject @ModelAttribute GetDateReq p){
+        List<MonthSalesDto> result = null;
 
-        String msg = "가게 월 매출 불러오기 완료";
-        int code = 1;
-        try {
-            result = service.getMonthSales(p);
-        } catch (RuntimeException e){
-            return ResultDto.<List<GetMonthSaleRes>>builder()
+        p.setResUserPk(authenticationFacade.getLoginUserPk());
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
+
+
+        if (restaurant == null ){
+            return ResultDto.<List<MonthSalesDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다")
                     .resultData(result)
                     .build();
         }
-            catch (Exception e){
+        p.setResPk(restaurant.getSeq());
+        int code = 1;
+        try {
+            result = service.getMonthSales(p);
+        } catch (Exception e){
 
-            return ResultDto.<List<GetMonthSaleRes>>builder()
+            return ResultDto.<List<MonthSalesDto>>builder()
                     .statusCode(-1)
                     .resultMsg("가게 월 매출 불러오기 실패")
                     .resultData(result)
                     .build();
         }
-        return ResultDto.<List<GetMonthSaleRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+        return ResultDto.<List<MonthSalesDto>>builder()
+                .statusCode(1)
+                .resultMsg("가게 월 매출 불러오기 완료")
                 .resultData(result)
                 .build();
 
@@ -105,32 +119,34 @@ public class StatController {
                                                                         "<p> 1 : 월 주문 수 불러오기 완료 </p>"+
                                                                         "<p> -1 : 월 주문 수 불러오기 실패 </p>"+
                                                                         "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<List<GetMonthOrderCountRes>> getMonthOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
-        List<GetMonthOrderCountRes> result = null;
+    public ResultDto<List<MonthOrderCountDto>> getMonthOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
+        List<MonthOrderCountDto> result = null;
 
-        String msg = "가게 월 주문수 불러오기 완료";
-        int code = 1;
-        try {
-            result = service.getMonthOrderCount(p);
-        } catch (RuntimeException e){
+        p.setResUserPk(authenticationFacade.getLoginUserPk());
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
 
-            return ResultDto.<List<GetMonthOrderCountRes>>builder()
+        if (restaurant == null){
+
+            return ResultDto.<List<MonthOrderCountDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다")
                     .resultData(result)
                     .build();
         }
-         catch (Exception e){
-             return ResultDto.<List<GetMonthOrderCountRes>>builder()
+        p.setResPk(restaurant.getSeq());
+        try {
+            result = service.getMonthOrderCount(p);
+        }   catch (Exception e){
+             return ResultDto.<List<MonthOrderCountDto>>builder()
                      .statusCode(-1)
                      .resultMsg("가게 월 주문수 불러오기 실패")
                      .resultData(result)
                      .build();
         }
 
-        return ResultDto.<List<GetMonthOrderCountRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+        return ResultDto.<List<MonthOrderCountDto>>builder()
+                .statusCode(1)
+                .resultMsg("가게 월 주문수 불러오기 완료")
                 .resultData(result)
                 .build();
     }
@@ -140,32 +156,34 @@ public class StatController {
                                                                         "<p> 1 : 일일 매출 불러오기 완료 </p>"+
                                                                         "<p> -1 : 일일 매출 불러오기 실패 </p>"+
                                                                         "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<List<GetDailySalesRes>> getDailySales(@ParameterObject @ModelAttribute GetDateReq p){
-        List<GetDailySalesRes> result = null;
+    public ResultDto<List<DailySalesDto>> getDailySales(@ParameterObject @ModelAttribute GetDateReq p){
+        List<DailySalesDto> result = null;
 
-        String msg = "가게 일일 매출 불러오기 완료";
-        int code = 1;
-        try {
-            result = service.getDailySales(p);
-        } catch (RuntimeException e){
+        p.setResUserPk(authenticationFacade.getLoginUserPk());
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
 
-            return ResultDto.<List<GetDailySalesRes>>builder()
+        if (restaurant == null ){
+            return ResultDto.<List<DailySalesDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다.")
                     .resultData(result)
                     .build();
+        }
+        p.setResPk(restaurant.getSeq());
+        try {
+            result = service.getDailySales(p);
         } catch (Exception e){
 
-            return ResultDto.<List<GetDailySalesRes>>builder()
+            return ResultDto.<List<DailySalesDto>>builder()
                     .statusCode(-1)
                     .resultMsg("가게 일일 매출 불러오기 실패")
                     .resultData(result)
                     .build();
         }
 
-        return ResultDto.<List<GetDailySalesRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+        return ResultDto.<List<DailySalesDto>>builder()
+                .statusCode(1)
+                .resultMsg("가게 일일 매출 불러오기 완료")
                 .resultData(result)
                 .build();
     }
@@ -175,32 +193,34 @@ public class StatController {
                                                                         "<p> 1 : 일일 주문 수 불러오기 완료 </p>"+
                                                                         "<p> -1 : 일일 주문 수 불러오기 실패 </p>"+
                                                                         "<p> -2 : 사장님이 아닙니다.</p>")
-    public ResultDto<List<GetDailyOrderCountRes>> getDailyOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
-        List<GetDailyOrderCountRes> result = service.getDailyOrderCount(p);
+    public ResultDto<List<DailyOrderCountDto>> getDailyOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
+        List<DailyOrderCountDto> result = service.getDailyOrderCount(p);
 
-        String msg = "가게 일일 주문 수 불러오기 완료";
-        int code = 1;
-        try {
-            result = service.getDailyOrderCount(p);
-        } catch (RuntimeException e){
+        p.setResUserPk(authenticationFacade.getLoginUserPk());
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
 
-            return ResultDto.<List<GetDailyOrderCountRes>>builder()
+        if (restaurant == null){
+            return ResultDto.<List<DailyOrderCountDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다.")
                     .resultData(result)
                     .build();
-        } catch (Exception e){
+        }
+        p.setResPk(restaurant.getSeq());
+        try {
+            result = service.getDailyOrderCount(p);
+        }  catch (Exception e){
 
-            return ResultDto.<List<GetDailyOrderCountRes>>builder()
+            return ResultDto.<List<DailyOrderCountDto>>builder()
                     .statusCode(-1)
                     .resultMsg("가게 일일 주문수 불러오기 실패")
                     .resultData(result)
                     .build();
         }
 
-        return ResultDto.<List<GetDailyOrderCountRes>>builder()
-                .statusCode(code)
-                .resultMsg(msg)
+        return ResultDto.<List<DailyOrderCountDto>>builder()
+                .statusCode(1)
+                .resultMsg("가게 일일 주문수 불러오기 성공")
                 .resultData(result)
                 .build();
     }

@@ -1,8 +1,7 @@
 package com.green.beadalyo.lmy.doneorder.repository;
 
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
-import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
-import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetResUser;
+import com.green.beadalyo.lmy.doneorder.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,4 +43,26 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
 
     @Query("SELECT r.user FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")
     Long getDoneOrderResUser(@Param("doneOrderPk") Long doneOrderPk);
+
+    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.MonthSalesDto(DATE_FORMAT(o.createdAt, '%Y-%m'), SUM(o.orderPrice)) " +
+            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
+            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m')")
+    List<MonthSalesDto> getMonthSales(@Param("date") String date, @Param("resPk") Long resPk);
+
+    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.MonthOrderCountDto(DATE_FORMAT(o.createdAt, '%Y-%m'), COUNT(o.doneOrderPk)) " +
+            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
+            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m')")
+    List<MonthOrderCountDto> getMonthOrderCount(@Param("date") String date, @Param("resPk") Long resPk);
+
+    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.DailySalesDto(DATE_FORMAT(o.createdAt, '%Y-%m-%d'), SUM(o.orderPrice)) " +
+            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y-%m') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
+            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m-%d')")
+    List<DailySalesDto> getDailySales(@Param("date") String date, @Param("resPk") Long resPk);
+
+    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto(DATE_FORMAT(o.createdAt, '%Y-%m-%d'), COUNT(o.doneOrderPk)) " +
+            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y-%m') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
+            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m-%d')")
+    List<DailyOrderCountDto> getDailyOrderCount(@Param("date") String date, @Param("resPk") Long resPk);
+
+
 }

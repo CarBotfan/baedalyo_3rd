@@ -5,7 +5,7 @@ import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
@@ -32,9 +32,9 @@ public class MenuController {
     private final MenuService service;
     private final AuthenticationFacade authenticationFacade;
     private final RestaurantRepository restaurantRepository;
-    private final UserRepository2 userRepository;
     private final MenuRepository menuRepository;
     private final CustomFileUtils customFileUtils;
+    private final UserRepository userRepository;
     private final long maxSize = 3145728;
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE
             , MediaType.MULTIPART_FORM_DATA_VALUE})
