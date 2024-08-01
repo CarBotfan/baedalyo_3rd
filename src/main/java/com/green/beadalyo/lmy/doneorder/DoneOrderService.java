@@ -50,8 +50,8 @@ public class DoneOrderService {
 
     @Transactional
     public Map<String, Object> getDoneOrderByResPk(Long resPk, Paging p) {
-        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<DoneOrderMiniGetRes> result = doneOrderRepository.findDoneOrdersByResPk(resPk, pageable);
 
         Map<String, Object> resultMap = new HashMap<>();
@@ -71,8 +71,8 @@ public class DoneOrderService {
 
     @Transactional
     public Map<String, Object> getCancelOrderByResPk(Long resPk, Paging p) {
-        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<DoneOrderMiniGetRes> result = doneOrderRepository.findCancelOrdersByResPk(resPk, pageable);
 
         Map<String, Object> resultMap = new HashMap<>();
