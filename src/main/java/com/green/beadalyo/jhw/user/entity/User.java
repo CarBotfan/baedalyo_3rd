@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.user.entity;
 
+import com.green.beadalyo.jhw.user.model.UserInfoPatchDto;
 import com.green.beadalyo.jhw.user.model.UserSignUpPostReq;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -72,6 +73,18 @@ public class User {
         this.userEmail = p.getUserEmail();
         this.userRole = p.getUserRole();
         this.userLoginType = p.getUserLoginType();
+    }
+
+    public void update(UserInfoPatchDto p) {
+        if(p.getUserNickname() != null && !p.getUserNickname().isEmpty()) {
+            this.userNickname = p.getUserNickname();
+        }
+        if(p.getUserPhone() != null && !p.getUserPhone().isEmpty()) {
+            this.userPhone = p.getUserPhone();
+        }
+        if(p.getUserPic() != null && !p.getUserPic().isEmpty()) {
+            this.userPic = p.getUserPic();
+        }
     }
 
 }

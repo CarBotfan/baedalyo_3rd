@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public long saveUser(User user) throws Exception{
+    public long postUserSignUp(User user) throws Exception{
         repository.save(user);
         return user.getUserPk();
     }
@@ -86,11 +86,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Transactional
-    public void deleteProfileImage(User user) {
-        String originalFileName = user.getUserPic();
+    public void deleteProfileImage() {
+        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         try {
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, originalFileName);
+            File file = new File(delAbsoluteFolderPath, user.getUserPic());
             file.delete();
         } catch (Exception e) {
             throw new FileUploadFailedException();
@@ -149,23 +149,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserInfoGetRes getUserInfo() throws Exception{
+    public UserInfoGetRes getUserInfo(User user) throws Exception{
         long userPk = authenticationFacade.getLoginUserPk();
-        User user = repository.getReferenceById(userPk);
-        UserInfoGetRes result = new UserInfoGetRes(user);
-        if(result == null) {
+        if(user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
-        result.setMainAddr(userAddrService.getMainUserAddr());
-        return result;
+        return new UserInfoGetRes(user);
 
     }
 
     @Override
     @Transactional
-    public String patchProfilePic(String fileName) throws Exception{
+    public String patchProfilePic(MultipartFile pic) throws Exception{
+        return null;
+    }
 
-        return fileName;
+    public int patchUserInfo(UserInfoPatchDto dto) {
+        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        user.update(dto);
+        repository.save(user);
+        return 1;
     }
 
     @Override
