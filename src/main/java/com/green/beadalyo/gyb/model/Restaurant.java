@@ -2,6 +2,7 @@ package com.green.beadalyo.gyb.model;
 
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
+import com.green.beadalyo.jhw.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,9 +31,9 @@ public class Restaurant
     @Comment("고유 번호")
     private Long seq;
 
-    @Column(name = "res_user_pk")
+    @ManyToOne(fetch = FetchType.LAZY)
     @Comment("소유자 정보")
-    private Long user;
+    private User user;
 
     @Column(name = "res_name", nullable = false, length = 50)
     @Comment("음식점 이름")
