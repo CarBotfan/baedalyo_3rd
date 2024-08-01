@@ -46,6 +46,8 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query("SELECT r.user FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")
     Long getDoneOrderResUser(@Param("doneOrderPk") Long doneOrderPk);
 
+    //여기서부터 동동tv
+
     @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.MonthSalesDto(DATE_FORMAT(o.createdAt, '%Y-%m'), SUM(o.orderPrice)) " +
             "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
             "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m')")
