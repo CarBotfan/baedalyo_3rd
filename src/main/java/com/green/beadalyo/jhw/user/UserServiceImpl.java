@@ -57,7 +57,19 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public long postUserSignUp(User user) throws Exception{
-        repository.save(user);
+        try {
+            repository.saveAndFlush(user);
+        } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+                throw new DuplicatedInfoException(errorMessage);
+            } else {
+                // 기타 예외 처리
+
+                throw new RuntimeException(e.getMessage());
+            }
+        }
         return user.getUserPk();
     }
 
@@ -168,7 +180,7 @@ public class UserServiceImpl implements UserService{
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         user.update(dto);
         try {
-            repository.save(user);
+            repository.saveAndFlush(user);
         } catch (Exception e) {
             Throwable cause = e.getCause();
             if (cause instanceof SQLIntegrityConstraintViolationException) {

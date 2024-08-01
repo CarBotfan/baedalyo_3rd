@@ -5,6 +5,7 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.order.entity.Order;
@@ -39,6 +40,7 @@ public class OrderController {
     private final OrderService orderService;
     private final RestaurantService restaurantService;
     private final AuthenticationFacade authenticationFacade;
+    private final UserRepository userRepository;
 
 
     @PostMapping
@@ -103,7 +105,7 @@ public class OrderController {
         long userPk = authenticationFacade.getLoginUserPk();
 
         if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 1){
-            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()
+            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()
                     && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
                 return ResultDto.<Integer>builder()
                         .statusCode(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getCode())
@@ -113,7 +115,7 @@ public class OrderController {
         }
 
         if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 2){
-            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()) {
+            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()) {
                 return ResultDto.<Integer>builder()
                         .statusCode(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getCode())
                         .resultMsg(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getMessage()).build();
@@ -147,7 +149,7 @@ public class OrderController {
         int result = -1;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()) {
+        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()) {
             return ResultDto.<Integer>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage()).build();
@@ -218,7 +220,7 @@ public class OrderController {
 
         Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userPk);
+            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
         } catch (Exception e) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
@@ -226,7 +228,7 @@ public class OrderController {
                     .build();
         }
 
-        if (userPk != resPk.getUser()){
+        if (userPk != resPk.getUser().getUserPk()){
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
@@ -266,7 +268,7 @@ public class OrderController {
 
         Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userPk);
+            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
         } catch (Exception e) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
@@ -274,7 +276,7 @@ public class OrderController {
                     .build();
         }
 
-        if (userPk != resPk.getUser()){
+        if (userPk != resPk.getUser().getUserPk()){
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
@@ -309,7 +311,7 @@ public class OrderController {
         OrderGetRes result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()
+        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()
                 && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
             return ResultDto.<OrderGetRes>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
@@ -345,7 +347,7 @@ public class OrderController {
         Integer result = -1;
 
         long resUserPk = authenticationFacade.getLoginUserPk();
-        if (resUserPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser()) {
+        if (resUserPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()) {
             return ResultDto.<Integer>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
