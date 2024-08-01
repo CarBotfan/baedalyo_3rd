@@ -114,7 +114,7 @@ public class RestaurantApiController
             RestaurantDetailRes res = new RestaurantDetailRes(data) ;
             GetAllMenuReq temp = new GetAllMenuReq(data.getRestaurantPk()) ;
 
-            res.setMenuList(menuService.getAllMenu(temp));
+//            res.setMenuList(menuService.getAllMenu(temp));
             return ResultDto.<RestaurantDetailRes>builder().resultData(res).build();
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-2).resultMsg("음식점 정보가 존재하지 않습니다.").build();

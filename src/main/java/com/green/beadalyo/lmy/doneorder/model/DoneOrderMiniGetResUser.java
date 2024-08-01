@@ -2,10 +2,13 @@ package com.green.beadalyo.lmy.doneorder.model;
 
 import com.green.beadalyo.lmy.order.model.MenuInfoDto;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class DoneOrderMiniGetResUser {
     private Long doneOrderPk;
     private Long resPk;
@@ -16,4 +19,15 @@ public class DoneOrderMiniGetResUser {
     private Integer reviewState;
     private String createdAt;
     private List<MenuInfoDto> menuInfoDtos;
+
+    public DoneOrderMiniGetResUser(Long doneOrderPk, Long resPk, String resPic, String resName, Integer orderPrice, Integer doneOrderState, String createdAt, Integer reviewState) {
+        this.doneOrderPk = doneOrderPk;
+        this.resPk = resPk;
+        this.resPic = resPic;
+        this.resName = resName;
+        this.orderPrice = orderPrice;
+        this.doneOrderState = doneOrderState;
+        this.createdAt = createdAt;
+        this.reviewState = reviewState;
+    }
 }

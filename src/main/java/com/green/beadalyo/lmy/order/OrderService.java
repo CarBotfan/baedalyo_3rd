@@ -1,14 +1,17 @@
 package com.green.beadalyo.lmy.order;
 
-import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.repository.UserRepository2;
-import com.green.beadalyo.lmy.order.entity.Menu2;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.kdh.menu.repository.MenuRepository;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrderMenu;
+import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
+import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import com.green.beadalyo.lmy.order.model.*;
-import com.green.beadalyo.lmy.order.repository.Menu2Repository;
 import com.green.beadalyo.lmy.order.repository.OrderMenuRepository;
 import com.green.beadalyo.lmy.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +27,24 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
     private final OrderMenuRepository orderMenuRepository;
-    private final Menu2Repository menuRepository;
-    private final UserRepository2 userRepository;
+    private final DoneOrderRepository doneOrderRepository;
+    private final DoneOrderMenuRepository doneOrderMenuRepository;
+    private final MenuRepository menuRepository;
+    private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final AuthenticationFacade authenticationFacade;
 
-//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Post Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡValidation 전용ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    public Order getOrderByOrderPk(long orderPk){
+        return orderRepository.getReferenceById(orderPk);
+    }
+
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡPost Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
     public List<Map<String, Object>> getMenuDetails(List<Long> menuPkList) {
-        List<Menu2> menus = menuRepository.findByMenuPkIn(menuPkList);
+        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
         return menus.stream()
                 .map(menu -> {
                     Map<String, Object> map = new HashMap<>();
@@ -49,10 +58,10 @@ public class OrderService {
 
 
     public int calculateTotalPrice(List<Long> menuPkList) {
-        List<Menu2> menus = menuRepository.findByMenuPkIn(menuPkList);
+        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
         return menus.stream()
                 .filter(menu -> menuPkList.contains(menu.getMenuPk()))
-                .mapToInt(Menu2::getMenuPrice)
+                .mapToInt(MenuEntity::getMenuPrice)
                 .sum();
     }
 
@@ -66,7 +75,9 @@ public class OrderService {
         order.setOrderPhone(p.getOrderPhone());
         order.setOrderAddress(p.getOrderAddress());
         order.setOrderPrice(p.getOrderPrice());
-        order.setCreatedAt(LocalDateTime.now());
+        order.setOrderState(1);
+        //이거는 포장주문이면 1들어갈 수 있도록 바꿔야함.
+        order.setOrderMethod(0);
         return orderRepository.save(order);
     }
 
@@ -101,88 +112,93 @@ public class OrderService {
     }
 
 
-//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Cancel Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Cancel & Complete Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+    public Order getOrderEntity(Long orderPk) {
+        return orderRepository.getReferenceById(orderPk);
+    }
+
+
+    public void setCanceller(DoneOrder doneOrder, long userPk) {
+        doneOrder.setCanceller(userRepository.getReferenceById(userPk).getUserRole());
+    }
+
+
+    public List<OrderMenu> getOrderMenuEntities(Long orderPk) {
+        return orderMenuRepository
+                .findOrderMenusByOrderPk(orderRepository.getReferenceById(orderPk));
+    }
+
+
+    public DoneOrder saveDoneOrder(Order order, long userPk, Integer isDone) {
+        DoneOrder doneOrder = new DoneOrder();
+        doneOrder.setUserPk(order.getOrderUserPk());
+        doneOrder.setResPk(order.getOrderResPk());
+        doneOrder.setOrderPrice(order.getOrderPrice());
+        doneOrder.setOrderRequest(order.getOrderRequest());
+        doneOrder.setOrderPhone(order.getOrderPhone());
+        doneOrder.setOrderAddress(order.getOrderAddress());
+        doneOrder.setPaymentMethod(order.getPaymentMethod());
+        doneOrder.setOrderMethod(order.getOrderMethod());
+        doneOrder.setDoneOrderState(isDone);
+        if (isDone == 2) {setCanceller(doneOrder, userPk);}
+        return doneOrderRepository.save(doneOrder);
+    }
+
+    public void saveDoneOrderMenuBatch(List<OrderMenu> menus, DoneOrder doneOrder) {
+        List<DoneOrderMenu> doneOrderMenus = menus.stream()
+                .map(menu -> {
+                    DoneOrderMenu doneOrderMenu = new DoneOrderMenu();
+                    doneOrderMenu.setDoneOrderPk(doneOrder);
+                    doneOrderMenu.setMenuPk(menu.getMenuPk());
+                    doneOrderMenu.setMenuName(menu.getMenuName());
+                    doneOrderMenu.setMenuPrice(menu.getMenuPrice());
+                    return doneOrderMenu;
+                })
+                .collect(Collectors.toList());
+        doneOrderMenuRepository.saveAll(doneOrderMenus);
+    }
+
+    public void deleteOrder(Long orderPk) {
+        orderRepository.deleteById(orderPk);
+    }
+
+
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Get Order + @ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
 
     @Transactional
-    public int cancelOrder(Long orderPk) {
-
+    public List<OrderMiniGetRes> getUserOrderList() {
         long userPk = authenticationFacade.getLoginUserPk();
+        List<Order> orders = orderRepository.findByOrderUserPk_UserPkOrderByCreatedAtDesc(userPk);
 
-        OrderEntity entity = null;
-        try {
-            entity = orderMapper.selectOrderById(orderPk);
-            entity.setCanceller(orderMapper.selectCancellerRole(userPk));
-        } catch (Exception e) {
-            throw new RuntimeException("주문 불러오기 오류");
-        }
+        return orders.stream().map(order -> {
+            OrderMiniGetRes res = new OrderMiniGetRes();
+            res.setOrderPk(order.getOrderPk());
+            res.setResPk(order.getOrderResPk().getSeq());
+            res.setResPic(order.getOrderResPk().getPic());
+            res.setResName(order.getOrderResPk().getName());
+            res.setOrderPrice(order.getOrderPrice());
+            res.setOrderState(order.getOrderState());
+            res.setCreatedAt(order.getCreatedAt());
 
-        List<OrderMenuEntity> menuEntities = null;
+            List<String> menuNames = orderMenuRepository.findByOrderPk(order)
+                    .stream()
+                    .map(OrderMenu::getMenuName)
+                    .collect(Collectors.toList());
+            res.setMenuName(menuNames);
 
-        menuEntities = orderMapper.selectOrderMenusById(orderPk);
-
-
-        entity.setOrderState(2);
-        orderMapper.insertDoneOrder(entity);
-        for (OrderMenuEntity orderMenuEntity : menuEntities) {
-            orderMenuEntity.setDoneOrderPk(entity.getDoneOrderPk());
-        }
-        orderMapper.insertDoneOrderMenu(menuEntities);
-
-
-        orderMapper.deleteOrder(orderPk);
-
-
-        return 1;
+            return res;
+        }).collect(Collectors.toList());
     }
 
-    @Transactional
-    public int completeOrder(Long orderPk) {
 
-        long resUserPk = authenticationFacade.getLoginUserPk();
-        if (resUserPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
-            throw new RuntimeException("");
-        }
-
-        OrderEntity entity = orderMapper.selectOrderById(orderPk);
-
-        List<OrderMenuEntity> menuEntities = orderMapper.selectOrderMenusById(orderPk);
-
-        entity.setOrderState(1);
-        orderMapper.insertDoneOrder(entity);
-        for (OrderMenuEntity orderMenuEntity : menuEntities) {
-            orderMenuEntity.setDoneOrderPk(entity.getDoneOrderPk());
-        }
-        orderMapper.insertDoneOrderMenu(menuEntities);
-
-        orderMapper.deleteOrder(orderPk);
-
-        return 1;
-    }
-
-    public List<OrderMiniGetRes> getUserOrderList(){
-        long userPk = authenticationFacade.getLoginUserPk();
-        List<OrderMiniGetRes> result = orderMapper.selectOrdersByUserPk(userPk);
+    public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk) {
+        List<OrderMiniGetRes> result = orderRepository.findNonConfirmOrdersByResPk(resPk);
 
         for (OrderMiniGetRes item : result) {
-            List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
-            item.setMenuName(result2);
-        }
-
-        return result;
-    }
-
-    public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk){
-
-        long resUserPk = authenticationFacade.getLoginUserPk();
-        if (resUserPk != orderMapper.getResUserPkByResPk(resPk)){
-            throw new RuntimeException();
-        }
-
-        List<OrderMiniGetRes> result = orderMapper.selectNonConfirmOrdersByResPk(resPk);
-
-        for (OrderMiniGetRes item : result) {
-            List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
-            item.setMenuName(result2);
+            List<String> menuNames = orderMenuRepository.findMenuNamesByOrderPk(item.getOrderPk());
+            item.setMenuName(menuNames);
         }
 
         return result;
@@ -190,45 +206,26 @@ public class OrderService {
 
     public List<OrderMiniGetRes> getResConfirmOrderList(Long resPk){
 
-        long resUserPk = authenticationFacade.getLoginUserPk();
-        if (resUserPk != orderMapper.getResUserPkByResPk(resPk)){
-            throw new RuntimeException();
-        }
-
-        List<OrderMiniGetRes> result = orderMapper.selectConfirmOrdersByResPk(resPk);
+        List<OrderMiniGetRes> result = orderRepository.findConfirmOrdersByResPk(resPk);
 
         for (OrderMiniGetRes item : result) {
-            List<String> result2 = orderMapper.selectMenuNames(item.getOrderPk());
-            item.setMenuName(result2);
+            List<String> menuNames = orderMenuRepository.findMenuNamesByOrderPk(item.getOrderPk());
+            item.setMenuName(menuNames);
         }
 
         return result;
     }
 
     public OrderGetRes getOrderInfo(Long orderPk) {
-
-        long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderMapper.getOrderResUser(orderPk)
-        && userPk != orderMapper.getOrderUser(orderPk)) {
-            throw new IllegalArgumentException("주문과 관련된 유저만 열람 가능합니다.");
-        }
-
-        OrderGetRes result = orderMapper.getOrderInfo(orderPk);
-        result.setMenuInfoList(orderMapper.selectMenuInfo(orderPk));
+        OrderGetRes result = orderRepository.getOrderInfo(orderPk);
+        List<MenuInfoDto> menuInfoList = orderMenuRepository.findMenuInfoByOrderPk(orderPk);
+        result.setMenuInfoList(menuInfoList);
 
         return result;
     }
 
-    public Integer confirmOrder(Long orderPk) {
-
-        long resUserPk = authenticationFacade.getLoginUserPk();
-
-        if (resUserPk != orderMapper.getResUserPkByOrderPk(orderPk)) {
-            throw new RuntimeException("");
-        }
-
-        orderMapper.confirmOrder(orderPk);
-
-        return 1;
+    public int confirmOrder(long orderPk) {
+        return orderRepository.confirmOrder(orderPk);
     }
+
 }

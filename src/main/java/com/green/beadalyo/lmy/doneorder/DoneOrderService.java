@@ -1,133 +1,118 @@
 package com.green.beadalyo.lmy.doneorder;
 
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.model.*;
+import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
+import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import com.green.beadalyo.lmy.order.model.MenuInfoDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class DoneOrderService {
-    private final DoneOrderMapper doneOrderMapper;
+    private final DoneOrderRepository doneOrderRepository;
+    private final DoneOrderMenuRepository doneOrderMenuRepository;
     private final AuthenticationFacade authenticationFacade;
 
+    @Transactional
     public Map<String, Object> getDoneOrderByUserPk(Paging p) {
         long userPk = authenticationFacade.getLoginUserPk();
 
-        List<DoneOrderMiniGetResUser> result = null;
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<DoneOrderMiniGetResUser> result = doneOrderRepository.findDoneOrdersByUserPk(userPk, pageable);
 
-        Integer totalElements = doneOrderMapper.selectTotalElementsByUserPk(userPk);
-        Integer totalPage = (totalElements / p.getSize()) + 1;
-
-        DoneOrderByUserPkDto dto = DoneOrderByUserPkDto.builder()
-                .page(p.getPage())
-                .size(p.getSize())
-                .startIndex(p.getStartIndex())
-                .userPk(userPk)
-                .build();
-
-        result = doneOrderMapper.selectDoneOrderByUserPk(dto);
-        for (DoneOrderMiniGetResUser item : result) {
-            item.setReviewState(doneOrderMapper.selectReviewState(item.getDoneOrderPk()) == 0 ? 0 : 1);
-            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
+        for (DoneOrderMiniGetResUser item : result.getContent()) {
+            item.setReviewState(doneOrderRepository.countReviewsByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 0 : 1);
+            List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
 
-        Map<String, Object> resultMap = new LinkedHashMap<>();
-        resultMap.put("maxPage", totalPage);
-        resultMap.put("contents", result);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("maxPage", result.getTotalPages());
+        resultMap.put("contents", result.getContent());
 
         return resultMap;
     }
 
-//    public List<DoneOrderMiniGetRes> getCancelOrderByUserPk() {
-//        long userPk = authenticationFacade.getLoginUserPk();
-//
-//        List<DoneOrderMiniGetRes> result = null;
-//
-//        result = doneOrderMapper.selectCancelOrderByUserPk(userPk);
-//        for (DoneOrderMiniGetRes item : result) {
-//            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
-//            item.setMenuInfoDtos(result2);
-//        }
-//
-//
-//        return result;
-//    }
-
+    @Transactional
     public Map<String, Object> getDoneOrderByResPk(Long resPk, Paging p) {
-        List<DoneOrderMiniGetRes> result = null;
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Integer totalElements = doneOrderMapper.selectDoneTotalElementsByResPk(resPk);
-        Integer totalPage = totalElements % p.getSize() == 0 ?
-                totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
+        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findDoneOrdersByResPk(resPk, pageable);
 
-        DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
-                .page(p.getPage())
-                .size(p.getSize())
-                .startIndex(p.getStartIndex())
-                .resPk(resPk)
-                .build();
-
-        result = doneOrderMapper.selectDoneOrderByResPk(dto);
-        for (DoneOrderMiniGetRes item : result) {
-            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
+        for (DoneOrderMiniGetRes item : result.getContent()) {
+            List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
 
-        Map<String, Object> resultMap = new LinkedHashMap<>();
-        resultMap.put("maxPage", totalPage);
-        resultMap.put("contents", result);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("maxPage", result.getTotalPages());
+        resultMap.put("contents", result.getContent());
 
         return resultMap;
     }
 
+    @Transactional
     public Map<String, Object> getCancelOrderByResPk(Long resPk, Paging p) {
-        List<DoneOrderMiniGetRes> result = null;
+        Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Integer totalElements = doneOrderMapper.selectCancelTotalElementsByResPk(resPk);
-        Integer totalPage = totalElements % p.getSize() == 0 ?
-                totalElements / p.getSize() : (totalElements / p.getSize()) + 1;
+        Page<DoneOrderMiniGetRes> result = doneOrderRepository.findCancelOrdersByResPk(resPk, pageable);
 
-        DoneOrderByResPkDto dto = DoneOrderByResPkDto.builder()
-                .page(p.getPage())
-                .size(p.getSize())
-                .startIndex(p.getStartIndex())
-                .resPk(resPk)
-                .build();
-
-        result = doneOrderMapper.selectCancelOrderByResPk(dto);
-        for (DoneOrderMiniGetRes item : result) {
-            List<MenuInfoDto> result2 = doneOrderMapper.selectDoneMenuInfo(item.getDoneOrderPk());
+        for (DoneOrderMiniGetRes item : result.getContent()) {
+            List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
 
-        Map<String, Object> resultMap = new LinkedHashMap<>();
-        resultMap.put("maxPage", totalPage);
-        resultMap.put("contents", result);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("maxPage", result.getTotalPages());
+        resultMap.put("contents", result.getContent());
 
         return resultMap;
     }
 
+    @Transactional
     public DoneOrderGetRes getDoneOrderInfo(Long doneOrderPk) {
-        DoneOrderGetRes result = null;
-
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != doneOrderMapper.getDoneOrderResUser(doneOrderPk)
-                && userPk != doneOrderMapper.getDoneOrderUser(doneOrderPk)) {
+
+        Long doneOrderResUser = doneOrderRepository.getDoneOrderResUser(doneOrderPk);
+        Long doneOrderUser = doneOrderRepository.getDoneOrderUser(doneOrderPk);
+
+        if (userPk != doneOrderResUser && userPk != doneOrderUser) {
             throw new IllegalArgumentException("주문과 관련된 유저만 열람 가능합니다.");
         }
 
-        result = doneOrderMapper.getDoneOrderInfo(doneOrderPk);
-        result.setMenuInfoList(doneOrderMapper.selectDoneMenuInfo(doneOrderPk));
+        DoneOrder doneOrder = doneOrderRepository.findByDoneOrderPk(doneOrderPk);
+        if (doneOrder == null) {
+            throw new IllegalArgumentException("주문 정보를 찾을 수 없습니다.");
+        }
+
+        DoneOrderGetRes result = new DoneOrderGetRes();
+        result.setDoneOrderPk(doneOrder.getDoneOrderPk());
+        result.setUserPk(doneOrder.getUserPk().getUserPk());
+        result.setResPk(doneOrder.getResPk().getSeq());
+        result.setResName(doneOrder.getResPk().getName());
+        result.setOrderAddress(doneOrder.getOrderAddress());
+        result.setOrderPhone(doneOrder.getOrderPhone());
+        result.setOrderPrice(doneOrder.getOrderPrice());
+        result.setOrderRequest(doneOrder.getOrderRequest());
+        result.setDoneOrderState(doneOrder.getDoneOrderState());
+        result.setPaymentMethod(doneOrder.getPaymentMethod());
+        result.setCreatedAt(doneOrder.getCreatedAt());
+
+        List<MenuInfoDto> menuInfoList = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(doneOrderPk);
+        result.setMenuInfoList(menuInfoList);
 
         return result;
     }
-
-
 }
