@@ -4,6 +4,7 @@ import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderGetRes;
 import com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes;
@@ -34,6 +35,7 @@ public class DoneOrderController {
     private final DoneOrderService doneOrderService;
     private final AuthenticationFacade authenticationFacade;
     private final RestaurantService restaurantService;
+    private final UserRepository userRepository;
 
     @GetMapping("user/list")
     @Operation(summary = "유저 끝난주문기록 불러오기(완료 = 1, 취소 = 2)")
@@ -80,7 +82,7 @@ public class DoneOrderController {
 
         Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userPk);
+            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
         } catch (Exception e) {
             return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
@@ -127,7 +129,7 @@ public class DoneOrderController {
 
         Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userPk);
+            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
         } catch (Exception e) {
             return ResultDto.<Map<String, Object>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
