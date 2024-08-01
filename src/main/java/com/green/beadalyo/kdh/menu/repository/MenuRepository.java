@@ -33,4 +33,6 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
             "      FROM menu mn" +
             "       WHERE mn.menu_res_Pk = :menuResPk and mn.menu_pk != :menuPk",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPkAndMenuPk(Long MenuResPk, Long menuPk);
+
+    List<MenuEntity> findByMenuPkIn(List<Long> menuPkList);
 }

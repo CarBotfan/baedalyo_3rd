@@ -3,15 +3,15 @@ package com.green.beadalyo.lmy.order;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.kdh.menu.repository.MenuRepository;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrderMenu;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
-import com.green.beadalyo.lmy.order.entity.Menu2;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import com.green.beadalyo.lmy.order.model.*;
-import com.green.beadalyo.lmy.order.repository.Menu2Repository;
 import com.green.beadalyo.lmy.order.repository.OrderMenuRepository;
 import com.green.beadalyo.lmy.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class OrderService {
     private final OrderMenuRepository orderMenuRepository;
     private final DoneOrderRepository doneOrderRepository;
     private final DoneOrderMenuRepository doneOrderMenuRepository;
-    private final Menu2Repository menuRepository;
+    private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final AuthenticationFacade authenticationFacade;
@@ -44,7 +44,7 @@ public class OrderService {
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡPost Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
     public List<Map<String, Object>> getMenuDetails(List<Long> menuPkList) {
-        List<Menu2> menus = menuRepository.findByMenuPkIn(menuPkList);
+        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
         return menus.stream()
                 .map(menu -> {
                     Map<String, Object> map = new HashMap<>();
@@ -58,10 +58,10 @@ public class OrderService {
 
 
     public int calculateTotalPrice(List<Long> menuPkList) {
-        List<Menu2> menus = menuRepository.findByMenuPkIn(menuPkList);
+        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
         return menus.stream()
                 .filter(menu -> menuPkList.contains(menu.getMenuPk()))
-                .mapToInt(Menu2::getMenuPrice)
+                .mapToInt(MenuEntity::getMenuPrice)
                 .sum();
     }
 
