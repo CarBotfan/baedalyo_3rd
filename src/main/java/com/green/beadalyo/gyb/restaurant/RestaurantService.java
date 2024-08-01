@@ -10,6 +10,7 @@ import com.green.beadalyo.gyb.model.RestaurantListView;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantDetailViewRepository;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantListViewRepository;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
+import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -79,10 +80,10 @@ public class RestaurantService
     }
 
     //음식점 정보 호출
-    public Restaurant getRestaurantData(Long userSeq) throws Exception
+    public Restaurant getRestaurantData(User user) throws Exception
     {
-        if (userSeq == null) throw new DataNotFoundException("유저 정보를 찾을수 없습니다.") ;
-        return repository.findTop1ByUser(userSeq).orElseThrow(NullPointerException::new);
+        if (user == null) throw new DataNotFoundException("유저 정보를 찾을수 없습니다.") ;
+        return repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
     }
 
     //음식점 정보 호출(음식점 pk로)
@@ -102,18 +103,18 @@ public class RestaurantService
     }
 
     //폐업 처리(사업자 회원 탈퇴시 호출 필요)
-    public void deleteRestaurantData(Long userSeq) throws Exception
+    public void deleteRestaurantData(User user) throws Exception
     {
-        Restaurant data = repository.findTop1ByUser(userSeq).orElseThrow(NullPointerException::new);
+        Restaurant data = repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
         data.setState(3);
         repository.save(data);
         System.out.println(data);
     }
 
     //음식점 상태 전환(영업 <-> 휴점)
-    public Integer toggleState(Long userSeq) throws Exception
+    public Integer toggleState(Long seq) throws Exception
     {
-        Restaurant data = repository.findTop1ByUser(userSeq).orElseThrow(NullPointerException::new);
+        Restaurant data = repository.findTop1BySeq(seq).orElseThrow(NullPointerException::new);
         if (data.getState() == 1) data.setState(2);
         else if (data.getState() == 2) data.setState(1);
         else throw new DataWrongException() ;
@@ -124,9 +125,9 @@ public class RestaurantService
     }
 
     //음식점 사진 변경
-    public String updateRestaurantPic(Long userSeq, MultipartFile file) throws Exception
+    public String updateRestaurantPic(User user, MultipartFile file) throws Exception
     {
-        Restaurant data = repository.findTop1ByUser(userSeq).orElseThrow(NullPointerException::new);
+        Restaurant data = repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
 
         if (data.getPic() != null) fileUtils.fileDelete(data.getPic()) ;
         return fileUtils.fileInput("restaurant/" + data.getSeq().toString(),file) ;

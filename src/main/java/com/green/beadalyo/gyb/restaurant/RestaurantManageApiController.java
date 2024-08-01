@@ -12,6 +12,8 @@ import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import com.green.beadalyo.gyb.response.RestaurantManageRes;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -79,15 +81,16 @@ public class RestaurantManageApiController
     public Result getManageData()
     {
 
-        Long seq = authenticationFacade.getLoginUserPk() ;
+        long seq = authenticationFacade.getLoginUserPk() ;
         try {
             if (seq == 0) throw new DataNotFoundException() ;
+            User user = userService.getUser(seq) ;
 
-            Restaurant data = service.getRestaurantData(seq);
+            Restaurant data = service.getRestaurantData(user);
 
             RestaurantManageRes res = new RestaurantManageRes(data);
             return ResultDto.<RestaurantManageRes>builder().resultData(res).build();
-        } catch (DataNotFoundException e) {
+        } catch (DataNotFoundException | UserNotFoundException e ) {
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 존재하지 않습니다.").build();
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-3).resultMsg("음식점 정보가 존재하지 않습니다.").build();
@@ -153,14 +156,15 @@ public class RestaurantManageApiController
             return ResultError.builder().statusCode(-5).resultMsg("상호 명 은 20자리 까지만 허용 됩니다.").build();
 
         try {
-            Restaurant restaurant = service.getRestaurantData(seq);
+            User user = userService.getUser(seq) ;
+            Restaurant restaurant = service.getRestaurantData(user);
             restaurant.update(request);
             service.save(restaurant);
 
             RestaurantManageRes res = new RestaurantManageRes(restaurant);
             return ResultDto.<RestaurantManageRes>builder().resultData(res).build();
 
-        } catch (DataNotFoundException e) {
+        } catch (DataNotFoundException | UserNotFoundException e ) {
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 존재하지 않습니다.").build();
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-3).resultMsg("음식점 정보가 존재하지 않습니다.").build();
@@ -187,14 +191,14 @@ public class RestaurantManageApiController
         if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;
 
         try {
-            String filename = service.updateRestaurantPic(seq,file);
-            Restaurant rest = service.getRestaurantData(seq) ;
+            User user = userService.getUser(seq) ;
+            String filename = service.updateRestaurantPic(user,file);
+            Restaurant rest = service.getRestaurantData(user) ;
             rest.setPic(filename);
             service.save(rest);
 
             return ResultDto.builder().build();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        } catch (NullPointerException | UserNotFoundException e) {
             return ResultError.builder().statusCode(-3).resultMsg("음식점 정보 조회 실패").build();
         } catch (Exception e) {
             log.error("An error occurred: ", e);
@@ -231,7 +235,10 @@ public class RestaurantManageApiController
         }
 
         try {
-            restaurant = service.getRestaurantData(userSeq) ;
+            User user = userService.getUser(userSeq) ;
+            restaurant = service.getRestaurantData(user) ;
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("유저 정보 조회 실패").build();
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-4).resultMsg("음식점 정보 조회 실패").build();
         } catch (Exception e) {
@@ -278,7 +285,10 @@ public class RestaurantManageApiController
         }
 
         try {
-            restaurant = service.getRestaurantData(userSeq) ;
+            User user = userService.getUser(seq) ;
+            restaurant = service.getRestaurantData(user) ;
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("유저 정보 조회 실패").build();
         } catch (NullPointerException e) {
             return ResultError.builder().statusCode(-4).resultMsg("음식점 정보 조회 실패").build();
         } catch (Exception e) {
