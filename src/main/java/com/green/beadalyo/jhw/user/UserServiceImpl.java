@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public long saveUser(User user) throws Exception{
+    public long postUserSignUp(User user) throws Exception{
         repository.save(user);
         return user.getUserPk();
     }
@@ -64,6 +64,9 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     public String uploadProfileImage(MultipartFile pic) {
+        if(pic == null) {
+            return null;
+        }
         if (!Objects.requireNonNull(pic.getContentType()).startsWith("image/")) {
             throw new InvalidRegexException();
         }
@@ -83,11 +86,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Transactional
-    public void deleteProfileImage(User user) {
-        String originalFileName = user.getUserPic();
+    public void deleteProfileImage() {
+        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         try {
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, originalFileName);
+            File file = new File(delAbsoluteFolderPath, user.getUserPic());
             file.delete();
         } catch (Exception e) {
             throw new FileUploadFailedException();
@@ -122,15 +125,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public SignInRes postSignIn(HttpServletResponse res, SignInPostReq p) throws Exception{
-        p.setUserLoginType(SignInProviderType.LOCAL.getValue());
-        User user = repository.findUserByUserId(p.getUserId());
-        if(user == null || user.getUserState() == 3) {
-            throw new UserNotFoundException();
-        }
-        if(!passwordEncoder.matches(p.getUserPw(), user.getUserPw())) {
-            throw new IncorrectPwException();
-        }
+    public SignInRes postSignIn(HttpServletResponse res, User user) throws Exception{
         UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
@@ -154,23 +149,38 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserInfoGetRes getUserInfo() throws Exception{
+    public UserInfoGetRes getUserInfo(User user) throws Exception{
         long userPk = authenticationFacade.getLoginUserPk();
-        User user = repository.getReferenceById(userPk);
-        UserInfoGetRes result = new UserInfoGetRes(user);
-        if(result == null) {
+        if(user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
-        result.setMainAddr(userAddrService.getMainUserAddr());
-        return result;
+        return new UserInfoGetRes(user);
 
     }
 
     @Override
     @Transactional
-    public String patchProfilePic(String fileName) throws Exception{
+    public String patchProfilePic(MultipartFile pic) throws Exception{
+        return null;
+    }
 
-        return fileName;
+    public int patchUserInfo(UserInfoPatchDto dto) {
+        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        user.update(dto);
+        try {
+            repository.save(user);
+        } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
+                throw new DuplicatedInfoException(errorMessage);
+            } else {
+                // 기타 예외 처리
+
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+        return 1;
     }
 
     @Override
@@ -270,7 +280,11 @@ public class UserServiceImpl implements UserService{
     }
 
     public User getUser(Long userPk) {
+        try {
         return repository.getReferenceById(userPk);
+        } catch(EntityNotFoundException e) {
+            throw new UserNotFoundException();
+        }
     }
 
     @Override
@@ -305,6 +319,14 @@ public class UserServiceImpl implements UserService{
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         return new UserGetRes(user);
 
+    }
+
+    public User getUserById(String userId)  {
+        try {
+            return repository.findUserByUserId(userId);
+        } catch (EntityNotFoundException e) {
+            throw new UserNotFoundException();
+        }
     }
 
     @Override

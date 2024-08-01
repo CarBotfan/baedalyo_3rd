@@ -28,6 +28,7 @@ public class UserInfoGetRes {
     private String userEmail;
     @Schema(defaultValue = "메인 주소")
     private UserAddrGetRes mainAddr;
+
     public UserInfoGetRes(User user) {
         this.userId = user.getUserId();
         this.userName = user.getUserName();

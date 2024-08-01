@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 @Service
 public class ReviewService {
-    private final ReviewRepository mapper;
+    private final ReviewRepository repository;
     private final ReviewFilter filter;
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
@@ -30,7 +30,7 @@ public class ReviewService {
         long userPk = authenticationFacade.getLoginUserPk();
         p.setUserPk(userPk);
 
-        if (mapper.ReviewExistForOrder(p.getDoneOrderPk())) {
+        if (repository.ReviewExistForOrder(p.getDoneOrderPk())) {
             log.warn("주문에 대한 리뷰가 이미 존재합니다");
             throw new IllegalArgumentException("주문에 대한 리뷰가 이미 존재합니다");
         }
@@ -74,14 +74,14 @@ public class ReviewService {
             throw new IllegalArgumentException("별점은 1에서 5까지가 최대");
         }
 
-        mapper.insertReview(p);
+        repository.insertReview(p);
         return userPk;
     }
 
     // 사장님 리뷰 답글
     public long postReviewReply(ReviewReplyReq p) {
         long userPk = authenticationFacade.getLoginUserPk();
-        long resUserPk = mapper.getRestaurantUser(p.getReviewPk());
+        long resUserPk = repository.getRestaurantUser(p.getReviewPk());
 
         if (userPk != resUserPk) {
             throw new IllegalArgumentException("식당 사장님이 아닙니다");
@@ -94,24 +94,24 @@ public class ReviewService {
             }
         }
 
-        return mapper.postReviewReply(p);
+        return repository.postReviewReply(p);
     }
 
     // 사장이 보는 자기 가게의 리뷰와 답글들
     public List<ReviewGetRes> getOwnerReviews() {
         long userPk = authenticationFacade.getLoginUserPk();
-        long resPk = mapper.getResPkByUserPk(userPk);
+        long resPk = repository.getResPkByUserPk(userPk);
         return getReviewGetRes(resPk);
     }
 
     private List<ReviewGetRes> getReviewGetRes(long resPk) {
-        List<ReviewGetRes> reviews = mapper.getReviewsRestaurant(resPk);
+        List<ReviewGetRes> reviews = repository.getReviewsRestaurant(resPk);
 
         for (ReviewGetRes review : reviews) {
             addPicsToReview(review);
-            ReviewReplyRes reply = mapper.getReviewComment(review.getReviewPk());
+            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
             review.setReply(reply);
-            review.setNickName(mapper.selectUserNickName(review.getUserPk()));
+            review.setNickName(repository.selectUserNickName(review.getUserPk()));
         }
 
         return reviews;
@@ -120,11 +120,11 @@ public class ReviewService {
     // 손님이 보는 자기가 쓴 리뷰
     public List<ReviewGetRes> getCustomerReviews() {
         long userPk = authenticationFacade.getLoginUserPk();
-        List<ReviewGetRes> reviews = mapper.getReviewsUser(userPk);
+        List<ReviewGetRes> reviews = repository.getReviewsUser(userPk);
 
         for (ReviewGetRes review : reviews) {
             addPicsToReview(review);
-            ReviewReplyRes reply = mapper.getReviewComment(review.getReviewPk());
+            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
             review.setReply(reply);
         }
 
@@ -138,9 +138,9 @@ public class ReviewService {
     // 사장님 답글 수정
     public void updReviewReply(ReviewReplyUpdReq p) {
         long userPk = authenticationFacade.getLoginUserPk();
-        long resPk = mapper.getResPkByReviewCommentPk(p.getReviewCommentPk());
+        long resPk = repository.getResPkByReviewCommentPk(p.getReviewCommentPk());
 
-        if (resPk != mapper.getResPkByUserPk(userPk)) {
+        if (resPk != repository.getResPkByUserPk(userPk)) {
             throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
         }
 
@@ -151,13 +151,13 @@ public class ReviewService {
             }
         }
 
-        mapper.updReviewReply(p);
+        repository.updReviewReply(p);
     }
 
     // 리뷰 업데이트
     @Transactional
     public long updReview(ReviewPutReq p, List<MultipartFile> pics) {
-        long reviewUserPk = mapper.getReviewUserPk(p.getReviewPk());
+        long reviewUserPk = repository.getReviewUserPk(p.getReviewPk());
         long userPk = authenticationFacade.getLoginUserPk();
 
         if (reviewUserPk != userPk) {
@@ -199,14 +199,14 @@ public class ReviewService {
             }
         }
 
-        mapper.putReview(p); // 수정 완료
+        repository.putReview(p); // 수정 완료
         return 1;
     }
 
     // 리뷰 삭제
     @Transactional
     public void deleteReview(long reviewPk) {
-        ReviewGetRes review = mapper.getReview(reviewPk);
+        ReviewGetRes review = repository.getReview(reviewPk);
         long reviewUserPk = (review == null ? 0 : review.getUserPk());
 
         if (reviewUserPk == 0) {
@@ -217,19 +217,19 @@ public class ReviewService {
             throw new IllegalArgumentException("리뷰를 작성한 사용자가 아닙니다");
         }
 
-        mapper.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
+        repository.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
     }
 
     // 사장님 답글 삭제
     public void deleteReviewReply(long reviewCommentPk) {
         long userPk = authenticationFacade.getLoginUserPk();
-        long resPk = mapper.getResPkByUserPk(userPk);
+        long resPk = repository.getResPkByUserPk(userPk);
 
-        if (resPk != mapper.getResPkByReviewCommentPk(reviewCommentPk)) {
+        if (resPk != repository.getResPkByReviewCommentPk(reviewCommentPk)) {
             throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
         }
 
-        mapper.deleteReviewReply(reviewCommentPk);
+        repository.deleteReviewReply(reviewCommentPk);
     }
 
     // 리뷰에 사진 추가

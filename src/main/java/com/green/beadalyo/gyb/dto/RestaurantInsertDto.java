@@ -1,5 +1,6 @@
 package com.green.beadalyo.gyb.dto;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import lombok.Data;
 
 import java.time.LocalTime;
@@ -9,7 +10,7 @@ public class RestaurantInsertDto
 {
 
     //유저 정보
-    private Long user ;
+    private User user ;
     //가게 이름
     private String name ;
     //사업자 번호
