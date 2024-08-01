@@ -46,24 +46,24 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query("SELECT r.user FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")
     Long getDoneOrderResUser(@Param("doneOrderPk") Long doneOrderPk);
 
-    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.MonthSalesDto(DATE_FORMAT(o.createdAt, '%Y-%m'), SUM(o.orderPrice)) " +
-            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
-            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m')")
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m') AS createdAt, SUM(o.order_price) AS monthSales " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y') = :date AND o.res_pk = :resPk AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')", nativeQuery = true)
     List<MonthSalesDto> getMonthSales(@Param("date") String date, @Param("resPk") Long resPk);
 
-    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.MonthOrderCountDto(DATE_FORMAT(o.createdAt, '%Y-%m'), COUNT(o.doneOrderPk)) " +
-            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
-            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m')")
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m') AS createdAt, COUNT(o.done_order_pk) AS monthOrderCount " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y') = :date AND o.res_pk = :resPk AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')", nativeQuery = true)
     List<MonthOrderCountDto> getMonthOrderCount(@Param("date") String date, @Param("resPk") Long resPk);
 
-    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.DailySalesDto(DATE_FORMAT(o.createdAt, '%Y-%m-%d'), SUM(o.orderPrice)) " +
-            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y-%m') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
-            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m-%d')")
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m-%d') AS createdAt, SUM(o.order_price) AS dailySales " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y-%m') = :date AND o.res_pk = :resPk AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m-%d')", nativeQuery = true)
     List<DailySalesDto> getDailySales(@Param("date") String date, @Param("resPk") Long resPk);
 
-    @Query("SELECT new com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto(DATE_FORMAT(o.createdAt, '%Y-%m-%d'), COUNT(o.doneOrderPk)) " +
-            "FROM DoneOrder o WHERE DATE_FORMAT(o.createdAt, '%Y-%m') = :date AND o.resPk = :resPk AND o.doneOrderState = 1 " +
-            "GROUP BY DATE_FORMAT(o.createdAt, '%Y-%m-%d')")
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m-%d') AS createdAt, COUNT(o.done_order_pk) AS dailyOrderCount " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y-%m') = :date AND o.res_pk = :resPk AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m-%d')", nativeQuery = true)
     List<DailyOrderCountDto> getDailyOrderCount(@Param("date") String date, @Param("resPk") Long resPk);
 
 
