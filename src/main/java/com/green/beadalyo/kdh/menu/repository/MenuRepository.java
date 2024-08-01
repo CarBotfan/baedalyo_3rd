@@ -21,16 +21,16 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
             "                mn.menu_price as menu_price, mn.menu_pic as menuPic, "+
            "                 mn.menu_state as menuState, mn.created_at as createdAt ,mn.updated_at as  updatedAt" +
              "      FROM menu mn" +
-            "       WHERE mn.menu_Res_Pk = :menuResPk",nativeQuery = true)
+            "       WHERE mn.menu_res_Pk = :menuResPk",nativeQuery = true)
     List<GetAllMenuResInterface> findAllByMenuResPk(Long menuResPk);
 
     @Query(value = "select   mn.menu_name as menuName" +
             "      FROM menu mn" +
-            "       WHERE mn.menu_Res_Pk = :menuResPk",nativeQuery = true)
+            "       WHERE mn.menu_res_Pk = :menuResPk",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPk(Long MenuResPk);
 
     @Query(value = "select   mn.menu_name as menuName" +
             "      FROM menu mn" +
-            "       WHERE mn.menu_Res_Pk = :menuResPk and mn.menu_pk != :menuPk",nativeQuery = true)
+            "       WHERE mn.menu_res_Pk = :menuResPk and mn.menu_pk != :menuPk",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPkAndMenuPk(Long MenuResPk, Long menuPk);
 }
