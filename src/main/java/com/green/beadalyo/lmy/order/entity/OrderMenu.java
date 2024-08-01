@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.order.entity;
 
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,7 +22,7 @@ public class OrderMenu {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_pk", nullable = false)
-    private Menu2 menuPk;
+    private MenuEntity menuPk;
 
     @Column(name = "menu_name", length = 20, nullable = false)
     private String menuName;
