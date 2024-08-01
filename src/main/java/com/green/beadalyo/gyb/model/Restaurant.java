@@ -33,6 +33,7 @@ public class Restaurant
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Comment("소유자 정보")
+    @JoinColumn(name = "res_user_pk")
     private User user;
 
     @Column(name = "res_name", nullable = false, length = 50)
