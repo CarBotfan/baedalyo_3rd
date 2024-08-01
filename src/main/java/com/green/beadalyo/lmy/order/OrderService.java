@@ -1,11 +1,21 @@
 package com.green.beadalyo.lmy.order;
 
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.lmy.order.entity.Menu2;
+import com.green.beadalyo.lmy.order.entity.Order;
+import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import com.green.beadalyo.lmy.order.model.*;
+import com.green.beadalyo.lmy.order.repository.Menu2Repository;
+import com.green.beadalyo.lmy.order.repository.OrderMenuRepository;
+import com.green.beadalyo.lmy.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,48 +25,83 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderMapper orderMapper;
+    private final OrderRepository orderRepository;
+    private final OrderMenuRepository orderMenuRepository;
+    private final Menu2Repository menuRepository;
+    private final UserRepository2 userRepository;
+    private final RestaurantRepository restaurantRepository;
     private final AuthenticationFacade authenticationFacade;
 
-    @Transactional
-    public void postOrder(OrderPostReq p) {
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Post Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-        p.setOrderUserPk(authenticationFacade.getLoginUserPk());
-
-        List<Map<String, Object>> menuList = orderMapper.selectMenus(p.getMenuPk());
-
-        // 총 가격 계산
-        int totalPrice = p.getMenuPk().stream()
-                .mapToInt(menuPk -> menuList.stream()
-                        .filter(menu -> menuPk.equals(menu.get("menu_pk")))
-                        .mapToInt(menu -> (Integer) menu.get("menu_price"))
-                        .sum())
-                .sum();
-
-        p.setOrderPrice(totalPrice);
-
-        orderMapper.postOrderTable(p);
-
-        // order_menu에 삽입할 데이터 리스트 생성
-        List<Map<String, Object>> orderMenuList = null;
-        try {
-            orderMenuList = p.getMenuPk().stream().map(menuPk -> {
-                Map<String, Object> menu = menuList.stream()
-                        .filter(m -> m.get("menu_pk").equals(menuPk))
-                        .findFirst().orElseThrow(() -> new NullPointerException(""));
-                Map<String, Object> orderMenuMap = new HashMap<>();
-                orderMenuMap.put("orderPk", p.getOrderPk());
-                orderMenuMap.put("menuPk", menu.get("menu_pk"));
-                orderMenuMap.put("menuName", menu.get("menu_name"));
-                orderMenuMap.put("menuPrice", menu.get("menu_price"));
-                return orderMenuMap;
-            }).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeException("");
-        }
-
-        // order_menu 테이블에 배치 삽입
-        orderMapper.insertOrderMenuBatch(orderMenuList);
+    public List<Map<String, Object>> getMenuDetails(List<Long> menuPkList) {
+        List<Menu2> menus = menuRepository.findByMenuPkIn(menuPkList);
+        return menus.stream()
+                .map(menu -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("menu_pk", menu.getMenuPk());
+                    map.put("menu_name", menu.getMenuName());
+                    map.put("menu_price", menu.getMenuPrice());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
+
+
+    public int calculateTotalPrice(List<Long> menuPkList) {
+        List<Menu2> menus = menuRepository.findByMenuPkIn(menuPkList);
+        return menus.stream()
+                .filter(menu -> menuPkList.contains(menu.getMenuPk()))
+                .mapToInt(Menu2::getMenuPrice)
+                .sum();
+    }
+
+
+    public Order saveOrder(OrderPostReq p) {
+        Order order = new Order();
+        order.setOrderUserPk(userRepository.getReferenceById(p.getOrderUserPk()));
+        order.setOrderResPk(restaurantRepository.getReferenceById(p.getOrderResPk()));
+        order.setOrderRequest(p.getOrderRequest());
+        order.setPaymentMethod(p.getPaymentMethod());
+        order.setOrderPhone(p.getOrderPhone());
+        order.setOrderAddress(p.getOrderAddress());
+        order.setOrderPrice(p.getOrderPrice());
+        order.setCreatedAt(LocalDateTime.now());
+        return orderRepository.save(order);
+    }
+
+
+    public List<Map<String, Object>> createOrderMenuList(OrderPostReq p, List<Map<String, Object>> menuList) {
+        return p.getMenuPk().stream().map(menuPk -> {
+            Map<String, Object> menu = menuList.stream()
+                    .filter(m -> m.get("menu_pk").equals(menuPk))
+                    .findFirst().orElseThrow(() -> new NullPointerException(""));
+            Map<String, Object> orderMenuMap = new HashMap<>();
+            orderMenuMap.put("orderPk", p.getOrderPk());
+            orderMenuMap.put("menuPk", menu.get("menu_pk"));
+            orderMenuMap.put("menuName", menu.get("menu_name"));
+            orderMenuMap.put("menuPrice", menu.get("menu_price"));
+            return orderMenuMap;
+        }).collect(Collectors.toList());
+    }
+
+    public void saveOrderMenuBatch(List<Map<String, Object>> orderMenuList, Order order) {
+        List<OrderMenu> orderMenus = orderMenuList.stream()
+                .map(menuMap -> {
+                    OrderMenu orderMenu = new OrderMenu();
+                    orderMenu.setOrderPk(order);
+                    orderMenu.setMenuPk(menuRepository.getReferenceById((Long) menuMap.get("menuPk")));
+                    orderMenu.setMenuName((String) menuMap.get("menuName"));
+                    orderMenu.setMenuPrice((Integer) menuMap.get("menuPrice"));
+                    orderMenu.setCreatedAt(LocalDateTime.now());
+                    return orderMenu;
+                })
+                .collect(Collectors.toList());
+        orderMenuRepository.saveAll(orderMenus);
+    }
+
+
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Cancel Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
     @Transactional
     public int cancelOrder(Long orderPk) {

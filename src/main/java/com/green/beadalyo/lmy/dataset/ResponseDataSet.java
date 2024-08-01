@@ -18,3 +18,4 @@ public interface ResponseDataSet {
     String GET_CANCEL_ORDER_BY_RES_PK_SUCCESS = "상점 취소주문기록 불러오기 완료";
     String GET_DONE_ORDER_INFO_SUCCESS = "끝난 주문 상세보기 완료";
 }
+
