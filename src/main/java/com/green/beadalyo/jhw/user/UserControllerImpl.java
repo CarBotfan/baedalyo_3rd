@@ -504,7 +504,7 @@ public class UserControllerImpl implements UserController{
                 throw new IncorrectPwException();
             }
             result = service.deleteUser(user);
-            restaurantService.deleteRestaurantData(user.getUserPk());
+            restaurantService.deleteRestaurantData(user);
 
         } catch (UserNotFoundException e) {
             statusCode = -2;
