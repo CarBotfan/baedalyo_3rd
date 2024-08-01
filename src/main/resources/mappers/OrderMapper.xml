@@ -60,7 +60,7 @@
 
     <select id="selectCancellerRole">
         SELECT user_role
-        FROM user
+        FROM userGetRes
         WHERE user_pk = #{UserPk}
     </select>
 

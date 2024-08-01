@@ -2,7 +2,7 @@ package com.green.beadalyo.lmy.order;
 
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.repository.UserRepository2;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrderMenu;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
@@ -32,7 +32,7 @@ public class OrderService {
     private final DoneOrderRepository doneOrderRepository;
     private final DoneOrderMenuRepository doneOrderMenuRepository;
     private final Menu2Repository menuRepository;
-    private final UserRepository2 userRepository;
+    private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final AuthenticationFacade authenticationFacade;
 

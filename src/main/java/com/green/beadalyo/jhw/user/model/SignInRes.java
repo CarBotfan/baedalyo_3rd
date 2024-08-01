@@ -15,7 +15,7 @@ public class SignInRes {
     @Schema(defaultValue = "닉네임")
     private String userNickname;
     @Schema(defaultValue = "메인 주소")
-    private UserAddr mainAddr;
+    private UserAddrGetRes mainAddr;
     @Schema(defaultValue = "전화번호")
     private String userPhone;
     @Schema(defaultValue = "유저 역할")

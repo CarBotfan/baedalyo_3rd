@@ -2,11 +2,9 @@ package com.green.beadalyo.gyb.category;
 
 import com.green.beadalyo.gyb.common.*;
 import com.green.beadalyo.gyb.model.Category;
-import com.green.beadalyo.gyb.response.CategoryRes;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
-import com.green.beadalyo.jhw.user.model.User;
-import io.swagger.v3.oas.annotations.Hidden;
+import com.green.beadalyo.jhw.user.model.UserGetRes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -47,13 +45,13 @@ public class CategoryApiController
     )
     public Result putCategory(@RequestPart String str, @RequestPart MultipartFile file)
     {
-//        UserEntity user = new UserEntity().Admin();
-        User user = userService.getUserByPk() ;
+//        User userGetRes = new User().Admin();
+        UserGetRes userGetRes = userService.getUserByPk() ;
         //유효성 검증
-        if (user == null)
+        if (userGetRes == null)
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
         //관리자 권한 검증
-        if (!user.getUserRole().equals("ROLE_ADMIN"))
+        if (!userGetRes.getUserRole().equals("ROLE_ADMIN"))
             return ResultError.builder().statusCode(-3).resultMsg("권한이 부족합니다.").build();
 
         String filename = null ;
@@ -103,13 +101,13 @@ public class CategoryApiController
     )
     public Result deleteCategory(@PathVariable Long seq)
     {
-        User user = userService.getUserByPk() ;
+        UserGetRes userGetRes = userService.getUserByPk() ;
         authenticationFacade.getLoginUserPk() ;
         //유효성 검증
-        if (user == null)
+        if (userGetRes == null)
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
         //관리자 권한 검증
-        if (!user.getUserRole().equals("ROLE_ADMIN"))
+        if (!userGetRes.getUserRole().equals("ROLE_ADMIN"))
             return ResultError.builder().statusCode(-3).resultMsg("권한이 부족합니다.").build();
 
         try {

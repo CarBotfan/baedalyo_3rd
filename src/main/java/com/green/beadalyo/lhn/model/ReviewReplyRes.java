@@ -16,4 +16,5 @@ public class ReviewReplyRes {
 
     @Schema(description = "댓글 내용", example = "감사")
     private String commentContents;
+
 }
