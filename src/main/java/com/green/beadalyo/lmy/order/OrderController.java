@@ -5,6 +5,7 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.order.entity.Order;
@@ -39,6 +40,7 @@ public class OrderController {
     private final OrderService orderService;
     private final RestaurantService restaurantService;
     private final AuthenticationFacade authenticationFacade;
+    private final UserRepository userRepository;
 
 
     @PostMapping
@@ -218,7 +220,7 @@ public class OrderController {
 
         Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userPk);
+            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
         } catch (Exception e) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
@@ -266,7 +268,7 @@ public class OrderController {
 
         Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userPk);
+            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
         } catch (Exception e) {
             return ResultDto.<List<OrderMiniGetRes>>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
