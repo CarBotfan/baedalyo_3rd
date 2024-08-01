@@ -32,15 +32,18 @@ public class DoneOrderService {
         Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<DoneOrderMiniGetResUser> result = doneOrderRepository.findDoneOrdersByUserPk(userPk, pageable);
 
-        for (DoneOrderMiniGetResUser item : result.getContent()) {
-            item.setReviewState(doneOrderRepository.countReviewsByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 0 : 1);
-            List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
-            item.setMenuInfoDtos(result2);
-        }
-
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("maxPage", result.getTotalPages());
-        resultMap.put("contents", result.getContent());
+
+        if (result != null) {
+            for (DoneOrderMiniGetResUser item : result.getContent()) {
+                item.setReviewState(doneOrderRepository.countReviewsByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 0 : 1);
+                List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
+                item.setMenuInfoDtos(result2);
+            }
+
+            resultMap.put("maxPage", result.getTotalPages());
+            resultMap.put("contents", result.getContent());
+        }
 
         return resultMap;
     }
@@ -51,14 +54,17 @@ public class DoneOrderService {
 
         Page<DoneOrderMiniGetRes> result = doneOrderRepository.findDoneOrdersByResPk(resPk, pageable);
 
-        for (DoneOrderMiniGetRes item : result.getContent()) {
-            List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
-            item.setMenuInfoDtos(result2);
-        }
-
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("maxPage", result.getTotalPages());
-        resultMap.put("contents", result.getContent());
+
+        if (result != null) {
+            for (DoneOrderMiniGetRes item : result.getContent()) {
+                List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
+                item.setMenuInfoDtos(result2);
+            }
+
+            resultMap.put("maxPage", result.getTotalPages());
+            resultMap.put("contents", result.getContent());
+        }
 
         return resultMap;
     }
@@ -69,14 +75,17 @@ public class DoneOrderService {
 
         Page<DoneOrderMiniGetRes> result = doneOrderRepository.findCancelOrdersByResPk(resPk, pageable);
 
-        for (DoneOrderMiniGetRes item : result.getContent()) {
-            List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
-            item.setMenuInfoDtos(result2);
-        }
-
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("maxPage", result.getTotalPages());
-        resultMap.put("contents", result.getContent());
+
+        if (result != null) {
+            for (DoneOrderMiniGetRes item : result.getContent()) {
+                List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
+                item.setMenuInfoDtos(result2);
+            }
+
+            resultMap.put("maxPage", result.getTotalPages());
+            resultMap.put("contents", result.getContent());
+        }
 
         return resultMap;
     }
