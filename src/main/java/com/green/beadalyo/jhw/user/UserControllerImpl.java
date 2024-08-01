@@ -144,7 +144,7 @@ public class UserControllerImpl implements UserController{
             long userPk = service.postUserSignUp(user);
 
             RestaurantInsertDto dto = new RestaurantInsertDto();
-            dto.setUser(userPk);
+            dto.setUser(user);
             dto.setName(p.getRestaurantName());
             dto.setRegiNum(p.getRegiNum());
             dto.setResAddr(p.getAddr());

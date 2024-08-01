@@ -2,7 +2,7 @@ package com.green.beadalyo.gyb.model;
 
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
-import com.green.beadalyo.jhw.user.model.User;
+import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
