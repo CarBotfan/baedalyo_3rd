@@ -54,8 +54,9 @@ public class MenuController {
         Long result = null;
 
         p.setResUserPk(authenticationFacade.getLoginUserPk());
+        log.info("ResUserPk: {}", p.getResUserPk());
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
-
+        log.info("restaurant: {}", restaurant);
         if (restaurant == null) {
             return ResultDto.<Long>builder()
                     .statusCode(-3)
