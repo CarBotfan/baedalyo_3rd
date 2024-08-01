@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +46,7 @@ public class UserControllerImpl implements UserController{
     private final UserAddrServiceImpl userAddrService;
 
     @Override
+    @Transactional
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
             , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "일반 유저 회원가입", description = "일반 유저 회원가입을 진행합니다")
@@ -72,11 +74,11 @@ public class UserControllerImpl implements UserController{
             service.duplicatedCheck(p.getUserId());
 
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
-            p.setUserPic(service.uploadProfileImage(pic));
             User user = new User(p);
 
 
             service.postUserSignUp(user);
+            user.setUserPic(service.uploadProfileImage(pic));
 
             result = 1;
         } catch (DuplicatedIdException e) {
@@ -108,6 +110,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
+    @Transactional
     @PostMapping(value = "/owner/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
             , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "음식점 사장 회원가입", description = "음식점 사장 가입을 진행합니다")
@@ -138,10 +141,8 @@ public class UserControllerImpl implements UserController{
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
             User user = new User(req);
 
-            user.setUserPic(service.uploadProfileImage(pic));
-
-
             long userPk = service.postUserSignUp(user);
+            user.setUserPic(service.uploadProfileImage(pic));
 
             RestaurantInsertDto dto = new RestaurantInsertDto();
             dto.setUser(user);
