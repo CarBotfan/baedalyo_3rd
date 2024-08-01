@@ -39,4 +39,9 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
                                                            @Param("menuPk")Long menuPk);
 
     List<MenuEntity> findByMenuPkIn(List<Long> menuPkList);
+
+    @Query(value = "delete " +
+                   "from menu " +
+            "       where menu_pk = :menuPk and menu_res_pk = :menuResPk",nativeQuery = true)
+    void deleteByMenuPkAndMenuResPk(@Param("menuPk") Long menuPk ,@Param("menuResPk") Long menuResPk);
 }
