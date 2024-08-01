@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "order")
+@Table(name = "`order`")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,7 +49,7 @@ public class Order {
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = true)
     @CreationTimestamp
     private LocalDateTime createdAt;
 

@@ -66,9 +66,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(nativeQuery = true, value = "SELECT review_pk AS reviewPk, user_pk AS userPk, review_contents AS reviewContents, review_rating AS reviewRating, review_state AS reviewState, updated_at AS updatedAt FROM review WHERE review_pk = :reviewPk AND review_state = 1")
     ReviewGetRes getReview(@Param("reviewPk") Long reviewPk);
 
-    // 사용자 권한 조회
-    @Query(nativeQuery = true, value = "SELECT user_role FROM user WHERE user_pk = :userPk")
-    String getUserRole(@Param("userPk") Long userPk);
+//    // 사용자 권한 조회
+//    @Query(nativeQuery = true, value = "SELECT user_role FROM user WHERE user_pk = :userPk")
+//    String getUserRole(@Param("userPk") Long userPk);
 
     // 특정 레스토랑의 리뷰 조회
     @Query(nativeQuery = true, value = "SELECT review_pk AS reviewPk, user_pk AS userPk, review_contents AS reviewContents, review_rating AS reviewRating, review_state AS reviewState, updated_at AS updatedAt, created_at AS createdAt, review_pics_1 AS reviewPics1, review_pics_2 AS reviewPics2, review_pics_3 AS reviewPics3, review_pics_4 AS reviewPics4 FROM review WHERE res_pk = :resPk AND review_state = 1 ORDER BY created_at DESC")

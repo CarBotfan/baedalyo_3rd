@@ -156,7 +156,7 @@ public class ReviewService {
 
     // 리뷰 업데이트
     @Transactional
-    public void updReview(ReviewPutReq p, List<MultipartFile> pics) {
+    public long updReview(ReviewPutReq p, List<MultipartFile> pics) {
         long reviewUserPk = mapper.getReviewUserPk(p.getReviewPk());
         long userPk = authenticationFacade.getLoginUserPk();
 
@@ -200,6 +200,7 @@ public class ReviewService {
         }
 
         mapper.putReview(p); // 수정 완료
+        return 1;
     }
 
     // 리뷰 삭제
