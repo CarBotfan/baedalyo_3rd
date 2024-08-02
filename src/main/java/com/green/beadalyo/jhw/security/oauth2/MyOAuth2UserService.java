@@ -20,6 +20,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /*
     MyOAuth2UserService:
     OAuth2 제공자(구글, 페이스북, 카카오, 네이버 등)로부터 Access-Token 받은 후 loadUser메소드가 호출이 됩니다.
@@ -70,9 +72,13 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         SignInPostReq signInParam = new SignInPostReq();
         signInParam.setUserId(oAuth2UserInfo.getId()); //플랫폼에서 넘어오는 유니크값(항상 같은 값이며 다른 사용자와 구별되는 유니크 값)
         signInParam.setUserLoginType(signInProviderType.getValue());
-        UserGetRes userGetRes = new UserGetRes(repository.findUserByUserId(signInParam.getUserId()));
 
-        if(userGetRes == null) { //회원가입 처리
+        UserGetRes userGetRes = null;
+        if(repository.existsByUserId(signInParam.getUserId())) {
+            userGetRes = new UserGetRes(repository.findUserByUserId(signInParam.getUserId()));
+        }
+
+        if(userGetRes== null) { //회원가입 처리
             UserSignUpPostReq signUpParam = new UserSignUpPostReq();
             signUpParam.setUserLoginType(signInProviderType.getValue());
             signUpParam.setUserId(oAuth2UserInfo.getId());

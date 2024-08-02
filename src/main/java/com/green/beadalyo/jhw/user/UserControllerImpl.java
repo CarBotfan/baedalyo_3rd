@@ -24,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,10 +70,10 @@ public class UserControllerImpl implements UserController{
                 throw new PwConfirmFailureException();
             }
 
-            service.duplicatedCheck(p.getUserId());
 
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
             User user = new User(p);
+            service.duplicatedInfoCheck(user);
 
 
             service.postUserSignUp(user);
@@ -137,9 +136,9 @@ public class UserControllerImpl implements UserController{
                 throw new PwConfirmFailureException();
             }
 
-            service.duplicatedCheck(p.getUserId());
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
             User user = new User(req);
+            service.duplicatedInfoCheck(user);
 
             long userPk = service.postUserSignUp(user);
             user.setUserPic(service.uploadProfileImage(pic));
@@ -536,7 +535,7 @@ public class UserControllerImpl implements UserController{
         int result = 0;
         String msg = "사용 가능한 ID";
         try {
-            result = service.duplicatedCheck(userId);
+            result = service.duplicatedIdCheck(userId);
         } catch (DuplicatedIdException e) {
             statusCode = -7;
             msg = e.getMessage();

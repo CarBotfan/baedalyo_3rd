@@ -46,7 +46,7 @@ public class CategoryApiController
     public Result putCategory(@RequestPart String str, @RequestPart MultipartFile file)
     {
 //        User userGetRes = new User().Admin();
-        UserGetRes userGetRes = userService.getUserByPk() ;
+        UserGetRes userGetRes = userService.getUserGetResByPk() ;
         //유효성 검증
         if (userGetRes == null)
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보가 일치하지 않습니다.").build();
@@ -101,7 +101,7 @@ public class CategoryApiController
     )
     public Result deleteCategory(@PathVariable Long seq)
     {
-        UserGetRes userGetRes = userService.getUserByPk() ;
+        UserGetRes userGetRes = userService.getUserGetResByPk() ;
         authenticationFacade.getLoginUserPk() ;
         //유효성 검증
         if (userGetRes == null)
