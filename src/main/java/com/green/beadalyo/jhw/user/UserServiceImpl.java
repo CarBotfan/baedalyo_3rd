@@ -7,7 +7,6 @@ import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
-import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
@@ -20,10 +19,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -207,8 +204,6 @@ public class UserServiceImpl implements UserService{
     }
 
     public User getUser(Long userPk) {
-        User user = repository.getReferenceById(userPk);
-        if(user == null)
         if(!repository.existsById(userPk)) {
             throw new UserNotFoundException();
         }
@@ -238,7 +233,7 @@ public class UserServiceImpl implements UserService{
         return map;
     }
 
-    public UserGetRes getUserByPk() {
+    public UserGetRes getUserGetResByPk() {
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         return new UserGetRes(user);
 
