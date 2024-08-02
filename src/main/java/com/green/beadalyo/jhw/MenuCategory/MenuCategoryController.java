@@ -32,7 +32,6 @@ public class MenuCategoryController {
         User user = userService.getUser(authenticationFacade.getLoginUserPk());
         try {
             Restaurant restaurant = restaurantService.getRestaurantData(user);
-            MenuCategoryDto
         } catch(DataNotFoundException e) {
             return ResultDto.<Long>builder().build();
         } catch (Exception e) {
