@@ -1,4 +1,4 @@
-package com.green.beadalyo.lmy;
+package com.green.beadalyo.lmy.resfollow.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
