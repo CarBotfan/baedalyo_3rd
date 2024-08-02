@@ -14,6 +14,7 @@ import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -82,14 +83,14 @@ public class MenuCategoryController {
                 .resultData(result).build();
     }
     @GetMapping("/{position}")
-    public ResultDto<GetMenuCategoryRes> getMenuCat(@PathVariable(name = "position") Long positon) {
+    public ResultDto<GetMenuCategoryRes> getMenuCat(@PathVariable(name = "position") Long position) {
         int statusCode = 1;
         GetMenuCategoryRes result = null;
         String msg = "카테고리 조회 완료";
         try {
             User user = userService.getUser(authenticationFacade.getLoginUserPk());
             Restaurant restaurant = restaurantService.getRestaurantData(user);
-            result = new GetMenuCategoryRes(service.getMenuCat(restaurant, positon));
+            result = new GetMenuCategoryRes(service.getMenuCat(restaurant, position));
 
         } catch(DataNotFoundException e) {
             msg = "식당 정보를 찾을 수 없음";
@@ -100,6 +101,29 @@ public class MenuCategoryController {
             statusCode = -1;
         }
         return ResultDto.<GetMenuCategoryRes>builder()
+                .statusCode(statusCode)
+                .resultMsg(msg)
+                .resultData(result).build();
+    }
+    @DeleteMapping("/{position}")
+    public ResultDto<Integer> deleteMenuCat(@PathVariable(name = "position") Long position) {
+        int statusCode = 1;
+        int result = 0;
+        String msg = "카테고리 삭제 완료";
+        try {
+            User user = userService.getUser(authenticationFacade.getLoginUserPk());
+            Restaurant restaurant = restaurantService.getRestaurantData(user);
+            result = service.deleteMenuCat(restaurant, position);
+
+        } catch(DataNotFoundException e) {
+            msg = "식당 정보를 찾을 수 없음";
+            statusCode = -2;
+        } catch (Exception e) {
+            e.printStackTrace();
+            msg = e.getMessage();
+            statusCode = -1;
+        }
+        return ResultDto.<Integer>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
                 .resultData(result).build();

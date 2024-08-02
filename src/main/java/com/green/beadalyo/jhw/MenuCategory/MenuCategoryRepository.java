@@ -12,6 +12,7 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long
     @Query("SELECT COUNT(mc.menuCategoryPk) FROM MenuCategory mc WHERE mc.restaurant = :restaurant")
     Long countMenuCategories(Restaurant restaurant);
 
+
     List<MenuCategory> findMenuCategoriesByRestaurantOrderByPosition(Restaurant restaurant);
     MenuCategory findMenuCategoryByRestaurantAndPosition(Restaurant restaurant, Long positon);
 
