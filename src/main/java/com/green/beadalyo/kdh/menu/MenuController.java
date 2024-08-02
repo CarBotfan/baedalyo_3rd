@@ -113,7 +113,7 @@ public class MenuController {
 
 
     }
-
+    //메뉴 상태 ( menu_state) 1번과 2번만 불러옴
     @GetMapping
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "가게에 있는 메뉴를 불러옵니다." , description = "menuPk는 등록된 메뉴의 고유 번호(PK)입니다.\n" +
@@ -241,6 +241,7 @@ public class MenuController {
 
     )
 
+    //실제 메뉴를 삭제하는게 아님! menu_state를 3으로 변경
     public ResultDto<Integer> delMenu(@PathVariable(name = "menu_pk") long menuPk){
         MenuEntity menuEntity = new MenuEntity();
         menuEntity.setMenuPk(menuPk);
