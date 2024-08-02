@@ -24,44 +24,44 @@ public class User {
     @Column(name = "user_pk")
     private Long userPk;
 
-    @Column(name = "user_id", unique = true)
+    @Column(name = "user_id", nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "user_pw", nullable = false)
+    @Column(name = "user_pw")
     private String userPw;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "user_nickname", unique = true, nullable = false)
+    @Column(name = "user_nickname", unique = true)
     private String userNickname;
 
-    @Column(name = "user_pic", nullable = false)
+    @Column(name = "user_pic")
     private String userPic;
 
-    @Column(name = "user_phone" ,length = 30, unique = true, nullable = false)
+    @Column(name = "user_phone" ,length = 30, unique = true)
     private String userPhone;
 
-    @Column(name = "user_email", length = 50, unique = true, nullable = false)
+    @Column(name = "user_email", length = 50, unique = true)
     private String userEmail;
 
-    @Column(name = "user_role", length = 20, nullable = false)
+    @Column(name = "user_role", length = 20)
     private String userRole;
 
     @ColumnDefault("1")
-    @Column(name = "user_state", nullable = false)
+    @Column(name = "user_state")
     private int userState;
 
     @ColumnDefault("1")
-    @Column(name = "user_login_type",nullable = false)
+    @Column(name = "user_login_type")
     private Integer userLoginType ;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public User(UserSignUpPostReq p) {
