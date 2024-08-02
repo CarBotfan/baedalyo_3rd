@@ -1,6 +1,9 @@
 package com.green.beadalyo.kdh.stat;
 
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.stat.model.*;
 import com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto;
 import com.green.beadalyo.lmy.doneorder.model.DailySalesDto;
@@ -21,8 +24,9 @@ import java.util.List;
 public class StatService {
     private final StatMapper mapper;
     private final DoneOrderRepository doneOrderRepository;
-
-
+    private final AuthenticationFacade authenticationFacade;
+    private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
     public GetReviewCountRes getReviewCount(GetReviewStatReq p){
         return mapper.getReviewCount(p);
     }
@@ -32,23 +36,42 @@ public class StatService {
     }
 
     public List<MonthSalesDto> getMonthSales(GetDateReq p){
-
-        List<MonthSalesDto> list = doneOrderRepository.getMonthSales(p.getDate(), p.getResPk());
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+        if (restaurant == null){
+            throw new RuntimeException();
+        }
+        List<MonthSalesDto> list = doneOrderRepository.getMonthSales(p.getDate(), restaurant.getSeq());
         return list;
     }
 
     public List<MonthOrderCountDto> getMonthOrderCount(GetDateReq p){
-        List<MonthOrderCountDto> list = doneOrderRepository.getMonthOrderCount(p.getDate(),p.getResPk());
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+        if (restaurant == null){
+            throw new RuntimeException();
+        }
+        List<MonthOrderCountDto> list = doneOrderRepository.getMonthOrderCount(p.getDate(),restaurant.getSeq());
         return list;
     }
 
     public List<DailySalesDto> getDailySales(GetDateReq p){
-        List<DailySalesDto> list = doneOrderRepository.getDailySales(p.getDate(), p.getResPk());
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+        if (restaurant == null){
+            throw new RuntimeException();
+        }
+        List<DailySalesDto> list = doneOrderRepository.getDailySales(p.getDate(), restaurant.getSeq());
         return list;
     }
 
     public List<DailyOrderCountDto> getDailyOrderCount(GetDateReq p){
-        List<DailyOrderCountDto> list = doneOrderRepository.getDailyOrderCount(p.getDate(),p.getResPk());
+        long resUserPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+        if (restaurant == null){
+            throw new RuntimeException();
+        }
+        List<DailyOrderCountDto> list = doneOrderRepository.getDailyOrderCount(p.getDate(),restaurant.getSeq());
         return list;
     }
 }
