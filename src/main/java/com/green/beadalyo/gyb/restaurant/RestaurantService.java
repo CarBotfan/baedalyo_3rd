@@ -55,7 +55,7 @@ public class RestaurantService
         return switch (orderType)
         {
             case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
-            case 2 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+            case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
             case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
             default -> null ;
         } ;
@@ -73,7 +73,7 @@ public class RestaurantService
         return switch (orderType)
         {
             case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
-            case 2 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+            case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
             case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
             default -> null ;
         } ;

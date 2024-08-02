@@ -34,6 +34,11 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-gson:0.12.5'
 
+    //웹 클라이언트 기능을 위한 webflux 추가
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     //redis 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
