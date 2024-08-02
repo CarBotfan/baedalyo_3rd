@@ -27,22 +27,22 @@ public class User {
     @Column(name = "user_id", nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "user_pw")
+    @Column(name = "user_pw", nullable = false)
     private String userPw;
 
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @Column(name = "user_nickname" ,unique = true)
+    @Column(name = "user_nickname", unique = true, nullable = false)
     private String userNickname;
 
-    @Column(name = "user_pic")
+    @Column(name = "user_pic", nullable = false)
     private String userPic;
 
-    @Column(name = "user_phone" ,length = 30, unique = true)
+    @Column(name = "user_phone" ,length = 30, unique = true, nullable = false)
     private String userPhone;
 
-    @Column(name = "user_email", length = 50, unique = true)
+    @Column(name = "user_email", length = 50, unique = true, nullable = false)
     private String userEmail;
 
     @Column(name = "user_role", length = 20, nullable = false)
@@ -57,11 +57,11 @@ public class User {
     private Integer userLoginType ;
 
     @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     public User(UserSignUpPostReq p) {
