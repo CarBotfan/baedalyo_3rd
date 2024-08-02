@@ -24,7 +24,7 @@ public class DoneOrder {
     @Column(name = "done_order_pk")
     private Long doneOrderPk;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_pk", nullable = false, referencedColumnName = "user_pk")
     private User userPk;
 
