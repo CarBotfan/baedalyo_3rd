@@ -29,51 +29,53 @@ public class StatController {
     private final AuthenticationFacade authenticationFacade;
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
-    @GetMapping("review_count")
-    @Operation(summary = "가게의 리뷰 갯수를 불러옵니다.." , description = "<p>res_pk는 가게의 PK(고유번호)입니다.</p>"+
-                                                                            "<p> 1 : 리뷰 갯수 불러오기 완료 </p>"+
-                                                                            "<p> -1 : 리뷰 갯수 불러오기 실패 </p>")
-    public ResultDto<GetReviewCountRes> getReviewCount(@ParameterObject @ModelAttribute GetReviewStatReq p){
-        GetReviewCountRes result = null;
 
-        String msg = "가게 리뷰 갯수 불러오기 완료";
-        int code = 1;
-        try {
-            result = service.getReviewCount(p);
-        }  catch (Exception e){
-            msg = e.getMessage();
-            code = -1;
-        }
-
-        return ResultDto.<GetReviewCountRes>builder()
-                .statusCode(code)
-                .resultMsg(msg)
-                .resultData(result)
-                .build();
-    }
-
-    @GetMapping("review_avg")
-    @Operation(summary = "가게의 별점 평균을 불러옵니다." , description = "<p>res_pk는 가게의 PK(고유번호)입니다.</p>"+
-                                                                        "<p> 1 : 별점 평균 불러오기 완료 </p>"+
-                                                                        "<p> -1 : 별점 평균 불러오기 실패 </p>")
-    public ResultDto<GetReviewAvgRes> getReviewAvg(@ParameterObject @ModelAttribute GetReviewStatReq p){
-        GetReviewAvgRes result = null;
-
-        String msg = "가게 별점 평균 불러오기 완료";
-        int code = 1;
-        try {
-            result = service.getReviewAvg(p);
-        } catch (Exception e){
-            msg = e.getMessage();
-            code = -1;
-        }
-
-        return ResultDto.<GetReviewAvgRes>builder()
-                .statusCode(code)
-                .resultMsg(msg)
-                .resultData(result)
-                .build();
-    }
+    //리뷰 관련 기능은 안쓰길래 폐기처분
+//    @GetMapping("review_count")
+//    @Operation(summary = "가게의 리뷰 갯수를 불러옵니다.." , description = "<p>res_pk는 가게의 PK(고유번호)입니다.</p>"+
+//                                                                            "<p> 1 : 리뷰 갯수 불러오기 완료 </p>"+
+//                                                                            "<p> -1 : 리뷰 갯수 불러오기 실패 </p>")
+//    public ResultDto<GetReviewCountRes> getReviewCount(@ParameterObject @ModelAttribute GetReviewStatReq p){
+//        GetReviewCountRes result = null;
+//
+//        String msg = "가게 리뷰 갯수 불러오기 완료";
+//        int code = 1;
+//        try {
+//            result = service.getReviewCount(p);
+//        }  catch (Exception e){
+//            msg = e.getMessage();
+//            code = -1;
+//        }
+//
+//        return ResultDto.<GetReviewCountRes>builder()
+//                .statusCode(code)
+//                .resultMsg(msg)
+//                .resultData(result)
+//                .build();
+//    }
+//
+//    @GetMapping("review_avg")
+//    @Operation(summary = "가게의 별점 평균을 불러옵니다." , description = "<p>res_pk는 가게의 PK(고유번호)입니다.</p>"+
+//                                                                        "<p> 1 : 별점 평균 불러오기 완료 </p>"+
+//                                                                        "<p> -1 : 별점 평균 불러오기 실패 </p>")
+//    public ResultDto<GetReviewAvgRes> getReviewAvg(@ParameterObject @ModelAttribute GetReviewStatReq p){
+//        GetReviewAvgRes result = null;
+//
+//        String msg = "가게 별점 평균 불러오기 완료";
+//        int code = 1;
+//        try {
+//            result = service.getReviewAvg(p);
+//        } catch (Exception e){
+//            msg = e.getMessage();
+//            code = -1;
+//        }
+//
+//        return ResultDto.<GetReviewAvgRes>builder()
+//                .statusCode(code)
+//                .resultMsg(msg)
+//                .resultData(result)
+//                .build();
+//    }
 
     @GetMapping("month_sales")
     @Operation(summary = "가게의 월 매출을 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
@@ -83,22 +85,18 @@ public class StatController {
     public ResultDto<List<MonthSalesDto>> getMonthSales(@ParameterObject @ModelAttribute GetDateReq p){
         List<MonthSalesDto> result = null;
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
 
-
-        if (restaurant == null ){
+        int code = 1;
+        try {
+            result = service.getMonthSales(p);
+        } catch (RuntimeException e){
             return ResultDto.<List<MonthSalesDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다")
                     .resultData(result)
                     .build();
         }
-        p.setResPk(restaurant.getSeq());
-        int code = 1;
-        try {
-            result = service.getMonthSales(p);
-        } catch (Exception e){
+        catch (Exception e){
 
             return ResultDto.<List<MonthSalesDto>>builder()
                     .statusCode(-1)
@@ -122,21 +120,16 @@ public class StatController {
     public ResultDto<List<MonthOrderCountDto>> getMonthOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
         List<MonthOrderCountDto> result = null;
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
-
-        if (restaurant == null){
-
+        try {
+            result = service.getMonthOrderCount(p);
+        } catch (RuntimeException e){
             return ResultDto.<List<MonthOrderCountDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다")
                     .resultData(result)
                     .build();
         }
-        p.setResPk(restaurant.getSeq());
-        try {
-            result = service.getMonthOrderCount(p);
-        }   catch (Exception e){
+        catch (Exception e){
              return ResultDto.<List<MonthOrderCountDto>>builder()
                      .statusCode(-1)
                      .resultMsg("가게 월 주문수 불러오기 실패")
@@ -159,20 +152,17 @@ public class StatController {
     public ResultDto<List<DailySalesDto>> getDailySales(@ParameterObject @ModelAttribute GetDateReq p){
         List<DailySalesDto> result = null;
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
 
-        if (restaurant == null ){
+        try {
+            result = service.getDailySales(p);
+        } catch (RuntimeException e){
             return ResultDto.<List<DailySalesDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다.")
                     .resultData(result)
                     .build();
         }
-        p.setResPk(restaurant.getSeq());
-        try {
-            result = service.getDailySales(p);
-        } catch (Exception e){
+        catch (Exception e){
 
             return ResultDto.<List<DailySalesDto>>builder()
                     .statusCode(-1)
@@ -196,20 +186,17 @@ public class StatController {
     public ResultDto<List<DailyOrderCountDto>> getDailyOrderCount(@ParameterObject @ModelAttribute GetDateReq p){
         List<DailyOrderCountDto> result = service.getDailyOrderCount(p);
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
 
-        if (restaurant == null){
+        try {
+            result = service.getDailyOrderCount(p);
+        } catch (RuntimeException e){
             return ResultDto.<List<DailyOrderCountDto>>builder()
                     .statusCode(-2)
                     .resultMsg("사장님이 아닙니다.")
                     .resultData(result)
                     .build();
         }
-        p.setResPk(restaurant.getSeq());
-        try {
-            result = service.getDailyOrderCount(p);
-        }  catch (Exception e){
+        catch (Exception e){
 
             return ResultDto.<List<DailyOrderCountDto>>builder()
                     .statusCode(-1)
