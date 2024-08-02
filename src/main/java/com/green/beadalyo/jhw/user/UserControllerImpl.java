@@ -201,7 +201,7 @@ public class UserControllerImpl implements UserController{
 
         try {
             User user = service.getUserById(p.getUserId());
-            if(user.getUserState() == 3) {
+            if(user == null || user.getUserState() == 3) {
                 throw new UserNotFoundException();
             }
             if(service.checkPassword(p.getUserPw(), user. getUserPw())) {
