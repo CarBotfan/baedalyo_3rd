@@ -111,7 +111,10 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public SignInRes postSignIn(HttpServletResponse res, User user) throws Exception{
-        UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
+        UserAddrGetRes addrGetRes = null;
+        if(userAddrRepository.existsById(user.getUserPk())) {
+            addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
+        }
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
                 .role(user.getUserRole())
@@ -234,7 +237,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public UserGetRes getUserGetResByPk() {
-        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        User user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
         return new UserGetRes(user);
 
     }

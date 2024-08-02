@@ -4,9 +4,7 @@ import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,7 +17,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "restaurant")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Restaurant
@@ -33,6 +32,7 @@ public class Restaurant
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Comment("소유자 정보")
+    @JoinColumn(name = "res_user_pk")
     private User user;
 
     @Column(name = "res_name", nullable = false, length = 50)

@@ -6,6 +6,7 @@ import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
+import com.green.beadalyo.jhw.MenuCategory.model.MenuCategoryInsertDto;
 import com.green.beadalyo.jhw.MenuCategory.model.PostMenuCategoryReq;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
@@ -28,16 +29,30 @@ public class MenuCategoryController {
     private final AuthenticationFacade authenticationFacade;
 
     @PostMapping
-    public ResultDto<Long> postMenuCategory(@RequestBody PostMenuCategoryReq p) {
+    public ResultDto<Integer> postMenuCategory(@RequestBody PostMenuCategoryReq p) {
         User user = userService.getUser(authenticationFacade.getLoginUserPk());
+        int result = 0;
+        int statusCode = 1;
+        String msg = "카테고리 등록 완료";
         try {
             Restaurant restaurant = restaurantService.getRestaurantData(user);
+            MenuCategoryInsertDto dto = new MenuCategoryInsertDto();
+            dto.setMenuCatName(p.getMenuCategoryName());
+            dto.setRestaurant(restaurant);
+            dto.setPosition(service.getMenuCatCount(restaurant) + 1);
+            service.insertMenuCat(dto);
+            result = 1;
         } catch(DataNotFoundException e) {
-            return ResultDto.<Long>builder().build();
+            msg = "식당 정보를 찾을 수 없음";
+            statusCode = -2;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            msg = e.getMessage();
+            statusCode = -1;
         }
-        return ResultDto.<Long>builder().build();
+        return ResultDto.<Integer>builder()
+                .statusCode(statusCode)
+                .resultMsg(msg)
+                .resultData(result).build();
     }
 }

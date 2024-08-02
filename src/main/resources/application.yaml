@@ -60,6 +60,9 @@ app:
 
     refresh-token-expiry: 1_296_000_000
 
+payment:
+  secret: ${PAYMENT.SECRET}
+
 ---
 
 spring:

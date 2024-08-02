@@ -30,11 +30,7 @@ import java.util.List;
 @Slf4j
 public class MenuController {
     private final MenuService service;
-    private final AuthenticationFacade authenticationFacade;
-    private final RestaurantRepository restaurantRepository;
-    private final MenuRepository menuRepository;
     private final CustomFileUtils customFileUtils;
-    private final UserRepository userRepository;
     private final long maxSize = 3145728;
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE
             , MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -53,30 +49,6 @@ public class MenuController {
 
         Long result = null;
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        log.info("ResUserPk: {}", p.getResUserPk());
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
-
-        log.info("restaurant: {}", restaurant);
-        if (restaurant == null) {
-            return ResultDto.<Long>builder()
-                    .statusCode(-3)
-                    .resultMsg("가게 사장님만 메뉴를 등록할 수 있습니다.")
-                    .resultData(result)
-                    .build();
-        }
-
-        List<GetAllMenuNames> menuName = menuRepository.findMenuNameByMenuResPk(restaurant.getSeq());
-        for (GetAllMenuNames menu : menuName){
-            if (menu.equals(p.getMenuName())){
-                return ResultDto.<Long>builder()
-                        .statusCode(-4)
-                        .resultMsg("메뉴 이름 중복")
-                        .resultData(result)
-                        .build();
-            }
-        }
-
         if (( !p.getMenuName().isEmpty() && p.getMenuName().length()>=20)
             && ( !p.getMenuContent().isEmpty()) && p.getMenuContent().length() >= 100 ) {
             return ResultDto.<Long>builder()
@@ -85,19 +57,16 @@ public class MenuController {
                     .build();
         }
 
-
-
         try {
             MenuEntity menuEntity = new MenuEntity();
-            menuEntity.setMenuResPk(restaurant);
             menuEntity.setMenuContent(p.getMenuContent());
             menuEntity.setMenuName(p.getMenuName());
             menuEntity.setMenuPrice(p.getMenuPrice());
             menuEntity.setMenuState(p.getMenuState());
             String filename = "" ;
 
-            if (pic != null){
-                if(pic.getSize() > maxSize){
+            if (pic != null && !pic.isEmpty()) {
+                if (pic.getSize() > maxSize) {
                     return ResultDto.<Long>builder()
                             .statusCode(-5)
                             .resultMsg("파일 사이즈는 3mb이하만 됩니다.")
@@ -105,9 +74,13 @@ public class MenuController {
                             .build();
                 }
                 filename = customFileUtils.makeRandomFileName(pic);
-                service.postPic(menuEntity, pic);
             }
-              result = service.postMenu(menuEntity,filename);
+
+                result = service.postMenu(menuEntity,filename);
+
+                if (pic != null && !pic.isEmpty()) {
+                    service.postPic(menuEntity, pic);
+                }
 
 
             return ResultDto.<Long>builder()
@@ -116,8 +89,21 @@ public class MenuController {
                     .resultData(result)
                     .build();
 
+        }  catch (IllegalArgumentException e){
+            return ResultDto.<Long>builder()
+                    .statusCode(-4)
+                    .resultMsg("메뉴 이름 중복")
+                    .resultData(result)
+                    .build();
+        }  catch (RuntimeException e){
+            e.printStackTrace();
+            return ResultDto.<Long>builder()
+                    .statusCode(-3)
+                    .resultMsg("가게 사장님만 메뉴를 등록할 수 있습니다.")
+                    .resultData(result)
+                    .build();
         }  catch (Exception e){
-
+            e.printStackTrace();
             return ResultDto.<Long>builder()
                     .statusCode(-1)
                     .resultMsg(e.getMessage())
@@ -127,7 +113,7 @@ public class MenuController {
 
 
     }
-
+    //메뉴 상태 ( menu_state) 1번과 2번만 불러옴
     @GetMapping
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "가게에 있는 메뉴를 불러옵니다." , description = "menuPk는 등록된 메뉴의 고유 번호(PK)입니다.\n" +
@@ -139,20 +125,20 @@ public class MenuController {
                                                     )
     public ResultDto<List<GetAllMenuResInterface>> getAllMenu(){
         List<GetAllMenuResInterface> result = null;
-        long userPk = authenticationFacade.getLoginUserPk();
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(userPk));
 
-        if (restaurant == null || restaurant.getSeq() == 0 ){
+
+
+        try {
+            result = service.getAllMenuByUserPk();
+        } catch (RuntimeException e){
             return ResultDto.<List<GetAllMenuResInterface>>builder()
                     .statusCode(-2)
                     .resultMsg("소유한 가게가 없음")
                     .resultData(result)
                     .build();
         }
-        try {
-            result = service.getAllMenuByUserPk(restaurant.getSeq());
-        } catch (Exception e){
-
+        catch (Exception e){
+            e.printStackTrace();
             return ResultDto.<List<GetAllMenuResInterface>>builder()
                     .statusCode(-1)
                     .resultMsg("메뉴 리스트 불러오기 실패")
@@ -184,17 +170,6 @@ public class MenuController {
                                          @RequestPart(required = false) MultipartFile pic) {
         Long result = null;
 
-        p.setResUserPk(authenticationFacade.getLoginUserPk());
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(p.getResUserPk()));
-
-        if (restaurant == null) {
-            return ResultDto.<Long>builder()
-                    .statusCode(-3)
-                    .resultMsg("가게 사장님만 메뉴를 수정할 수 있습니다.")
-                    .resultData(result)
-                    .build();
-        }
-
         if (p.getMenuName() != null) {
             if (p.getMenuName().length() >= 20) {
                 return ResultDto.<Long>builder()
@@ -211,26 +186,17 @@ public class MenuController {
                         .build();
             }
         }
-        List<GetAllMenuNames> menuName = menuRepository.findMenuNameByMenuResPkAndMenuPk(restaurant.getSeq(), p.getMenuPk());
-        for (GetAllMenuNames menu : menuName) {
-            if (menu.equals(p.getMenuName())) {
-                return ResultDto.<Long>builder()
-                        .statusCode(-4)
-                        .resultMsg("메뉴 이름 중복")
-                        .resultData(result)
-                        .build();
-            }
-        }
+
         try {
             MenuEntity menuEntity = new MenuEntity();
-            menuEntity.setMenuResPk(restaurant);
+            menuEntity.setMenuPk(p.getMenuPk());
             menuEntity.setMenuContent(p.getMenuContent());
             menuEntity.setMenuName(p.getMenuName());
             menuEntity.setMenuPrice(p.getMenuPrice());
             menuEntity.setMenuState(p.getMenuState());
             String filename = "";
 
-            if (pic != null) {
+            if (pic != null && !pic.isEmpty()) {
                 if (pic.getSize() > maxSize) {
                     return ResultDto.<Long>builder()
                             .statusCode(-5)
@@ -239,10 +205,11 @@ public class MenuController {
                             .build();
                 }
                 filename = customFileUtils.makeRandomFileName(pic);
-                service.postPic(menuEntity, pic);
             }
-            result = service.postMenu(menuEntity, filename);
-
+            result = service.putMenu(menuEntity, filename);
+            if (pic != null && !pic.isEmpty()) {
+                service.putPic(menuEntity, pic);
+            }
 
             return ResultDto.<Long>builder()
                     .statusCode(1)
@@ -250,8 +217,14 @@ public class MenuController {
                     .resultData(result)
                     .build();
 
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResultDto.<Long>builder()
+                    .statusCode(-3)
+                    .resultMsg("가게 사장님만 메뉴를 등록할 수 있습니다.")
+                    .resultData(result)
+                    .build();
         } catch (Exception e) {
-
             return ResultDto.<Long>builder()
                     .statusCode(-1)
                     .resultMsg(e.getMessage())
@@ -268,26 +241,22 @@ public class MenuController {
 
     )
 
+    //실제 메뉴를 삭제하는게 아님! menu_state를 3으로 변경
     public ResultDto<Integer> delMenu(@PathVariable(name = "menu_pk") long menuPk){
-        Long resUserPk = authenticationFacade.getLoginUserPk();
-        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
-        MenuEntity menuEntity = menuRepository.getReferenceById(menuPk);
+        MenuEntity menuEntity = new MenuEntity();
+        menuEntity.setMenuPk(menuPk);
 
-
-        if (restaurant.getSeq() != menuEntity.getMenuResPk().getSeq()){
+        int result= 0;
+        try {
+           result =  service.delMenu(menuEntity);
+        }  catch (RuntimeException e){
             return ResultDto.<Integer>builder()
                     .statusCode(-2)
                     .resultMsg("사장님만 삭제 할 수있습니다.")
                     .resultData(null)
                     .build();
         }
-
-        int result= 0;
-        try {
-           result =  service.delMenu(menuEntity);
-        }  catch (RuntimeException e){
-
-        } catch (Exception e){
+         catch (Exception e){
             return ResultDto.<Integer>builder()
                     .statusCode(-1)
                     .resultMsg("메뉴 삭제 실패")

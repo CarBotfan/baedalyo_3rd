@@ -2,6 +2,7 @@ package com.green.beadalyo.kdh.menu;
 
 
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
@@ -23,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class MenuService {
-    private final MenuMapper mapper;
     private final CustomFileUtils customFileUtils;
     private final AuthenticationFacade authenticationFacade;
 
@@ -35,90 +35,111 @@ public class MenuService {
     //메뉴 등록하기
     @Transactional
     public Long postMenu(MenuEntity menuEntity,String filename){
+        Long resUserPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+
+       //로그인한 유저 사장님인지 체크
+        if (restaurant == null){
+            throw new RuntimeException();
+        }
+        menuEntity.setMenuResPk(restaurant);
+
+        //메뉴 이름 중복체크
+        if  (menuRepository.existsByMenuNameAndMenuResPk(menuEntity.getMenuName(), restaurant)){
+            throw new IllegalArgumentException();
+        }
+
+        //파일이 있는지 없는지 체크
         if (filename != null && !filename.isEmpty()) {
             menuEntity.setMenuPic(filename);
         }
         MenuEntity menuEntity1 =  menuRepository.save(menuEntity);
+
         return menuEntity1.getMenuPk();
     }
+
+
     //사진 등록하기
     @Transactional
     public void postPic(MenuEntity menuEntity, MultipartFile pic){
-
         String path = String.format("menu/%d", menuEntity.getMenuPk());
         menuEntity.setMenuPic(path + "/"+ menuEntity.getMenuPic());
+
         menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
         try {
             customFileUtils.makeFolder(path);
-            String target = String.format("%s/%s",path,menuEntity.getMenuPic());
-            customFileUtils.transferTo(pic,target);
+            customFileUtils.transferTo(pic,menuEntity.getMenuPic());
         } catch (Exception e){
+            e.printStackTrace();
+            customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
+        }
+    }
+    //메뉴 수정하기
+    @Transactional
+    public Long putMenu(MenuEntity menuEntity,String filename){
+        Long resUserPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+
+        //로그인한 유저 사장님인지 체크
+        if (restaurant == null){
+            throw new RuntimeException();
+        }
+        menuEntity.setMenuResPk(restaurant);
+
+        //메뉴 이름 중복체크
+        List<GetAllMenuNames> menuName = menuRepository.findMenuNameByMenuResPkAndMenuPk(restaurant.getSeq(),menuEntity.getMenuPk());
+        for (GetAllMenuNames menu : menuName) {
+            if (menu.getMenuNames().equals(menuEntity.getMenuName())) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        //파일이 있는지 없는지 체크
+        if (filename != null && !filename.isEmpty()) {
+            menuEntity.setMenuPic(filename);
+        }
+        MenuEntity menuEntity1 =  menuRepository.save(menuEntity);
+
+        return menuEntity1.getMenuPk();
+    }
+    //사진 수정하기
+    @Transactional
+    public void putPic(MenuEntity menuEntity, MultipartFile pic){
+
+        String path = String.format("menu/%d", menuEntity.getMenuPk());
+        menuEntity.setMenuPic(path + "/"+ menuEntity.getMenuPic());
+
+        menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
+        try {
+            customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
+            customFileUtils.makeFolder(path);
+            customFileUtils.transferTo(pic,menuEntity.getMenuPic());
+        } catch (Exception e){
+            e.printStackTrace();
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
         }
     }
 
+
+
     //메뉴 전부 불러오기
-    public List<GetAllMenuResInterface> getAllMenuByUserPk(Long menuResPk){
-        return menuRepository.findAllByMenuResPk(menuResPk);
+    public List<GetAllMenuResInterface> getAllMenuByUserPk(){
+        long userPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(userPk));
+        if (restaurant == null || restaurant.getSeq() == 0 ){
+            throw new RuntimeException();
+        }
+        return menuRepository.findAllByMenuResPk(restaurant.getSeq());
     }
 
 
-//    @Transactional
-//    public long putMenu(MultipartFile pic, PutMenuReq p){
-//
-//            long userPk = authenticationFacade.getLoginUserPk();
-//            Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(userPk));
-//            MenuEntity menuEntity = menuRepository.getReferenceById(p.getMenuPk());
-//
-//            if (restaurant.getSeq() != menuEntity.getMenuResPk().getSeq()){
-//                throw new RuntimeException();
-//            }
-//
-//            long menuResPk = mapper.getMenuResPkByMenuPk(p.getMenuPk());
-//            List<String> menuName = mapper.getMenuNameByPut(menuResPk,p.getMenuPk());
-//            for (String menu : menuName){
-//                if (menu.equals(p.getMenuName())){
-//                    throw new IllegalArgumentException();
-//                }
-//            }
-//
-//        if (pic == null || pic.isEmpty() ){
-//            menuEntity.setMenuContent(p.getMenuContent());
-//            menuEntity.setMenuName(p.getMenuName());
-//            menuEntity.setMenuPrice(p.getMenuPrice());
-//            menuEntity.setMenuState(p.getMenuState());
-//            menuEntity.setMenuPic(null);
-//            MenuEntity result = menuRepository.save(menuEntity);
-//
-//            return result.getMenuPk();
-//        }
-//        if(pic.getSize() > maxSize){
-//            throw new ArithmeticException();
-//        }
-//        MenuEntity result = null;
-//        try {
-//            String path = String.format("menu/%d",p.getMenuPk());
-//            customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
-//            customFileUtils.makeFolder(path);
-//            String picName = customFileUtils.makeRandomFileName(pic);
-//            String target = String.format("%s/%s",path,picName);
-//            customFileUtils.transferTo(pic,target);
-//            p.setMenuPic(path + "/" + picName);
-//            menuEntity.setMenuContent(p.getMenuContent());
-//            menuEntity.setMenuName(p.getMenuName());
-//            menuEntity.setMenuPrice(p.getMenuPrice());
-//            menuEntity.setMenuState(p.getMenuState());
-//            menuEntity.setMenuPic(p.getMenuPic());
-//            result = menuRepository.save(menuEntity);
-//        } catch (Exception e){
-//            throw new RuntimeException("");
-//        }
-//
-//        return result.getMenuPk();
-//    }
-
     public int delMenu(MenuEntity menuEntity){
-        menuRepository.delete(menuEntity);
+        Long resUserPk = authenticationFacade.getLoginUserPk();
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
+        if (restaurant == null){
+            throw new RuntimeException();
+        }
+        menuRepository.deleteByMenuPkAndMenuResPk(menuEntity.getMenuPk(), restaurant.getSeq());
         return 1;
     }
 
