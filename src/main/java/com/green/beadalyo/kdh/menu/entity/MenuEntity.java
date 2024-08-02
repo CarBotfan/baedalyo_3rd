@@ -40,7 +40,7 @@ public class MenuEntity {
     @Column(name = "menu_state")
     private Integer menuState;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false ,nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
