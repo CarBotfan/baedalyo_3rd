@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.MenuCategory;
 
+import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.MenuCategory.MenuCategoryRepository;
 import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
@@ -7,6 +8,9 @@ import com.green.beadalyo.jhw.MenuCategory.model.MenuCategoryInsertDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 
 @Service
 @Slf4j
@@ -24,5 +28,16 @@ public class MenuCategoryService {
 
     public Long getMenuCatCount(Restaurant restaurant) {
         return repository.countMenuCategories(restaurant);
+    }
+
+    public List<MenuCategory> getMenuCatList(Restaurant restaurant) {
+        return repository.findMenuCategoriesByRestaurantOrderByPosition(restaurant);
+    }
+
+    public MenuCategory getMenuCat(Restaurant restaurant, Long position) {
+        if(!repository.existsByRestaurantAndPosition(restaurant, position)) {
+            throw new RuntimeException("정보 조회 실패");
+        }
+        return repository.findMenuCategoryByRestaurantAndPosition(restaurant, position);
     }
 }

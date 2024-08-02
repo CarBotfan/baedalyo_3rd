@@ -26,7 +26,7 @@ public class MenuEntity {
     private Restaurant menuResPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_category_pk")
+    @JoinColumn(name = "menu_cat_pk")
     private MenuCategory menuCategory;
 
     @Column(name = "menu_name", length = 20, nullable = false)
@@ -44,6 +44,7 @@ public class MenuEntity {
     @ColumnDefault("1")
     @Column(name = "menu_state")
     private Integer menuState;
+
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
