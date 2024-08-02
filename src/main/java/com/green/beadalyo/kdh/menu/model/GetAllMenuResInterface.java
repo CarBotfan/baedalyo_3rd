@@ -2,7 +2,7 @@ package com.green.beadalyo.kdh.menu.model;
 
 public interface GetAllMenuResInterface {
     Long getMenuPk();
-    long getMenuResPk();
+    Long getMenuResPk();
     String getMenuName();
     String getMenuContent();
     int getMenuPrice();
