@@ -33,7 +33,7 @@ public class User {
     @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "user_nickname" ,unique = true)
+    @Column(name = "user_nickname", unique = true)
     private String userNickname;
 
     @Column(name = "user_pic")
@@ -45,15 +45,15 @@ public class User {
     @Column(name = "user_email", length = 50, unique = true)
     private String userEmail;
 
-    @Column(name = "user_role", length = 20, nullable = false)
+    @Column(name = "user_role", length = 20)
     private String userRole;
 
     @ColumnDefault("1")
-    @Column(name = "user_state", nullable = false)
+    @Column(name = "user_state")
     private int userState;
 
     @ColumnDefault("1")
-    @Column(name = "user_login_type",nullable = false)
+    @Column(name = "user_login_type")
     private Integer userLoginType ;
 
     @CreationTimestamp

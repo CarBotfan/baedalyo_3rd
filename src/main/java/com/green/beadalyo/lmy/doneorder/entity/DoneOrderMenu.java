@@ -16,7 +16,7 @@ public class DoneOrderMenu {
     @Column(name = "done_order_menu_pk")
     private Long doneOrderMenuPk;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "done_order_pk",nullable = false)
     private DoneOrder doneOrderPk;
 

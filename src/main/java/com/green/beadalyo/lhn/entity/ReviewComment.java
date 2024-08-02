@@ -15,8 +15,10 @@ public class ReviewComment {
     @Column(name = "review_comment_pk")
     private Long reviewCommentPk;
 
-    @Column(name = "review_pk")
-    private Long reviewPk;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_pk",nullable = false)
+    private Review reviewPk;
 
     @Column(name = "comment_content")
     private String commentContent;

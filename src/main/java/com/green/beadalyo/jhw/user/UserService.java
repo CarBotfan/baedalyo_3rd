@@ -10,15 +10,10 @@ import java.util.Map;
 
 public interface UserService {
     long postUserSignUp(User user) throws Exception;
-    int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p);
     int deleteUser(User user) throws Exception;
-    int patchUserNickname(UserNicknamePatchReq p) throws Exception;
-    int patchUserPhone(UserPhonePatchReq p) throws Exception;
     int patchUserPassword(UserPasswordPatchReq p) throws Exception;
     SignInRes postSignIn(HttpServletResponse res, User user) throws Exception;
     UserInfoGetRes getUserInfo(User user) throws Exception;
-    String patchProfilePic(MultipartFile pic) throws Exception;
     Map getAccessToken(HttpServletRequest req) throws Exception;
-    int deleteOwner(User user);
-    int duplicatedCheck(String userId);
+    int duplicatedIdCheck(String userId);
 }

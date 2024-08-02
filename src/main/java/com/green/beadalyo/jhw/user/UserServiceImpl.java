@@ -7,7 +7,6 @@ import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
-import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.security.jwt.JwtTokenProvider;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
@@ -109,36 +108,13 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    @Override
-    @Transactional
-    public int postOwnerSignUp(MultipartFile pic, OwnerSignUpPostReq p) {
-//        try {
-//            UserSignUpPostReq req = new UserSignUpPostReq(p);
-//            long userPk = postSignUp(req);
-//            RestaurantInsertDto dto = new RestaurantInsertDto();
-//            dto.setUser(userPk);
-//            dto.setName(p.getRestaurantName());
-//            dto.setRegiNum(p.getRegiNum());
-//            dto.setResAddr(p.getAddr());
-//            dto.setDesc1(p.getDesc1());
-//            dto.setDesc2(p.getDesc2());
-//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-//            dto.setOpenTime(LocalTime.parse(p.getOpenTime(), formatter));
-//            dto.setCloseTime(LocalTime.parse(p.getCloseTime(), formatter));
-//            dto.setResCoorX(p.getCoorX());
-//            dto.setResCoorY(p.getCoorY());
-//            resService.insertRestaurantData(dto);
-//        } catch(RuntimeException e){
-//            throw e;
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-        return 1;
-    }
 
     @Override
     public SignInRes postSignIn(HttpServletResponse res, User user) throws Exception{
-        UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
+        UserAddrGetRes addrGetRes = null;
+        if(userAddrRepository.existsById(user.getUserPk())) {
+            addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
+        }
         MyUser myUser = MyUser.builder()
                 .userPk(user.getUserPk())
                 .role(user.getUserRole())
@@ -170,89 +146,26 @@ public class UserServiceImpl implements UserService{
 
     }
 
-    @Override
     @Transactional
-    public String patchProfilePic(MultipartFile pic) throws Exception{
-        return null;
-    }
-
     public int patchUserInfo(UserInfoPatchDto dto) {
-        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
-        user.update(dto);
-        try {
-            repository.saveAndFlush(user);
-        } catch (Exception e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLIntegrityConstraintViolationException) {
-                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
-                throw new DuplicatedInfoException(errorMessage);
-            } else {
-                // 기타 예외 처리
-
-                throw new RuntimeException(e.getMessage());
-            }
+        if(repository.existsByUserPhone(dto.getUserPhone())) {
+            throw new DuplicatedInfoException("전화번호");
         }
+        if(repository.existsByUserNickname(dto.getUserNickname())) {
+            throw new DuplicatedInfoException("닉네임");
+        }
+        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+
+        user.update(dto);
+        repository.save(user);
         return 1;
     }
 
-    @Override
-    public int patchUserNickname(UserNicknamePatchReq p) throws Exception{
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user;
-        try {
-            user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
-        } catch(EntityNotFoundException e) {
-            throw new UserNotFoundException();
-        }
-        if(user.getUserState() == 3) {
-            throw new UserNotFoundException();
-        }
-        int result = 0;
-        try {
-            user.setUserNickname(p.getUserNickname());
-            result = 1;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLIntegrityConstraintViolationException) {
-                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
-                throw new DuplicatedInfoException(errorMessage);
-            } else {
-                // 기타 예외 처리
-                throw new RuntimeException(e.getMessage());
-            }
-        }
-        return result;
-    }
+
+
 
     @Override
-    public int patchUserPhone(UserPhonePatchReq p) throws Exception{
-        p.setSignedUserPk(authenticationFacade.getLoginUserPk());
-        User user;
-        try {
-            user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
-        } catch(EntityNotFoundException e) {
-            throw new UserNotFoundException();
-        }
-        int result = 0;
-        try {
-            user.setUserPhone(p.getUserPhone());
-            result = 1;
-        } catch (Exception e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLIntegrityConstraintViolationException) {
-                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
-                throw new DuplicatedInfoException(errorMessage);
-            } else {
-                // 기타 예외 처리
-
-                throw new RuntimeException(e.getMessage());
-            }
-        }
-        return result;
-    }
-
-    @Override
+    @Transactional
     public int patchUserPassword(UserPasswordPatchReq p) throws Exception{
         User user;
         int result = 0;
@@ -269,6 +182,7 @@ public class UserServiceImpl implements UserService{
             throw new PwConfirmFailureException();
         }
         try {
+            p.setNewPw(passwordEncoder.encode(p.getNewPw()));
             user.setUserPw(p.getNewPw());
             result = 1;
         } catch(Exception e) {
@@ -279,6 +193,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public int deleteUser(User user) throws Exception{
         if(user.getUserState() == 3) {
             throw new UserNotFoundException();
@@ -292,18 +207,12 @@ public class UserServiceImpl implements UserService{
     }
 
     public User getUser(Long userPk) {
-        try {
-        return repository.getReferenceById(userPk);
-        } catch(EntityNotFoundException e) {
+        if(!repository.existsById(userPk)) {
             throw new UserNotFoundException();
         }
+        return repository.getReferenceById(userPk);
     }
 
-    @Override
-    public int deleteOwner(User user) {
-        user.setUserState(3);
-        return 1;
-    }
 
     @Override
     public Map getAccessToken(HttpServletRequest req) throws Exception{
@@ -327,31 +236,38 @@ public class UserServiceImpl implements UserService{
         return map;
     }
 
-    public UserGetRes getUserByPk() {
-        User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+    public UserGetRes getUserGetResByPk() {
+        User user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
         return new UserGetRes(user);
 
     }
 
     public User getUserById(String userId)  {
-        try {
-            return repository.findUserByUserId(userId);
-        } catch (EntityNotFoundException e) {
-            throw new UserNotFoundException();
-        }
+        return repository.findUserByUserId(userId);
     }
 
     @Override
-    public int duplicatedCheck(String userId) {
-        if(userId.length() < 8) {
-            throw new RuntimeException("Id는 8자 이상이어야 합니다.");
-        }
-        User user = repository.findUserByUserId(userId);
-        UserInfoGetRes result = new UserInfoGetRes(user);
-        if(result.getUserId().equals(userId)) {
+    public int duplicatedIdCheck(String userId) {
+        if(repository.existsByUserId(userId)) {
             throw new DuplicatedIdException();
         }
         return 1;
+    }
+
+    public void duplicatedInfoCheck(User user) {
+        if(repository.existsByUserId(user.getUserId()))
+        {
+            throw new DuplicatedIdException();
+        }
+        if(repository.existsByUserEmail(user.getUserEmail())) {
+            throw new DuplicatedInfoException("이메일");
+        }
+        if(repository.existsByUserNickname(user.getUserNickname())) {
+            throw new DuplicatedInfoException("닉네임");
+        }
+        if(repository.existsByUserPhone(user.getUserPhone())) {
+            throw new DuplicatedInfoException("전화번호");
+        }
     }
 
     public void logoutToken(HttpServletRequest request, HttpServletResponse response) {

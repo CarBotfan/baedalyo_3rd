@@ -1,5 +1,8 @@
 package com.green.beadalyo.lhn.entity;
 
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,14 +20,17 @@ public class Review {
     @Column(name = "review_pk")
     private Long reviewPk;
 
-    @Column(name = "done_order_pk")
-    private Long doneOrderPk;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "done_order_pk", nullable = false)
+    private DoneOrder doneOrderPk;
 
-    @Column(name = "user_pk")
-    private Long userPk;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_pk", nullable = false)
+    private User userPk;
 
-    @Column(name = "res_pk")
-    private Long resPk;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "res_pk", nullable = false)
+    private Restaurant resPk;
 
     @Column(name = "review_contents")
     private String reviewContents;

@@ -5,9 +5,9 @@ public interface GetAllMenuResInterface {
     Long getMenuResPk();
     String getMenuName();
     String getMenuContent();
-    int getMenuPrice();
+    Integer getMenuPrice();
     String getMenuPic();
-    int getMenuState();
+    Integer getMenuState();
     String getCreatedAt();
     String getUpdatedAt();
 }

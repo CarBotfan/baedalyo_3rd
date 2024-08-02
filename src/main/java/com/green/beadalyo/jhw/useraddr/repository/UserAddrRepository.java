@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.useraddr.repository;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.useraddr.Entity.UserAddr;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,4 +27,6 @@ public interface UserAddrRepository extends JpaRepository<UserAddr, Long> {
 
     @Query("select ua from UserAddr ua WHERE ua.user.userPk = :userPk AND ua.addrPk = :addrPk")
     UserAddr findUserAddrByUserPkAnAndAddrPk(Long addrPk, Long userPk);
+
+    Boolean existsUserAddrByUser(User user);
 }
