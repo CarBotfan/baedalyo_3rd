@@ -52,7 +52,7 @@ public class SecurityConfiguration {
 //
 //                                        //프론트 화면 보일수 있게 세팅
 //                                        ,"/"
-//                                        ,"/index.html"
+//                                        ,"/testPaymentModule.html"
 //                                        , "/css/**"
 //                                        , "/js/**"
 //                                        , "/static/**"
