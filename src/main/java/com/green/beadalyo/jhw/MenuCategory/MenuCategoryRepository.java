@@ -14,8 +14,5 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long
 
 
     List<MenuCategory> findMenuCategoriesByRestaurantOrderByPosition(Restaurant restaurant);
-    MenuCategory findMenuCategoryByRestaurantAndPosition(Restaurant restaurant, Long positon);
-
-    Boolean existsByRestaurantAndPosition(Restaurant restaurant, Long position);
 
 }

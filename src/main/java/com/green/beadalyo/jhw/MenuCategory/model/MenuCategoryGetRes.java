@@ -7,11 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GetMenuCategoryRes {
+public class MenuCategoryGetRes {
+    private Long MenuCatPk;
     private String menuCatName;
     private Long position;
 
-    public GetMenuCategoryRes(MenuCategory menuCat) {
+    public MenuCategoryGetRes(MenuCategory menuCat) {
+        this.MenuCatPk = menuCat.getMenuCategoryPk();
         this.menuCatName = menuCat.getMenuCatName();
         this.position = menuCat.getPosition();
     }

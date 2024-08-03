@@ -5,6 +5,6 @@ import lombok.Getter;
 
 
 @Getter
-public class PostMenuCategoryReq {
+public class MenuCategoryPostReq {
     private String menuCategoryName;
 }
