@@ -131,7 +131,7 @@ public class MenuCategoryController {
     }
 
     @PatchMapping()
-    public ResultDto<Integer> patchMenuCat(@ModelAttribute @ParameterObject MenuCatPatchReq p) {
+    public ResultDto<Integer> patchMenuCat(@RequestBody MenuCatPatchReq p) {
         int statusCode = 1;
         int result = 0;
         String msg = "카테고리 수정 완료";
@@ -160,7 +160,7 @@ public class MenuCategoryController {
     }
 
     @PatchMapping("/position")
-    public ResultDto<Integer> patchMenuPosition(@ModelAttribute @ParameterObject MenuCatPositionPatchReq p) {
+    public ResultDto<Integer> patchMenuPosition(@RequestBody MenuCatPositionPatchReq p) {
         int statusCode = 1;
         int result = 0;
         String msg = "카테고리 수정 완료";

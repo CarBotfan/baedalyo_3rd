@@ -5,6 +5,8 @@ import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
+import com.green.beadalyo.jhw.MenuCategory.MenuCategoryRepository;
+import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
@@ -30,6 +32,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final MenuCategoryRepository menuCategoryRepository;
 
 
     //메뉴 등록하기
@@ -143,5 +146,15 @@ public class MenuService {
         return 1;
     }
 
+    @Transactional
+    public int patchCategory(MenuPatchCategoryDto dto) {
+        if(!menuRepository.existsByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant()) || !menuCategoryRepository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())){
+            throw new RuntimeException("DB 정보 조회 실패");
+        }
+        MenuEntity menu = menuRepository.findByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant());
+        MenuCategory menuCat = menuCategoryRepository.findByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant());
+        menu.setMenuCategory(menuCat);
+        return 1;
+    }
 }
 

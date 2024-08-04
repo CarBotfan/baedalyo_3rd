@@ -44,4 +44,8 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
                    "set menu_state = 3 " +
             "       where menu_pk = :menuPk and menu_res_pk = :menuResPk",nativeQuery = true)
     void deleteByMenuPkAndMenuResPk(@Param("menuPk") Long menuPk ,@Param("menuResPk") Long menuResPk);
+
+
+    MenuEntity findByMenuPkAndMenuResPk(Long menuPk, Restaurant menuResPk);
+    Boolean existsByMenuPkAndMenuResPk(Long menuPk, Restaurant menuResPk);
 }
