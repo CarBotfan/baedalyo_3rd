@@ -10,17 +10,17 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(
-        uniqueConstraints = {
+@Table(name = "res_follow"
+        ,uniqueConstraints = {
                 @UniqueConstraint(
                         columnNames = {"user_pk", "res_pk"}
                 )
         }
 )
 public class ResFollow {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "res_follow_pk")
     private Long resFollowPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,5 +32,6 @@ public class ResFollow {
     private Restaurant resPk;
 
     @CreationTimestamp
-    private LocalDateTime created_at;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

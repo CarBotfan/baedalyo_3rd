@@ -318,5 +318,30 @@ public class UserServiceImpl implements UserService{
         }
         return null;
     }
+
+    @Override
+    public User getUserByUserNameAndUserEmail(FindUserIdReq req) throws Exception {
+        return repository.findByUserEmailAndUserName(req.getUserEmail(), req.getUserName());
+    }
+
+    @Override
+    public User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req) throws Exception {
+        return repository.findByUserEmailAndUserNameAndUserId(req.getUserEmail(), req.getUserName(), req.getUserId());
+    }
+
+    public Boolean confirmPw(FindUserPwReq req) {
+        if (req.getUserPw().equals(req.getUserPwConfirm())) {
+            return true;
+        } else return false;
+    }
+
+    public Integer saveUser(User user) {
+        try {
+            repository.save(user);
+            return 1;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
 }
 

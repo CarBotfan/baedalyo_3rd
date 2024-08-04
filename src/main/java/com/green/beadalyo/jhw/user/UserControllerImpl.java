@@ -582,4 +582,78 @@ public class UserControllerImpl implements UserController{
                 .resultData(result)
                 .build();
     }
+
+    @Override
+    @PostMapping("/find/id")
+    @Operation(summary = "유저 아이디 찾기", description = "아이디 반환 해드립니다.")
+    @ApiResponse(
+            description =
+                    "<p> 1 :  </p>"+
+                            "<p> -2 :  </p>" +
+                            "<p> -3 :  </p>" +
+                            "<p> -1 :  </p>"
+    )
+    public ResultDto<String> findUserId(FindUserIdReq req) {
+        int code = 1;
+        String msg = "아이디 찾기 성공";
+        String result = null;
+        User user;
+        try {
+            user = service.getUserByUserNameAndUserEmail(req);
+            result = user.getUserId();
+        } catch (Exception e) {
+            return ResultDto.<String>builder()
+                    .statusCode(-2)
+                    .resultMsg("해당 유저를 찾을 수 없음")
+                    .build();
+        }
+
+        return ResultDto.<String>builder()
+                .statusCode(1)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+
+    @Override
+    @PostMapping("/find/pw")
+    @Operation(summary = "유저 비밀번호 찾기", description = "비밀번호 변경해드립니다.")
+    @ApiResponse(
+            description =
+                    "<p> 1 :  </p>"+
+                            "<p> -2 :  </p>" +
+                            "<p> -3 :  </p>" +
+                            "<p> -1 :  </p>"
+    )
+    public ResultDto<Integer> findAndResetPassword(FindUserPwReq req) {
+        int code = 1;
+        String msg = "비밀번호가 재설정 되었습니다.";
+        Integer result = null;
+
+        User user;
+        try {
+            user = service.getUserByUserNameAndUserEmailAndUserId(req);
+        } catch (Exception e) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-2)
+                    .resultMsg("해당 유저를 찾을 수 없음")
+                    .build();
+        }
+
+        if (!service.confirmPw(req)) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-3)
+                    .resultMsg("비밀번호 불일치")
+                    .build();
+        }
+
+        user.setUserPw(req.getUserPw());
+        result = service.saveUser(user);
+
+        return ResultDto.<Integer>builder()
+                .statusCode(code)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
 }
