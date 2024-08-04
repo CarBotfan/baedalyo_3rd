@@ -11,6 +11,7 @@ import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -111,7 +112,9 @@ public class MenuCategoryController {
         int result = 0;
         String msg = "카테고리 삭제 완료";
         try {
-            result = service.deleteMenuCat(menuCatPk);
+            User user = userService.getUser(authenticationFacade.getLoginUserPk());
+            Restaurant restaurant = restaurantService.getRestaurantData(user);
+            result = service.deleteMenuCat(menuCatPk, restaurant);
 
         } catch(MenuCatNotFoundException e) {
             msg = e.getMessage();
@@ -128,15 +131,23 @@ public class MenuCategoryController {
     }
 
     @PatchMapping()
-    public ResultDto<Integer> patchMenuCat(@ModelAttribute MenuCatPatchReq p) {
+    public ResultDto<Integer> patchMenuCat(@ModelAttribute @ParameterObject MenuCatPatchReq p) {
         int statusCode = 1;
         int result = 0;
         String msg = "카테고리 수정 완료";
         try {
-            result = service.patchMenuCat(p);
+            User user = userService.getUser(authenticationFacade.getLoginUserPk());
+            Restaurant restaurant = restaurantService.getRestaurantData(user);
+
+            MenuCatPatchDto dto = new MenuCatPatchDto(p);
+            dto.setRestaurant(restaurant);
+            result = service.patchMenuCat(dto);
         } catch(MenuCatNotFoundException e) {
             msg = e.getMessage();
             statusCode = -3;
+        } catch(DataNotFoundException e) {
+            msg = "식당 정보를 찾을 수 없음";
+            statusCode = -2;
         } catch (Exception e) {
             e.printStackTrace();
             msg = e.getMessage();
@@ -149,15 +160,25 @@ public class MenuCategoryController {
     }
 
     @PatchMapping("/position")
-    public ResultDto<Integer> patchMenuPosition(@ModelAttribute MenuCatPositionPatchReq p) {
+    public ResultDto<Integer> patchMenuPosition(@ModelAttribute @ParameterObject MenuCatPositionPatchReq p) {
         int statusCode = 1;
         int result = 0;
         String msg = "카테고리 수정 완료";
         try {
-            result = service.patchMenuCatPosition(p);
+            if(p.getPosition() <= 0) {
+                throw new RuntimeException("올바르지 않은 위치입니다.");
+            }
+            User user = userService.getUser(authenticationFacade.getLoginUserPk());
+            Restaurant restaurant = restaurantService.getRestaurantData(user);
+            MenuCatPositionPatchDto dto = new MenuCatPositionPatchDto(p);
+            dto.setRestaurant(restaurant);
+            result = service.patchMenuCatPosition(dto);
         } catch(MenuCatNotFoundException e) {
             msg = e.getMessage();
             statusCode = -3;
+        } catch(DataNotFoundException e) {
+            msg = "식당 정보를 찾을 수 없음";
+            statusCode = -2;
         } catch (Exception e) {
             e.printStackTrace();
             msg = e.getMessage();

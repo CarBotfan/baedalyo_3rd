@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class MenuCatPositionPatchReq {
     private Long menuCatPk1;
-    private Long menuCatPk2;
+    private Long position;
 }
