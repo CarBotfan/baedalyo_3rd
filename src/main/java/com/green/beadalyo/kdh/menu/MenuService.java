@@ -132,6 +132,12 @@ public class MenuService {
         return menuRepository.findAllByMenuResPk(restaurant.getSeq());
     }
 
+    //특정 메뉴 pk 로 메뉴 데이터 불러오기
+    public List<MenuEntity> getInMenuData(List<Long> menuIds)
+    {
+        return menuRepository.findByMenuPkIn(menuIds);
+    }
+
 
     public int delMenu(MenuEntity menuEntity){
         Long resUserPk = authenticationFacade.getLoginUserPk();

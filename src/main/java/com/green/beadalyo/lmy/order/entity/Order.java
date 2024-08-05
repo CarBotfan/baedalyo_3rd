@@ -74,14 +74,12 @@ public class Order {
         this.orderPhone = data.getOrderPhone() ;
         this.orderAddress = data.getOrderAddress() ;
         this.paymentMethod = data.getPaymentMethod() ;
+        this.orderState = 1 ;
+        this.orderMethod = 0 ;
     }
 
 
 
-    private List<MenuEntity> transMenu(List<OrderMenuReq> menu, List<MenuEntity> menuList)
-    {
-
-    }
 }
 
 

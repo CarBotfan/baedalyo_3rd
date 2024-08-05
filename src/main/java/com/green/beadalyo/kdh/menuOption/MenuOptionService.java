@@ -15,7 +15,7 @@ public class MenuOptionService {
 
     public List<MenuOption> getListIn(List<Long> ids)
     {
-        return repository.findbySeqIn(ids) ;
+        return repository.findBySeqIn(ids) ;
     }
 
 

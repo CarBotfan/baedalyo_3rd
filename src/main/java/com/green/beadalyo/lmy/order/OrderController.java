@@ -6,18 +6,16 @@ import com.green.beadalyo.gyb.common.ResultError;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
-import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
+import com.green.beadalyo.kdh.menu.MenuService;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menuOption.MenuOptionService;
 import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
-import com.green.beadalyo.lmy.doneorder.entity.DoneOrderMenu;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import com.green.beadalyo.lmy.order.entity.OrderMenuOption;
@@ -30,14 +28,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 import static com.green.beadalyo.lmy.dataset.ResponseDataSet.*;
@@ -55,6 +51,8 @@ public class OrderController {
     private final AuthenticationFacade authenticationFacade;
     private final UserServiceImpl userService;
     private final MenuOptionService menuOptionService ;
+    private final MenuService menuService;
+    private final UserRepository userRepository;
 
 
     @PostMapping
@@ -112,7 +110,7 @@ public class OrderController {
         //메뉴 검증
         boolean checksum = p.getMenu().stream()
                 //req 의 orderMenuPk 를 추출
-                .map(OrderMenuReq::getOrderMenuPk)
+                .map(OrderMenuReq::getMenuPk)
                 //추출한 값을 menuOptionPk 에 세팅후 검증실행
                 .allMatch(menuOptionPk ->
                         //res 의 메뉴 리스트를 스트림하여
@@ -124,22 +122,48 @@ public class OrderController {
 
         if (!checksum) return ResultError.builder().statusCode(-6).resultMsg("메뉴 검증에 실패하였습니다.").build();
 
-    //실제 데이터 주입 절차
 
 
         try {
-            Order order = new Order(p) ;
-
-            for (OrderMenuReq i : p.getMenu())
+            //오더 객체 생성
+            Order order = new Order(p, user, res);
+            AtomicReference<Integer> totalPrice = new AtomicReference<>(order.getOrderPrice());
+            //받은 pk 리스트를 기반으로 메뉴 pk 조회
+            List<MenuEntity> menu = menuService.getInMenuData(
+                    p.getMenu().stream()
+                    .map(OrderMenuReq::getMenuPk)
+                    .toList());
+            //메뉴 Entity 를 OrderMenu 로 전환
+            List<OrderMenu> orderMenus = OrderMenu.toOrderMenuList(menu, order, p.getMenu());
+            //order 에 세팅
+            order.setMenus(orderMenus);
+            for (OrderMenu i : orderMenus)
             {
-                List<MenuOption> optionList = menuOptionService.getListIn(i.getMenuOptionPk()) ;
-                List<OrderMenuOption> orderMenu = MenuOption.toOrderMenuOptionList(optionList) ;
-
-
-
+                totalPrice.updateAndGet(v -> v + (i.getMenuPrice() * i.getMenuCount()));
             }
+            //메뉴 옵션 설정
+            p.getMenu().forEach(i ->
+                orderMenus.stream()
+                    .filter(j -> i.getMenuPk().equals(j.getOrderMenuPk()))
+                    .findFirst()
+                    .ifPresent(j -> {
+                        List<MenuOption> optionList = menuOptionService.getListIn(i.getMenuOptionPk());
+                        List<OrderMenuOption> orderMenu = OrderMenuOption.toOrderMenuOptionList(optionList, j);
+                        for (OrderMenuOption o : orderMenu)
+                        {
+                            totalPrice.updateAndGet(v -> v + j.getMenuPrice());
 
-            Order order = new Order(p, user, res) ;
+                        }
+                        j.setOrderMenuOption(orderMenu);
+                    })
+            );
+
+
+            order.setOrderPrice(totalPrice.get());
+            orderService.saveOrder(order) ;
+            return ResultDto.builder().build();
+
+
         } catch (Exception e) {
             log.error("An error occurred: ", e);
             return ResultError.builder().build();
@@ -148,22 +172,22 @@ public class OrderController {
 
 
 
-        List<Map<String, Object>> menuList = orderService.getMenuDetails(p.getMenuPk());
-        p.setOrderUserPk(authenticationFacade.getLoginUserPk());
-        int totalPrice = orderService.calculateTotalPrice(p.getMenuPk());
-        p.setOrderPrice(totalPrice);
-
-        Order order = orderService.saveOrder(p);
-
-        List<Map<String, Object>> orderMenuList = orderService.createOrderMenuList(p, menuList);
-
-        orderService.saveOrderMenuBatch(orderMenuList, order);
-
-        return ResultDto.<Long>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(POST_ORDER_SUCCESS)
-                .resultData(order.getOrderPk())
-                .build();
+//        List<Map<String, Object>> menuList = orderService.getMenuDetails(p.getMenuPk());
+//        p.setOrderUserPk(authenticationFacade.getLoginUserPk());
+//        int totalPrice = orderService.calculateTotalPrice(p.getMenuPk());
+//        p.setOrderPrice(totalPrice);
+//
+//        Order order = orderService.saveOrder(p);
+//
+//        List<Map<String, Object>> orderMenuList = orderService.createOrderMenuList(p, menuList);
+//
+//        orderService.saveOrderMenuBatch(orderMenuList, order);
+//
+//        return ResultDto.<Long>builder()
+//                .statusCode(SUCCESS_CODE)
+//                .resultMsg(POST_ORDER_SUCCESS)
+//                .resultData(order.getOrderPk())
+//                .build();
     }
 
     @PutMapping("cancel/list/{order_pk}")

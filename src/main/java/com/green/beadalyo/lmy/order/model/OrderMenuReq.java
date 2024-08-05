@@ -12,7 +12,7 @@ import java.util.List;
 public class OrderMenuReq
 {
     @Schema(description = "메뉴 고유번호")
-    private Long orderMenuPk ;
+    private Long menuPk;
     @Schema(description = "메뉴 수량")
     private Integer menuCount ;
     @Schema(description = "메뉴 옵션 번호")

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "order_menu_option")
@@ -42,6 +44,19 @@ public class OrderMenuOption
         this.optionName = data.getOptionName() ;
         this.optionPrice = data.getOptionPrice() ;
         this.createdAt = LocalDateTime.now() ;
+    }
+
+    public static List<OrderMenuOption> toOrderMenuOptionList(List<MenuOption> data, OrderMenu orderMenu)
+    {
+        List<OrderMenuOption> list = new ArrayList<>() ;
+        for (MenuOption i : data)
+        {
+            OrderMenuOption menuOption = new OrderMenuOption(i,orderMenu) ;
+            list.add(menuOption) ;
+        }
+
+        return list ;
+
     }
 
 }

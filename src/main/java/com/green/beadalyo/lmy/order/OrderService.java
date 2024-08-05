@@ -66,35 +66,40 @@ public class OrderService {
     }
 
 
-    public Order saveOrder(OrderPostReq p) {
-        Order order = new Order();
-        order.setOrderUserPk(userRepository.getReferenceById(p.getOrderUserPk()));
-        order.setOrderResPk(restaurantRepository.getReferenceById(p.getOrderResPk()));
-        order.setOrderRequest(p.getOrderRequest());
-        order.setPaymentMethod(p.getPaymentMethod());
-        order.setOrderPhone(p.getOrderPhone());
-        order.setOrderAddress(p.getOrderAddress());
-        order.setOrderPrice(p.getOrderPrice());
-        order.setOrderState(1);
-        //이거는 포장주문이면 1들어갈 수 있도록 바꿔야함.
-        order.setOrderMethod(0);
-        return orderRepository.save(order);
+//    public Order saveOrder(OrderPostReq p) {
+//        Order order = new Order();
+//        order.setOrderUserPk(userRepository.getReferenceById(p.getOrderUserPk()));
+//        order.setOrderResPk(restaurantRepository.getReferenceById(p.getOrderResPk()));
+//        order.setOrderRequest(p.getOrderRequest());
+//        order.setPaymentMethod(p.getPaymentMethod());
+//        order.setOrderPhone(p.getOrderPhone());
+//        order.setOrderAddress(p.getOrderAddress());
+//        order.setOrderPrice(p.getOrderPrice());
+//        order.setOrderState(1);
+//        //이거는 포장주문이면 1들어갈 수 있도록 바꿔야함.
+//        order.setOrderMethod(0);
+//        return orderRepository.save(order);
+//    }
+
+    public void saveOrder(Order order) throws Exception
+    {
+        orderRepository.save(order);
     }
 
 
-    public List<Map<String, Object>> createOrderMenuList(OrderPostReq p, List<Map<String, Object>> menuList) {
-        return p.getMenuPk().stream().map(menuPk -> {
-            Map<String, Object> menu = menuList.stream()
-                    .filter(m -> m.get("menu_pk").equals(menuPk))
-                    .findFirst().orElseThrow(() -> new NullPointerException(""));
-            Map<String, Object> orderMenuMap = new HashMap<>();
-            orderMenuMap.put("orderPk", p.getOrderPk());
-            orderMenuMap.put("menuPk", menu.get("menu_pk"));
-            orderMenuMap.put("menuName", menu.get("menu_name"));
-            orderMenuMap.put("menuPrice", menu.get("menu_price"));
-            return orderMenuMap;
-        }).collect(Collectors.toList());
-    }
+//    public List<Map<String, Object>> createOrderMenuList(OrderPostReq p, List<Map<String, Object>> menuList) {
+//        return p.getMenuPk().stream().map(menuPk -> {
+//            Map<String, Object> menu = menuList.stream()
+//                    .filter(m -> m.get("menu_pk").equals(menuPk))
+//                    .findFirst().orElseThrow(() -> new NullPointerException(""));
+//            Map<String, Object> orderMenuMap = new HashMap<>();
+//            orderMenuMap.put("orderPk", p.getOrderPk());
+//            orderMenuMap.put("menuPk", menu.get("menu_pk"));
+//            orderMenuMap.put("menuName", menu.get("menu_name"));
+//            orderMenuMap.put("menuPrice", menu.get("menu_price"));
+//            return orderMenuMap;
+//        }).collect(Collectors.toList());
+//    }
 
     public void saveOrderMenuBatch(List<Map<String, Object>> orderMenuList, Order order) {
         List<OrderMenu> orderMenus = orderMenuList.stream()

@@ -57,4 +57,6 @@ public class MenuEntity {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+
 }
