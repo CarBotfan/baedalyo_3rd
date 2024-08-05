@@ -1,6 +1,7 @@
-package com.green.beadalyo.lhn.entity;
+package com.green.beadalyo.lhn.coupon.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -35,4 +36,6 @@ public class Coupon {
 
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CouponUser> couponUsers;
+
+
 }

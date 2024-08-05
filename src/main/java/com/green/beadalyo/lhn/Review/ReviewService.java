@@ -1,10 +1,9 @@
-package com.green.beadalyo.lhn;
+package com.green.beadalyo.lhn.Review;
 
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
-import com.green.beadalyo.lhn.model.*;
-import com.green.beadalyo.lhn.repository.ReviewRepository;
+import com.green.beadalyo.lhn.Review.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -242,6 +241,7 @@ public class ReviewService {
 
         review.setPics(pics);
     }
+
 }
 
 

@@ -1,4 +1,4 @@
-package com.green.beadalyo.lhn.model;
+package com.green.beadalyo.lhn.Review.model;
 
 import lombok.Getter;
 import lombok.Setter;

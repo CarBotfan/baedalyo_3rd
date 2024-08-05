@@ -1,4 +1,4 @@
-package com.green.beadalyo.lhn.entity;
+package com.green.beadalyo.lhn.Review.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;

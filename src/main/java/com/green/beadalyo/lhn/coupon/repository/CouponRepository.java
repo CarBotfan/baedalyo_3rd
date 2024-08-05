@@ -1,6 +1,7 @@
-package com.green.beadalyo.lhn.repository;
+package com.green.beadalyo.lhn.coupon.repository;
 
-import com.green.beadalyo.lhn.entity.Coupon;
+
+import com.green.beadalyo.lhn.coupon.entity.Coupon;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

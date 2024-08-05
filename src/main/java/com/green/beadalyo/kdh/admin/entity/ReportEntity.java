@@ -1,7 +1,7 @@
 package com.green.beadalyo.kdh.admin.entity;
 
 import com.green.beadalyo.jhw.user.entity.User;
-import com.green.beadalyo.lhn.entity.Review;
+import com.green.beadalyo.lhn.Review.entity.Review;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

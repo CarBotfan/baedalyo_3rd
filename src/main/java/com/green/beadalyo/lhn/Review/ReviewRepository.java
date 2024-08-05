@@ -1,7 +1,7 @@
-package com.green.beadalyo.lhn.repository;
+package com.green.beadalyo.lhn.Review;
 
-import com.green.beadalyo.lhn.entity.Review;
-import com.green.beadalyo.lhn.model.*;
+import com.green.beadalyo.lhn.Review.model.*;
+import com.green.beadalyo.lhn.Review.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -48,7 +48,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 사장님 답글 수정
     @Query(nativeQuery = true, value = "UPDATE review_comment SET comment_content = :p.commentContent WHERE review_comment_pk = :p.reviewCommentPk")
-    void updReviewReply(@Param("p")ReviewReplyUpdReq p);
+    void updReviewReply(@Param("p") ReviewReplyUpdReq p);
 
     // 리뷰 수정
     @Query(nativeQuery = true, value = "UPDATE review SET review_title = :p.reviewTitle, review_content = :p.reviewContent, review_rating = :p.reviewRating, review_pics1 = :p.reviewPics1, review_pics2 = :p.reviewPics2, review_pics3 = :p.reviewPics3, review_pics4 = :p.reviewPics4 WHERE review_pk = :p.reviewPk AND review_state = 1")

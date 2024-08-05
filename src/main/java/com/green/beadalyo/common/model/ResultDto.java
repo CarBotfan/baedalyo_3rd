@@ -1,6 +1,7 @@
 package com.green.beadalyo.common.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.green.beadalyo.lhn.coupon.dto.CouponResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +19,5 @@ public class ResultDto<T> {
     @Schema(example = "완료")
     private String resultMsg;
     private T resultData;
+
 }

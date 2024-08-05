@@ -1,9 +1,9 @@
-package com.green.beadalyo.lhn;
+package com.green.beadalyo.lhn.Review;
 
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
-import com.green.beadalyo.lhn.model.*;
+import com.green.beadalyo.lhn.Review.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/rev")
-@Tag(name = "리뷰 CRUD")
+@Tag(name = "리뷰 컨트롤러")
 public class ReviewController {
     private final ReviewService service;
     private final AuthenticationFacade facade ;
@@ -158,7 +158,7 @@ public class ReviewController {
     @ApiResponse(description =  "<p> code : 1  => 답글 수정 완료 </p>"+
             "<p> code : -7  => 리뷰를 작성한 사장님이 아닙니다 </p>" +
             "<p> code : -2  => 답글에 비속어가 존재합니다 </p>")
-    public ResultDto<Long> updReviewReply(@RequestBody  ReviewReplyUpdReq p){
+    public ResultDto<Long> updReviewReply(@RequestBody ReviewReplyUpdReq p){
         int code = 1;
         String msg = "답글수정완료";
         long result = 0;
