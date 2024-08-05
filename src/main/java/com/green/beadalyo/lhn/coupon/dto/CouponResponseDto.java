@@ -22,15 +22,11 @@ public class CouponResponseDto {
     // 쿠폰 생성 일시
     private LocalDateTime createdAt;
 
-    // 쿠폰 최소 주문 금액
-    private Long minOrderAmount;
-
-    public CouponResponseDto(Long id, String name, String content, Long price, LocalDateTime createdAt, Long minOrderAmount) {
+    public CouponResponseDto(Long id, String name, String content, Long price, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.content = content;
         this.price = price;
         this.createdAt = createdAt;
-        this.minOrderAmount = minOrderAmount;
     }
 }

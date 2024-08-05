@@ -4,6 +4,7 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.lhn.coupon.dto.CouponResponseDto;
 import com.green.beadalyo.lhn.coupon.entity.Coupon;
 import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lhn.coupon.repository.CouponRepository;
@@ -11,8 +12,10 @@ import com.green.beadalyo.lhn.coupon.repository.CouponUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +28,8 @@ public class CouponService {
 
     // 쿠폰 생성
     @Transactional
-    public Coupon createCoupon(Coupon coupon, Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+    public Coupon createCoupon(Coupon coupon, Long resPk) {
+        Restaurant restaurant = restaurantRepository.findById(resPk)
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다."));
         coupon.setRestaurant(restaurant);
         coupon.setCreatedAt(LocalDateTime.now());
@@ -34,8 +37,11 @@ public class CouponService {
     }
 
     // 가게별 쿠폰 조회
-    public List<Coupon> getCouponsByRestaurant(Long restaurantId) {
-        return couponRepository.findByRestaurantId(restaurantId);
+    public List<CouponResponseDto> getCouponsByRestaurant(Long resPk) {
+        List<Coupon> coupons = couponRepository.findByRestaurantId(resPk);
+        return coupons.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     // 쿠폰 발급
@@ -56,5 +62,16 @@ public class CouponService {
         couponUser.setCreatedAt(LocalDateTime.now());
 
         return couponUserRepository.save(couponUser);
+    }
+
+    // 쿠폰 엔티티를 DTO로 변환
+    private CouponResponseDto convertToDto(Coupon coupon) {
+        return new CouponResponseDto(
+                coupon.getId(),
+                coupon.getName(),
+                coupon.getContent(),
+                coupon.getPrice(),
+                coupon.getCreatedAt()
+        );
     }
 }
