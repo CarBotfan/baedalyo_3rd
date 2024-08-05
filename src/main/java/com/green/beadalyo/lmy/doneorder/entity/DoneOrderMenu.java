@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -19,6 +20,9 @@ public class DoneOrderMenu {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "done_order_pk",nullable = false)
     private DoneOrder doneOrderPk;
+
+    @OneToMany(fetch = FetchType.EAGER,orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "doneOrderMenu")
+    private List<DoneOrderMenuOption> doneMenuOption ;
 
     @ManyToOne
     @JoinColumn(name = "menu_pk", nullable = false)

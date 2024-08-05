@@ -85,9 +85,14 @@ public class RestaurantService
         if (user == null) throw new DataNotFoundException("유저 정보를 찾을수 없습니다.") ;
         return repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
     }
+    //음식점 정보 호출(PK)
+    public Restaurant getRestaurantDataBySeq(Long seq) throws Exception
+    {
+        return repository.findTop1BySeq(seq).orElseThrow(NullPointerException::new);
+    }
 
-    //음식점 정보 호출(음식점 pk로)
-    public RestaurantDetailView getRestaurantDataBySeq(Long seq) throws Exception
+    //음식점 뷰 정보 호출(음식점 pk로)
+    public RestaurantDetailView getRestaurantDataViewBySeq(Long seq) throws Exception
     {
         return viewDetailRepository.findTop1ByRestaurantPk(seq).orElseThrow(NullPointerException::new);
     }

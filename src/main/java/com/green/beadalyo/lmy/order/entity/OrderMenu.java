@@ -16,11 +16,11 @@ public class OrderMenu {
     @Column(name = "order_menu_pk")
     private Long orderMenuPk;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_pk", nullable = false)
     private Order orderPk;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_pk", nullable = false)
     private MenuEntity menuPk;
 

@@ -1,28 +1,41 @@
 package com.green.beadalyo.lmy.order;
 
-import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.gyb.common.Result;
+import com.green.beadalyo.gyb.common.ResultDto;
+import com.green.beadalyo.gyb.common.ResultError;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
-import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.jhw.user.UserServiceImpl;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.kdh.menuOption.MenuOptionService;
+import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrderMenu;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
+import com.green.beadalyo.lmy.order.entity.OrderMenuOption;
 import com.green.beadalyo.lmy.order.model.OrderGetRes;
+import com.green.beadalyo.lmy.order.model.OrderMenuReq;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
-import com.green.beadalyo.lmy.order.repository.OrderRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +53,8 @@ public class OrderController {
     private final OrderService orderService;
     private final RestaurantService restaurantService;
     private final AuthenticationFacade authenticationFacade;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
+    private final MenuOptionService menuOptionService ;
 
 
     @PostMapping
@@ -52,24 +66,87 @@ public class OrderController {
                             "<p> -1 : 결제가 완료되지 않았습니다 </p>"+
                             "<p> -2 : 글 양식을 맞춰주세요 (글자 수) </p>" +
                             "<p> -3 : 메뉴를 찾을 수 없습니다 </p>" +
-                            "<p> -4 : 데이터 리스트 생성 실패 </p>"
+                            "<p> -4 : 데이터 리스트 생성 실패 </p>" +
+                            "<p> -5 : 레스토랑 데이터 조회 실패 </p>" +
+                            "<p> -6 : 메뉴 검증 실패 </p>" +
+                            "<p> -7 : 유저 검증 실패 </p>"
     )
     @Transactional
-    public ResultDto<Long> postOrder(@RequestBody OrderPostReq p){
+    public Result postOrder(@RequestBody OrderPostReq p){
 
+        //유저 검증
+        Long userPk =authenticationFacade.getLoginUserPk() ;
+        User user = null ;
+        try {
+                user = userService.getUser(userPk);
+
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().resultMsg("유저 정보를 찾을수 없습니다.").statusCode(-7).build();
+        }
+
+        //결제수단 검증
         if (p.getPaymentMethod() == null) {
-            return ResultDto.<Long>builder()
+            return ResultDto.builder()
                     .statusCode(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getMessage())
                     .build();
         }
-
+        //주문요구사항 길이 검증
         if (500 < p.getOrderRequest().length()) {
             return ResultDto.<Long>builder()
                     .statusCode(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getMessage())
                     .build();
         }
+        //레스토랑 검증
+        final Restaurant res  ;
+        try {
+             res = restaurantService.getRestaurantDataBySeq(p.getOrderResPk());
+
+        } catch (NullPointerException e) {
+            return ResultError.builder().resultMsg("레스토랑이 존재하지 않습니다.").statusCode(-5).build() ;
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
+        //메뉴 검증
+        boolean checksum = p.getMenu().stream()
+                //req 의 orderMenuPk 를 추출
+                .map(OrderMenuReq::getOrderMenuPk)
+                //추출한 값을 menuOptionPk 에 세팅후 검증실행
+                .allMatch(menuOptionPk ->
+                        //res 의 메뉴 리스트를 스트림하여
+                        res.getMenuList().stream()
+                        //MenuEntity 의 menuPk 를 추출
+                        .map(MenuEntity::getMenuPk)
+                        // 추출한 두 값을 비교하여 매치
+                        .anyMatch(menuPk -> menuPk.equals(menuOptionPk)));
+
+        if (!checksum) return ResultError.builder().statusCode(-6).resultMsg("메뉴 검증에 실패하였습니다.").build();
+
+    //실제 데이터 주입 절차
+
+
+        try {
+            Order order = new Order(p) ;
+
+            for (OrderMenuReq i : p.getMenu())
+            {
+                List<MenuOption> optionList = menuOptionService.getListIn(i.getMenuOptionPk()) ;
+                List<OrderMenuOption> orderMenu = MenuOption.toOrderMenuOptionList(optionList) ;
+
+
+
+            }
+
+            Order order = new Order(p, user, res) ;
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
+
+
+
 
         List<Map<String, Object>> menuList = orderService.getMenuDetails(p.getMenuPk());
         p.setOrderUserPk(authenticationFacade.getLoginUserPk());

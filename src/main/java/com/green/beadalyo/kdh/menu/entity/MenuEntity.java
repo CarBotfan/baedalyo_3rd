@@ -2,6 +2,7 @@ package com.green.beadalyo.kdh.menu.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
+import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,6 +30,9 @@ public class MenuEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_cat_pk")
     private MenuCategory menuCategory;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "menu")
+    private List<MenuOption> optionList ;
 
     @Column(name = "menu_name", length = 20, nullable = false)
     private String menuName;

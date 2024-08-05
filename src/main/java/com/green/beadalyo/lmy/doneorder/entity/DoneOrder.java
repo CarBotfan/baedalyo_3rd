@@ -11,6 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -31,6 +32,9 @@ public class DoneOrder {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_pk", nullable = false, referencedColumnName = "res_pk")
     private Restaurant resPk;
+
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "doneOrderPk")
+    private List<DoneOrderMenu> doneOrderMenus;
 
     @Column(name = "order_price", nullable = false)
     private Integer orderPrice;
