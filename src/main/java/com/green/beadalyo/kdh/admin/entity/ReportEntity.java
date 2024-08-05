@@ -5,7 +5,9 @@ import com.green.beadalyo.lhn.entity.Review;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -27,10 +29,21 @@ public class ReportEntity {
     @JoinColumn(name = "user_pk",nullable = false)
     private User userPk;
 
-    @Column(name = "report_content")
+    @Column(name = "report_title",nullable = false)
+    private String reportTitle;
+
+    @Column(name = "report_content",nullable = false)
     private String reportContent;
+
+    @ColumnDefault("1")
+    @Column(name = "report_state")
+    private int reportState;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

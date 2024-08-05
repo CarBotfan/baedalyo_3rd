@@ -3,6 +3,9 @@ package com.green.beadalyo.lhn;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.kdh.admin.entity.ReportEntity;
+import com.green.beadalyo.lhn.entity.Review;
 import com.green.beadalyo.lhn.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +29,7 @@ public class ReviewController {
     private final ReviewService service;
     private final AuthenticationFacade facade ;
     private final UserService userService ;
+    private final ReviewService reviewService;
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "고객리뷰작성")
@@ -272,6 +277,40 @@ public class ReviewController {
       return ResultDto.<Integer>builder()
                 .statusCode(code)
                 .resultMsg(msg)
+                .build();
+    }
+
+    //이건 김동현이 작업 ㅎ했습니다. 리뷰에서 신고하느거임!!
+    @PostMapping("report")
+    @Operation(summary = "리뷰 신고기능", description = "리뷰를 신고합니다.")
+    @PreAuthorize("isAuthenticated()")
+    public ResultDto<Long> postReport(@RequestBody ReportPostReq p){
+
+        Review review = service.getReviewByPk(p.getReviewPk());
+        User user = service.getUserByPk(facade.getLoginUserPk());
+        p.setReview(review);
+        p.setUser(user);
+
+        Long result = null;
+
+        //그럼 만들고 pk를 리턴하겟쬬?
+
+        try {
+
+            ReportEntity reportEntity = service.makeReport(p);
+            result = service.saveReport(reportEntity);
+
+        } catch (Exception e){
+            return ResultDto.<Long>builder()
+                    .statusCode(-1)
+                    .resultMsg("리뷰 신고 실패")
+                    .resultData(result)
+                    .build();
+        }
+        return ResultDto.<Long>builder()
+                .statusCode(1)
+                .resultMsg("리뷰 신고 완료")
+                .resultData(result)
                 .build();
     }
 }

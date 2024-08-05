@@ -3,6 +3,11 @@ package com.green.beadalyo.lhn;
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.kdh.admin.entity.ReportEntity;
+import com.green.beadalyo.kdh.admin.repository.ReportRepository;
+import com.green.beadalyo.lhn.entity.Review;
 import com.green.beadalyo.lhn.model.*;
 import com.green.beadalyo.lhn.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +28,10 @@ public class ReviewService {
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
+
+
 
     // 리뷰 작성
     @Transactional
@@ -241,6 +250,30 @@ public class ReviewService {
         if (review.getReviewPics4() != null) pics.add(review.getReviewPics4());
 
         review.setPics(pics);
+    }
+
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+    //이거 유저 service에 있어야함
+    public User getUserByPk(Long userPk) {
+        return userRepository.findByUserPk(userPk);
+    }
+
+    public Review getReviewByPk(Long reviewPk) {
+        return repository.getReferenceById(reviewPk);
+    }
+
+    public ReportEntity makeReport(ReportPostReq req) {
+        ReportEntity reportEntity = new ReportEntity();
+        reportEntity.setUserPk(req.getUser());
+        reportEntity.setReviewPk(req.getReview());
+        reportEntity.setReportContent(req.getReportContent());
+        reportEntity.setReportTitle(req.getReportContent());
+        return reportEntity;
+    }
+
+    public Long saveReport(ReportEntity report){
+        return reportRepository.save(report).getReportPk();
     }
 }
 
