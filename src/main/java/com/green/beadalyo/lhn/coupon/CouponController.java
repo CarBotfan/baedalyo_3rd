@@ -1,0 +1,135 @@
+package com.green.beadalyo.lhn.coupon;
+
+import com.green.beadalyo.lhn.coupon.dto.CouponResponseDto;
+import com.green.beadalyo.lhn.coupon.dto.CouponUserResponseDto;
+import com.green.beadalyo.lhn.coupon.entity.Coupon;
+import com.green.beadalyo.lhn.coupon.entity.CouponUser;
+import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.lhn.coupon.model.CouponPostReq;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/coupons")
+@RequiredArgsConstructor
+public class CouponController {
+
+    private final CouponService couponService;
+
+    // 쿠폰 생성
+    @PostMapping("쿠폰만들기")
+    public ResponseEntity<ResultDto<CouponResponseDto>> createCoupon(@RequestBody CouponPostReq p) {
+        try {
+            Coupon createdCoupon = couponService.createCoupon(p);
+            return ResponseEntity.ok(ResultDto.<CouponResponseDto>builder()
+                    .statusCode(1)
+                    .resultMsg("쿠폰 생성 완료")
+                    .resultData(convertToDto(createdCoupon))
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResultDto.<CouponResponseDto>builder()
+                    .statusCode(-1)
+                    .resultMsg(e.getMessage())
+                    .build());
+        }
+    }
+
+    // 가게별 쿠폰 조회
+    @GetMapping("가게 쿠폰 조회")
+    public ResponseEntity<ResultDto<List<CouponResponseDto>>> getCouponsByRestaurant(@PathVariable Long restaurantId) {
+        try {
+            List<Coupon> coupons = couponService.getCouponsByRestaurant(restaurantId);
+            List<CouponResponseDto> couponDtos = coupons.stream().map(this::convertToDto).collect(Collectors.toList());
+            return ResponseEntity.ok(ResultDto.<List<CouponResponseDto>>builder()
+                    .statusCode(1)
+                    .resultMsg("쿠폰 조회 완료")
+                    .resultData(couponDtos)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResultDto.<List<CouponResponseDto>>builder()
+                    .statusCode(-1)
+                    .resultMsg(e.getMessage())
+                    .build());
+        }
+    }
+
+    // 쿠폰 발급
+    @PostMapping("쿠폰발급")
+    public ResponseEntity<ResultDto<CouponUserResponseDto>> issueCoupon(@RequestParam Long couponId, @RequestParam Long userId) {
+        try {
+            CouponUser issuedCoupon = couponService.issueCoupon(couponId, userId);
+            return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
+                    .statusCode(1)
+                    .resultMsg("쿠폰 발급 완료")
+                    .resultData(convertToCouponUserDto(issuedCoupon))
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
+                    .statusCode(-1)
+                    .resultMsg(e.getMessage())
+                    .build());
+        }
+    }
+
+    // 쿠폰 상태 변경
+    @PutMapping("쿠폰상태변경")
+    public ResponseEntity<ResultDto<CouponUserResponseDto>> updateCouponStatus(@RequestParam Long couponUserId, @RequestParam int state) {
+        try {
+            CouponUser updatedCouponUser = couponService.updateCouponStatus(couponUserId, state);
+            return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
+                    .statusCode(1)
+                    .resultMsg("쿠폰 상태 변경 완료")
+                    .resultData(convertToCouponUserDto(updatedCouponUser))
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
+                    .statusCode(-1)
+                    .resultMsg(e.getMessage())
+                    .build());
+        }
+    }
+
+    // 쿠폰 삭제
+    @DeleteMapping("쿠폰삭제")
+    public ResponseEntity<ResultDto<Void>> deleteCoupon(@PathVariable Long couponId) {
+        try {
+            couponService.deleteCoupon(couponId);
+            return ResponseEntity.ok(ResultDto.<Void>builder()
+                    .statusCode(1)
+                    .resultMsg("쿠폰 삭제 완료")
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResultDto.<Void>builder()
+                    .statusCode(-1)
+                    .resultMsg(e.getMessage())
+                    .build());
+        }
+    }
+
+    // 쿠폰 엔티티를 DTO로 변환
+    private CouponResponseDto convertToDto(Coupon coupon) {
+        return new CouponResponseDto(
+                coupon.getId(),
+                coupon.getName(),
+                coupon.getContent(),
+                coupon.getPrice(),
+                coupon.getMinOrderAmount(),
+                coupon.getCreatedAt()
+        );
+    }
+
+    // 쿠폰 사용자 엔티티를 DTO로 변환
+    private CouponUserResponseDto convertToCouponUserDto(CouponUser couponUser) {
+        return new CouponUserResponseDto(
+                couponUser.getId(),
+                couponUser.getCoupon().getId(),
+                couponUser.getUser().getUserId(),
+                couponUser.getState(),  // 상태를 반환
+                couponUser.getCreatedAt()
+        );
+    }
+}

@@ -1,4 +1,4 @@
-package com.green.beadalyo.lhn.entity;
+package com.green.beadalyo.lhn.Review.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

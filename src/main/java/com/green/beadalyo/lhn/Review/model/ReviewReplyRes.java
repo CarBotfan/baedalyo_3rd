@@ -1,4 +1,4 @@
-package com.green.beadalyo.lhn.model;
+package com.green.beadalyo.lhn.Review.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

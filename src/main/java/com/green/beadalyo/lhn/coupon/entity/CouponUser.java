@@ -1,9 +1,8 @@
-package com.green.beadalyo.lhn.entity;
+package com.green.beadalyo.lhn.coupon.entity;
 
 import com.green.beadalyo.jhw.user.entity.User;
-import lombok.Data;
-
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 

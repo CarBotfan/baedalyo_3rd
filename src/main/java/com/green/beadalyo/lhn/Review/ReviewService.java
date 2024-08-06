@@ -1,4 +1,4 @@
-package com.green.beadalyo.lhn;
+package com.green.beadalyo.lhn.Review;
 
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.gyb.model.Restaurant;
@@ -12,6 +12,7 @@ import com.green.beadalyo.kdh.admin.repository.ReportRepository;
 import com.green.beadalyo.lhn.entity.Review;
 import com.green.beadalyo.lhn.model.*;
 import com.green.beadalyo.lhn.repository.ReviewRepository;
+import com.green.beadalyo.lhn.Review.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
