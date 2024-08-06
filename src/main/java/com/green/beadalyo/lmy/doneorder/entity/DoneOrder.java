@@ -81,7 +81,7 @@ public class DoneOrder {
         this.orderMethod = data.getOrderMethod() ;
         this.useMileage = data.getUseMileage() ;
         this.doneOrderMenus = null ;
-        data.getMenus().stream().forEach(menu -> {
+        data.getMenus().forEach(menu -> {
             DoneOrderMenu doneMenu = new DoneOrderMenu(menu) ;
             doneMenu.setDoneOrderPk(this);
             List<DoneOrderMenuOption> options =  menu.getOrderMenuOption().stream().map(option -> {
