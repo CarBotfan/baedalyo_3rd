@@ -2,7 +2,7 @@ package com.green.beadalyo.jhw.menucategory;
 
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
+import com.green.beadalyo.jhw.menucategory.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
