@@ -2,6 +2,7 @@ package com.green.beadalyo.lmy.doneorder.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.lmy.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,7 +62,35 @@ public class DoneOrder {
     @Column(name = "canceller")
     private String canceller;
 
+    @Column(name = "use_mileage")
+    private Integer useMileage;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public DoneOrder(Order data)
+    {
+        this.userPk = data.getOrderUserPk() ;
+        this.resPk = data.getOrderResPk() ;
+        this.orderPrice = data.getOrderPrice() ;
+        this.orderRequest = data.getOrderRequest() ;
+        this.orderPhone = data.getOrderPhone() ;
+        this.orderAddress = data.getOrderAddress() ;
+        this.paymentMethod = data.getPaymentMethod() ;
+        this.orderMethod = data.getOrderMethod() ;
+        this.useMileage = data.getUseMileage() ;
+        this.doneOrderMenus = null ;
+        data.getMenus().stream().forEach(menu -> {
+            DoneOrderMenu doneMenu = new DoneOrderMenu(menu) ;
+            doneMenu.setDoneOrderPk(this);
+            List<DoneOrderMenuOption> options =  menu.getOrderMenuOption().stream().map(option -> {
+                DoneOrderMenuOption doneOption = new DoneOrderMenuOption(option);
+                doneOption.setDoneOrderMenu(doneMenu);
+                return doneOption ;
+            }).toList() ;
+            doneMenu.setDoneMenuOption(options);
+        }) ;
+
+    }
 }

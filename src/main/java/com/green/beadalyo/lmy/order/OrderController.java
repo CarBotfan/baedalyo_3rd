@@ -245,10 +245,10 @@ public class OrderController {
         }
 
         Order order = orderService.getOrderEntity(orderPk);
-        DoneOrder doneOrder = orderService.saveDoneOrder(order, userPk,2);
+        orderService.saveDoneOrder(order, userPk,2);
 
-        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
-        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
+//        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
+//        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
 
         orderService.deleteOrder(orderPk);
 
@@ -278,10 +278,10 @@ public class OrderController {
         }
 
         Order order = orderService.getOrderEntity(orderPk);
-        DoneOrder doneOrder = orderService.saveDoneOrder(order, userPk,1);
+        orderService.saveDoneOrder(order, userPk,1);
 
-        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
-        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
+//        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
+//        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
 
         orderService.deleteOrder(orderPk);
 

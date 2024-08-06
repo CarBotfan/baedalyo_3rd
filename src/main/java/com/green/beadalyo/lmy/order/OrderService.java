@@ -103,20 +103,20 @@ public class OrderService {
 //        }).collect(Collectors.toList());
 //    }
 
-    public void saveOrderMenuBatch(List<Map<String, Object>> orderMenuList, Order order) {
-        List<OrderMenu> orderMenus = orderMenuList.stream()
-                .map(menuMap -> {
-                    OrderMenu orderMenu = new OrderMenu();
-                    orderMenu.setOrderPk(order);
-                    orderMenu.setMenuPk(menuRepository.getReferenceById((Long) menuMap.get("menuPk")));
-                    orderMenu.setMenuName((String) menuMap.get("menuName"));
-                    orderMenu.setMenuPrice((Integer) menuMap.get("menuPrice"));
-                    orderMenu.setCreatedAt(LocalDateTime.now());
-                    return orderMenu;
-                })
-                .collect(Collectors.toList());
-        orderMenuRepository.saveAll(orderMenus);
-    }
+//    public void saveOrderMenuBatch(List<Map<String, Object>> orderMenuList, Order order) {
+//        List<OrderMenu> orderMenus = orderMenuList.stream()
+//                .map(menuMap -> {
+//                    OrderMenu orderMenu = new OrderMenu();
+//                    orderMenu.setOrderPk(order);
+//                    orderMenu.setMenuPk(menuRepository.getReferenceById((Long) menuMap.get("menuPk")));
+//                    orderMenu.setMenuName((String) menuMap.get("menuName"));
+//                    orderMenu.setMenuPrice((Integer) menuMap.get("menuPrice"));
+//                    orderMenu.setCreatedAt(LocalDateTime.now());
+//                    return orderMenu;
+//                })
+//                .collect(Collectors.toList());
+//        orderMenuRepository.saveAll(orderMenus);
+//    }
 
 
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Cancel & Complete Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
@@ -137,34 +137,26 @@ public class OrderService {
     }
 
 
-    public DoneOrder saveDoneOrder(Order order, long userPk, Integer isDone) {
-        DoneOrder doneOrder = new DoneOrder();
-        doneOrder.setUserPk(order.getOrderUserPk());
-        doneOrder.setResPk(order.getOrderResPk());
-        doneOrder.setOrderPrice(order.getOrderPrice());
-        doneOrder.setOrderRequest(order.getOrderRequest());
-        doneOrder.setOrderPhone(order.getOrderPhone());
-        doneOrder.setOrderAddress(order.getOrderAddress());
-        doneOrder.setPaymentMethod(order.getPaymentMethod());
-        doneOrder.setOrderMethod(order.getOrderMethod());
+    public void saveDoneOrder(Order order, long userPk, Integer isDone) {
+        DoneOrder doneOrder = new DoneOrder(order);
         doneOrder.setDoneOrderState(isDone);
         if (isDone == 2) {setCanceller(doneOrder, userPk);}
-        return doneOrderRepository.save(doneOrder);
+//        return doneOrderRepository.save(doneOrder);
     }
 
-    public void saveDoneOrderMenuBatch(List<OrderMenu> menus, DoneOrder doneOrder) {
-        List<DoneOrderMenu> doneOrderMenus = menus.stream()
-                .map(menu -> {
-                    DoneOrderMenu doneOrderMenu = new DoneOrderMenu();
-                    doneOrderMenu.setDoneOrderPk(doneOrder);
-                    doneOrderMenu.setMenuPk(menu.getMenuPk());
-                    doneOrderMenu.setMenuName(menu.getMenuName());
-                    doneOrderMenu.setMenuPrice(menu.getMenuPrice());
-                    return doneOrderMenu;
-                })
-                .collect(Collectors.toList());
-        doneOrderMenuRepository.saveAll(doneOrderMenus);
-    }
+//    public void saveDoneOrderMenuBatch(List<OrderMenu> menus, DoneOrder doneOrder) {
+//        List<DoneOrderMenu> doneOrderMenus = menus.stream()
+//                .map(menu -> {
+//                    DoneOrderMenu doneOrderMenu = new DoneOrderMenu();
+//                    doneOrderMenu.setDoneOrderPk(doneOrder);
+//                    doneOrderMenu.setMenuPk(menu.getMenuPk());
+//                    doneOrderMenu.setMenuName(menu.getMenuName());
+//                    doneOrderMenu.setMenuPrice(menu.getMenuPrice());
+//                    return doneOrderMenu;
+//                })
+//                .collect(Collectors.toList());
+//        doneOrderMenuRepository.saveAll(doneOrderMenus);
+//    }
 
     public void deleteOrder(Long orderPk) {
         orderRepository.deleteById(orderPk);
@@ -235,17 +227,6 @@ public class OrderService {
         return orderRepository.confirmOrder(orderPk);
     }
 
-
-    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ SSE 처리ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-    private final SSEApiController sse ;
-    public void sendSSE(){
-        sse.sendEmitters("newOrder");
-//        switch (data.getPaymentMethod())
-//        {
-//            case 1 , 2 -> 2 ;
-//            default -> 1 ;
-//        };
-    }
 
 
 }

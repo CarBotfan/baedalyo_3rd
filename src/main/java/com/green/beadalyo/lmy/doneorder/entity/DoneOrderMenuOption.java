@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.doneorder.entity;
 
+import com.green.beadalyo.lmy.order.entity.OrderMenuOption;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,7 +36,12 @@ public class DoneOrderMenuOption
     private LocalDateTime createdAt ;
 
 
-
+    public DoneOrderMenuOption(OrderMenuOption data)
+    {
+        this.doneOrderMenu = null ;
+        this.optionName = data.getOptionName() ;
+        this.optionPrice = data.getOptionPrice() ;
+    }
 
 
 }
