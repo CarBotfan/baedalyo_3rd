@@ -465,7 +465,10 @@ public class UserControllerImpl implements UserController{
             if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
-            result = service.deleteUser(user);
+            if (user.getUserPic() != null) {service.deleteProfileImage();}
+            user = service.clearUser(user);
+            result = service.saveUser(user);
+
         } catch (UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();
@@ -502,8 +505,10 @@ public class UserControllerImpl implements UserController{
             if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
-            result = service.deleteUser(user);
             restaurantService.deleteRestaurantData(user);
+            if (user.getUserPic() != null) {service.deleteProfileImage();}
+            user = service.clearUser(user);
+            result = service.saveUser(user);
 
         } catch (UserNotFoundException e) {
             statusCode = -2;

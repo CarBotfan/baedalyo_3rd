@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface UserService {
     long postUserSignUp(User user) throws Exception;
-    int deleteUser(User user) throws Exception;
+    User clearUser(User user) throws Exception;
     int patchUserPassword(UserPasswordPatchReq p) throws Exception;
     SignInRes postSignIn(HttpServletResponse res, User user) throws Exception;
     UserInfoGetRes getUserInfo(User user) throws Exception;

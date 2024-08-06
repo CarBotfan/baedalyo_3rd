@@ -194,12 +194,21 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public int deleteUser(User user) throws Exception{
+    public User clearUser(User user) throws Exception{
         if(user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
+        user.setUserPw(null);
+        user.setUserName(null);
+        user.setUserNickname(null);
+        user.setUserPhone(null);
+        user.setUserEmail(null);
+        user.setUserRole(null);
+        user.setUserLoginType(null);
+        user.setUserPic(null);
+        user.setCreatedAt(null);
         user.setUserState(3);
-        return 1;
+        return user;
     }
 
     public boolean checkPassword(String password1, String password2) {

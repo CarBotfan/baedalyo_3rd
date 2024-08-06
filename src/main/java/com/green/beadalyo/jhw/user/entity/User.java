@@ -50,7 +50,7 @@ public class User {
 
     @ColumnDefault("1")
     @Column(name = "user_state")
-    private int userState;
+    private Integer userState;
 
     @ColumnDefault("1")
     @Column(name = "user_login_type")
