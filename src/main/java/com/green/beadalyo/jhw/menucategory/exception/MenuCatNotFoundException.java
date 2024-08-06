@@ -1,4 +1,4 @@
-package com.green.beadalyo.jhw.MenuCategory.exception;
+package com.green.beadalyo.jhw.menucategory.exception;
 
 public class MenuCatNotFoundException extends RuntimeException{
     public MenuCatNotFoundException() {

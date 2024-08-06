@@ -1,5 +1,6 @@
 package com.green.beadalyo.lhn.Review;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lhn.Review.model.*;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.gyb.model.Restaurant;
@@ -91,5 +92,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("select r from Review r where r.resPk = :resPk order by r.createdAt")
     Page<Review> findReviewsByResPk(Restaurant resPk, Pageable pageable);
+
+    @Query("select r from Review  r where r.userPk = :userPk order by r.createdAt")
+    Page<Review> findReviewsByUserPk(User userPk, Pageable pageable);
 
 }

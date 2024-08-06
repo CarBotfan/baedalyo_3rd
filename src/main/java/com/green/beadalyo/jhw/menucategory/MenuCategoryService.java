@@ -1,8 +1,8 @@
-package com.green.beadalyo.jhw.MenuCategory;
+package com.green.beadalyo.jhw.menucategory;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.MenuCategory.exception.MenuCatNotFoundException;
-import com.green.beadalyo.jhw.MenuCategory.model.*;
+import com.green.beadalyo.jhw.menucategory.exception.MenuCatNotFoundException;
+import com.green.beadalyo.jhw.menucategory.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
