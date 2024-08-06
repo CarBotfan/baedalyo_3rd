@@ -183,7 +183,7 @@ public class OrderController {
 
             order.setOrderPrice(totalPrice.get());
             orderService.saveOrder(order) ;
-            if (order.getOrderState() == 2) SSEApiController.sendEmitters("OrderRequest");
+            if (order.getOrderState() == 2) SSEApiController.sendEmitters("OrderRequest", order.getOrderResPk().getUser());
             return ResultDto.builder().resultData(order.getOrderPk()).build();
 
 

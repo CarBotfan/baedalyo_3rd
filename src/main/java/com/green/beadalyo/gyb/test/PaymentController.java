@@ -1,5 +1,6 @@
 package com.green.beadalyo.gyb.test;
 
+import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.sse.SSEApiController;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
@@ -43,7 +44,8 @@ public class PaymentController
         userService.save(user);
         order.setOrderState(2);
         orderService.saveOrder(order);
-        sse.sendEmitters("OrderRequest");
+        User user2 = order.getOrderResPk().getUser() ;
+        sse.sendEmitters("OrderRequest",user2);
 
 
     }

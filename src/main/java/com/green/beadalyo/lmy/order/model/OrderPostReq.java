@@ -16,7 +16,7 @@ public class OrderPostReq {
     private Long orderResPk;
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "요청사항" , description = "주문요구사항")
     private String orderRequest;
-    @Schema(example = "결제수단 키", description = "1 : 현금결제(후불) / 2 : 카드결제(후불) / 3 : 통합모듈 결제(선불) / 4 : 계좌이체 결제(선불) / 5 : 가상계좌 결제(선불) / 5 : 휴대폰 결제(선불)")
+    @Schema(example = "결제수단 키", description = "1 : 현금결제(후불) / 2 : 카드결제(후불) / 3 : 통합모듈 결제(선불) / 4 : 계좌이체 결제(선불) / 5 : 가상계좌 결제(선불) / 6 : 휴대폰 결제(선불)")
     private Integer paymentMethod;
     @Schema(example = "전화번호", description = "주문 전화번호")
     private String orderPhone;
