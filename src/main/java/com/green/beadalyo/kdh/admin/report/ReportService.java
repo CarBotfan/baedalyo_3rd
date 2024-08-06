@@ -1,5 +1,7 @@
 package com.green.beadalyo.kdh.admin.report;
 
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.admin.report.model.GetReportListResInterface;
 import com.green.beadalyo.kdh.admin.report.model.GetReportOneResInterface;
 import com.green.beadalyo.kdh.admin.repository.ReportRepository;
@@ -12,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportService {
     private final ReportRepository reportRepository;
+    private final UserRepository userRepository;
 
     public List<GetReportListResInterface> getReportList(){
         return reportRepository.findReportList();
@@ -27,5 +30,9 @@ public class ReportService {
 
     public GetReportOneResInterface getReportOne(Long reportPk){
         return reportRepository.findReportOneByReportPk(reportPk);
+    }
+
+    public User makeUserEntity(User user){
+
     }
 }

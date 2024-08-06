@@ -61,4 +61,5 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
                             "WHERE r.report_pk = :reportPk",nativeQuery = true
                             )
     GetReportOneResInterface findReportOneByReportPk(Long reportPk);
+
 }
