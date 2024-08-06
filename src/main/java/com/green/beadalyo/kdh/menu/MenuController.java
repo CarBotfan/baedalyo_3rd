@@ -25,6 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -132,14 +133,14 @@ public class MenuController {
                                                     "<p> -1 : 메뉴 리스트 불러오기 실패 </p>" +
                                                     "<p> -2 : 소유한 가게가 없음 </p>"
                                                     )
-    public ResultDto<List<Map<MenuCatDto, List<GetAllMenuRes>>>> getAllMenu(){
-        List<Map<MenuCatDto, List<GetAllMenuRes>>> result = null;
+    public ResultDto<List<MenuListGetRes>> getAllMenu(){
+        List<MenuListGetRes> result = null;
         try {
             User user = userServiceImpl.getUser(authenticationFacade.getLoginUserPk());
             Restaurant res = restaurantService.getRestaurantData(user);
             result = service.getMenuList(res);
         } catch (RuntimeException e){
-            return ResultDto.<List<Map<MenuCatDto, List<GetAllMenuRes>>>>builder()
+            return ResultDto.<List<MenuListGetRes>>builder()
                     .statusCode(-2)
                     .resultMsg("소유한 가게가 없음")
                     .resultData(result)
@@ -147,14 +148,14 @@ public class MenuController {
         }
         catch (Exception e){
             e.printStackTrace();
-            return ResultDto.<List<Map<MenuCatDto, List<GetAllMenuRes>>>>builder()
+            return ResultDto.<List<MenuListGetRes>>builder()
                     .statusCode(-1)
                     .resultMsg("메뉴 리스트 불러오기 실패")
                     .resultData(result)
                     .build();
         }
 
-        return ResultDto.<List<Map<MenuCatDto, List<GetAllMenuRes>>>>builder()
+        return ResultDto.<List<MenuListGetRes>>builder()
                 .statusCode(1)
                 .resultMsg("메뉴 리스트 불러오기 완료")
                 .resultData(result)

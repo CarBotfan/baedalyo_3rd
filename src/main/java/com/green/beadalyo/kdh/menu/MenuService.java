@@ -164,22 +164,23 @@ public class MenuService {
         return 1;
     }
 
-    public List<Map<MenuCatDto, List<GetAllMenuRes>>> getMenuList(Restaurant res) {
-        List<Map<MenuCatDto, List<GetAllMenuRes>>> result = new ArrayList<>();
-        Map<MenuCatDto, List<GetAllMenuRes>> map = new LinkedHashMap<>();
+    public List<MenuListGetRes> getMenuList(Restaurant res) {
         List<MenuCategory> menuCatList = menuCategoryRepository.findMenuCategoriesByRestaurantOrderByPosition(res);
         List<MenuEntity> menuList = menuRepository.findByMenuResPk(res);
+        List<MenuListGetRes> result = new ArrayList<>();
         for (MenuCategory menuCategory : menuCatList) {
+            MenuListGetRes menuListGetRes = new MenuListGetRes();
+            menuListGetRes.setMenuCategory(new MenuCatDto(menuCategory));
+
             List<GetAllMenuRes> menuDtoList = new ArrayList<>();
-            MenuCatDto menuCatDto = new MenuCatDto(menuCategory);
             for (MenuEntity menu : menuList) {
                 if (menu.getMenuCategory() != null && menu.getMenuCategory().equals(menuCategory)) {
                     menuDtoList.add(new GetAllMenuRes(menu));
                 }
             }
-            map.put(menuCatDto, menuDtoList);
+            menuListGetRes.setMenu(menuDtoList);
+            result.add(menuListGetRes);
         }
-        result.add(map);
         return result;
     }
 }
