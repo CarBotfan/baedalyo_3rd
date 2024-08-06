@@ -10,13 +10,19 @@
 </head>
 <body>
 
+<!--기본 로직
+        /api/order 로 주문정보를 전송 후 반환되는 OrderPK 고유 번호를 결제모듈의 customData 에 첨부하여 보냄.
+        즉 결제 준비(/api/order/) -> 실 결제 -> 결제완료 훅을 전송받을시 결제 완료로 상태변경 및 SSE 로 갱신요청 -> 갱신
+        후불 결제(1, 2)의 경우 실 결제 부분은 스킵되고 바로 SSE 로 갱신요청이 전송 됨.
+-->
     <select id="testselect">
-        <option value="1">후불 현금결제</option>
-        <option value="2">후불 신용카드 결제</option>
-        <option value="3">통합모듈</option>
-        <option value="4">실시간 계좌이체</option>
-        <option value="5">가상계좌</option>
-        <option value="6">휴대폰 소액결제</option>
+<!--    data-int 값은 주문 보낼때 paymentMethod 에 첨부해서 보내기 -->
+        <option value="" data-int="1">후불 현금결제</option>
+        <option value="" data-int="2">후불 신용카드 결제</option>
+        <option value="CARD" data-int="3">통합모듈</option>
+        <option value="TRANSFER" data-int="4">실시간 계좌이체</option>
+        <option value="VIRTUAL_ACCOUNT" data-int="5">가상계좌</option>
+        <option value="MOBILE" data-int="6">휴대폰 소액결제</option>
     </select>
     <button id="testinsurance">
         버튼
@@ -29,10 +35,10 @@
 
             let pay
             switch (payment) {
-                case "5":
+                case "VIRTUAL_ACCOUNT":
                     pay = { virtualAccount: { accountExpiry: { validHours : 1 } } };
                     break;
-                case "6":
+                case "MOBILE":
                     pay = { productType: "DIGITAL" };
                     break;
                 default:
@@ -55,7 +61,7 @@
                     customerId: "", //JWT 토큰 첨부
                 },
                 customData: "", // 주문 API 전송 후 리턴되는 고유 PK 첨부
-                redirectUrl: "http://localhost:8080/",
+                redirectUrl: "http://localhost:8080/",// 결제완료후 이동되는 페이지 URL
             });
             console.log(response) ;
         })
