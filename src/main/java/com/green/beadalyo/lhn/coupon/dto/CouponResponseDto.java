@@ -33,5 +33,6 @@ public class CouponResponseDto {
         this.content = content;
         this.price = price;
         this.createdAt = createdAt;
+        this.minOrderAmount = minOrderAmount;
     }
 }

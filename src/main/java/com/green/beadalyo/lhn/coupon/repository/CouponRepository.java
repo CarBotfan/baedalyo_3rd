@@ -12,5 +12,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
     @Query("SELECT c FROM Coupon c WHERE c.restaurant.seq = :restaurantId")
     List<Coupon> findByRestaurantId(@Param("restaurantId") Long restaurantId);
+//    List<Coupon> findAllByRestaurantId(@Param("restaurantId") Long restaurantId);
 }
 
