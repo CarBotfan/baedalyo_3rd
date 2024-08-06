@@ -32,8 +32,11 @@ public class CouponService {
     public Coupon createCoupon(CouponPostReq p) {
         User user = userRepository.findByUserPk(authenticationFacade.getLoginUserPk());
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(user);
-        p.setRestaurant(restaurant);
+        if (restaurant == null) {
+            throw new RuntimeException("쿠폰을 생성할 권한이 없는 사용자입니다");
+        }
 
+        p.setRestaurant(restaurant);
         Coupon coupon = new Coupon();
         coupon.setRestaurant(p.getRestaurant());
         coupon.setMinOrderAmount(p.getMinOrderAmount());
