@@ -1,10 +1,12 @@
 package com.green.beadalyo.lhn.coupon.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class CouponResponseDto {
 
     // 쿠폰의 고유 ID
@@ -22,7 +24,10 @@ public class CouponResponseDto {
     // 쿠폰 생성 일시
     private LocalDateTime createdAt;
 
-    public CouponResponseDto(Long id, String name, String content, Long price, LocalDateTime createdAt) {
+    //쿠폰 최소주문금액
+    private Long minOrderAmount;
+
+    public CouponResponseDto(Long id, String name, String content, Long price, Long minOrderAmount, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.content = content;

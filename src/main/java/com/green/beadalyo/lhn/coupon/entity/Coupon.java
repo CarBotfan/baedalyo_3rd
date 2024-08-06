@@ -34,8 +34,8 @@ public class Coupon {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CouponUser> couponUsers;
+    @Column(name = "min_order_amount")
+    private Long minOrderAmount; // 최소 주문 금액 필드 추가
 
 
 }
