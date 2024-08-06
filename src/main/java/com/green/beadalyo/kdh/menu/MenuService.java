@@ -2,7 +2,6 @@ package com.green.beadalyo.kdh.menu;
 
 
 import com.green.beadalyo.common.CustomFileUtils;
-import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.MenuCategory.MenuCategoryRepository;
@@ -13,8 +12,7 @@ import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
-import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
-import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
+import com.green.beadalyo.kdh.menuOption.MenuOptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,7 @@ public class MenuService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuCategoryRepository menuCategoryRepository;
-
+    private final MenuOptionRepository menuOptionRepository;
 
     //메뉴 등록하기
     @Transactional
@@ -182,5 +180,8 @@ public class MenuService {
         result.add(map);
         return result;
     }
+
+    public MenuEntity getMenuByOptionPk(Long optionPk) {return menuRepository.getReferenceById(menuOptionRepository.getReferenceById(optionPk).getSeq());}
+    public MenuEntity getMenuByMenuPk(Long menuPk) {return menuRepository.getReferenceById(menuPk);}
 }
 

@@ -52,5 +52,4 @@ public class MenuOption
     @UpdateTimestamp
     private LocalDateTime updatedAt ;
 
-
 }

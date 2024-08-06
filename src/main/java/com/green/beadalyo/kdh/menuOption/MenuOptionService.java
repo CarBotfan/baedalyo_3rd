@@ -1,65 +1,108 @@
 package com.green.beadalyo.kdh.menuOption;
 
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.kdh.menu.repository.MenuRepository;
 import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
 import com.green.beadalyo.kdh.menuOption.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class MenuOptionService {
 
-    final MenuOptionRepository repository ;
+    private final UserRepository userRepository;
+    private final AuthenticationFacade authenticationFacade;
+    private final MenuOptionRepository menuOptionRepository ;
+    private final MenuRepository menuRepository ;
 
     public List<MenuOption> getListIn(List<Long> ids)
     {
-        return repository.findBySeqIn(ids) ;
+        return menuOptionRepository.findBySeqIn(ids) ;
     }
 
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    public MenuOption makeOptionEntity(PostMenuOptionReq req) {
+        MenuOption entity = new MenuOption();
+        MenuEntity menuEntity = menuRepository.getReferenceById(req.getOptionMenuPk());
+        entity.setMenu(menuEntity);
+        entity.setOptionName(req.getOptionName());
+        entity.setOptionPrice(req.getOptionPrice());
 
+        return entity;
+    }
 
+    public MenuOption saveOption(MenuOption entity) {
+        return menuOptionRepository.save(entity);
+    }
 
-//    private final MenuOptionMapper mapper;
-//
-//    public PostMenuOptionRes postMenuOption(PostMenuOptionReq p){
-//        mapper.postMenuOption(p);
-//
-//        return PostMenuOptionRes.builder()
-//                .optionPk(p.getOptionPk())
-//                .optionMenuPk(p.getOptionMenuPk())
-//                .option1Name(p.getOption1Name())
-//                .option2Name(p.getOption2Name())
-//                .optionPrice(p.getOptionPrice())
-//                .optionState(p.getOptionState())
-//                .build();
-//    }
-//    public List<GetMenuWithOptionRes> getMenuWithOption(GetMenuWithOptionReq p){
-//
-//        return mapper.getMenuWithOption(p);
-//    }
-//    public PutMenuOptionRes putMenuOption(PutMenuOptionReq p){
-//        mapper.putMenuOption(p);
-//        GetMenuOptionReq req = new GetMenuOptionReq(p.getOptionPk());
-//        GetMenuOptionRes afterPutMenuOption = mapper.getMenuOption(req);
-//
-//
-//        return PutMenuOptionRes.builder()
-//                .optionPk(afterPutMenuOption.getOptionPk())
-//                .optionMenuPk(afterPutMenuOption.getOptionMenuPk())
-//                .option1Name(afterPutMenuOption.getOption1Name())
-//                .option2Name(afterPutMenuOption.getOption2Name())
-//                .optionPrice(afterPutMenuOption.getOptionPrice())
-//                .optionState(afterPutMenuOption.getOptionState())
-//                .createdAt(afterPutMenuOption.getCreatedAt())
-//                .updatedAt(afterPutMenuOption.getUpdatedAt())
-//                .build();
-//    }
-//
-//    public int delMenuOption(DelMenuOptionReq p){
-//        int affectedRow = mapper.delMenuOption(p);
-//        return affectedRow;
-//    }
+    public boolean validateMenuOwner(Long menuPk) {
+        MenuEntity menuEntity = menuRepository.getReferenceById(menuPk);
+        Restaurant restaurant = menuEntity.getMenuResPk();
+        User resUser = restaurant.getUser();
+        long resUserPk = resUser.getUserPk();
+        long userPk = authenticationFacade.getLoginUserPk();
 
+        return resUserPk == userPk;
+    }
+
+    public PostMenuOptionRes makePostMenuOptionRes(MenuOption entity) {
+        PostMenuOptionRes res = new PostMenuOptionRes();
+        res.setOptionName(entity.getOptionName());
+        res.setOptionPrice(entity.getOptionPrice());
+        res.setOptionMenuPk(entity.getMenu().getMenuPk());
+        res.setOptionPrice(entity.getOptionPrice());
+        res.setOptionState(entity.getOptionState());
+        return res;
+    }
+
+    public PutMenuOptionRes makePutMenuOptionRes(MenuOption entity) {
+        PutMenuOptionRes res = new PutMenuOptionRes();
+        res.setOptionName(entity.getOptionName());
+        res.setOptionPrice(entity.getOptionPrice());
+        res.setOptionMenuPk(entity.getMenu().getMenuPk());
+        res.setOptionPrice(entity.getOptionPrice());
+        res.setOptionState(entity.getOptionState());
+        return res;
+    }
+
+    public MenuOption updateOptionEntity(PutMenuOptionReq req) {
+        MenuOption entity = menuOptionRepository.getReferenceById(req.getOptionPk());
+        entity.setOptionName(req.getOptionName());
+        entity.setOptionPrice(req.getOptionPrice());
+        return entity;
+    }
+
+    public MenuOption changeOptionState(Long optionPk) {
+        MenuOption entity = menuOptionRepository.getReferenceById(optionPk);
+        Integer state = entity.getOptionState();
+
+        switch (state) {
+            case 1: entity.setOptionState(2);
+            case 2: entity.setOptionState(1);
+            default: ;
+        }
+
+        return entity;
+    }
+
+    public MenuOption deleteOption(Long optionPk) {
+        MenuOption entity = menuOptionRepository.getReferenceById(optionPk);
+        entity.setOptionState(3);
+
+        return entity;
+    }
+
+    public List<GetMenuOptionRes> getMenuOptions(MenuEntity menu) {
+        List<GetMenuOptionRes> result = menuOptionRepository.한개메뉴 옵션들 전부 가지고오기 get
+    }
 }

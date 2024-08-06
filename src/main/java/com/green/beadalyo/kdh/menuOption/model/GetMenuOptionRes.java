@@ -8,8 +8,7 @@ import lombok.Setter;
 public class GetMenuOptionRes {
     private long optionPk;
     private long optionMenuPk;
-    private String option1Name;
-    private String option2Name;
+    private String optionName;
     private int optionPrice;
     private int optionState;
     private String createdAt;
