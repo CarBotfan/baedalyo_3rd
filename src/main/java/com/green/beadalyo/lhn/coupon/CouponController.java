@@ -6,6 +6,7 @@ import com.green.beadalyo.lhn.coupon.entity.Coupon;
 import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.lhn.coupon.model.CouponPostReq;
+import com.green.beadalyo.lhn.coupon.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class CouponController {
     }
 
     // 가게별 쿠폰 조회
-    @GetMapping("가게 쿠폰 조회")
+    @GetMapping("가게 쿠폰 조회/{restaurantId}")
     public ResponseEntity<ResultDto<List<CouponResponseDto>>> getCouponsByRestaurant(@PathVariable Long restaurantId) {
         try {
             List<Coupon> coupons = couponService.getCouponsByRestaurant(restaurantId);
@@ -55,6 +56,23 @@ public class CouponController {
                     .resultMsg(e.getMessage())
                     .build());
         }
+    }
+
+    // 가게 주인이 생성한 쿠폰 목록 조회
+    @GetMapping("/가게주인 쿠폰목록조회")
+    public ResultDto<List<CouponResponseDto>> getCouponsByOwner() {
+        List<CouponResponseDto> coupons = couponService.getCouponsByOwner();
+//        List<CouponResponseDto> couponResponseDtos = coupons.stream()
+//                .map(CouponResponseDto::new)
+//                .collect(Collectors.toList());
+
+
+
+        return ResultDto.<List<CouponResponseDto>>builder()
+                .statusCode(1)
+                .resultMsg("쿠폰 목록 조회 완료")
+                .resultData(coupons)
+                .build();
     }
 
     // 쿠폰 발급

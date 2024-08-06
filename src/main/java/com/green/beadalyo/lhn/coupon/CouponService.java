@@ -5,6 +5,7 @@ import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.lhn.coupon.dto.CouponResponseDto;
 import com.green.beadalyo.lhn.coupon.entity.Coupon;
 import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lhn.coupon.model.CouponPostReq;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -50,6 +52,35 @@ public class CouponService {
     public List<Coupon> getCouponsByRestaurant(Long restaurantId) {
         return couponRepository.findByRestaurantId(restaurantId);
     }
+
+    // 사장님 쿠폰 조회
+    @Transactional(readOnly = true)
+    public List<CouponResponseDto> getCouponsByOwner() {
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        User user = userRepository.findByUserPk(loginUserPk);
+        Restaurant restaurant = restaurantRepository.findRestaurantByUser(user);
+
+        if (restaurant == null) {
+            throw new IllegalArgumentException("가게의 주인이 아닙니다.");
+        }
+
+        List<Coupon> list = couponRepository.findByRestaurantId(restaurant.getSeq());
+        List<CouponResponseDto> result = new ArrayList<>();
+        for (int a = 0; a < list.size(); a++) {
+            CouponResponseDto data = new CouponResponseDto(
+                    list.get(a).getId(),
+                    list.get(a).getName(),
+                    list.get(a).getContent(),
+                    list.get(a).getPrice(),
+                    list.get(a).getMinOrderAmount(),
+                    list.get(a).getCreatedAt()
+
+            );
+            result.add(data);
+        }
+        return result;
+    }
+
 
     // 쿠폰 발급
     @Transactional
