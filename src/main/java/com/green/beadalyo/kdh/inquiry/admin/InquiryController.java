@@ -26,25 +26,25 @@ public class InquiryController {
     @PostMapping()
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "고객센터 문의하기(유저용)")
-    public ResultDto<Long> postInquiry(@RequestBody PostInquiryReq p){
+    public ResultDto<Integer> postInquiry(@RequestBody PostInquiryReq p){
 
         User user = service.getUserByPk(authenticationFacade.getLoginUserPk());
         p.setUser(user);
 
-        Long result = null;
+        Integer result = null;
 
        try {
             InquiryEntity entity = service.makeInquiry(p);
             result = service.postInquiry(entity);
        } catch (Exception e){
-           return ResultDto.<Long>builder()
+           return ResultDto.<Integer>builder()
                    .statusCode(-1)
                    .resultMsg("고객문의 실패")
                    .build();
        }
 
 
-        return ResultDto.<Long>builder()
+        return ResultDto.<Integer>builder()
                 .statusCode(1)
                 .resultMsg("고객문의 완료")
                 .resultData(result).build();
