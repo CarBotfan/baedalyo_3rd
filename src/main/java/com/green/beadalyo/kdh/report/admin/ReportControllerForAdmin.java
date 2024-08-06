@@ -97,4 +97,25 @@ public class ReportControllerForAdmin {
                 .build();
     }
 
+    @DeleteMapping("{report_pk}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Operation(summary = "신고된 항목 삭제",description = "신고 중 하나를 삭제합니다")
+    public ResultDto<Integer> delReport(@PathVariable("report_pk") Long reportPk){
+
+        try {
+             service.delReport(reportPk);
+        } catch (Exception e){
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("신고 삭제 실패")
+                    .build();
+        }
+
+        return ResultDto.<Integer>builder()
+                .statusCode(1)
+                .resultMsg("신고 삭제 성공")
+                .resultData(1)
+                .build();
+    }
+
 }

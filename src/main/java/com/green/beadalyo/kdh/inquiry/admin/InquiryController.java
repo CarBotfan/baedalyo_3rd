@@ -6,14 +6,12 @@ import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.inquiry.entity.InquiryEntity;
 import com.green.beadalyo.kdh.inquiry.admin.model.PostInquiryReq;
 import com.green.beadalyo.kdh.inquiry.admin.model.PostInquiryResponseReq;
+import com.green.beadalyo.kdh.report.admin.model.GetReportOneResForAdmin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/inquiry")
@@ -74,4 +72,6 @@ public class InquiryController {
                 .resultMsg("고객문의 완료")
                 .resultData(result).build();
     }
+
+
 }

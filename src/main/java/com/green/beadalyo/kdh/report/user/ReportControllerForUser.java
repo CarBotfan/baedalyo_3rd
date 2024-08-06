@@ -70,12 +70,18 @@ public class ReportControllerForUser {
             ReportEntity reportEntity = service.makeReportForPut(p);
             service.saveReport(reportEntity);
 
-        } catch (Exception e){
+        } catch (RuntimeException e) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-2)
+                    .resultMsg("신고한 유저와 다른 유저입니다.")
+                    .build();
+        }catch (Exception e){
             return ResultDto.<Integer>builder()
                     .statusCode(-1)
                     .resultMsg("수정 실패")
                     .build();
         }
+
         return ResultDto.<Integer>builder()
                 .statusCode(1)
                 .resultMsg("수정 완료")
@@ -130,6 +136,32 @@ public class ReportControllerForUser {
                 .statusCode(1)
                 .resultMsg("불러오기 완료")
                 .resultData(result)
+                .build();
+    }
+
+    @DeleteMapping("{report_pk}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Operation(summary = "신고된 항목 삭제",description = "신고 중 하나를 삭제합니다")
+    public ResultDto<Integer> delReport(@PathVariable("report_pk") Long reportPk){
+
+        try {
+            service.delReport(reportPk);
+        } catch (RuntimeException e){
+            return ResultDto.<Integer>builder()
+                    .statusCode(-2)
+                    .resultMsg("이미 처리 된 신고사항입니다")
+                    .build();
+        } catch (Exception e){
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("신고 삭제 실패")
+                    .build();
+        }
+
+        return ResultDto.<Integer>builder()
+                .statusCode(1)
+                .resultMsg("신고 삭제 성공")
+                .resultData(1)
                 .build();
     }
 }

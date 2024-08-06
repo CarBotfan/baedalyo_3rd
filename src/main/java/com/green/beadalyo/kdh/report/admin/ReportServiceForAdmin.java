@@ -50,4 +50,9 @@ public class ReportServiceForAdmin {
         reportEntity.setReportResult(String.format("%d일 정지",p.getUserBlockDate()));
         reportRepository.save(reportEntity);
     }
+
+    public void delReport(Long reportPk){
+        ReportEntity reportEntity = reportRepository.getReferenceById(reportPk);
+        reportRepository.delete(reportEntity);
+    }
 }

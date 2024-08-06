@@ -36,8 +36,11 @@ public class ReportServiceForUser {
     }
 
     public ReportEntity makeReportForPut(ReportPutReq req) {
+
         ReportEntity reportEntity = reportRepository.getReferenceById(req.getReportPk());
-        reportEntity.setUserPk(req.getUser());
+        if ( req.getUser() != reportEntity.getUserPk()){
+            throw new RuntimeException();
+        }
         reportEntity.setReportContent(req.getReportContent());
         reportEntity.setReportTitle(req.getReportTitle());
         return reportEntity;
@@ -54,5 +57,13 @@ public class ReportServiceForUser {
 
     public GetReportOneResForUser getReportOneForUser(Long reportPk){
         return reportRepository.findReportOneForUser(reportPk);
+    }
+
+    public void delReport(Long reportPk){
+        ReportEntity reportEntity = reportRepository.getReferenceById(reportPk);
+        if (reportEntity.getReportState() == 2){
+            throw new RuntimeException();
+        }
+        reportRepository.delete(reportEntity);
     }
 }

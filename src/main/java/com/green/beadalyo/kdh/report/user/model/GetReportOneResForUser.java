@@ -4,6 +4,7 @@ public interface GetReportOneResForUser {
     String getReportTitle();
     String getReportContent();
     String getReportCreatedAt();
+    String getReportUpdatedAt();
     String getReviewContents();
     String getReviewPics1();
     String getReviewPics2();

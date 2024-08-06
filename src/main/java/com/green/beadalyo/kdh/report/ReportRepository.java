@@ -49,6 +49,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
     @Query(value = "SELECT   r.report_title AS reportTitle, "+
                             "r.report_content AS reportContent, "+
                             "(SELECT user_nickname FROM user WHERE user_pk = r.user_pk) AS reportNickName, "+
+                            "r.updated_at AS reportUpdatedAt, "+
                             "r.created_at AS reportCreatedAt, "+
                             "v.review_contents AS reviewContents, "+
                             "v.review_pics_1 AS reviewPics1, "+
@@ -78,6 +79,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
     @Query(value = "SELECT   r.report_title AS reportTitle, "+
                             "r.report_content AS reportContent, "+
                             "r.created_at AS reportCreatedAt, "+
+                            "r.updated_at AS reportUpdatedAt, "+
                             "v.review_contents AS reviewContents, "+
                             "v.review_pics_1 AS reviewPics1, "+
                             "v.review_pics_2 AS reviewPics2, "+
