@@ -5,6 +5,9 @@ import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
+import com.green.beadalyo.jhw.MenuCategory.MenuCategoryRepository;
+import com.green.beadalyo.jhw.MenuCategory.model.MenuCatDto;
+import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
@@ -18,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final MenuCategoryRepository menuCategoryRepository;
 
 
     //메뉴 등록하기
@@ -149,5 +153,34 @@ public class MenuService {
         return 1;
     }
 
+    @Transactional
+    public int patchCategory(MenuPatchCategoryDto dto) {
+        if(!menuRepository.existsByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant()) || !menuCategoryRepository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())){
+            throw new RuntimeException("DB 정보 조회 실패");
+        }
+        MenuEntity menu = menuRepository.findByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant());
+        MenuCategory menuCat = menuCategoryRepository.findByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant());
+        menu.setMenuCategory(menuCat);
+        return 1;
+    }
+
+    public List<Map<MenuCatDto, List<GetAllMenuRes>>> getMenuList(Restaurant res) {
+        List<Map<MenuCatDto, List<GetAllMenuRes>>> result = new ArrayList<>();
+        Map<MenuCatDto, List<GetAllMenuRes>> map = new LinkedHashMap<>();
+        List<MenuCategory> menuCatList = menuCategoryRepository.findMenuCategoriesByRestaurantOrderByPosition(res);
+        List<MenuEntity> menuList = menuRepository.findByMenuResPk(res);
+        for (MenuCategory menuCategory : menuCatList) {
+            List<GetAllMenuRes> menuDtoList = new ArrayList<>();
+            MenuCatDto menuCatDto = new MenuCatDto(menuCategory);
+            for (MenuEntity menu : menuList) {
+                if (menu.getMenuCategory() != null && menu.getMenuCategory().equals(menuCategory)) {
+                    menuDtoList.add(new GetAllMenuRes(menu));
+                }
+            }
+            map.put(menuCatDto, menuDtoList);
+        }
+        result.add(map);
+        return result;
+    }
 }
 

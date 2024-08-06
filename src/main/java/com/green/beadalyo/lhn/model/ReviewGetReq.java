@@ -11,6 +11,9 @@ public class ReviewGetReq {
     @Schema(example = "2", description = "식당의 고유 Pk")
     private long resPk;
 
+    @Schema(example = "1", description = "페이지")
+    private Integer page;
+
 
 }
 

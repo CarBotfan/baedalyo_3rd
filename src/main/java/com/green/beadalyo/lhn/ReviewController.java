@@ -1,8 +1,11 @@
 package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.jhw.user.UserServiceImpl;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lhn.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,7 +27,8 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService service;
     private final AuthenticationFacade facade ;
-    private final UserService userService ;
+    private final UserServiceImpl userService ;
+    private final RestaurantService restaurantService;
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "고객리뷰작성")
@@ -109,7 +113,8 @@ public class ReviewController {
             // 로그인된 사용자의 역할에 따라 다른 메서드를 호출
             String userRole = facade.getLoginUserRole();
             if ("ROLE_OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
-                result = service.getOwnerReviews();
+                User user = userService.getUser(facade.getLoginUserPk());
+                result = service.reviewPagingTest(restaurantService.getRestaurantData(user), 1);
             }
             if ("ROLE_USER".equals(userRole)){
                 result = service.getCustomerReviews();
@@ -119,6 +124,7 @@ public class ReviewController {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             code = -13;
             msg = e.getMessage();
         }

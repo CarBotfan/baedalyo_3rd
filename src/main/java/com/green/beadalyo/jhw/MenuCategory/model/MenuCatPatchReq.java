@@ -1,13 +1,11 @@
 package com.green.beadalyo.jhw.MenuCategory.model;
 
-import com.green.beadalyo.gyb.model.Restaurant;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MenuCategoryInsertDto {
-    private Restaurant restaurant;
+public class MenuCatPatchReq {
+    private Long menuCatPk;
     private String menuCatName;
-    private Long position;
 }

@@ -1,13 +1,10 @@
 package com.green.beadalyo.jhw.MenuCategory;
 
-import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.MenuCategory.MenuCategoryRepository;
-import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
-import com.green.beadalyo.jhw.MenuCategory.model.MenuCategoryInsertDto;
+import com.green.beadalyo.jhw.MenuCategory.exception.MenuCatNotFoundException;
+import com.green.beadalyo.jhw.MenuCategory.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +17,8 @@ import java.util.List;
 public class MenuCategoryService {
     private final MenuCategoryRepository repository;
 
-    public void insertMenuCat(MenuCategoryInsertDto dto) {
+    @Transactional
+    public void insertMenuCat(MenuCatInsertDto dto) {
         if(dto.getMenuCatName().length() > 50) {
             throw new RuntimeException("카테고리명의 길이는 최대 50자입니다.");
         }
@@ -36,25 +34,67 @@ public class MenuCategoryService {
         return repository.findMenuCategoriesByRestaurantOrderByPosition(restaurant);
     }
 
-    public MenuCategory getMenuCat(Restaurant restaurant, Long position) {
-        if(!repository.existsByRestaurantAndPosition(restaurant, position)) {
-            throw new RuntimeException("정보 조회 실패");
+    public MenuCategory getMenuCat(Long menuCatPk) {
+        if(!repository.existsById(menuCatPk)) {
+            throw new MenuCatNotFoundException();
         }
-        return repository.findMenuCategoryByRestaurantAndPosition(restaurant, position);
+        return repository.getReferenceById(menuCatPk);
     }
 
     @Transactional
-    public int deleteMenuCat(Restaurant res, Long position) {
-        if(!repository.existsByRestaurantAndPosition(res, position)) {
-            throw new RuntimeException("정보 조회 실패");
+    public int deleteMenuCat(Long menuCatPk, Restaurant restaurant) {
+        if(!repository.existsByMenuCategoryPkAndRestaurant(menuCatPk, restaurant)) {
+            throw new MenuCatNotFoundException();
         }
-        repository.delete(repository.findMenuCategoryByRestaurantAndPosition(res, position));
-        List<MenuCategory> list = repository.findMenuCategoriesByRestaurantOrderByPosition(res);
+        MenuCategory menuCat = repository.findByMenuCategoryPkAndRestaurant(menuCatPk, restaurant);
+        List<MenuCategory> list = repository.findMenuCategoriesByRestaurantOrderByPosition(restaurant);
         for(MenuCategory mc : list) {
-            if(mc.getPosition() > position) {
+            if(mc.getPosition() > menuCat.getPosition()) {
                 mc.setPosition(mc.getPosition() - 1);
             }
         }
+        repository.delete(menuCat);
         return 1;
     }
+    @Transactional
+    public int patchMenuCat(MenuCatPatchDto dto) {
+        if(!repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())) {
+            throw new MenuCatNotFoundException();
+        }
+        MenuCategory menuCategory = repository.findByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant());
+        menuCategory.setMenuCatName(dto.getMenuCatName());
+        return 1;
+    }
+
+    @Transactional
+    public int patchMenuCatPosition(MenuCatPositionPatchDto dto) {
+        if(!repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk1(), dto.getRestaurant())) {
+            throw new MenuCatNotFoundException();
+        }
+        MenuCategory menuCategory = repository.getReferenceById(dto.getMenuCatPk1());
+        if(menuCategory.getPosition() > dto.getPosition()) {
+            List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestuaurant(dto.getRestaurant(), dto.getPosition(), menuCategory.getPosition());
+            for(MenuCategory mc : list) {
+                if(mc.getPosition() >= dto.getPosition()) {
+                    mc.setPosition(mc.getPosition() + 1);
+                }
+            }
+        } else if(menuCategory.getPosition() < dto.getPosition()) {
+            List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestuaurant(dto.getRestaurant(), menuCategory.getPosition(), dto.getPosition());
+            if(list.get(list.size()-1).getPosition() < dto.getPosition()) {
+                throw new RuntimeException("올바르지 않은 위치입니다");
+            }
+            for(MenuCategory mc : list) {
+                if(mc.getPosition() <= dto.getPosition()) {
+                    mc.setPosition(mc.getPosition() - 1);
+                }
+            }
+        }
+
+        menuCategory.setPosition(dto.getPosition());
+        return 1;
+    }
+
+
+
 }

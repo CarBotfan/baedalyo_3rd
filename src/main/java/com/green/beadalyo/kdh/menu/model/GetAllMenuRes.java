@@ -2,11 +2,16 @@ package com.green.beadalyo.kdh.menu.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GetAllMenuRes {
     private long menuPk;
@@ -16,6 +21,18 @@ public class GetAllMenuRes {
     private int menuPrice;
     private String menuPic;
     private int menuState;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public GetAllMenuRes(MenuEntity menuEntity) {
+        this.menuPk = menuEntity.getMenuPk();
+        this.menuResPk = menuEntity.getMenuResPk().getSeq();
+        this.menuName = menuEntity.getMenuName();
+        this.menuContent = menuEntity.getMenuContent();
+        this.menuPrice = menuEntity.getMenuPrice();
+        this.menuPic = menuEntity.getMenuPic();
+        this.menuState = menuEntity.getMenuState();
+        this.createdAt = menuEntity.getCreatedAt();
+        this.updatedAt = menuEntity.getUpdatedAt();
+    }
 }

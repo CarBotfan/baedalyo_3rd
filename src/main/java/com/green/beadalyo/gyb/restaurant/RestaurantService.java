@@ -61,6 +61,7 @@ public class RestaurantService
         } ;
     }
 
+
     //음식점 카테고리 기준 정보 호출
     public Page<RestaurantListView> getRestaurantByCategoryAll(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page ) throws Exception
     {
