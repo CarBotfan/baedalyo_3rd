@@ -1,6 +1,5 @@
-package com.green.beadalyo.gyb.test;
+package com.green.beadalyo.gyb.payment;
 
-import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.sse.SSEApiController;
 import com.green.beadalyo.jhw.security.MyUser;
 import com.green.beadalyo.jhw.security.MyUserDetails;
@@ -38,10 +37,10 @@ public class PaymentController
         User user = userService.getUser(myUser.getUserPk()) ;
         long paymentId = Long.parseLong(data.getCustomData());
         Order order = orderService.getOrderByOrderPk(paymentId) ;
-        if (order.getOrderUserPk() != user) return ;
-        if ((order.getOrderPrice() - order.getUseMileage()) != data.getAmount().getTotal()) return ;
-        user.setMileage(order.getUseMileage());
-        userService.save(user);
+        if (order.getOrderUserPk() != user) return ; // 실패시 로깅처리
+//        if ((order.getOrderPrice() - order.getUseMileage()) != data.getAmount().getTotal()) return ;
+//        user.setMileage(order.getUseMileage());
+//        userService.save(user);
         order.setOrderState(2);
         orderService.saveOrder(order);
         User user2 = order.getOrderResPk().getUser() ;

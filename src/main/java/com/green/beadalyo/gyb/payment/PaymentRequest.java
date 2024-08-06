@@ -1,4 +1,4 @@
-package com.green.beadalyo.gyb.test;
+package com.green.beadalyo.gyb.payment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

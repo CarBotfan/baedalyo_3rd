@@ -26,6 +26,8 @@ public class OrderPostReq {
     private List<OrderMenuReq> menu;
     @Schema(description = "유저 마일리지 사용")
     private Integer useMileage ;
+    @Schema(description = "사용할 쿠폰 고유번호")
+    private Long coupon ;
 }
 
 //    @JsonIgnore
