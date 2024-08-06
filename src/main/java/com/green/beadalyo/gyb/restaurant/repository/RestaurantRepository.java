@@ -14,4 +14,5 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long>
     Optional<Restaurant> findTop1BySeq(Long seq);
 
     Restaurant findRestaurantByUser(User user);
+    Restaurant findRestaurantBySeq(Long seq);
 }

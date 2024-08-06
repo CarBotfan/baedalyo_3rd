@@ -192,12 +192,21 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public int deleteUser(User user) throws Exception{
+    public User clearUser(User user) throws Exception{
         if(user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
+        user.setUserPw(null);
+        user.setUserName(null);
+        user.setUserNickname(null);
+        user.setUserPhone(null);
+        user.setUserEmail(null);
+        user.setUserRole(null);
+        user.setUserLoginType(null);
+        user.setUserPic(null);
+        user.setCreatedAt(null);
         user.setUserState(3);
-        return 1;
+        return user;
     }
 
     public boolean checkPassword(String password1, String password2) {
@@ -315,6 +324,31 @@ public class UserServiceImpl implements UserService{
             return mysqlMatcher.group(1);
         }
         return null;
+    }
+
+    @Override
+    public User getUserByUserNameAndUserEmail(FindUserIdReq req) throws Exception {
+        return repository.findByUserEmailAndUserName(req.getUserEmail(), req.getUserName());
+    }
+
+    @Override
+    public User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req) throws Exception {
+        return repository.findByUserEmailAndUserNameAndUserId(req.getUserEmail(), req.getUserName(), req.getUserId());
+    }
+
+    public Boolean confirmPw(FindUserPwReq req) {
+        if (req.getUserPw().equals(req.getUserPwConfirm())) {
+            return true;
+        } else return false;
+    }
+
+    public Integer saveUser(User user) {
+        try {
+            repository.save(user);
+            return 1;
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }
 

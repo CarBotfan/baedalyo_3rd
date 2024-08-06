@@ -105,7 +105,8 @@ public class RestaurantService
         if (!dto.getRegiNum().matches(regex))
             throw new DataWrongException("사업자 번호는 nnn-nn-nnnnn의 형식으로 들어와야 합니다.") ;
         Restaurant data = new Restaurant(dto);
-        repository.save(data) ;
+        data.setState(4);
+        repository.save(data);
     }
 
     //폐업 처리(사업자 회원 탈퇴시 호출 필요)
