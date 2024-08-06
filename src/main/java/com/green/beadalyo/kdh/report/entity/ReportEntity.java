@@ -1,4 +1,4 @@
-package com.green.beadalyo.kdh.admin.entity;
+package com.green.beadalyo.kdh.report.entity;
 
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lhn.Review.entity.Review;
@@ -36,8 +36,11 @@ public class ReportEntity {
     private String reportContent;
 
     @ColumnDefault("1")
-    @Column(name = "report_state")
+    @Column(name = "report_state",nullable = false)
     private int reportState;
+
+    @Column(name = "report_result")
+    private String reportResult;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
@@ -46,4 +49,6 @@ public class ReportEntity {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+
 }

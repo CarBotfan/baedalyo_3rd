@@ -1,4 +1,4 @@
-package com.green.beadalyo.kdh.admin.entity;
+package com.green.beadalyo.kdh.inquiry.entity;
 
 import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;

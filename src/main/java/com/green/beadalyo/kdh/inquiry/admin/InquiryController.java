@@ -1,11 +1,11 @@
-package com.green.beadalyo.kdh.admin.inquiry;
+package com.green.beadalyo.kdh.inquiry.admin;
 
 import com.green.beadalyo.gyb.common.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
-import com.green.beadalyo.kdh.admin.entity.InquiryEntity;
-import com.green.beadalyo.kdh.admin.inquiry.model.PostInquiryReq;
-import com.green.beadalyo.kdh.admin.inquiry.model.PostInquiryResponseReq;
+import com.green.beadalyo.kdh.inquiry.entity.InquiryEntity;
+import com.green.beadalyo.kdh.inquiry.admin.model.PostInquiryReq;
+import com.green.beadalyo.kdh.inquiry.admin.model.PostInquiryResponseReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -53,23 +53,23 @@ public class InquiryController {
     @PostMapping("response")
     @PreAuthorize("hasRole(ADMIN)")
     @Operation(summary = "고객센터 문의답변하기(어드민용)")
-    public ResultDto<Long> postInquiryResponse(@RequestBody PostInquiryResponseReq p){
+    public ResultDto<Integer> postInquiryResponse(@RequestBody PostInquiryResponseReq p){
 
 
-        Long result = null;
+        Integer result = null;
 
         try {
             InquiryEntity entity = service.makeInquiryResponse(p);
             result = service.postInquiry(entity);
         } catch (Exception e){
-            return ResultDto.<Long>builder()
+            return ResultDto.<Integer>builder()
                     .statusCode(-1)
                     .resultMsg("고객문의 실패")
                     .build();
         }
 
 
-        return ResultDto.<Long>builder()
+        return ResultDto.<Integer>builder()
                 .statusCode(1)
                 .resultMsg("고객문의 완료")
                 .resultData(result).build();

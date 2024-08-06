@@ -1,6 +1,6 @@
-package com.green.beadalyo.kdh.admin.report.model;
+package com.green.beadalyo.kdh.report.admin.model;
 
-public interface GetReportOneResInterface {
+public interface GetReportOneResForAdmin {
     String getReportTitle();
     String getReportContent();
     String getReportNickName();
@@ -11,5 +11,6 @@ public interface GetReportOneResInterface {
     String getReviewPics3();
     String getReviewPics4();
     String getReviewNickName();
+    String getReportResult();
     String getReviewCreatedAt();
 }

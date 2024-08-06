@@ -1,4 +1,4 @@
-package com.green.beadalyo.kdh.admin.report.model;
+package com.green.beadalyo.kdh.inquiry.admin.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.green.beadalyo.jhw.user.entity.User;
@@ -7,13 +7,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PatchAccountSuspensionReq {
-    private Integer userState;
+public class PostInquiryReq {
 
-    private String userBlockDate;
 
-    private Long userPk;
+    private String inquiryTitle;
+
+    private String inquiryContent;
 
     @JsonIgnore
     private User user;
+
 }

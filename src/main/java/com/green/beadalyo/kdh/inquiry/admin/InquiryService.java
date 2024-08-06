@@ -1,11 +1,11 @@
-package com.green.beadalyo.kdh.admin.inquiry;
+package com.green.beadalyo.kdh.inquiry.admin;
 
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
-import com.green.beadalyo.kdh.admin.entity.InquiryEntity;
-import com.green.beadalyo.kdh.admin.inquiry.model.PostInquiryReq;
-import com.green.beadalyo.kdh.admin.inquiry.model.PostInquiryResponseReq;
-import com.green.beadalyo.kdh.admin.repository.InquiryRepository;
+import com.green.beadalyo.kdh.inquiry.entity.InquiryEntity;
+import com.green.beadalyo.kdh.inquiry.admin.model.PostInquiryReq;
+import com.green.beadalyo.kdh.inquiry.admin.model.PostInquiryResponseReq;
+import com.green.beadalyo.kdh.inquiry.InquiryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +28,16 @@ public class InquiryService {
         return entity;
     }
 
-    public Long postInquiry(InquiryEntity entity){
-       return inquiryRepository.save(entity).getInquiryPk();
+    public Integer postInquiry(InquiryEntity entity){
+        inquiryRepository.save(entity);
+        return 1;
     }
 
     public InquiryEntity makeInquiryResponse(PostInquiryResponseReq p){
         InquiryEntity entity = new InquiryEntity();
         entity.setInquiryPk(p.getInquiryPk());
         entity.setInquiryResponse(p.getInquiryResponse());
+        entity.setInquiryState(2);
         return entity;
     }
 

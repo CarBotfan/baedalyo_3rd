@@ -1,4 +1,4 @@
-package com.green.beadalyo.kdh.admin.inquiry.model;
+package com.green.beadalyo.kdh.inquiry.admin.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.green.beadalyo.jhw.user.entity.User;
