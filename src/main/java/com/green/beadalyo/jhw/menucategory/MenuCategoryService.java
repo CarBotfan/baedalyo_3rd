@@ -73,14 +73,14 @@ public class MenuCategoryService {
         }
         MenuCategory menuCategory = repository.getReferenceById(dto.getMenuCatPk1());
         if(menuCategory.getPosition() > dto.getPosition()) {
-            List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestuaurant(dto.getRestaurant(), dto.getPosition(), menuCategory.getPosition());
+            List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestaurant(dto.getRestaurant(), dto.getPosition(), menuCategory.getPosition());
             for(MenuCategory mc : list) {
                 if(mc.getPosition() >= dto.getPosition()) {
                     mc.setPosition(mc.getPosition() + 1);
                 }
             }
         } else if(menuCategory.getPosition() < dto.getPosition()) {
-            List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestuaurant(dto.getRestaurant(), menuCategory.getPosition(), dto.getPosition());
+            List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestaurant(dto.getRestaurant(), menuCategory.getPosition(), dto.getPosition());
             if(list.get(list.size()-1).getPosition() < dto.getPosition()) {
                 throw new RuntimeException("올바르지 않은 위치입니다");
             }

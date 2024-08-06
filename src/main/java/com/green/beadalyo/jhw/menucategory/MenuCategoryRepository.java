@@ -19,5 +19,5 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long
     Boolean existsByMenuCategoryPkAndRestaurant(Long menuCatPk, Restaurant restaurant);
 
     @Query("SELECT mc from MenuCategory mc WHERE mc.restaurant = :restaurant AND mc.position between :fromPosition AND :toPosition ORDER BY mc.position ")
-    List<MenuCategory> findMenuCategoriesByPositionBetweenAndRestuaurant(Restaurant restaurant, Long fromPosition, Long toPosition);
+    List<MenuCategory> findMenuCategoriesByPositionBetweenAndRestaurant(Restaurant restaurant, Long fromPosition, Long toPosition);
 }
