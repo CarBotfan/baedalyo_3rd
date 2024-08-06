@@ -10,8 +10,8 @@ import lombok.Setter;
 @Setter
 public class ReportPostReq {
     private long reviewPk;
+    private String reportTitle;
     private String reportContent;
-    private String created_at;
 
     @JsonIgnore
     private User user;

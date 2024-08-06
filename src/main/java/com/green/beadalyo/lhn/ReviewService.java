@@ -268,7 +268,7 @@ public class ReviewService {
         reportEntity.setUserPk(req.getUser());
         reportEntity.setReviewPk(req.getReview());
         reportEntity.setReportContent(req.getReportContent());
-        reportEntity.setReportTitle(req.getReportContent());
+        reportEntity.setReportTitle(req.getReportTitle());
         return reportEntity;
     }
 

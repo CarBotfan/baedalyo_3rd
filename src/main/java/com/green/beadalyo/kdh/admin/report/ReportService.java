@@ -1,6 +1,7 @@
 package com.green.beadalyo.kdh.admin.report;
 
 import com.green.beadalyo.kdh.admin.report.model.GetReportListResInterface;
+import com.green.beadalyo.kdh.admin.report.model.GetReportOneResInterface;
 import com.green.beadalyo.kdh.admin.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,9 @@ public class ReportService {
 
     public List<GetReportListResInterface> getReportUnFinishedList(){
         return reportRepository.findReportUnFinishedList();
+    }
+
+    public GetReportOneResInterface getReportOne(Long reportPk){
+        return reportRepository.findReportOneByReportPk(reportPk);
     }
 }
