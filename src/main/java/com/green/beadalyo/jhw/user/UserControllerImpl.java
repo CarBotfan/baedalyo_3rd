@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -203,7 +204,15 @@ public class UserControllerImpl implements UserController{
             if(user == null || user.getUserState() == 3) {
                 throw new UserNotFoundException();
             }
-            if(service.checkPassword(p.getUserPw(), user. getUserPw())) {
+            if(user.getUserBlockDate() != null && user.getUserBlockDate().isBefore(LocalDate.now())) {
+                user.setUserBlockDate(null);
+                user.setUserState(1);
+                service.save(user);
+            }
+            if(user.getUserState() == 2) {
+                throw new SuspendedUserException(user.getUserBlockDate());
+            }
+            if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
             result = service.postSignIn(res, user);
@@ -212,6 +221,9 @@ public class UserControllerImpl implements UserController{
             msg = e.getMessage();
         } catch(IncorrectPwException e) {
             statusCode = -3;
+            msg = e.getMessage();
+        } catch(SuspendedUserException e) {
+            statusCode = -12;
             msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
