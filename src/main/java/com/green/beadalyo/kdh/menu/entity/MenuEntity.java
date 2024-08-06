@@ -1,7 +1,7 @@
 package com.green.beadalyo.kdh.menu.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,11 +1,10 @@
-package com.green.beadalyo.jhw.MenuCategory;
+package com.green.beadalyo.jhw.menucategory;
 
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

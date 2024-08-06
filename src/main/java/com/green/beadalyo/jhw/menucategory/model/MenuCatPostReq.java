@@ -1,4 +1,4 @@
-package com.green.beadalyo.jhw.MenuCategory.model;
+package com.green.beadalyo.jhw.menucategory.model;
 
 
 import lombok.Getter;

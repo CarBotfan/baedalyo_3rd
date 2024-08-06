@@ -9,16 +9,12 @@ import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.admin.entity.ReportEntity;
 import com.green.beadalyo.kdh.admin.repository.ReportRepository;
-import com.green.beadalyo.lhn.Review.entity.Review;
-import com.green.beadalyo.lhn.Review.model.*;
-import com.green.beadalyo.lhn.Review.ReviewRepository;
 import com.green.beadalyo.lhn.Review.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,12 +114,31 @@ public class ReviewService {
     }
 
     // 사장이 보는 자기 가게의 리뷰와 답글들
-    public List<ReviewGetRes> getOwnerReviews() {
-        long userPk = authenticationFacade.getLoginUserPk();
-        long resPk = repository.getResPkByUserPk(userPk);
-        return getReviewGetRes(resPk);
+    public ReviewGetListResponse getOwnerReviews(ReviewGetDto p) {
+        Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
+        Page<Review> page = repository.findReviewsByResPk(p.getRestaurant(), pageable);
+        List<ReviewGetRes> list = new ArrayList<>();
+        for(Review rev : page.getContent()) {
+            ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+            list.add(revRes);
+        }
+        return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
     }
+    // 손님이 보는 자기가 쓴 리뷰
 
+    public ReviewGetListResponse getCustomerReviews(ReviewGetDto p) {
+        Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
+        Page<Review> page = repository.findReviewsByUserPk(p.getUser(), pageable);
+        List<ReviewGetRes> list = new ArrayList<>();
+        for(Review rev : page.getContent()) {
+            ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+            list.add(revRes);
+        }
+
+        return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
+    }
     private List<ReviewGetRes> getReviewGetRes(long resPk) {
         List<ReviewGetRes> reviews = repository.getReviewsRestaurant(resPk);
 
@@ -132,20 +147,6 @@ public class ReviewService {
             ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
             review.setReply(reply);
             review.setNickName(repository.selectUserNickName(review.getUserPk()));
-        }
-
-        return reviews;
-    }
-
-    // 손님이 보는 자기가 쓴 리뷰
-    public List<ReviewGetRes> getCustomerReviews() {
-        long userPk = authenticationFacade.getLoginUserPk();
-        List<ReviewGetRes> reviews = repository.getReviewsUser(userPk);
-
-        for (ReviewGetRes review : reviews) {
-            addPicsToReview(review);
-            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
-            review.setReply(reply);
         }
 
         return reviews;

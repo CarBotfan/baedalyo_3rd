@@ -1,11 +1,11 @@
-package com.green.beadalyo.jhw.MenuCategory;
+package com.green.beadalyo.jhw.menucategory;
 
 import com.green.beadalyo.gyb.common.ResultDto;
 import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
-import com.green.beadalyo.jhw.MenuCategory.exception.MenuCatNotFoundException;
-import com.green.beadalyo.jhw.MenuCategory.model.*;
+import com.green.beadalyo.jhw.menucategory.exception.MenuCatNotFoundException;
+import com.green.beadalyo.jhw.menucategory.model.*;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
