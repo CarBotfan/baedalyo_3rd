@@ -1,7 +1,7 @@
 package com.green.beadalyo.lhn.Review.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.green.beadalyo.lhn.entity.Review;
+import com.green.beadalyo.lhn.Review.entity.Review;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

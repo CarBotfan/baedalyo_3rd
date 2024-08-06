@@ -3,8 +3,8 @@ package com.green.beadalyo.lhn.Review;
 import com.green.beadalyo.lhn.Review.model.*;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.lhn.entity.Review;
-import com.green.beadalyo.lhn.model.*;
+import com.green.beadalyo.lhn.Review.entity.Review;
+import com.green.beadalyo.lhn.Review.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,7 +39,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(nativeQuery = true, value = "SELECT review_pk AS reviewPk, review_comment_pk AS reviewCommentPk, comment_content AS commentContents FROM review_comment WHERE review_pk = :reviewPk")
     ReviewReplyRes getReviewComment(@Param("reviewPk") Long reviewPk);
 
-    @Query("select new com.green.beadalyo.lhn.model.ReviewReplyRes(rc.reviewPk.reviewPk, rc.reviewCommentPk, rc.commentContent) from ReviewComment rc where rc.reviewPk = :review")
+    @Query("select new com.green.beadalyo.lhn.Review.model.ReviewReplyRes(rc.reviewPk.reviewPk, rc.reviewCommentPk, rc.commentContent) from ReviewComment rc where rc.reviewPk = :review")
     ReviewReplyRes findReviewReplyByReviewPk(Review review);
     // 사장님 레스토랑 조회
     @Query(nativeQuery = true, value = "SELECT res_user_pk FROM restaurant WHERE res_pk = (SELECT res_pk FROM review WHERE review_pk = :reviewPk)")

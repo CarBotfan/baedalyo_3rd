@@ -75,7 +75,8 @@ public class UserControllerImpl implements UserController{
             service.duplicatedInfoCheck(user);
 
 
-            user.setUserPic(service.uploadProfileImage(pic));
+            String picName = service.uploadProfileImage(pic);
+            user.setUserPic(picName);
             service.postUserSignUp(user);
 
             result = 1;
@@ -108,7 +109,6 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @Transactional
     @PostMapping(value = "/owner/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
             , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "음식점 사장 회원가입", description = "음식점 사장 가입을 진행합니다")
@@ -138,9 +138,9 @@ public class UserControllerImpl implements UserController{
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
             User user = new User(req);
             service.duplicatedInfoCheck(user);
-
-            long userPk = service.postUserSignUp(user);
-            user.setUserPic(service.uploadProfileImage(pic));
+            String picName = service.uploadProfileImage(pic);
+            user.setUserPic(picName);
+            service.postUserSignUp(user);
 
             RestaurantInsertDto dto = new RestaurantInsertDto();
             dto.setUser(user);

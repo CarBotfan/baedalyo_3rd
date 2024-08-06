@@ -7,9 +7,9 @@ import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.admin.entity.ReportEntity;
-import com.green.beadalyo.lhn.entity.Review;
-import com.green.beadalyo.lhn.model.*;
+import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.lhn.Review.model.*;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
