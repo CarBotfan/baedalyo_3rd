@@ -90,6 +90,7 @@ public class DoneOrder {
                 return doneOption ;
             }).toList() ;
             doneMenu.setDoneMenuOption(options);
+            this.doneOrderMenus.add(doneMenu) ;
         }) ;
 
     }
