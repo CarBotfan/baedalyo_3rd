@@ -46,7 +46,6 @@ public class UserControllerImpl implements UserController{
     private final UserAddrServiceImpl userAddrService;
 
     @Override
-    @Transactional
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
             , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "일반 유저 회원가입", description = "일반 유저 회원가입을 진행합니다")
@@ -77,8 +76,8 @@ public class UserControllerImpl implements UserController{
             User user = new User(p);
 
 
-            service.postUserSignUp(user);
             user.setUserPic(service.uploadProfileImage(pic));
+            service.postUserSignUp(user);
 
             result = 1;
         } catch (DuplicatedIdException e) {

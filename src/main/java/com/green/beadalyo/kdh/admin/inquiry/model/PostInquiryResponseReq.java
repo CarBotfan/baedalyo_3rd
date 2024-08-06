@@ -7,14 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PostInquiryReq {
+public class PostInquiryResponseReq {
 
+    private Long inquiryPk;
 
-    private String inquiryTitle;
-
-    private String inquiryContent;
-
-    @JsonIgnore
-    private User user;
+    private String inquiryResponse;
 
 }

@@ -24,10 +24,10 @@ public class InquiryEntity {
     @JoinColumn(name = "user_pk", nullable = false)
     private User userPk;
 
-    @Column(name = "inquiry_title")
+    @Column(name = "inquiry_title", nullable = false)
     private String inquiryTitle;
 
-    @Column(name = "inquiry_content")
+    @Column(name = "inquiry_content", nullable = false)
     private String inquiryContent;
 
     @ColumnDefault("1")

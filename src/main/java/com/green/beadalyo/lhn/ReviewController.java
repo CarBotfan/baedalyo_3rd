@@ -291,26 +291,25 @@ public class ReviewController {
         p.setReview(review);
         p.setUser(user);
 
-        Long result = null;
+
 
         //그럼 만들고 pk를 리턴하겟쬬?
 
         try {
 
             ReportEntity reportEntity = service.makeReport(p);
-            result = service.saveReport(reportEntity);
+             service.saveReport(reportEntity);
 
         } catch (Exception e){
             return ResultDto.<Long>builder()
                     .statusCode(-1)
                     .resultMsg("리뷰 신고 실패")
-                    .resultData(result)
                     .build();
         }
         return ResultDto.<Long>builder()
                 .statusCode(1)
                 .resultMsg("리뷰 신고 완료")
-                .resultData(result)
+                .resultData(1L)
                 .build();
     }
 }

@@ -4,6 +4,7 @@ import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.admin.entity.InquiryEntity;
 import com.green.beadalyo.kdh.admin.inquiry.model.PostInquiryReq;
+import com.green.beadalyo.kdh.admin.inquiry.model.PostInquiryResponseReq;
 import com.green.beadalyo.kdh.admin.repository.InquiryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,4 +31,12 @@ public class InquiryService {
     public Long postInquiry(InquiryEntity entity){
        return inquiryRepository.save(entity).getInquiryPk();
     }
+
+    public InquiryEntity makeInquiryResponse(PostInquiryResponseReq p){
+        InquiryEntity entity = new InquiryEntity();
+        entity.setInquiryPk(p.getInquiryPk());
+        entity.setInquiryResponse(p.getInquiryResponse());
+        return entity;
+    }
+
 }

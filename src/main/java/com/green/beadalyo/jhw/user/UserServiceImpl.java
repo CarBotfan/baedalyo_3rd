@@ -346,9 +346,7 @@ public class UserServiceImpl implements UserService{
         if(userId.length() < 8) {
             throw new RuntimeException("Id는 8자 이상이어야 합니다.");
         }
-        User user = repository.findUserByUserId(userId);
-        UserInfoGetRes result = new UserInfoGetRes(user);
-        if(result.getUserId().equals(userId)) {
+        if(repository.existsByUserId(userId)) {
             throw new DuplicatedIdException();
         }
         return 1;

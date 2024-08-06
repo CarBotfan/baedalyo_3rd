@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     User findUserByUserId(String userId);
+    Boolean existsByUserId(String userId);
 
     User findByUserPk(Long userPk);
 

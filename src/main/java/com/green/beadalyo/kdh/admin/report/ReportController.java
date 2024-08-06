@@ -61,10 +61,10 @@ public class ReportController {
                 .build();
     }
 
-    @GetMapping("report_one")
+    @GetMapping("{report_one}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "신고된 항목 자세히 보기",description = "신고 중 하나를 선택해 봅니다")
-    public ResultDto<GetReportOneResInterface> getReportOne(@PathVariable(name = "report_Pk") Long reportPk){
+    public ResultDto<GetReportOneResInterface> getReportOne(@PathVariable(name = "report_pk") Long reportPk){
         GetReportOneResInterface result = service.getReportOne(reportPk);
 
         return ResultDto.<GetReportOneResInterface>builder()
