@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MenuCategoryInsertDto {
+public class MenuCatInsertDto {
     private Restaurant restaurant;
     private String menuCatName;
     private Long position;

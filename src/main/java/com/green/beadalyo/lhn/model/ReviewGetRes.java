@@ -1,10 +1,14 @@
 package com.green.beadalyo.lhn.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.green.beadalyo.lhn.entity.Review;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +39,10 @@ public class ReviewGetRes {
     private int reviewState;
 
     @Schema(description = "리뷰 생성 일자")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Schema(description = "리뷰 수정 일자")
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 
     @Schema(example = "감사" ,description = "사장님의 리뷰에 대한 답변")
     private ReviewReplyRes reply;
@@ -57,4 +61,18 @@ public class ReviewGetRes {
 
     private String resName;
 
+    public ReviewGetRes(Review review) {
+        this.reviewPk = review.getReviewPk();
+        this.userPk = review.getUserPk().getUserPk();
+        this.nickName = review.getUserPk().getUserNickname();
+        this.reviewContents = review.getReviewContents();
+        this.reviewRating = review.getReviewRating();
+        this.createdAt = review.getCreatedAt();
+        this.updatedAt = review.getUpdatedAt();
+        this.reviewPics1 = review.getReviewPics1();
+        this.reviewPics2 = review.getReviewPics2();
+        this.reviewPics3 = review.getReviewPics3();
+        this.reviewPics4 = review.getReviewPics4();
+        this.resName = review.getResPk().getName();
+    }
 }

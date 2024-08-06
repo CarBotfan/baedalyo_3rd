@@ -11,7 +11,6 @@ import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,14 +27,14 @@ public class MenuCategoryController {
     private final AuthenticationFacade authenticationFacade;
 
     @PostMapping
-    public ResultDto<Integer> postMenuCat(@RequestBody MenuCategoryPostReq p) {
+    public ResultDto<Integer> postMenuCat(@RequestBody MenuCatPostReq p) {
         int result = 0;
         int statusCode = 1;
         String msg = "카테고리 등록 완료";
         try {
             User user = userService.getUser(authenticationFacade.getLoginUserPk());
             Restaurant restaurant = restaurantService.getRestaurantData(user);
-            MenuCategoryInsertDto dto = new MenuCategoryInsertDto();
+            MenuCatInsertDto dto = new MenuCatInsertDto();
             dto.setMenuCatName(p.getMenuCategoryName());
             dto.setRestaurant(restaurant);
             dto.setPosition(service.getMenuCatCount(restaurant) + 1);
@@ -56,8 +55,8 @@ public class MenuCategoryController {
     }
 
     @GetMapping("/list")
-    public ResultDto<List<MenuCategoryGetRes>> getMenuCatResList() {
-        List<MenuCategoryGetRes> result = new ArrayList<>();
+    public ResultDto<List<MenuCatGetRes>> getMenuCatResList() {
+        List<MenuCatGetRes> result = new ArrayList<>();
         int statusCode = 1;
         String msg = "카테고리 목록 조회 성공";
         try {
@@ -65,7 +64,7 @@ public class MenuCategoryController {
             Restaurant restaurant = restaurantService.getRestaurantData(user);
             List<MenuCategory> list = service.getMenuCatList(restaurant);
             for(MenuCategory menuCat : list) {
-                result.add(new MenuCategoryGetRes(menuCat));
+                result.add(new MenuCatGetRes(menuCat));
             }
         } catch(DataNotFoundException e) {
             msg = "식당 정보를 찾을 수 없음";
@@ -78,19 +77,19 @@ public class MenuCategoryController {
             msg = e.getMessage();
             statusCode = -1;
         }
-        return ResultDto.<List<MenuCategoryGetRes>>builder()
+        return ResultDto.<List<MenuCatGetRes>>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
                 .resultData(result).build();
     }
 
     @GetMapping("/{menu_cat_pk}")
-    public ResultDto<MenuCategoryGetRes> getMenuCat(@PathVariable(name = "menu_cat_pk") Long MenuCatPk) {
+    public ResultDto<MenuCatGetRes> getMenuCat(@PathVariable(name = "menu_cat_pk") Long MenuCatPk) {
         int statusCode = 1;
-        MenuCategoryGetRes result = null;
+        MenuCatGetRes result = null;
         String msg = "카테고리 조회 완료";
         try {
-            result = new MenuCategoryGetRes(service.getMenuCat(MenuCatPk));
+            result = new MenuCatGetRes(service.getMenuCat(MenuCatPk));
 
         } catch(MenuCatNotFoundException e) {
             msg = e.getMessage();
@@ -100,7 +99,7 @@ public class MenuCategoryController {
             msg = e.getMessage();
             statusCode = -1;
         }
-        return ResultDto.<MenuCategoryGetRes>builder()
+        return ResultDto.<MenuCatGetRes>builder()
                 .statusCode(statusCode)
                 .resultMsg(msg)
                 .resultData(result).build();

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.util.List;
 
 
@@ -19,7 +18,7 @@ public class MenuCategoryService {
     private final MenuCategoryRepository repository;
 
     @Transactional
-    public void insertMenuCat(MenuCategoryInsertDto dto) {
+    public void insertMenuCat(MenuCatInsertDto dto) {
         if(dto.getMenuCatName().length() > 50) {
             throw new RuntimeException("카테고리명의 길이는 최대 50자입니다.");
         }
@@ -95,5 +94,7 @@ public class MenuCategoryService {
         menuCategory.setPosition(dto.getPosition());
         return 1;
     }
+
+
 
 }

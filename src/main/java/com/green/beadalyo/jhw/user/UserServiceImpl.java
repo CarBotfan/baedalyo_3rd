@@ -59,15 +59,7 @@ public class UserServiceImpl implements UserService{
         try {
             repository.saveAndFlush(user);
         } catch (Exception e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLIntegrityConstraintViolationException) {
-                String errorMessage = handleSQLException((SQLIntegrityConstraintViolationException) cause);
-                throw new DuplicatedInfoException(errorMessage);
-            } else {
-                // 기타 예외 처리
-
-                throw new RuntimeException(e.getMessage());
-            }
+            throw new RuntimeException(e.getMessage());
         }
         return user.getUserPk();
     }

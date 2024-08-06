@@ -12,6 +12,8 @@ import java.util.List;
 public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long> {
     @Query("SELECT COUNT(mc.menuCategoryPk) FROM MenuCategory mc WHERE mc.restaurant = :restaurant")
     Long countMenuCategories(Restaurant restaurant);
+
+
     MenuCategory findByMenuCategoryPkAndRestaurant(Long menuCatPk, Restaurant restaurant);
 
     List<MenuCategory> findMenuCategoriesByRestaurantOrderByPosition(Restaurant restaurant);

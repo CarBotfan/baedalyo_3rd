@@ -6,6 +6,7 @@ import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.MenuCategory.MenuCategoryRepository;
+import com.green.beadalyo.jhw.MenuCategory.model.MenuCatDto;
 import com.green.beadalyo.jhw.MenuCategory.model.MenuCategory;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -155,6 +156,25 @@ public class MenuService {
         MenuCategory menuCat = menuCategoryRepository.findByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant());
         menu.setMenuCategory(menuCat);
         return 1;
+    }
+
+    public List<Map<MenuCatDto, List<GetAllMenuRes>>> getMenuList(Restaurant res) {
+        List<Map<MenuCatDto, List<GetAllMenuRes>>> result = new ArrayList<>();
+        Map<MenuCatDto, List<GetAllMenuRes>> map = new LinkedHashMap<>();
+        List<MenuCategory> menuCatList = menuCategoryRepository.findMenuCategoriesByRestaurantOrderByPosition(res);
+        List<MenuEntity> menuList = menuRepository.findByMenuResPk(res);
+        for (MenuCategory menuCategory : menuCatList) {
+            List<GetAllMenuRes> menuDtoList = new ArrayList<>();
+            MenuCatDto menuCatDto = new MenuCatDto(menuCategory);
+            for (MenuEntity menu : menuList) {
+                if (menu.getMenuCategory() != null && menu.getMenuCategory().equals(menuCategory)) {
+                    menuDtoList.add(new GetAllMenuRes(menu));
+                }
+            }
+            map.put(menuCatDto, menuDtoList);
+        }
+        result.add(map);
+        return result;
     }
 }
 

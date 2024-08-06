@@ -1,18 +1,26 @@
 package com.green.beadalyo.lhn;
 
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.lhn.entity.Review;
 import com.green.beadalyo.lhn.model.*;
 import com.green.beadalyo.lhn.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,6 +31,8 @@ public class ReviewService {
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
     private final UserService userService;
+
+    private final Integer REVIEW_PER_PAGE = 20;
 
     // 리뷰 작성
     @Transactional
@@ -241,6 +251,23 @@ public class ReviewService {
         if (review.getReviewPics4() != null) pics.add(review.getReviewPics4());
 
         review.setPics(pics);
+    }
+
+    public List<ReviewGetRes> reviewPagingTest(Restaurant res, Integer page) {
+
+        Pageable pageable = PageRequest.of(page - 1, REVIEW_PER_PAGE);
+        Page<Review> list = repository.findReviewsByResPk(res, pageable);
+        List<ReviewGetRes> result = new ArrayList<>();
+        for(Review rev : list.getContent()) {
+            ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+            result.add(revRes);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("total Page", list.getTotalPages());
+        map.put("page", result);
+        log.info("{}", map);
+        return result;
     }
 }
 
