@@ -49,7 +49,7 @@ public class DoneOrder {
     private String orderAddress;
 
     @Column(name = "payment_method")
-    private String paymentMethod;
+    private Integer paymentMethod;
 
     @ColumnDefault("0")
     @Column(name = "order_method")

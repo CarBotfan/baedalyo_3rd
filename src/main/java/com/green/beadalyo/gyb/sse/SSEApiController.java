@@ -27,9 +27,10 @@ public class SSEApiController
 
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(( ) -> emitters.remove(emitter));
-
+        sendEmitters("연결 완료");
         return emitter;
     }
+
 
     public void sendEmitters(String str) {
         List<SseEmitter> deadEmitters = new ArrayList<>();

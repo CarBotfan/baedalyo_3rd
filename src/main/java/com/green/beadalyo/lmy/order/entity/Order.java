@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,6 +52,7 @@ public class Order {
 
     @Column(name = "order_state")
     @ColumnDefault("1")
+    @Comment("결제 진행상황 1 : 결제 전 / 2 : 결제 후 / 3 : 주문 접수")
     private Integer orderState;
 
     @Column(name = "order_method")
@@ -58,7 +60,12 @@ public class Order {
     private Integer orderMethod;
 
     @Column(name = "payment_method")
-    private String paymentMethod;
+    @Comment("1 : 현금결제(후불) / 2 : 카드결제(후불) / 3 : 통합모듈 결제(선불) / 4 : 계좌이체 결제(선불) / 5 : 가상계좌 결제(선불) / 6 : 휴대폰 결제(선불)")
+    private Integer paymentMethod;
+
+    @Column(name = "use_mileage", nullable = false)
+    @ColumnDefault("0")
+    private Integer useMileage;
 
     @Column(name = "created_at", nullable = true)
     @CreationTimestamp

@@ -1,6 +1,7 @@
 package com.green.beadalyo.lmy.order;
 
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
+import com.green.beadalyo.gyb.sse.SSEApiController;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
@@ -85,6 +86,7 @@ public class OrderService {
     {
         orderRepository.save(order);
     }
+
 
 
 //    public List<Map<String, Object>> createOrderMenuList(OrderPostReq p, List<Map<String, Object>> menuList) {
@@ -233,4 +235,19 @@ public class OrderService {
         return orderRepository.confirmOrder(orderPk);
     }
 
+
+    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ SSE 처리ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    private final SSEApiController sse ;
+    public void sendSSE(){
+        sse.sendEmitters("newOrder");
+//        switch (data.getPaymentMethod())
+//        {
+//            case 1 , 2 -> 2 ;
+//            default -> 1 ;
+//        };
+    }
+
+
 }
+
+

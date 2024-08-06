@@ -56,6 +56,9 @@ public class User {
     @Column(name = "user_login_type")
     private Integer userLoginType ;
 
+    @Column(name = "mileage")
+    private Integer mileage ;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

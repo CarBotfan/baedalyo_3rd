@@ -17,7 +17,7 @@ public class DoneOrderGetRes {
     private Integer orderPrice;
     private String orderRequest;
     private Integer doneOrderState;
-    private String paymentMethod;
+    private Integer paymentMethod;
     private LocalDateTime createdAt;
     private List<MenuInfoDto> menuInfoList;
 }

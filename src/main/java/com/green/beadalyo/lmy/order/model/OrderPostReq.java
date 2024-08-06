@@ -16,14 +16,16 @@ public class OrderPostReq {
     private Long orderResPk;
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "요청사항" , description = "주문요구사항")
     private String orderRequest;
-    @Schema(example = "결제수단 키", description = "")
-    private String paymentMethod;
+    @Schema(example = "결제수단 키", description = "1 : 현금결제(후불) / 2 : 카드결제(후불) / 3 : 통합모듈 결제(선불) / 4 : 계좌이체 결제(선불) / 5 : 가상계좌 결제(선불) / 5 : 휴대폰 결제(선불)")
+    private Integer paymentMethod;
     @Schema(example = "전화번호", description = "주문 전화번호")
     private String orderPhone;
     @Schema(example = "배달주소", description = "배달 주소")
     private String orderAddress;
     @Schema(description = "메뉴 정보")
     private List<OrderMenuReq> menu;
+    @Schema(description = "유저 마일리지 사용")
+    private Integer useMileage ;
 }
 
 //    @JsonIgnore

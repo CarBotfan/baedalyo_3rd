@@ -43,7 +43,6 @@ public class OrderMenuOption
         this.orderMenu = orderMenu ;
         this.optionName = data.getOptionName() ;
         this.optionPrice = data.getOptionPrice() ;
-        this.createdAt = LocalDateTime.now() ;
     }
 
     public static List<OrderMenuOption> toOrderMenuOptionList(List<MenuOption> data, OrderMenu orderMenu)

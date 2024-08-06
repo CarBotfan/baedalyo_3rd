@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService{
     private final UserAddrServiceImpl userAddrService;
 
     private static int IMAGE_SIZE_LIMIT = 3145728;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -72,6 +73,11 @@ public class UserServiceImpl implements UserService{
         return user.getUserPk();
     }
 
+    @Transactional
+    public void save(User user)
+    {
+        userRepository.save(user) ;
+    }
 
     @Transactional
     public String uploadProfileImage(MultipartFile pic) {

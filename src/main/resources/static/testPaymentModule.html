@@ -11,10 +11,12 @@
 <body>
 
     <select id="testselect">
-        <option value="CARD">통합모듈</option>
-        <option value="TRANSFER">실시간 계좌이체</option>
-        <option value="VIRTUAL_ACCOUNT">가상계좌</option>
-        <option value="MOBILE">휴대폰 소액결제</option>
+        <option value="1">후불 현금결제</option>
+        <option value="2">후불 신용카드 결제</option>
+        <option value="3">통합모듈</option>
+        <option value="4">실시간 계좌이체</option>
+        <option value="5">가상계좌</option>
+        <option value="6">휴대폰 소액결제</option>
     </select>
     <button id="testinsurance">
         버튼
@@ -26,11 +28,11 @@
             let payment = $("#testselect").val() ;
 
             let pay
-            switch ($("#testselect").val()) {
-                case "VIRTUAL_ACCOUNT":
+            switch (payment) {
+                case "5":
                     pay = { virtualAccount: { accountExpiry: { validHours : 1 } } };
                     break;
-                case "MOBILE":
+                case "6":
                     pay = { productType: "DIGITAL" };
                     break;
                 default:
@@ -47,12 +49,12 @@
                 orderName: "나이키 와플 트레이너 2 SD",
                 totalAmount: 100,
                 currency: "CURRENCY_KRW",
-                payMethod: $("#testselect").val(),
+                payMethod: payment,
                 ...pay,
                 customer: {
-                    customerId: "user_lzc1op02",
+                    customerId: "", //JWT 토큰 첨부
                 },
-                customData: "asdasdasd", // USER JWT TOKEN 첨부
+                customData: "", // 주문 API 전송 후 리턴되는 고유 PK 첨부
                 redirectUrl: "http://localhost:8080/",
             });
             console.log(response) ;
