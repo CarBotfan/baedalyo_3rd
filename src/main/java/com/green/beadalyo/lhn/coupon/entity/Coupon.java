@@ -4,6 +4,7 @@ import com.green.beadalyo.gyb.model.Restaurant;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +33,7 @@ public class Coupon {
     private Long price;
 
     @Column(name = "created_at")
+    @CreationTimestamp()
     private LocalDateTime createdAt;
 
     @Column(name = "min_order_amount")
