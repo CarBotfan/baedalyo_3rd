@@ -9,8 +9,10 @@ import com.green.beadalyo.lhn.coupon.model.CouponPostReq;
 import com.green.beadalyo.lhn.coupon.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,9 @@ public class CouponController {
     @GetMapping("가게 쿠폰 조회/{restaurantId}")
     public ResponseEntity<ResultDto<List<CouponResponseDto>>> getCouponsByRestaurant(@PathVariable Long restaurantId) {
         try {
-            List<Coupon> coupons = couponService.getCouponsByRestaurant(restaurantId);
+            List<Integer> state = new ArrayList<>();
+            state.add(1);
+            List<Coupon> coupons = couponService.getCouponsByRestaurant(restaurantId , state);
             List<CouponResponseDto> couponDtos = coupons.stream().map(this::convertToDto).collect(Collectors.toList());
             return ResponseEntity.ok(ResultDto.<List<CouponResponseDto>>builder()
                     .statusCode(1)
@@ -57,7 +61,6 @@ public class CouponController {
                     .build());
         }
     }
-
     // 가게 주인이 생성한 쿠폰 목록 조회
     @GetMapping("/가게주인 쿠폰목록조회")
     public ResultDto<List<CouponResponseDto>> getCouponsByOwner() {
@@ -76,23 +79,18 @@ public class CouponController {
     }
 
     // 쿠폰 발급
-    @PostMapping("쿠폰발급")
-    public ResponseEntity<ResultDto<CouponUserResponseDto>> issueCoupon(@RequestParam Long couponId) {
+    @PostMapping("쿠폰발급/{couponId}")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResultDto<Long> issueCoupon(@PathVariable Long couponId) {
+        Long issuedCoupon = couponService.issueCoupon(couponId);
 
-        try {
-            CouponUser issuedCoupon = couponService.issueCoupon(couponId);
-            return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
-                    .statusCode(1)
-                    .resultMsg("쿠폰 발급 완료")
-                    .resultData(convertToCouponUserDto(issuedCoupon))
-                    .build());
-        } catch (Exception e) {
-            return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
-                    .statusCode(-1)
-                    .resultMsg(e.getMessage())
-                    .build());
-        }
+        return ResultDto.<Long>builder()
+                .statusCode(1)
+                .resultMsg("쿠폰 발급 성공")
+                .resultData(issuedCoupon)
+                .build();
     }
+
 
     // 쿠폰 상태 변경
     @PutMapping("쿠폰상태변경")
@@ -114,15 +112,15 @@ public class CouponController {
 
     // 쿠폰 삭제
     @DeleteMapping("쿠폰삭제/{couponId}")
-    public ResponseEntity<ResultDto<Void>> deleteCoupon(@PathVariable Long couponId) {
+    public ResponseEntity<ResultDto<CouponResponseDto>> deleteCoupon(@RequestParam Long couponId) {
         try {
-            couponService.deleteCoupon(couponId);
-            return ResponseEntity.ok(ResultDto.<Void>builder()
+            couponService.deleteCoupon(couponId , 2);
+            return ResponseEntity.ok(ResultDto.<CouponResponseDto>builder()
                     .statusCode(1)
                     .resultMsg("쿠폰 삭제 완료")
                     .build());
         } catch (Exception e) {
-            return ResponseEntity.ok(ResultDto.<Void>builder()
+            return ResponseEntity.ok(ResultDto.<CouponResponseDto>builder()
                     .statusCode(-1)
                     .resultMsg(e.getMessage())
                     .build());
@@ -146,9 +144,11 @@ public class CouponController {
         return new CouponUserResponseDto(
                 couponUser.getId(),
                 couponUser.getCoupon().getId(),
-                couponUser.getUser().getUserId(),
-                couponUser.getState(),  // 상태를 반환
-                couponUser.getCreatedAt()
+                couponUser.getCoupon().getContent(),
+                couponUser.getCoupon().getPrice(),
+                couponUser.getCoupon().getMinOrderAmount(),
+                couponUser.getCoupon().getName()
         );
+
     }
 }
