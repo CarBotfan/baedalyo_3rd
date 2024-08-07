@@ -4,6 +4,8 @@ import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
+import com.green.beadalyo.jhw.menucategory.MenuCategoryService;
+import com.green.beadalyo.jhw.menucategory.exception.MenuCatNotFoundException;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
@@ -18,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.util.List;
 
 @RestController
@@ -32,6 +35,7 @@ public class MenuController {
     private final UserServiceImpl userServiceImpl;
     private final AuthenticationFacade authenticationFacade;
     private final RestaurantService restaurantService;
+    private final MenuCategoryService menuCategoryService;
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE
             , MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -64,12 +68,14 @@ public class MenuController {
             menuEntity.setMenuName(p.getMenuName());
             menuEntity.setMenuPrice(p.getMenuPrice());
             menuEntity.setMenuState(p.getMenuState());
+            menuEntity.setMenuCategory(menuCategoryService.getMenuCat(p.getMenuCatPk()));
             String filename = "" ;
 
             if (pic != null && !pic.isEmpty()) {
                 if (pic.getSize() > maxSize) {
                     return ResultDto.<Long>builder()
                             .statusCode(-5)
+
                             .resultMsg("파일 사이즈는 3mb이하만 됩니다.")
                             .resultData(result)
                             .build();
@@ -96,7 +102,13 @@ public class MenuController {
                     .resultMsg("메뉴 이름 중복")
                     .resultData(result)
                     .build();
-        }  catch (RuntimeException e){
+        } catch(MenuCatNotFoundException e) {
+            return ResultDto.<Long>builder()
+                    .statusCode(-4)
+                    .resultMsg(e.getMessage())
+                    .resultData(result)
+                    .build();
+        }catch (RuntimeException e){
             e.printStackTrace();
             return ResultDto.<Long>builder()
                     .statusCode(-3)

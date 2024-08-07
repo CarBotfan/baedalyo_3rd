@@ -37,12 +37,13 @@ public class MenuService {
     public Long postMenu(MenuEntity menuEntity,String filename){
         Long resUserPk = authenticationFacade.getLoginUserPk();
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
-
+        MenuCategory menuCat = menuCategoryRepository.findByMenuCategoryPkAndRestaurant(menuEntity.getMenuCategory().getMenuCategoryPk(), restaurant);
        //로그인한 유저 사장님인지 체크
         if (restaurant == null){
             throw new RuntimeException();
         }
         menuEntity.setMenuResPk(restaurant);
+        menuEntity.setMenuCategory(menuCat);
 
         //메뉴 이름 중복체크
         if  (menuRepository.existsByMenuNameAndMenuResPk(menuEntity.getMenuName(), restaurant)){

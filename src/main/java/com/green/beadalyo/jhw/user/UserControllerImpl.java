@@ -204,6 +204,11 @@ public class UserControllerImpl implements UserController{
             if(user == null || user.getUserState() == 3) {
                 throw new UserNotFoundException();
             }
+            if(user.getUserRole().equals("ROLE_OWNER")) {
+                if(restaurantService.getRestaurantData(user).getState() == 4) {
+                    throw new RuntimeException("관리자의 승인 대기중인 계정입니다.");
+                }
+            }
             if(user.getUserBlockDate() != null && user.getUserBlockDate().isBefore(LocalDate.now())) {
                 user.setUserBlockDate(null);
                 user.setUserState(1);

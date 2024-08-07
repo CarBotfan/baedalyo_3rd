@@ -3,6 +3,7 @@ package com.green.beadalyo.gyb.response;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.model.RestaurantDetailView;
 import com.green.beadalyo.kdh.menu.model.GetAllMenuRes;
+import com.green.beadalyo.kdh.menu.model.MenuListGetRes;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -39,7 +40,7 @@ public class RestaurantDetailRes
     private String restaurantPic ;
     @Schema(description = "음식점 상태(1 : 영업 중 / 2 : 휴점 중 / 3 : 폐업)")
     private Integer restaurantState ;
-    private List<GetAllMenuRes> menuList ;
+    private List<MenuListGetRes> menuList ;
 
     public RestaurantDetailRes(RestaurantDetailView data)
     {

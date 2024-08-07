@@ -113,7 +113,7 @@ public class RestaurantService
     public void deleteRestaurantData(User user) throws Exception
     {
         Restaurant data = repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
-        data.setState(3);
+        data.setState(5);
         repository.save(data);
         System.out.println(data);
     }

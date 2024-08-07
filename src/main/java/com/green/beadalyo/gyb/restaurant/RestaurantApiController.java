@@ -112,7 +112,8 @@ public class RestaurantApiController
             RestaurantDetailView data = service.getRestaurantDataViewBySeq(seq);
 
             RestaurantDetailRes res = new RestaurantDetailRes(data) ;
-            GetAllMenuReq temp = new GetAllMenuReq(data.getRestaurantPk()) ;
+
+            res.setMenuList(menuService.getMenuList(service.getRestaurantDataBySeq(seq)));
 
 //            res.setMenuList(menuService.getAllMenu(temp));
             return ResultDto.<RestaurantDetailRes>builder().resultData(res).build();
