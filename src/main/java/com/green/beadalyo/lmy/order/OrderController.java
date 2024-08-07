@@ -13,6 +13,8 @@ import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.MenuService;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.kdh.menuoption.MenuOptionService;
+import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
 import com.green.beadalyo.kdh.menuOption.MenuOptionService;
 import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
 import com.green.beadalyo.lhn.coupon.CouponService;

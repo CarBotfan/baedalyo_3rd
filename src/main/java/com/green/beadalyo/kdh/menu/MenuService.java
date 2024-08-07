@@ -11,6 +11,7 @@ import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
+import com.green.beadalyo.kdh.menuoption.MenuOptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class MenuService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuCategoryRepository menuCategoryRepository;
-
+    private final MenuOptionRepository menuOptionRepository;
 
     //메뉴 등록하기
     @Transactional
@@ -180,5 +181,8 @@ public class MenuService {
         }
         return result;
     }
+
+    public MenuEntity getMenuByOptionPk(Long optionPk) {return menuRepository.getReferenceById(menuOptionRepository.getReferenceById(optionPk).getSeq());}
+    public MenuEntity getMenuByMenuPk(Long menuPk) {return menuRepository.getReferenceById(menuPk);}
 }
 

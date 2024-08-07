@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.green.beadalyo.kdh.menuOption.MenuOptionMapper">
+<mapper namespace="com.green.beadalyo.kdh.menuoption.MenuOptionMapper">
 
 <insert id="postMenuOption" useGeneratedKeys="true" keyProperty="optionPk">
     INSERT INTO option

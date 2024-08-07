@@ -1,8 +1,6 @@
 package com.green.beadalyo.kdh.menu;
 
 import com.green.beadalyo.kdh.menu.model.*;
-import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionReq;
-import com.green.beadalyo.kdh.menuOption.model.GetMenuWithOptionRes;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

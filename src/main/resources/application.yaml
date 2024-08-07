@@ -31,6 +31,51 @@ spring:
     username: ${MAIL.USERNAME}
     password: ${MAIL.PASSWORD}
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${SOCIAL.GOOGLE.CLIENT_ID}
+            client-secret: ${SOCIAL.GOOGLE.SECRET}
+            scope:
+              - email
+              - profile
+          kakao:
+            client-id: ${SOCIAL.KAKAO.CLIENT_ID}
+            client-secret: ${SOCIAL.KAKAO.SECRET}
+            client-authentication-method: client_secret_post    # 쿼리 스트링 client-id, client-secret 가 카카오쪽으로 보내진다.
+            authorization-grant-type: authorization_code        # 권한 부여 유형 (인가 코드 -> access-token 을 받는 방식을 선택)
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"   # redirect-uri: http://localhost:8080/login/oauth2/code/kakao 와 같은 의미
+            scope:
+              - profile_nickname
+              - profile_image
+            client-name: Kakao
+          naver:
+            client-id: ${SOCIAL.NAVER.CLIENT_ID}
+            client-secret: ${SOCIAL.NAVER.SECRET}
+            client-authentication-method: client_secret_post    # 쿼리 스트링 client-id, client-secret 가 카카오쪽으로 보내진다.
+            authorization-grant-type: authorization_code        # 권한 부여 유형 (인가 코드 -> access-token 을 받는 방식을 선택)
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"   # redirect-uri: http://localhost:8080/login/oauth2/code/NAVER 와 같은 의미
+            scope:
+              - name
+              - email
+              - profile_image
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize    #소셜 로그인 버튼을 눌렀을 때 이동할 URL
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-info-authentication-method: header                       #사용자 정보를 가져올 때 토큰을 보내는 방법 , 속성값(header, form(Body), query), header가 기본값
+            user-name-attribute: id
+          naver:
+            authorization-uri: https://nid.naver.com/oauth2.0/authorize   #소셜 로그인 버튼을 눌렀을 때 이동할 URL
+            token-uri: https://nid.naver.com/oauth2.0/token               #사용자 서비스 서버가 Redirect URI로 전달받은 (인가 코드)로 (액세스 토큰)을 요청하는 URI
+            user-info-uri: https://openapi.naver.com/v1/nid/me            #서비스 서버가 발급받은 액세스 토큰으로 사용자 정보를 가져오는 URI
+            user-name-attribute: response
+
+
 
 mybatis:
   mapper-locations: mappers/**/*.xml
