@@ -84,19 +84,22 @@ public class CouponService {
 
     // 쿠폰 발급
     @Transactional
-    public CouponUser issueCoupon(Long couponId, Long userId) {
-        if (couponUserRepository.existsByCouponIdAndUserId(couponId, userId)) {
+    public CouponUser issueCoupon(Long couponId) {
+        if (couponUserRepository.existsByCouponIdAndUserId(couponId)) {
             throw new IllegalArgumentException("이미 발급된 쿠폰입니다.");
+        }
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+
+        if (loginUserPk == 0) {
+            throw new RuntimeException("로그인 해주세요");
         }
 
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰이 존재하지 않습니다."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
 
         CouponUser couponUser = new CouponUser();
         couponUser.setCoupon(coupon);
-        couponUser.setUser(user);
+        couponUser.setUser(userRepository.findByUserPk(loginUserPk));
         couponUser.setCreatedAt(LocalDateTime.now());
         couponUser.setState(1); // 쿠폰 상태 활성화
 

@@ -77,9 +77,10 @@ public class CouponController {
 
     // 쿠폰 발급
     @PostMapping("쿠폰발급")
-    public ResponseEntity<ResultDto<CouponUserResponseDto>> issueCoupon(@RequestParam Long couponId, @RequestParam Long userId) {
+    public ResponseEntity<ResultDto<CouponUserResponseDto>> issueCoupon(@RequestParam Long couponId) {
+
         try {
-            CouponUser issuedCoupon = couponService.issueCoupon(couponId, userId);
+            CouponUser issuedCoupon = couponService.issueCoupon(couponId);
             return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
                     .statusCode(1)
                     .resultMsg("쿠폰 발급 완료")
@@ -112,7 +113,7 @@ public class CouponController {
     }
 
     // 쿠폰 삭제
-    @DeleteMapping("쿠폰삭제")
+    @DeleteMapping("쿠폰삭제/{couponId}")
     public ResponseEntity<ResultDto<Void>> deleteCoupon(@PathVariable Long couponId) {
         try {
             couponService.deleteCoupon(couponId);

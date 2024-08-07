@@ -11,6 +11,6 @@ import java.util.List;
 public interface CouponUserRepository extends JpaRepository<CouponUser, Long> {
 
     @Query("SELECT COUNT(cu) > 0 FROM CouponUser cu WHERE cu.coupon.id = :couponId AND cu.user.userPk = :userId")
-    boolean existsByCouponIdAndUserId(@Param("couponId") Long couponId, @Param("userId") Long userId);
+    boolean existsByCouponIdAndUserId(@Param("couponId") Long couponId);
     List<CouponUser> findByCouponId(Long couponId);
 }
