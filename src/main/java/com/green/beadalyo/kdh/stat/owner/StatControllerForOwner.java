@@ -1,12 +1,10 @@
-package com.green.beadalyo.kdh.stat;
+package com.green.beadalyo.kdh.stat.owner;
 
 import com.green.beadalyo.common.model.ResultDto;
-import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
-import com.green.beadalyo.kdh.stat.StatService;
-import com.green.beadalyo.kdh.stat.model.*;
+import com.green.beadalyo.kdh.stat.owner.model.GetDateReq;
 import com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto;
 import com.green.beadalyo.lmy.doneorder.model.DailySalesDto;
 import com.green.beadalyo.lmy.doneorder.model.MonthOrderCountDto;
@@ -15,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +21,8 @@ import java.util.List;
 @RequestMapping("api/owner/stat")
 @RequiredArgsConstructor
 @Tag(name = "가게 통계 컨트롤러입니다.")
-public class StatController {
-    private final StatService service;
+public class StatControllerForOwner {
+    private final StatServiceForOwner service;
     private final AuthenticationFacade authenticationFacade;
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;

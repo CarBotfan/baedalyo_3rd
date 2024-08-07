@@ -1,4 +1,4 @@
-package com.green.beadalyo.kdh.stat.model;
+package com.green.beadalyo.kdh.stat.owner.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

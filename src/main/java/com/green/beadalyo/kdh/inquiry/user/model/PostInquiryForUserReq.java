@@ -1,4 +1,4 @@
-package com.green.beadalyo.kdh.inquiry.admin.model;
+package com.green.beadalyo.kdh.inquiry.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.green.beadalyo.jhw.user.entity.User;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PostInquiryReq {
+public class PostInquiryForUserReq {
 
 
     private String inquiryTitle;

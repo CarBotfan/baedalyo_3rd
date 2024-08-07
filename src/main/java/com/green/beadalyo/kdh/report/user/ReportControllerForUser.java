@@ -4,12 +4,13 @@ import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.exception.DuplicatedIdException;
 import com.green.beadalyo.kdh.report.entity.ReportEntity;
 import com.green.beadalyo.kdh.report.user.model.GetReportListResForUser;
 import com.green.beadalyo.kdh.report.user.model.GetReportOneResForUser;
-import com.green.beadalyo.kdh.report.user.model.ReportPutReq;
+import com.green.beadalyo.kdh.report.user.model.PutReportForUserReq;
 import com.green.beadalyo.lhn.Review.entity.Review;
-import com.green.beadalyo.kdh.report.user.model.ReportPostReq;
+import com.green.beadalyo.kdh.report.user.model.PostReportForUserReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/user/report")
 @RequiredArgsConstructor
-@Tag(name = "유저 신고 관리 컨트롤러")
+@Tag(name = "신고 관리 컨트롤러(유저)")
 public class ReportControllerForUser {
     private final ReportServiceForUser service;
     private final UserServiceImpl userService;
@@ -31,7 +32,7 @@ public class ReportControllerForUser {
     @PostMapping()
     @Operation(summary = "리뷰 신고기능", description = "리뷰를 신고합니다.")
     @PreAuthorize("hasAnyRole('USER','OWNER')")
-    public ResultDto<Integer> postReport(@RequestBody ReportPostReq p){
+    public ResultDto<Integer> postReport(@RequestBody PostReportForUserReq p){
 
         Review review = service.getReviewByPk(p.getReviewPk());
         User user = userService.getUser(authenticationFacade.getLoginUserPk());
@@ -59,23 +60,27 @@ public class ReportControllerForUser {
     @PutMapping()
     @Operation(summary = "리뷰 신고수정 기능", description = "신고사항을 수정합니다.")
     @PreAuthorize("hasAnyRole('USER','OWNER')")
-    public ResultDto<Integer> putReport(@RequestBody ReportPutReq p){
+    public ResultDto<Integer> putReport(@RequestBody PutReportForUserReq p){
 
 
-        User user = userService.getUser(authenticationFacade.getLoginUserPk());
-        p.setUser(user);
-
+        boolean checkUser = service.checkUser(p.getReportPk());
+        if (!checkUser){
+            return ResultDto.<Integer>builder()
+                    .statusCode(-2)
+                    .resultMsg("작성자가 아닙니다.")
+                    .build();
+        }
         try {
 
             ReportEntity reportEntity = service.makeReportForPut(p);
             service.saveReport(reportEntity);
 
-        } catch (RuntimeException e) {
+        } catch (DuplicatedIdException e){
             return ResultDto.<Integer>builder()
-                    .statusCode(-2)
-                    .resultMsg("신고한 유저와 다른 유저입니다.")
+                    .statusCode(-3)
+                    .resultMsg("이미 처리된 내역입니다.")
                     .build();
-        }catch (Exception e){
+        } catch (Exception e){
             return ResultDto.<Integer>builder()
                     .statusCode(-1)
                     .resultMsg("수정 실패")
@@ -119,9 +124,14 @@ public class ReportControllerForUser {
     @PreAuthorize("hasAnyRole('USER','OWNER')")
     public ResultDto<GetReportOneResForUser> getReportOneForUser(@PathVariable ("report_pk") Long reportPk){
 
-        Long userPk = authenticationFacade.getLoginUserPk();
         GetReportOneResForUser result = null;
-
+            boolean checkUser = service.checkUser(reportPk);
+            if (!checkUser){
+                return ResultDto.<GetReportOneResForUser>builder()
+                        .statusCode(-2)
+                        .resultMsg("작성자가 아닙니다.")
+                        .build();
+            }
         try {
 
             result = service.getReportOneForUser(reportPk);
@@ -129,7 +139,7 @@ public class ReportControllerForUser {
         } catch (Exception e){
             return ResultDto.<GetReportOneResForUser>builder()
                     .statusCode(-1)
-                    .resultMsg(e.getMessage())
+                    .resultMsg("신고 불러오기 실패")
                     .build();
         }
         return ResultDto.<GetReportOneResForUser>builder()
@@ -144,6 +154,14 @@ public class ReportControllerForUser {
     @Operation(summary = "신고된 항목 삭제",description = "신고 중 하나를 삭제합니다")
     public ResultDto<Integer> delReport(@PathVariable("report_pk") Long reportPk){
 
+
+        boolean checkUser = service.checkUser(reportPk);
+        if (!checkUser){
+            return ResultDto.<Integer>builder()
+                    .statusCode(-2)
+                    .resultMsg("작성자가 아닙니다.")
+                    .build();
+        }
         try {
             service.delReport(reportPk);
         } catch (RuntimeException e){

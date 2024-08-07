@@ -1,10 +1,13 @@
-package com.green.beadalyo.kdh.stat;
+package com.green.beadalyo.kdh.stat.owner;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
-import com.green.beadalyo.kdh.stat.model.*;
+import com.green.beadalyo.kdh.stat.owner.model.GetDateReq;
+import com.green.beadalyo.kdh.stat.owner.model.GetReviewAvgRes;
+import com.green.beadalyo.kdh.stat.owner.model.GetReviewCountRes;
+import com.green.beadalyo.kdh.stat.owner.model.GetReviewStatReq;
 import com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto;
 import com.green.beadalyo.lmy.doneorder.model.DailySalesDto;
 import com.green.beadalyo.lmy.doneorder.model.MonthOrderCountDto;
@@ -14,14 +17,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class StatService {
+public class StatServiceForOwner {
     private final StatMapper mapper;
     private final DoneOrderRepository doneOrderRepository;
     private final AuthenticationFacade authenticationFacade;

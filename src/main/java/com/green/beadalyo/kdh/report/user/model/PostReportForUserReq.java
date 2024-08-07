@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ReportPostReq {
+public class PostReportForUserReq {
     private long reviewPk;
     private String reportTitle;
     private String reportContent;

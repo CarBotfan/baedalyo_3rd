@@ -1,6 +1,7 @@
-package com.green.beadalyo.kdh.stat;
+package com.green.beadalyo.kdh.stat.owner;
 
 import com.green.beadalyo.kdh.stat.model.*;
+import com.green.beadalyo.kdh.stat.owner.model.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

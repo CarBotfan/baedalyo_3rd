@@ -6,6 +6,7 @@ import com.green.beadalyo.kdh.report.admin.model.GetReportListResForAdmin;
 import com.green.beadalyo.kdh.report.admin.model.GetReportOneResForAdmin;
 import com.green.beadalyo.kdh.report.admin.model.PatchAccountSuspensionReq;
 import com.green.beadalyo.kdh.report.ReportRepository;
+import com.green.beadalyo.kdh.report.admin.model.PutReportForAdminReq;
 import com.green.beadalyo.kdh.report.entity.ReportEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,4 +56,16 @@ public class ReportServiceForAdmin {
         ReportEntity reportEntity = reportRepository.getReferenceById(reportPk);
         reportRepository.delete(reportEntity);
     }
+
+    public ReportEntity makePutReportEntity(PutReportForAdminReq p){
+        ReportEntity reportEntity = reportRepository.getReferenceById(p.getReportPk());
+        reportEntity.setReportTitle(p.getReportTitle());
+        reportEntity.setReportContent(p.getReportContent());
+        return reportEntity;
+    }
+
+    public void saveReport(ReportEntity report){
+        reportRepository.save(report);
+    }
+
 }

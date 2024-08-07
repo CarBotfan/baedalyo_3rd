@@ -1,4 +1,4 @@
-package com.green.beadalyo.kdh.stat.model;
+package com.green.beadalyo.kdh.stat.owner.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GetReviewAvgRes {
-    private String reviewAvg;
+public class GetDailyOrderCountRes {
+    private String createdAt;
+    private int dailyOrderCount;
 }
