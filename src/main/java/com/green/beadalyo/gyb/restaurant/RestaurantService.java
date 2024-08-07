@@ -14,6 +14,7 @@ import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,32 +76,8 @@ public class RestaurantService
         }
     }
 
-//    public Page<RestaurantListView> getFollowRestaurant(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page ) throws Exception {
-//        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
-//        BigDecimal range = BigDecimal.valueOf(0.09);
-//        BigDecimal xMin = x.subtract(range);
-//        BigDecimal xMax = x.add(range);
-//        BigDecimal yMin = y.subtract(range);
-//        BigDecimal yMax = y.add(range);
-//
-//    }
 
-
-
-//    public Page<RestaurantListView> getFollowRestaurantList(Long seq, BigDecimal x, BigDecimal y, Integer page ) throws Exception
-//    {
-//        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
-//        BigDecimal range = BigDecimal.valueOf(0.09);
-//        BigDecimal xMin = x.subtract(range);
-//        BigDecimal xMax = x.add(range);
-//        BigDecimal yMin = y.subtract(range);
-//        BigDecimal yMax = y.add(range);
-//        return restaurantListViewRepository.
-//    }
-
-
-    //음식점 카테고리 기준 정보 호출
-    public Page<RestaurantListView> getRestaurantByCategoryAll(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page ) throws Exception
+    public Page<RestaurantListView> getFollowRestaurantList(Long seq, BigDecimal x, BigDecimal y, Integer page ) throws Exception
     {
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE) ;
         BigDecimal range = BigDecimal.valueOf(0.09);
@@ -108,27 +85,11 @@ public class RestaurantService
         BigDecimal xMax = x.add(range);
         BigDecimal yMin = y.subtract(range);
         BigDecimal yMax = y.add(range);
-        try {
-            Long userPk = authenticationFacade.getLoginUserPk();
-            return switch (orderType)
-            {
-                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,userPk,pageable);
-                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
-                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,userPk,pageable) ;
-                default -> null ;
-            };
-        } catch (Exception e) {
-            return switch (orderType)
-            {
-                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
-                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
-                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
-                default -> null ;
-            };
-        }
+        Long userPk = authenticationFacade.getLoginUserPk();
 
-
+        return viewListRepository.findFollowedRestaurant(seq, xMin, xMax, yMin, yMax, userPk, pageable);
     }
+
 
     //음식점 정보 호출
     public Restaurant getRestaurantData(User user) throws Exception

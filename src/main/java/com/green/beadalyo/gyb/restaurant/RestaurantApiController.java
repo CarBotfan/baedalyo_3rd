@@ -192,8 +192,8 @@ public class RestaurantApiController
         }
     }
 
-    @GetMapping
-    @Operation(summary = "주소기반 카테고리 별 리스트 불러오기")
+    @GetMapping("followed")
+    @Operation(summary = "주소기반 팔로우한 음식점 리스트 불러오기")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
             description =
                     "<p> 1 : 정상 </p>"+
@@ -202,15 +202,12 @@ public class RestaurantApiController
                             "<p> -3 : 주소 정보 획득 실패 </p>"
     )
     public Result getFollowList(@Nullable @RequestParam Integer page,
-                                    @Nullable @RequestParam("order_type") Integer orderType,
                                     @Nullable @RequestParam String addrX,
                                     @Nullable @RequestParam String addrY)
     {
         //유효성 검증
         if (page == null || page < 1)
             page = 1;
-        if (orderType == null || orderType < 1)
-            orderType = 1;
         if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
             return ResultError.builder().statusCode(-2).resultMsg("위경도의 정보를 획득하지 못하였습니다. 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
 
@@ -229,8 +226,8 @@ public class RestaurantApiController
                 y = addr.getAddrCoorY() ;
             }
 
-            Page<RestaurantListView> pageList = service.getRestaurantByCategory(0L,x,y,orderType,page) ;
-            ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList) ;
+            Page<RestaurantListView> pageList = service.getFollowRestaurantList(0L, x, y, page);
+            ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList);
             return ResultDto.builder().resultData(data).build();
 
         } catch (Exception e) {
