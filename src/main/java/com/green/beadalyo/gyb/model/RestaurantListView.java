@@ -3,6 +3,7 @@ package com.green.beadalyo.gyb.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
@@ -32,9 +33,33 @@ public class RestaurantListView
 
     private String restaurantPic ;
 
+    @Transient
+    private Integer isFollow = 0; // Transient 필드로 설정
+
     private BigDecimal restaurantCoorX ;
 
     private BigDecimal restaurantCoorY ;
 
     private LocalDateTime createdAt ;
+
+
+    public RestaurantListView(Long restaurantPk, String restaurantName, Float reviewAvgScore, Integer reviewTotalElements,
+                              String restaurantAddr, Integer restaurantState, String restaurantPic,
+                              BigDecimal restaurantCoorX, BigDecimal restaurantCoorY, LocalDateTime createdAt, Integer isFollow) {
+        this.restaurantPk = restaurantPk;
+        this.restaurantName = restaurantName;
+        this.reviewAvgScore = reviewAvgScore;
+        this.reviewTotalElements = reviewTotalElements;
+        this.restaurantAddr = restaurantAddr;
+        this.restaurantState = restaurantState;
+        this.restaurantPic = restaurantPic;
+        this.restaurantCoorX = restaurantCoorX;
+        this.restaurantCoorY = restaurantCoorY;
+        this.createdAt = createdAt;
+        this.isFollow = isFollow;
+    }
+
+    public RestaurantListView() {
+
+    }
 }

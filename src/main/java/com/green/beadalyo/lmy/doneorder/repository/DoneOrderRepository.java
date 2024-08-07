@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.doneorder.repository;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.model.*;
 import org.springframework.data.domain.Page;
@@ -38,12 +39,6 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
 
     @Query("SELECT o FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk")
     DoneOrder findByDoneOrderPk(@Param("doneOrderPk") Long doneOrderPk);
-
-    @Query("SELECT o.userPk.userPk FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk")
-    Long getDoneOrderUser(@Param("doneOrderPk") Long doneOrderPk);
-
-    @Query("SELECT r.user FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")
-    Long getDoneOrderResUser(@Param("doneOrderPk") Long doneOrderPk);
 
     @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m') AS createdAt, SUM(o.order_price) AS monthSales " +
             "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y') = :date AND o.res_pk = :resPk AND o.done_order_state = 1 " +

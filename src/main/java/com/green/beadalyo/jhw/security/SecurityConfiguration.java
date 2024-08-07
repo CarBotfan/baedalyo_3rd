@@ -90,15 +90,15 @@ public class SecurityConfiguration {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                         .accessDeniedHandler(new JwtAuthenticationAccessDeniedHandler())
                 )
-                .oauth2Login( oauth2 -> oauth2.authorizationEndpoint(
-                                        auth -> auth.baseUri( appProperties.getOauth2().getBaseUri() ) // ""주소값 프론트한테 알려주기
-                                                .authorizationRequestRepository(repository)
-                                ).redirectionEndpoint( redirection -> redirection.baseUri("/*/oauth2/code/*"))
-                                .userInfoEndpoint(userInfo -> userInfo.userService(myOAuth2UserService))
-                                .successHandler(oAuth2AuthenticationSuccessHandler)
-                                .failureHandler(oAuth2AuthenticationFailureHandler)
-                )
-                .addFilterBefore(oAuth2AuthenticationCheckRedirectUriFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+//                .oauth2Login( oauth2 -> oauth2.authorizationEndpoint(
+//                                        auth -> auth.baseUri( appProperties.getOauth2().getBaseUri() ) // ""주소값 프론트한테 알려주기
+//                                                .authorizationRequestRepository(repository)
+//                                ).redirectionEndpoint( redirection -> redirection.baseUri("/*/oauth2/code/*"))
+//                                .userInfoEndpoint(userInfo -> userInfo.userService(myOAuth2UserService))
+//                                .successHandler(oAuth2AuthenticationSuccessHandler)
+//                                .failureHandler(oAuth2AuthenticationFailureHandler)
+//                )
+//                .addFilterBefore(oAuth2AuthenticationCheckRedirectUriFilter, OAuth2AuthorizationRequestRedirectFilter.class)
                 .build();
     }
     @Bean

@@ -105,6 +105,12 @@ app:
 
     refresh-token-expiry: 1_296_000_000
 
+  oauth2:
+    baseUri: /oauth2/authorization
+    authorizedRedirectUris:
+      - http://localhost:8080/oauth2/callback
+      - http://localhost:3000/oauth2/callback
+
 payment:
   secret: ${PAYMENT.SECRET}
 

@@ -10,6 +10,7 @@ import com.green.beadalyo.gyb.model.RestaurantListView;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantDetailViewRepository;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantListViewRepository;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
+import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,8 @@ public class RestaurantService
     private final RestaurantDetailViewRepository viewDetailRepository;
 
     private final FileUtils fileUtils ;
+    private final RestaurantListViewRepository restaurantListViewRepository;
+    private final AuthenticationFacade authenticationFacade;
 
 
     // 업데이트
@@ -52,32 +55,79 @@ public class RestaurantService
         BigDecimal xMax = x.add(range);
         BigDecimal yMin = y.subtract(range);
         BigDecimal yMax = y.add(range);
-        return switch (orderType)
-        {
-            case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
-            case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
-            case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
-            default -> null ;
-        } ;
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return switch (orderType)
+            {
+                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,userPk,pageable);
+                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,userPk,pageable) ;
+                default -> null ;
+            };
+        } catch (Exception e) {
+            return switch (orderType)
+            {
+                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
+                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
+                default -> null ;
+            };
+        }
     }
+
+//    public Page<RestaurantListView> getFollowRestaurant(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page ) throws Exception {
+//        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
+//        BigDecimal range = BigDecimal.valueOf(0.09);
+//        BigDecimal xMin = x.subtract(range);
+//        BigDecimal xMax = x.add(range);
+//        BigDecimal yMin = y.subtract(range);
+//        BigDecimal yMax = y.add(range);
+//
+//    }
+
+
+
+//    public Page<RestaurantListView> getFollowRestaurantList(Long seq, BigDecimal x, BigDecimal y, Integer page ) throws Exception
+//    {
+//        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
+//        BigDecimal range = BigDecimal.valueOf(0.09);
+//        BigDecimal xMin = x.subtract(range);
+//        BigDecimal xMax = x.add(range);
+//        BigDecimal yMin = y.subtract(range);
+//        BigDecimal yMax = y.add(range);
+//        return restaurantListViewRepository.
+//    }
 
 
     //음식점 카테고리 기준 정보 호출
     public Page<RestaurantListView> getRestaurantByCategoryAll(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page ) throws Exception
     {
-        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
+        Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE) ;
         BigDecimal range = BigDecimal.valueOf(0.09);
         BigDecimal xMin = x.subtract(range);
         BigDecimal xMax = x.add(range);
         BigDecimal yMin = y.subtract(range);
         BigDecimal yMax = y.add(range);
-        return switch (orderType)
-        {
-            case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
-            case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
-            case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
-            default -> null ;
-        } ;
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return switch (orderType)
+            {
+                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,userPk,pageable);
+                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,userPk,pageable) ;
+                default -> null ;
+            };
+        } catch (Exception e) {
+            return switch (orderType)
+            {
+                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
+                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
+                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
+                default -> null ;
+            };
+        }
+
+
     }
 
     //음식점 정보 호출

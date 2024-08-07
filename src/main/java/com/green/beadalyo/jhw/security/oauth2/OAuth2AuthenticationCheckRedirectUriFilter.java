@@ -29,7 +29,14 @@ public class OAuth2AuthenticationCheckRedirectUriFilter extends OncePerRequestFi
         String requestUri = request.getRequestURI();    // 호스트값 제외한 uri를 리턴 (ex. http://localhost:8080/aaa/bbb 여기서 "/aaa/bbb" 를 리턴
         log.info("requestUri : {}", requestUri);
 
-        if (requestUri.startsWith(appProperties.getOauth2().getBaseUri())) {
+        String baseUri = appProperties.getOauth2().getBaseUri();
+        if (baseUri == null || baseUri.isEmpty()) {
+            log.error("Base URI is null or empty");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Base URI is not configured properly");
+            return;
+        }
+
+        if (requestUri.startsWith(baseUri)) {
             String redirectUriParam = request.getParameter("redirect_uri");
             if (redirectUriParam != null && !(hasAuthorizedRedirectUri(redirectUriParam))) {    //  허용하지 않은 URI 라면
                 String errRedirectUrl = UriComponentsBuilder.fromUriString("/err_message")
@@ -42,6 +49,7 @@ public class OAuth2AuthenticationCheckRedirectUriFilter extends OncePerRequestFi
         }
         filterChain.doFilter(request, response);
     }
+
     // 우리가 설정한 redirect-uri 인지 체크
     private boolean hasAuthorizedRedirectUri (String uri) {
         URI clientRedirectUri = URI.create(uri);

@@ -1,12 +1,16 @@
 package com.green.beadalyo.lmy.doneorder;
 
+import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.model.*;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import com.green.beadalyo.lmy.order.model.MenuInfoDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class DoneOrderService {
     private final DoneOrderRepository doneOrderRepository;
     private final DoneOrderMenuRepository doneOrderMenuRepository;
     private final AuthenticationFacade authenticationFacade;
+    private final UserRepository userRepository;
 
     @Transactional
     public Map<String, Object> getDoneOrderByUserPk(Paging p) {
@@ -94,10 +100,10 @@ public class DoneOrderService {
     public DoneOrderGetRes getDoneOrderInfo(Long doneOrderPk) {
         long userPk = authenticationFacade.getLoginUserPk();
 
-        Long doneOrderResUser = doneOrderRepository.getDoneOrderResUser(doneOrderPk);
-        Long doneOrderUser = doneOrderRepository.getDoneOrderUser(doneOrderPk);
+        DoneOrder doneOrder1 = doneOrderRepository.getReferenceById(doneOrderPk);
 
-        if (userPk != doneOrderResUser && userPk != doneOrderUser) {
+        if (userPk != doneOrder1.getResPk().getUser().getUserPk()
+                && userPk != doneOrder1.getUserPk().getUserPk()) {
             throw new IllegalArgumentException("주문과 관련된 유저만 열람 가능합니다.");
         }
 

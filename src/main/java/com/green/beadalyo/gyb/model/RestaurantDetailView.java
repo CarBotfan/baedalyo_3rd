@@ -3,6 +3,7 @@ package com.green.beadalyo.gyb.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
@@ -30,6 +31,8 @@ public class RestaurantDetailView
     private String restaurantAddr ;
     private Integer restaurantState ;
     private String restaurantPic ;
+    @Transient
+    private Integer isFollow; // Transient 필드로 설정
     private BigDecimal restaurantCoorX ;
     private BigDecimal restaurantCoorY ;
     private LocalDateTime createdAt ;
