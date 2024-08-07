@@ -11,7 +11,6 @@ public interface MenuOptionRepository extends JpaRepository<MenuOption, Long>
 {
     List<MenuOption> findBySeqIn(List<Long> seqs);
 
-
     @Query(value = "SELECT new com.green.beadalyo.kdh.menuoption.model.GetMenuOptionRes" +
             "(o.seq, o.menu.menuPk, o.optionName, o.optionPrice, o.optionState, o.createdAt, o.updatedAt) " +
             "FROM MenuOption o " +
