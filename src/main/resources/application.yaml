@@ -94,6 +94,11 @@ file:
   dir: ${DEFAULT.FILE_DIRECTORY}
 
 app:
+  oauth2:
+    baseUri: /oauth2/authorization
+    authorizedRedirectUris:
+      - http://localhost:8080/oauth2/callback
+      - http://localhost:3000/oauth2/callback
   jwt:
     secret: ${JWT_SECRET}
 

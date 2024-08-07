@@ -1,6 +1,6 @@
 package com.green.beadalyo.kdh.menuoption;
 
-import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
+import com.green.beadalyo.kdh.menuoption.entity.*;
 import com.green.beadalyo.kdh.menuoption.model.GetMenuOptionRes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
