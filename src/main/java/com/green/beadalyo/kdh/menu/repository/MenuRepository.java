@@ -50,4 +50,5 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
     Boolean existsByMenuPkAndMenuResPk(Long menuPk, Restaurant menuResPk);
 
     List<MenuEntity> findByMenuResPk(Restaurant menuResPk);
+
 }

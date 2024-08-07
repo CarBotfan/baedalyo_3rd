@@ -104,7 +104,7 @@ public class InquiryControllerForUser {
 
         return ResultDto.<List<GetInquiryListForUser>>builder()
                 .statusCode(1)
-                .resultMsg("고객문의 완료")
+                .resultMsg("리스트 불러오기 완료")
                 .resultData(result).build();
     }
 
@@ -143,7 +143,7 @@ public class InquiryControllerForUser {
 
     @DeleteMapping("{inquiry_pk}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "문의 자세히보기(유저용)")
+    @Operation(summary = "문의 삭제하기(유저용)")
     public ResultDto<Integer> delInquiryForUser(@PathVariable("inquiry_pk") Long inquiryPk){
 
 
