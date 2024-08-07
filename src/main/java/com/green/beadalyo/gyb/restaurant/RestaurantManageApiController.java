@@ -118,7 +118,8 @@ public class RestaurantManageApiController
         if (seq == 0) ResultError.builder().statusCode(-2).resultMsg("로그인한 유저 정보가 존재하지 않습니다.").build() ;
         try {
 
-            Integer data = service.toggleState(seq);
+            User user = userService.getUser(seq) ;
+            Integer data = service.toggleState(user);
 
             return ResultDto.builder().statusCode(data).build();
         } catch (DataWrongException e) {
