@@ -18,6 +18,7 @@ public class PostMenuRes {
     private int menuPrice;
     private String menuPic;
     private int menuState;
+    private Long menuCatPk;
 
 
 }

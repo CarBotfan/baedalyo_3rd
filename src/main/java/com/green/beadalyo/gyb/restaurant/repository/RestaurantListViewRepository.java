@@ -11,10 +11,12 @@ import java.math.BigDecimal;
 
 public interface RestaurantListViewRepository extends JpaRepository<RestaurantListView, Long>
 {
+
     @Query("SELECT r FROM RestaurantListView r " +
             "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
             "ORDER BY r.createdAt ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
@@ -29,6 +31,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE (r.restaurantPk IN (SELECT a.restaurantPk FROM restaurant_list_view a JOIN cate_res_matching crm ON a.restaurantPk = crm.crm_res_pk WHERE crm.crm_cate_pk = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
             "ORDER BY distance",
             countQuery = "SELECT count(*) " +
                     "FROM restaurant_list_view r " +
@@ -50,6 +53,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "FROM restaurant_list_view r " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
             "ORDER BY distance",
             countQuery = "SELECT count(*) " +
                     "FROM restaurant_list_view r " +
@@ -70,6 +74,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE (:categoryId = 0 OR m.category.seq = :categoryId) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
             "ORDER BY r.reviewAvgScore DESC")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,

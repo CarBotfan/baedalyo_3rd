@@ -85,7 +85,7 @@ public class Restaurant
     private LocalTime closeTime;
 
     @Column(name = "res_state")
-    @Comment("현재 영업 상태 1 : 영업 중 / 2 : 휴업 / 3 : 폐점 / 4 : 승인대기, 디폴트 2")
+    @Comment("현재 영업 상태 1 : 영업 중 / 2 : 휴업 / 3 : 폐점 / 4 : 승인대기, / 5: 폐점 대기, 디폴트 4")
     @ColumnDefault("2")
     private Integer state;
 
@@ -119,7 +119,7 @@ public class Restaurant
         this.RestaurantDescription = data.getDesc1() ;
         this.reviewDescription = data.getDesc2() ;
         this.pic = data.getResPic() ;
-        this.state = 2 ;
+        this.state = 4;
     }
 
     public void update(RestaurantManagePatchReq data)

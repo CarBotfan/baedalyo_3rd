@@ -40,5 +40,8 @@ public class PostMenuReq {
     @Schema(example = "1" , description = "메뉴 상태 ex) 1:판매 중 2: 품절", requiredMode = Schema.RequiredMode.REQUIRED)
     private int menuState;
 
+    @Schema(description = "메뉴 카테고리 Pk")
+    private long menuCatPk;
+
 
 }

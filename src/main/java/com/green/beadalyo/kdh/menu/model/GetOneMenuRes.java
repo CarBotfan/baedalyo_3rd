@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GetOneMenuRes {
     private long menuPk;
     private long menuResPk;
