@@ -1,6 +1,5 @@
-package com.green.beadalyo.kdh.menuOption.model;
+package com.green.beadalyo.kdh.menuoption.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

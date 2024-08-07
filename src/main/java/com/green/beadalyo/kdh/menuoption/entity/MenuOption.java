@@ -1,7 +1,6 @@
-package com.green.beadalyo.kdh.menuOption.entity;
+package com.green.beadalyo.kdh.menuoption.entity;
 
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
-import com.green.beadalyo.lmy.order.entity.OrderMenuOption;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,8 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "option")
@@ -48,7 +45,7 @@ public class MenuOption
     @CreationTimestamp
     private LocalDateTime createdAt ;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt ;
 

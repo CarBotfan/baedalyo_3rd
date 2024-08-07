@@ -12,7 +12,7 @@ import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
-import com.green.beadalyo.kdh.menuOption.MenuOptionRepository;
+import com.green.beadalyo.kdh.menuoption.MenuOptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

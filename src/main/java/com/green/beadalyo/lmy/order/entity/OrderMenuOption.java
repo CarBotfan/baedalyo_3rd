@@ -1,6 +1,6 @@
 package com.green.beadalyo.lmy.order.entity;
 
-import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
+import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

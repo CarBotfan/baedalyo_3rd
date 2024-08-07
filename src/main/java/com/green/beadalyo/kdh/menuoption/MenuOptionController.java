@@ -1,10 +1,10 @@
-package com.green.beadalyo.kdh.menuOption;
+package com.green.beadalyo.kdh.menuoption;
 
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.kdh.menu.MenuService;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
-import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
-import com.green.beadalyo.kdh.menuOption.model.*;
+import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
+import com.green.beadalyo.kdh.menuoption.model.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class MenuOptionController {
     private final MenuService menuService;
 
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ post ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-    @PostMapping
+    @PostMapping("owner")
     @PreAuthorize("hasAnyRole('OWNER')")
     @ApiResponse(
             description =
@@ -66,7 +66,7 @@ public class MenuOptionController {
 
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ put ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-    @PutMapping
+    @PutMapping("owner")
     @PreAuthorize("hasAnyRole('OWNER')")
     @ApiResponse(
             description =

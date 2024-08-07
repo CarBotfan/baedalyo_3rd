@@ -1,20 +1,17 @@
-package com.green.beadalyo.kdh.menuOption;
+package com.green.beadalyo.kdh.menuoption;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
-import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
-import com.green.beadalyo.kdh.menuOption.model.*;
+import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
+import com.green.beadalyo.kdh.menuoption.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -103,6 +100,6 @@ public class MenuOptionService {
     }
 
     public List<GetMenuOptionRes> getMenuOptions(MenuEntity menu) {
-        List<GetMenuOptionRes> result = menuOptionRepository.한개메뉴 옵션들 전부 가지고오기 get
+        return menuOptionRepository.findMenuOptionResByMenu(menu);
     }
 }

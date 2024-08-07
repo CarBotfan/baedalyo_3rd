@@ -1,6 +1,5 @@
-package com.green.beadalyo.kdh.menuOption.model;
+package com.green.beadalyo.kdh.menuoption.model;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
