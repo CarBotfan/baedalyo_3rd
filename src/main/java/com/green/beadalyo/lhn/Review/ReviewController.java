@@ -1,15 +1,23 @@
 package com.green.beadalyo.lhn.Review;
 
 import com.green.beadalyo.common.model.ResultDto;
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
-import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.jhw.user.UserServiceImpl;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.kdh.admin.entity.ReportEntity;
+import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.lhn.Review.model.*;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +32,9 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService service;
     private final AuthenticationFacade facade ;
-    private final UserService userService ;
+    private final UserServiceImpl userService ;
+    private final RestaurantService restaurantService;
+    private final ReviewService reviewService;
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "고객리뷰작성")
@@ -91,28 +101,31 @@ public class ReviewController {
                     .build();
         }
 
-    @GetMapping("list")
+    @GetMapping("list/{page}")
     @Operation(summary = "리뷰 리스트 불러오기", description = "")
-    public ResultDto<List<ReviewGetRes>> getReviewList() {
+    public ResultDto<ReviewGetListResponse> getReviewList(@PathVariable(name = "page") Integer page) {
         if (facade.getLoginUser() == null) {
-            return ResultDto.<List<ReviewGetRes>>builder()
+            return ResultDto.<ReviewGetListResponse>builder()
                     .statusCode(-13)
                     .resultMsg("로그인한 유저가 존재하지 않음")
                     .build();
         }
-
+        User user = userService.getUser(facade.getLoginUserPk());
+        ReviewGetDto req = new ReviewGetDto();
+        req.setPage(page);
         int code = 1;
         String msg = "불러오기 완료";
-        List<ReviewGetRes> result = null;
-
+        ReviewGetListResponse result = null;
         try {
             // 로그인된 사용자의 역할에 따라 다른 메서드를 호출
             String userRole = facade.getLoginUserRole();
             if ("ROLE_OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
-                result = service.getOwnerReviews();
+                req.setRestaurant(restaurantService.getRestaurantData(user));
+                result = service.getOwnerReviews(req);
             }
             if ("ROLE_USER".equals(userRole)){
-                result = service.getCustomerReviews();
+                req.setUser(user);
+                result = service.getCustomerReviews(req);
             }
             if ("ROLE_ADMIN".equals(userRole)){
                 throw new RuntimeException("어드민임니다");
@@ -123,29 +136,33 @@ public class ReviewController {
             msg = e.getMessage();
         }
 
-        return ResultDto.<List<ReviewGetRes>>builder()
+        return ResultDto.<ReviewGetListResponse>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
                 .build();
     }
 
-    @GetMapping("noauth/{res_pk}")
+    @GetMapping("noauth")
     @Operation(summary = "비회원 리뷰 리스트 불러오기", description = "")
-    public ResultDto<List<ReviewGetRes>> getReviewListByResPk(@PathVariable("res_pk") long resPk) {
+    public ResultDto<ReviewGetListResponse> getReviewListByResPk(@ModelAttribute @ParameterObject ReviewGetReq p) {
 
         int code = 1;
         String msg = "불러오기 완료";
-        List<ReviewGetRes> result = null;
+        ReviewGetListResponse result = null;
 
         try {
-            result = service.getReviewListByResPk(resPk);
+            Restaurant restaurant = restaurantService.getRestaurantDataBySeq(p.getResPk());
+            ReviewGetDto dto = new ReviewGetDto();
+            dto.setPage(p.getPage());
+            dto.setRestaurant(restaurant);
+            result = service.getOwnerReviews(dto);
         } catch (Exception e) {
             code = -13;
             msg = "유효하지 않은 상점 pk입니다.";
         }
 
-        return ResultDto.<List<ReviewGetRes>>builder()
+        return ResultDto.<ReviewGetListResponse>builder()
                 .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
@@ -272,6 +289,39 @@ public class ReviewController {
       return ResultDto.<Integer>builder()
                 .statusCode(code)
                 .resultMsg(msg)
+                .build();
+    }
+
+    //이건 김동현이 작업 ㅎ했습니다. 리뷰에서 신고하느거임!!
+    @PostMapping("report")
+    @Operation(summary = "리뷰 신고기능", description = "리뷰를 신고합니다.")
+    @PreAuthorize("isAuthenticated()")
+    public ResultDto<Long> postReport(@RequestBody ReportPostReq p){
+
+        Review review = service.getReviewByPk(p.getReviewPk());
+        User user = service.getUserByPk(facade.getLoginUserPk());
+        p.setReview(review);
+        p.setUser(user);
+
+
+
+        //그럼 만들고 pk를 리턴하겟쬬?
+
+        try {
+
+            ReportEntity reportEntity = service.makeReport(p);
+             service.saveReport(reportEntity);
+
+        } catch (Exception e){
+            return ResultDto.<Long>builder()
+                    .statusCode(-1)
+                    .resultMsg("리뷰 신고 실패")
+                    .build();
+        }
+        return ResultDto.<Long>builder()
+                .statusCode(1)
+                .resultMsg("리뷰 신고 완료")
+                .resultData(1L)
                 .build();
     }
 }

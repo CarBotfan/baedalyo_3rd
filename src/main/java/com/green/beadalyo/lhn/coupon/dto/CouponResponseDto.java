@@ -19,7 +19,7 @@ public class CouponResponseDto {
     private String content;
 
     // 쿠폰 할인 금액 (고정 금액)
-    private Long price;
+    private Integer price;
 
     // 쿠폰 생성 일시
     private LocalDateTime createdAt;
@@ -27,7 +27,7 @@ public class CouponResponseDto {
     //쿠폰 최소주문금액
     private Long minOrderAmount;
 
-    public CouponResponseDto(Long id, String name, String content, Long price, Long minOrderAmount, LocalDateTime createdAt) {
+    public CouponResponseDto(Long id, String name, String content, Integer price, Long minOrderAmount, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.content = content;

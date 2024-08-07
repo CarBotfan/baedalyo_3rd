@@ -13,10 +13,10 @@ import lombok.Setter;
 @Setter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SignInPostReq {
-    @Schema(defaultValue = "ID")
+    @Schema(defaultValue = "test_user2")
     @NotBlank(message = "아이디를 입력해주세요.")
     private String userId;
-    @Schema(defaultValue = "비밀번호")
+    @Schema(defaultValue = "test1234")
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String userPw;
     @JsonIgnore

@@ -10,6 +10,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -50,11 +51,17 @@ public class User {
 
     @ColumnDefault("1")
     @Column(name = "user_state")
-    private int userState;
+    private Integer userState;
 
     @ColumnDefault("1")
     @Column(name = "user_login_type")
     private Integer userLoginType ;
+
+    @Column(name = "mileage")
+    private Integer mileage ;
+
+    @Column(name = "user_block_date")
+    private LocalDate userBlockDate;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -72,6 +79,7 @@ public class User {
         this.userPhone = p.getUserPhone();
         this.userEmail = p.getUserEmail();
         this.userRole = p.getUserRole();
+        this.userState = 1;
         this.userLoginType = p.getUserLoginType();
     }
 

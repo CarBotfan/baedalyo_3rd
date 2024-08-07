@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -129,4 +130,23 @@ public class CouponService {
             couponUserRepository.save(issuedCoupon);
         }
     }
+
+    //쿠폰 데이터 조회
+    public Coupon getCouponByPk(Long couponPk)
+    {
+        return couponRepository.findById(couponPk).orElseThrow(NullPointerException::new) ;
+    }
+
+    //소지 쿠폰 데이터 조회
+    public CouponUser getCouponUserByPk(Long couponUserPk)
+    {
+        return couponUserRepository.findById(couponUserPk).orElseThrow(NullPointerException::new) ;
+    }
+
+    //상태 저장
+    public CouponUser save(CouponUser couponUser)
+    {
+        return couponUserRepository.save(couponUser);
+    }
+
 }

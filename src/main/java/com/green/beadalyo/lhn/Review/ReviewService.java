@@ -1,17 +1,28 @@
 package com.green.beadalyo.lhn.Review;
 
 import com.green.beadalyo.common.CustomFileUtils;
+import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.lhn.Review.entity.Review;
+import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.kdh.admin.entity.ReportEntity;
+import com.green.beadalyo.kdh.admin.repository.ReportRepository;
 import com.green.beadalyo.lhn.Review.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +33,12 @@ public class ReviewService {
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
+
+
+
+    private final Integer REVIEW_PER_PAGE = 20;
 
     // 리뷰 작성
     @Transactional
@@ -97,12 +114,31 @@ public class ReviewService {
     }
 
     // 사장이 보는 자기 가게의 리뷰와 답글들
-    public List<ReviewGetRes> getOwnerReviews() {
-        long userPk = authenticationFacade.getLoginUserPk();
-        long resPk = repository.getResPkByUserPk(userPk);
-        return getReviewGetRes(resPk);
+    public ReviewGetListResponse getOwnerReviews(ReviewGetDto p) {
+        Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
+        Page<Review> page = repository.findReviewsByResPk(p.getRestaurant(), pageable);
+        List<ReviewGetRes> list = new ArrayList<>();
+        for(Review rev : page.getContent()) {
+            ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+            list.add(revRes);
+        }
+        return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
     }
+    // 손님이 보는 자기가 쓴 리뷰
 
+    public ReviewGetListResponse getCustomerReviews(ReviewGetDto p) {
+        Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
+        Page<Review> page = repository.findReviewsByUserPk(p.getUser(), pageable);
+        List<ReviewGetRes> list = new ArrayList<>();
+        for(Review rev : page.getContent()) {
+            ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+            list.add(revRes);
+        }
+
+        return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
+    }
     private List<ReviewGetRes> getReviewGetRes(long resPk) {
         List<ReviewGetRes> reviews = repository.getReviewsRestaurant(resPk);
 
@@ -111,20 +147,6 @@ public class ReviewService {
             ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
             review.setReply(reply);
             review.setNickName(repository.selectUserNickName(review.getUserPk()));
-        }
-
-        return reviews;
-    }
-
-    // 손님이 보는 자기가 쓴 리뷰
-    public List<ReviewGetRes> getCustomerReviews() {
-        long userPk = authenticationFacade.getLoginUserPk();
-        List<ReviewGetRes> reviews = repository.getReviewsUser(userPk);
-
-        for (ReviewGetRes review : reviews) {
-            addPicsToReview(review);
-            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
-            review.setReply(reply);
         }
 
         return reviews;
@@ -242,6 +264,46 @@ public class ReviewService {
         review.setPics(pics);
     }
 
+    public List<ReviewGetRes> reviewPagingTest(Restaurant res, Integer page) {
+
+        Pageable pageable = PageRequest.of(page - 1, REVIEW_PER_PAGE);
+        Page<Review> list = repository.findReviewsByResPk(res, pageable);
+        List<ReviewGetRes> result = new ArrayList<>();
+        for(Review rev : list.getContent()) {
+            ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+            result.add(revRes);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("total Page", list.getTotalPages());
+        map.put("page", result);
+        log.info("{}", map);
+        return result;
+    }
+
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+    //이거 유저 service에 있어야함
+    public User getUserByPk(Long userPk) {
+        return userRepository.findByUserPk(userPk);
+    }
+
+    public Review getReviewByPk(Long reviewPk) {
+        return repository.getReferenceById(reviewPk);
+    }
+
+    public ReportEntity makeReport(ReportPostReq req) {
+        ReportEntity reportEntity = new ReportEntity();
+        reportEntity.setUserPk(req.getUser());
+        reportEntity.setReviewPk(req.getReview());
+        reportEntity.setReportContent(req.getReportContent());
+        reportEntity.setReportTitle(req.getReportTitle());
+        return reportEntity;
+    }
+
+    public Long saveReport(ReportEntity report){
+        return reportRepository.save(report).getReportPk();
+    }
 }
 
 

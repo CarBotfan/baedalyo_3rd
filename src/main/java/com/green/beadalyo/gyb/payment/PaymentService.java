@@ -1,4 +1,4 @@
-package com.green.beadalyo.gyb.test;
+package com.green.beadalyo.gyb.payment;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

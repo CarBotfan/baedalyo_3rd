@@ -1,15 +1,21 @@
 package com.green.beadalyo.lmy.doneorder.entity;
 
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "done_order_menu")
+@NoArgsConstructor
+@AllArgsConstructor
 public class DoneOrderMenu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +25,9 @@ public class DoneOrderMenu {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "done_order_pk",nullable = false)
     private DoneOrder doneOrderPk;
+
+    @OneToMany(fetch = FetchType.EAGER,orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "doneOrderMenu")
+    private List<DoneOrderMenuOption> doneMenuOption ;
 
     @ManyToOne
     @JoinColumn(name = "menu_pk", nullable = false)
@@ -33,4 +42,13 @@ public class DoneOrderMenu {
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public DoneOrderMenu(OrderMenu data)
+    {
+        this.doneOrderPk = null ;
+        this.doneMenuOption = null ;
+        this.menuPk = data.getMenuPk() ;
+        this.menuName = data.getMenuName() ;
+        this.menuPrice = data.getMenuPrice() ;
+    }
 }

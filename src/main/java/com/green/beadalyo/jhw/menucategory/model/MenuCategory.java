@@ -1,4 +1,4 @@
-package com.green.beadalyo.jhw.MenuCategory.model;
+package com.green.beadalyo.jhw.menucategory.model;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import jakarta.persistence.*;
@@ -34,7 +34,7 @@ public class MenuCategory {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public MenuCategory(MenuCategoryInsertDto dto) {
+    public MenuCategory(MenuCatInsertDto dto) {
         this.restaurant = dto.getRestaurant();
         this.menuCatName = dto.getMenuCatName();
         this.position = dto.getPosition();

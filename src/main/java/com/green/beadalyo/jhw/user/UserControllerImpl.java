@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -45,7 +46,6 @@ public class UserControllerImpl implements UserController{
     private final UserAddrServiceImpl userAddrService;
 
     @Override
-    @Transactional
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
             , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "일반 유저 회원가입", description = "일반 유저 회원가입을 진행합니다")
@@ -76,8 +76,9 @@ public class UserControllerImpl implements UserController{
             service.duplicatedInfoCheck(user);
 
 
+            String picName = service.uploadProfileImage(pic);
+            user.setUserPic(picName);
             service.postUserSignUp(user);
-            user.setUserPic(service.uploadProfileImage(pic));
 
             result = 1;
         } catch (DuplicatedIdException e) {
@@ -109,7 +110,6 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @Transactional
     @PostMapping(value = "/owner/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
             , MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "음식점 사장 회원가입", description = "음식점 사장 가입을 진행합니다")
@@ -139,9 +139,9 @@ public class UserControllerImpl implements UserController{
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
             User user = new User(req);
             service.duplicatedInfoCheck(user);
-
-            long userPk = service.postUserSignUp(user);
-            user.setUserPic(service.uploadProfileImage(pic));
+            String picName = service.uploadProfileImage(pic);
+            user.setUserPic(picName);
+            service.postUserSignUp(user);
 
             RestaurantInsertDto dto = new RestaurantInsertDto();
             dto.setUser(user);
@@ -204,7 +204,15 @@ public class UserControllerImpl implements UserController{
             if(user == null || user.getUserState() == 3) {
                 throw new UserNotFoundException();
             }
-            if(service.checkPassword(p.getUserPw(), user. getUserPw())) {
+            if(user.getUserBlockDate() != null && user.getUserBlockDate().isBefore(LocalDate.now())) {
+                user.setUserBlockDate(null);
+                user.setUserState(1);
+                service.save(user);
+            }
+            if(user.getUserState() == 2) {
+                throw new SuspendedUserException(user.getUserBlockDate());
+            }
+            if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
             result = service.postSignIn(res, user);
@@ -213,6 +221,9 @@ public class UserControllerImpl implements UserController{
             msg = e.getMessage();
         } catch(IncorrectPwException e) {
             statusCode = -3;
+            msg = e.getMessage();
+        } catch(SuspendedUserException e) {
+            statusCode = -12;
             msg = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
@@ -465,7 +476,10 @@ public class UserControllerImpl implements UserController{
             if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
-            result = service.deleteUser(user);
+            if (user.getUserPic() != null) {service.deleteProfileImage();}
+            user = service.clearUser(user);
+            result = service.saveUser(user);
+
         } catch (UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();
@@ -502,8 +516,10 @@ public class UserControllerImpl implements UserController{
             if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
-            result = service.deleteUser(user);
             restaurantService.deleteRestaurantData(user);
+            if (user.getUserPic() != null) {service.deleteProfileImage();}
+            user = service.clearUser(user);
+            result = service.saveUser(user);
 
         } catch (UserNotFoundException e) {
             statusCode = -2;
@@ -578,6 +594,80 @@ public class UserControllerImpl implements UserController{
         }
         return ResultDto.<Integer>builder()
                 .statusCode(result)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+
+    @Override
+    @PostMapping("/find/id")
+    @Operation(summary = "유저 아이디 찾기", description = "아이디 반환 해드립니다.")
+    @ApiResponse(
+            description =
+                    "<p> 1 :  </p>"+
+                            "<p> -2 :  </p>" +
+                            "<p> -3 :  </p>" +
+                            "<p> -1 :  </p>"
+    )
+    public ResultDto<String> findUserId(FindUserIdReq req) {
+        int code = 1;
+        String msg = "아이디 찾기 성공";
+        String result = null;
+        User user;
+        try {
+            user = service.getUserByUserNameAndUserEmail(req);
+            result = user.getUserId();
+        } catch (Exception e) {
+            return ResultDto.<String>builder()
+                    .statusCode(-2)
+                    .resultMsg("해당 유저를 찾을 수 없음")
+                    .build();
+        }
+
+        return ResultDto.<String>builder()
+                .statusCode(1)
+                .resultMsg(msg)
+                .resultData(result)
+                .build();
+    }
+
+    @Override
+    @PostMapping("/find/pw")
+    @Operation(summary = "유저 비밀번호 찾기", description = "비밀번호 변경해드립니다.")
+    @ApiResponse(
+            description =
+                    "<p> 1 :  </p>"+
+                            "<p> -2 :  </p>" +
+                            "<p> -3 :  </p>" +
+                            "<p> -1 :  </p>"
+    )
+    public ResultDto<Integer> findAndResetPassword(FindUserPwReq req) {
+        int code = 1;
+        String msg = "비밀번호가 재설정 되었습니다.";
+        Integer result = null;
+
+        User user;
+        try {
+            user = service.getUserByUserNameAndUserEmailAndUserId(req);
+        } catch (Exception e) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-2)
+                    .resultMsg("해당 유저를 찾을 수 없음")
+                    .build();
+        }
+
+        if (!service.confirmPw(req)) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-3)
+                    .resultMsg("비밀번호 불일치")
+                    .build();
+        }
+
+        user.setUserPw(req.getUserPw());
+        result = service.saveUser(user);
+
+        return ResultDto.<Integer>builder()
+                .statusCode(code)
                 .resultMsg(msg)
                 .resultData(result)
                 .build();

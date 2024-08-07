@@ -1,7 +1,13 @@
 package com.green.beadalyo.lhn.Review;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lhn.Review.model.*;
 import com.green.beadalyo.lhn.Review.entity.Review;
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.lhn.Review.entity.Review;
+import com.green.beadalyo.lhn.Review.model.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,6 +40,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(nativeQuery = true, value = "SELECT review_pk AS reviewPk, review_comment_pk AS reviewCommentPk, comment_content AS commentContents FROM review_comment WHERE review_pk = :reviewPk")
     ReviewReplyRes getReviewComment(@Param("reviewPk") Long reviewPk);
 
+    @Query("select new com.green.beadalyo.lhn.Review.model.ReviewReplyRes(rc.reviewPk.reviewPk, rc.reviewCommentPk, rc.commentContent) from ReviewComment rc where rc.reviewPk = :review")
+    ReviewReplyRes findReviewReplyByReviewPk(Review review);
     // 사장님 레스토랑 조회
     @Query(nativeQuery = true, value = "SELECT res_user_pk FROM restaurant WHERE res_pk = (SELECT res_pk FROM review WHERE review_pk = :reviewPk)")
     Long getRestaurantUser(@Param("reviewPk") Long reviewPk);
@@ -81,4 +89,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 유저 닉네임 조회
     @Query(nativeQuery = true, value = "SELECT user_nickname FROM user WHERE user_pk = :userPk")
     String selectUserNickName(@Param("userPk") Long userPk);
+
+    @Query("select r from Review r where r.resPk = :resPk order by r.createdAt")
+    Page<Review> findReviewsByResPk(Restaurant resPk, Pageable pageable);
+
+    @Query("select r from Review  r where r.userPk = :userPk order by r.createdAt")
+    Page<Review> findReviewsByUserPk(User userPk, Pageable pageable);
+
 }

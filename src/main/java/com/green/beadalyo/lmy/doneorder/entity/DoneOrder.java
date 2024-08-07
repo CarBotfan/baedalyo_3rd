@@ -2,6 +2,7 @@ package com.green.beadalyo.lmy.doneorder.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.lmy.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -32,6 +34,9 @@ public class DoneOrder {
     @JoinColumn(name = "res_pk", nullable = false, referencedColumnName = "res_pk")
     private Restaurant resPk;
 
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "doneOrderPk")
+    private List<DoneOrderMenu> doneOrderMenus;
+
     @Column(name = "order_price", nullable = false)
     private Integer orderPrice;
 
@@ -45,7 +50,7 @@ public class DoneOrder {
     private String orderAddress;
 
     @Column(name = "payment_method")
-    private String paymentMethod;
+    private Integer paymentMethod;
 
     @ColumnDefault("0")
     @Column(name = "order_method")
@@ -57,7 +62,36 @@ public class DoneOrder {
     @Column(name = "canceller")
     private String canceller;
 
+    @Column(name = "use_mileage")
+    private Integer useMileage;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public DoneOrder(Order data)
+    {
+        this.userPk = data.getOrderUserPk() ;
+        this.resPk = data.getOrderResPk() ;
+        this.orderPrice = data.getOrderPrice() ;
+        this.orderRequest = data.getOrderRequest() ;
+        this.orderPhone = data.getOrderPhone() ;
+        this.orderAddress = data.getOrderAddress() ;
+        this.paymentMethod = data.getPaymentMethod() ;
+        this.orderMethod = data.getOrderMethod() ;
+        this.useMileage = data.getUseMileage() ;
+        this.doneOrderMenus = null ;
+        data.getMenus().forEach(menu -> {
+            DoneOrderMenu doneMenu = new DoneOrderMenu(menu) ;
+            doneMenu.setDoneOrderPk(this);
+            List<DoneOrderMenuOption> options =  menu.getOrderMenuOption().stream().map(option -> {
+                DoneOrderMenuOption doneOption = new DoneOrderMenuOption(option);
+                doneOption.setDoneOrderMenu(doneMenu);
+                return doneOption ;
+            }).toList() ;
+            doneMenu.setDoneMenuOption(options);
+            this.doneOrderMenus.add(doneMenu) ;
+        }) ;
+
+    }
 }

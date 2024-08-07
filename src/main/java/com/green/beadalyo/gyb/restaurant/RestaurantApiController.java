@@ -109,7 +109,7 @@ public class RestaurantApiController
     {
 
         try {
-            RestaurantDetailView data = service.getRestaurantDataBySeq(seq);
+            RestaurantDetailView data = service.getRestaurantDataViewBySeq(seq);
 
             RestaurantDetailRes res = new RestaurantDetailRes(data) ;
             GetAllMenuReq temp = new GetAllMenuReq(data.getRestaurantPk()) ;

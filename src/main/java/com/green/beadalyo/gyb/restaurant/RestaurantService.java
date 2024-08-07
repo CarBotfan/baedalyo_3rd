@@ -61,6 +61,7 @@ public class RestaurantService
         } ;
     }
 
+
     //음식점 카테고리 기준 정보 호출
     public Page<RestaurantListView> getRestaurantByCategoryAll(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page ) throws Exception
     {
@@ -85,9 +86,14 @@ public class RestaurantService
         if (user == null) throw new DataNotFoundException("유저 정보를 찾을수 없습니다.") ;
         return repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
     }
+    //음식점 정보 호출(PK)
+    public Restaurant getRestaurantDataBySeq(Long seq) throws Exception
+    {
+        return repository.findTop1BySeq(seq).orElseThrow(NullPointerException::new);
+    }
 
-    //음식점 정보 호출(음식점 pk로)
-    public RestaurantDetailView getRestaurantDataBySeq(Long seq) throws Exception
+    //음식점 뷰 정보 호출(음식점 pk로)
+    public RestaurantDetailView getRestaurantDataViewBySeq(Long seq) throws Exception
     {
         return viewDetailRepository.findTop1ByRestaurantPk(seq).orElseThrow(NullPointerException::new);
     }
@@ -99,7 +105,8 @@ public class RestaurantService
         if (!dto.getRegiNum().matches(regex))
             throw new DataWrongException("사업자 번호는 nnn-nn-nnnnn의 형식으로 들어와야 합니다.") ;
         Restaurant data = new Restaurant(dto);
-        repository.save(data) ;
+        data.setState(4);
+        repository.save(data);
     }
 
     //폐업 처리(사업자 회원 탈퇴시 호출 필요)

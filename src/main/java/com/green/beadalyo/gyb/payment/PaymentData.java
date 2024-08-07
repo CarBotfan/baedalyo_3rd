@@ -1,9 +1,6 @@
-package com.green.beadalyo.gyb.test;
+package com.green.beadalyo.gyb.payment;
 
 import lombok.Data;
-import lombok.ToString;
-
-import java.util.List;
 
 @Data
 public class PaymentData

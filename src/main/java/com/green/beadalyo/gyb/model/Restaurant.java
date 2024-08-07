@@ -3,6 +3,7 @@ package com.green.beadalyo.gyb.model;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -10,9 +11,11 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -59,6 +62,8 @@ public class Restaurant
     )
     List<Category> categories;
 
+
+
     @Column(name = "res_regi_num", nullable = false , length = 12)
     @Comment("사업자 등록번호")
     private String regiNum;
@@ -80,7 +85,7 @@ public class Restaurant
     private LocalTime closeTime;
 
     @Column(name = "res_state")
-    @Comment("현재 영업 상태 1 : 영업 중 / 2 : 휴업 / 3 : 폐점, 디폴트 2")
+    @Comment("현재 영업 상태 1 : 영업 중 / 2 : 휴업 / 3 : 폐점 / 4 : 승인대기, 디폴트 2")
     @ColumnDefault("2")
     private Integer state;
 
@@ -97,6 +102,9 @@ public class Restaurant
     @Comment("수정일")
     @UpdateTimestamp
     private LocalDateTime updateDt ;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "menuResPk", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MenuEntity> menuList = new ArrayList<>(); ;
 
     public Restaurant(RestaurantInsertDto data)
     {
