@@ -99,7 +99,7 @@ public class MenuOptionService {
         return entity;
     }
 
-    public List<GetMenuOptionRes> getMenuOptions(MenuEntity menu) {
-        return menuOptionRepository.findMenuOptionResByMenu(menu);
+    public List<GetMenuOptionRes> getMenuOptions(Long menuPk) {
+        return menuOptionRepository.findMenuOptionResByMenu(menuPk);
     }
 }

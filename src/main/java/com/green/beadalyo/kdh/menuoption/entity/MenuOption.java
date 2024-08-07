@@ -41,7 +41,7 @@ public class MenuOption
     @Comment("옵션 상태 1 : 정상 / 2 : 품절")
     private Integer optionState ;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt ;
 

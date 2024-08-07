@@ -55,7 +55,7 @@ public class MenuOptionController {
     @GetMapping("{menu_pk}")
     public ResultDto<List<GetMenuOptionRes>> getMenuOptions(@PathVariable("menu_pk") Long menuPk){
         MenuEntity menu = menuService.getMenuByMenuPk(menuPk);
-        List<GetMenuOptionRes> result = service.getMenuOptions(menu);
+        List<GetMenuOptionRes> result = service.getMenuOptions(menuPk);
 
         return ResultDto.<List<GetMenuOptionRes>>builder()
                 .statusCode(1)
