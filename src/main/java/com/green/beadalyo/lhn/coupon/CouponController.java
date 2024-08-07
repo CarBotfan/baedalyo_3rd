@@ -24,7 +24,7 @@ public class CouponController {
     private final CouponService couponService;
 
     // 쿠폰 생성
-    @PostMapping("쿠폰만들기")
+    @PostMapping
     public ResponseEntity<ResultDto<CouponResponseDto>> createCoupon(@RequestBody CouponPostReq p) {
         try {
             Coupon createdCoupon = couponService.createCoupon(p);
@@ -42,7 +42,7 @@ public class CouponController {
     }
 
     // 가게별 쿠폰 조회
-    @GetMapping("가게 쿠폰 조회/{restaurantId}")
+    @GetMapping("/{restaurantId}")
     public ResponseEntity<ResultDto<List<CouponResponseDto>>> getCouponsByRestaurant(@PathVariable Long restaurantId) {
         try {
             List<Integer> state = new ArrayList<>();
@@ -62,7 +62,7 @@ public class CouponController {
         }
     }
     // 가게 주인이 생성한 쿠폰 목록 조회
-    @GetMapping("/가게주인 쿠폰목록조회")
+    @GetMapping("/owner")
     public ResultDto<List<CouponResponseDto>> getCouponsByOwner() {
         List<CouponResponseDto> coupons = couponService.getCouponsByOwner();
 //        List<CouponResponseDto> couponResponseDtos = coupons.stream()
@@ -79,7 +79,7 @@ public class CouponController {
     }
 
     // 쿠폰 발급
-    @PostMapping("쿠폰발급/{couponId}")
+    @PostMapping("/{couponId}")
     @PreAuthorize("hasAnyRole('USER')")
     public ResultDto<Long> issueCoupon(@PathVariable Long couponId) {
         Long issuedCoupon = couponService.issueCoupon(couponId);
@@ -93,7 +93,7 @@ public class CouponController {
 
 
     // 쿠폰 상태 변경
-    @PutMapping("쿠폰상태변경")
+    @PutMapping()
     public ResponseEntity<ResultDto<CouponUserResponseDto>> updateCouponStatus(@RequestParam Long couponUserId, @RequestParam int state) {
         try {
             CouponUser updatedCouponUser = couponService.updateCouponStatus(couponUserId, state);
@@ -111,7 +111,7 @@ public class CouponController {
     }
 
     // 쿠폰 삭제
-    @DeleteMapping("쿠폰삭제/{couponId}")
+    @DeleteMapping("/{couponId}")
     public ResponseEntity<ResultDto<CouponResponseDto>> deleteCoupon(@RequestParam Long couponId) {
         try {
             couponService.deleteCoupon(couponId , 2);
