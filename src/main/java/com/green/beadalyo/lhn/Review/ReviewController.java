@@ -6,7 +6,7 @@ import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
-import com.green.beadalyo.kdh.admin.entity.ReportEntity;
+import com.green.beadalyo.kdh.report.entity.ReportEntity;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.lhn.Review.model.*;
 
@@ -292,37 +292,6 @@ public class ReviewController {
                 .build();
     }
 
-    //이건 김동현이 작업 ㅎ했습니다. 리뷰에서 신고하느거임!!
-    @PostMapping("report")
-    @Operation(summary = "리뷰 신고기능", description = "리뷰를 신고합니다.")
-    @PreAuthorize("isAuthenticated()")
-    public ResultDto<Long> postReport(@RequestBody ReportPostReq p){
 
-        Review review = service.getReviewByPk(p.getReviewPk());
-        User user = service.getUserByPk(facade.getLoginUserPk());
-        p.setReview(review);
-        p.setUser(user);
-
-
-
-        //그럼 만들고 pk를 리턴하겟쬬?
-
-        try {
-
-            ReportEntity reportEntity = service.makeReport(p);
-             service.saveReport(reportEntity);
-
-        } catch (Exception e){
-            return ResultDto.<Long>builder()
-                    .statusCode(-1)
-                    .resultMsg("리뷰 신고 실패")
-                    .build();
-        }
-        return ResultDto.<Long>builder()
-                .statusCode(1)
-                .resultMsg("리뷰 신고 완료")
-                .resultData(1L)
-                .build();
-    }
 }
 

@@ -45,6 +45,7 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query("SELECT r.user.userPk FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")
     Long getDoneOrderResUser(@Param("doneOrderPk") Long doneOrderPk);
 
+    // ----------통계 부분 사장님!!!!!!!!!!!!!!!!!!!!!-----------
     @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m') AS createdAt, SUM(o.order_price) AS monthSales " +
             "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y') = :date AND o.res_pk = :resPk AND o.done_order_state = 1 " +
             "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')", nativeQuery = true)
@@ -64,6 +65,8 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
             "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y-%m') = :date AND o.res_pk = :resPk AND o.done_order_state = 1 " +
             "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m-%d')", nativeQuery = true)
     List<DailyOrderCountDto> getDailyOrderCount(@Param("date") String date, @Param("resPk") Long resPk);
+
+    //------------통계 부분 어드민!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 }
