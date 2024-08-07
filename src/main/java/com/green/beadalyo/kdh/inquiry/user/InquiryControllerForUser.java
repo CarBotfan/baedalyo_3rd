@@ -51,7 +51,7 @@ public class InquiryControllerForUser {
                 .resultData(result).build();
     }
 
-    @PostMapping()
+    @PutMapping()
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "문의하기 수정하기(유저용)")
     public ResultDto<Integer> PutInquiry(@RequestBody PutInquiryForUserReq p){
