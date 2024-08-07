@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query(value = "SELECT " +
-            "o.doneOrderPk , r.seq as resPK, r.pic as resPic, r.name as resName, o.orderPrice as orderPrice, o.doneOrderState as doneOrderState, o.createdAt as reatedAt, NULL " +
+            "o.doneOrderPk , r.seq as resPK, r.pic as resPic, r.name as resName, o.orderPrice as orderPrice, o.doneOrderState as doneOrderState, o.createdAt as createdAt " +
             "FROM DoneOrder o JOIN o.resPk r " +
             "WHERE o.userPk.userPk = :userPk")
     Page<DoneOrderMiniGetResUser> findDoneOrdersByUserPk(@Param("userPk") Long userPk, Pageable pageable);
@@ -42,7 +42,7 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query("SELECT o.userPk.userPk FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk")
     Long getDoneOrderUser(@Param("doneOrderPk") Long doneOrderPk);
 
-    @Query("SELECT r.user FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")
+    @Query("SELECT r.user.userPk FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")
     Long getDoneOrderResUser(@Param("doneOrderPk") Long doneOrderPk);
 
     @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m') AS createdAt, SUM(o.order_price) AS monthSales " +
