@@ -60,17 +60,17 @@ public class RestaurantService
             Long userPk = authenticationFacade.getLoginUserPk();
             return switch (orderType)
             {
-                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,userPk,pageable);
-                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
-                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,userPk,pageable) ;
+                case 1 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinates(xMin,xMax,yMin,yMax,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,userPk,pageable);
+                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,userPk,pageable);
+                case 3 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinatesSortedByScore(xMin,xMax,yMin,yMax,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,userPk,pageable);
                 default -> null ;
             };
         } catch (Exception e) {
             return switch (orderType)
             {
-                case 1 -> viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
+                case 1 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinates(xMin,xMax,yMin,yMax,pageable) : viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,pageable);
                 case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,pageable) ;
-                case 3 -> viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable) ;
+                case 3 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinatesSortedByScore(xMin,xMax,yMin,yMax,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,pageable);
                 default -> null ;
             };
         }

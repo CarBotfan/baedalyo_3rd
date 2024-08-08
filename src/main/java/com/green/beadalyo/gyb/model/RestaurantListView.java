@@ -5,9 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Getter;
-import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
-import org.hibernate.annotations.View;
+import net.jcip.annotations.Immutable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,32 +14,30 @@ import java.time.LocalDateTime;
 @Table(name = "restaurant_list_view")
 @Immutable
 @Getter
-public class RestaurantListView
-{
+public class RestaurantListView {
     @Id
-    private Long restaurantPk ;
+    private Long restaurantPk;
 
-    private String restaurantName ;
+    private String restaurantName;
 
-    private Float reviewAvgScore ;
+    private Float reviewAvgScore;
 
-    private Integer reviewTotalElements ;
+    private Integer reviewTotalElements;
 
-    private String restaurantAddr ;
+    private String restaurantAddr;
 
-    private Integer restaurantState ;
+    private Integer restaurantState;
 
-    private String restaurantPic ;
+    private String restaurantPic;
 
     @Transient
     private Integer isFollow = 0; // Transient 필드로 설정
 
-    private BigDecimal restaurantCoorX ;
+    private BigDecimal restaurantCoorX;
 
-    private BigDecimal restaurantCoorY ;
+    private BigDecimal restaurantCoorY;
 
-    private LocalDateTime createdAt ;
-
+    private LocalDateTime createdAt;
 
     public RestaurantListView(Long restaurantPk, String restaurantName, Float reviewAvgScore, Integer reviewTotalElements,
                               String restaurantAddr, Integer restaurantState, String restaurantPic,
@@ -60,6 +56,5 @@ public class RestaurantListView
     }
 
     public RestaurantListView() {
-
     }
 }
