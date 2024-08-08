@@ -76,6 +76,7 @@ public class CouponController {
     //유저가 발급 받은 쿠폰 목록 조회
     @GetMapping("/user")
     @Operation(summary = "유저 발급 쿠폰 목록조회")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResultDto<List<CouponUserResponseDto>> getCouponsByUser() {
         List<CouponUserResponseDto> coupons = couponService.getCouponByUser();
 
@@ -89,6 +90,7 @@ public class CouponController {
     // 가게 주인이 생성한 쿠폰 목록 조회
     @GetMapping("/owner")
     @Operation(summary = "가게 주인 쿠폰생성 목록조회")
+    @PreAuthorize("hasAnyRole('OWNER')")
     public ResultDto<List<CouponResponseDto>> getCouponsByOwner() {
         List<CouponResponseDto> coupons = couponService.getCouponsByOwner();
 //        List<CouponResponseDto> couponResponseDtos = coupons.stream()
