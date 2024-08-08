@@ -53,20 +53,20 @@ public class UserAddrServiceImpl implements UserAddrService{
 
     @Override
     public UserAddrGetRes getUserAddr(long addrPk) throws Exception {
-
-        UserAddrGetRes result = new UserAddrGetRes(repository.findUserAddrByUserPkAnAndAddrPk(addrPk, authenticationFacade.getLoginUserPk()));
-        if(result.getAddrPk() == 0) {
+        if(repository.existsById(addrPk)) {
             throw new RuntimeException("존재하지 않는 데이터");
         }
+        UserAddrGetRes result = new UserAddrGetRes(repository.findUserAddrByUserPkAnAndAddrPk(addrPk, authenticationFacade.getLoginUserPk()));
+
         return result;
     }
 
     @Override
     public UserAddrGetRes getMainUserAddr() throws Exception{
-        UserAddr addr = repository.findMainUserAddr(authenticationFacade.getLoginUserPk());
-        if(addr == null) {
+        if(repository.existsUserAddrByUser(userRepository.findByUserPk(authenticationFacade.getLoginUserPk())) == null) {
             return null;
         }
+        UserAddr addr = repository.findMainUserAddr(authenticationFacade.getLoginUserPk());
         return new UserAddrGetRes(addr);
     }
 
