@@ -9,8 +9,11 @@ import com.green.beadalyo.jhw.menucategory.model.*;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Description;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,12 +23,14 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("api/menu_category")
+@Tag(name = "메뉴 카테고리 컨트롤러")
 public class MenuCategoryController {
     private final MenuCategoryService service;
     private final RestaurantService restaurantService;
     private final UserServiceImpl userService;
     private final AuthenticationFacade authenticationFacade;
 
+    @Operation(summary = "메뉴 카테고리 등록")
     @PostMapping
     public ResultDto<Integer> postMenuCat(@RequestBody MenuCatPostReq p) {
         int result = 0;
@@ -54,6 +59,7 @@ public class MenuCategoryController {
                 .resultData(result).build();
     }
 
+    @Operation(summary = "메뉴 카테고리 목록 조회")
     @GetMapping("/list")
     public ResultDto<List<MenuCatGetRes>> getMenuCatResList() {
         List<MenuCatGetRes> result = new ArrayList<>();
@@ -83,6 +89,7 @@ public class MenuCategoryController {
                 .resultData(result).build();
     }
 
+    @Operation(summary = "메뉴 카테고리 조회")
     @GetMapping("/{menu_cat_pk}")
     public ResultDto<MenuCatGetRes> getMenuCat(@PathVariable(name = "menu_cat_pk") Long MenuCatPk) {
         int statusCode = 1;
@@ -105,6 +112,7 @@ public class MenuCategoryController {
                 .resultData(result).build();
     }
 
+    @Operation(summary = "메뉴 카테고리 삭제")
     @DeleteMapping("/{menu_cat_pk}")
     public ResultDto<Integer> deleteMenuCat(@PathVariable(name = "menu_cat_pk") Long menuCatPk) {
         int statusCode = 1;
@@ -129,6 +137,7 @@ public class MenuCategoryController {
                 .resultData(result).build();
     }
 
+    @Operation(summary = "메뉴 카테고리 수정")
     @PatchMapping()
     public ResultDto<Integer> patchMenuCat(@RequestBody MenuCatPatchReq p) {
         int statusCode = 1;
@@ -158,6 +167,7 @@ public class MenuCategoryController {
                 .resultData(result).build();
     }
 
+    @Operation(summary = "메뉴 카테고리 순서 변경", description = "position에 이동할 위치 입력")
     @PatchMapping("/position")
     public ResultDto<Integer> patchMenuPosition(@RequestBody MenuCatPositionPatchReq p) {
         int statusCode = 1;

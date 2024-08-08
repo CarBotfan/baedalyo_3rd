@@ -282,6 +282,7 @@ public class MenuController {
                 .build();
     }
 
+    @Operation(summary = "메뉴의 카테고리 변경")
     @PatchMapping("/patch-category")
     public ResultDto<Integer> patchCategory(@RequestBody MenuPatchCategoryReq p) {
         int statusCode = 1;
