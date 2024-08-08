@@ -351,5 +351,13 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    public User putUserEssential(PutSocialLoginReq req) {
+        User user = getUser(authenticationFacade.getLoginUserPk());
+        user.setUserNickname(req.getUserNickName());
+        user.setUserPhone(req.getUserPhone());
+
+        return user;
+    }
+
 }
 
