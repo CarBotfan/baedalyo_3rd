@@ -39,6 +39,9 @@ public class UserAddrServiceImpl implements UserAddrService{
         long signedUserPk = authenticationFacade.getLoginUserPk();
         List<UserAddr> list = repository.findAllByUserPkOrderByAddrDefaultDesc(signedUserPk);
         List<UserAddrGetRes> result = new ArrayList<>();
+        if(list.isEmpty()) {
+            return result;
+        }
         for(UserAddr userAddr : list) {
             UserAddrGetRes addrGetRes = new UserAddrGetRes(userAddr);
             result.add(addrGetRes);
@@ -61,6 +64,9 @@ public class UserAddrServiceImpl implements UserAddrService{
     @Override
     public UserAddrGetRes getMainUserAddr() throws Exception{
         UserAddr addr = repository.findMainUserAddr(authenticationFacade.getLoginUserPk());
+        if(addr == null) {
+            return null;
+        }
         return new UserAddrGetRes(addr);
     }
 
