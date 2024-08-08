@@ -97,8 +97,8 @@ public class SecurityConfiguration {
 //                                .userInfoEndpoint(userInfo -> userInfo.userService(myOAuth2UserService))
 //                                .successHandler(oAuth2AuthenticationSuccessHandler)
 //                                .failureHandler(oAuth2AuthenticationFailureHandler)
-                //)
-                .addFilterBefore(oAuth2AuthenticationCheckRedirectUriFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+//                )
+//                .addFilterBefore(oAuth2AuthenticationCheckRedirectUriFilter, OAuth2AuthorizationRequestRedirectFilter.class)
                 .build();
     }
     @Bean

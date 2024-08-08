@@ -31,6 +31,9 @@ public class RestaurantListRes
     @Schema(description = "가게 상태")
     private Integer restaurantState ;
 
+    @Schema(description = "팔로우 상태")
+    private Integer isFollow;
+
     @Schema(description = "가게 사진")
     private String restaurantPic ;
 
@@ -43,15 +46,15 @@ public class RestaurantListRes
         this.restaurantAddr = view.getRestaurantAddr() ;
         this.restaurantState = view.getRestaurantState() ;
         this.restaurantPic = view.getRestaurantPic() ;
+        this.isFollow = view.getIsFollow() ;
     }
 
     public static ResultPage<RestaurantListRes> toResultPage(Page<RestaurantListView> page)
     {
         List<RestaurantListRes> list = new ArrayList<>() ;
         for (RestaurantListView view : page)
-        {
-            list.add(new RestaurantListRes(view));
-        }
+        {list.add(new RestaurantListRes(view));}
+
         PageImpl<RestaurantListRes> pageImpl = new PageImpl<>(list) ;
         return new ResultPage<>(pageImpl) ;
     }

@@ -11,12 +11,16 @@ import java.math.BigDecimal;
 
 public interface RestaurantListViewRepository extends JpaRepository<RestaurantListView, Long>
 {
-
-    @Query("SELECT r FROM RestaurantListView r " +
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq " +
             "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
-            "AND r.restaurantState IN (1, 2) " +
             "ORDER BY r.createdAt ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
@@ -25,20 +29,72 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                             @Param("yMax") BigDecimal yMax,
                                                             Pageable pageable);
 
-    @Query(value = "SELECT r.*, " +
-            "(6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX)))) AS distance " +
-            "FROM restaurant_list_view r " +
-            "WHERE (r.restaurantPk IN (SELECT a.restaurantPk FROM restaurant_list_view a JOIN cate_res_matching crm ON a.restaurantPk = crm.crm_res_pk WHERE crm.crm_cate_pk = :categoryId)) " +
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
-            "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY distance",
-            countQuery = "SELECT count(*) " +
-                    "FROM restaurant_list_view r " +
-                    "WHERE (r.restaurantPk IN (SELECT a.restaurantPk FROM restaurant_list_view a JOIN cate_res_matching crm ON a.restaurantPk = crm.crm_res_pk WHERE crm.crm_cate_pk = :categoryId)) " +
-                    "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
-                    "AND r.restaurantCoorY BETWEEN :yMin AND :yMax",
-            nativeQuery = true)
+            "ORDER BY r.createdAt ASC")
+    Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
+                                                            @Param("xMin") BigDecimal xMin,
+                                                            @Param("xMax") BigDecimal xMax,
+                                                            @Param("yMin") BigDecimal yMin,
+                                                            @Param("yMax") BigDecimal yMax,
+                                                            @Param("userPk") Long userPk,
+                                                            Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq " +
+            "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY r.createdAt ASC")
+    Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
+                                                            @Param("xMax") BigDecimal xMax,
+                                                            @Param("yMin") BigDecimal yMin,
+                                                            @Param("yMax") BigDecimal yMax,
+                                                            Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY r.createdAt ASC")
+    Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
+                                                            @Param("xMax") BigDecimal xMax,
+                                                            @Param("yMin") BigDecimal yMin,
+                                                            @Param("yMax") BigDecimal yMax,
+                                                            @Param("userPk") Long userPk,
+                                                            Pageable pageable);
+
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq " +
+            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
+            "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
+    )
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByDistance(@Param("categoryId") Long categoryId,
                                                                             @Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
@@ -48,19 +104,43 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                                             @Param("longitude") BigDecimal longitude,
                                                                             Pageable pageable);
 
-    @Query(value = "SELECT r.*, " +
-            "(6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX)))) AS distance " +
-            "FROM restaurant_list_view r " +
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "left JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
+            "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
+    )
+    Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByDistance(@Param("categoryId") Long categoryId,
+                                                                            @Param("xMin") BigDecimal xMin,
+                                                                            @Param("xMax") BigDecimal xMax,
+                                                                            @Param("yMin") BigDecimal yMin,
+                                                                            @Param("yMax") BigDecimal yMax,
+                                                                            @Param("latitude") BigDecimal latitude,
+                                                                            @Param("longitude") BigDecimal longitude,
+                                                                            @Param("userPk") Long userPk,
+                                                                            Pageable pageable);
+
+
+
+
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
-            "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY distance",
-            countQuery = "SELECT count(*) " +
-                    "FROM restaurant_list_view r " +
-                    "WHERE r.restaurantPk IN (SELECT a.restaurantPk FROM restaurant_list_view a JOIN cate_res_matching crm ON a.restaurantPk = crm.crm_res_pk WHERE crm.crm_cate_pk = :categoryId) " +
-                    "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
-                    "AND r.restaurantCoorY BETWEEN :yMin AND :yMax",
-            nativeQuery = true)
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
+    )
     Page<RestaurantListView> findALLByCategoryIdAndCoordinatesSortedByDistance(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
                                                                             @Param("yMin") BigDecimal yMin,
@@ -69,12 +149,37 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                                             @Param("longitude") BigDecimal longitude,
                                                                             Pageable pageable);
 
-    @Query("SELECT r FROM RestaurantListView r " +
-            "LEFT JOIN MatchingCategoryRestaurant m ON r.restaurantPk = m.restaurant.seq AND m.category.seq = :categoryId " +
-            "WHERE (:categoryId = 0 OR m.category.seq = :categoryId) " +
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "left join ResFollow rf on r.restaurantPk = rf.resPk.seq  AND rf.userPk.userPk = :userPk " +
+            "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))")
+    Page<RestaurantListView> findALLByCategoryIdAndCoordinatesSortedByDistance(@Param("xMin") BigDecimal xMin,
+                                                                               @Param("xMax") BigDecimal xMax,
+                                                                               @Param("yMin") BigDecimal yMin,
+                                                                               @Param("yMax") BigDecimal yMax,
+                                                                               @Param("latitude") BigDecimal latitude,
+                                                                               @Param("longitude") BigDecimal longitude,
+                                                                               @Param("userPk") Long userPk,
+                                                                               Pageable pageable);
+
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq " +
+            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
-            "AND r.restaurantState IN (1, 2) " +
             "ORDER BY r.reviewAvgScore DESC")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,
@@ -84,4 +189,75 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                                          Pageable pageable);
 
 
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
+            "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY r.reviewAvgScore DESC")
+    Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
+                                                                         @Param("xMin") BigDecimal xMin,
+                                                                         @Param("xMax") BigDecimal xMax,
+                                                                         @Param("yMin") BigDecimal yMin,
+                                                                         @Param("yMax") BigDecimal yMax,
+                                                                         @Param("userPk") Long userPk,
+                                                                         Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq " +
+            "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY r.reviewAvgScore DESC")
+    Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
+                                                                            @Param("xMax") BigDecimal xMax,
+                                                                            @Param("yMin") BigDecimal yMin,
+                                                                            @Param("yMax") BigDecimal yMax,
+                                                                            Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "left join ResFollow rf on r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "ORDER BY r.reviewAvgScore DESC")
+    Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
+                                                                            @Param("xMax") BigDecimal xMax,
+                                                                            @Param("yMin") BigDecimal yMin,
+                                                                            @Param("yMax") BigDecimal yMax,
+                                                                            @Param("userPk") Long userPk,
+                                                                            Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
+            "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "and rf.resFollowPk is not NULL " +
+            "ORDER BY rf.createdAt")
+    Page<RestaurantListView> findFollowedRestaurant(@Param("categoryId") Long categoryId,
+                                                    @Param("xMin") BigDecimal xMin,
+                                                    @Param("xMax") BigDecimal xMax,
+                                                    @Param("yMin") BigDecimal yMin,
+                                                    @Param("yMax") BigDecimal yMax,
+                                                    @Param("userPk") Long userPk,
+                                                    Pageable pageable);
 }

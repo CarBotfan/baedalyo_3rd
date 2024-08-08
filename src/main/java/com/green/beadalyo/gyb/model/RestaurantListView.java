@@ -3,10 +3,9 @@ package com.green.beadalyo.gyb.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
-import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
-import org.hibernate.annotations.View;
+import net.jcip.annotations.Immutable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,26 +14,47 @@ import java.time.LocalDateTime;
 @Table(name = "restaurant_list_view")
 @Immutable
 @Getter
-public class RestaurantListView
-{
+public class RestaurantListView {
     @Id
-    private Long restaurantPk ;
+    private Long restaurantPk;
 
-    private String restaurantName ;
+    private String restaurantName;
 
-    private Float reviewAvgScore ;
+    private Float reviewAvgScore;
 
-    private Integer reviewTotalElements ;
+    private Integer reviewTotalElements;
 
-    private String restaurantAddr ;
+    private String restaurantAddr;
 
-    private Integer restaurantState ;
+    private Integer restaurantState;
 
-    private String restaurantPic ;
+    private String restaurantPic;
 
-    private BigDecimal restaurantCoorX ;
+    @Transient
+    private Integer isFollow = 0; // Transient 필드로 설정
 
-    private BigDecimal restaurantCoorY ;
+    private BigDecimal restaurantCoorX;
 
-    private LocalDateTime createdAt ;
+    private BigDecimal restaurantCoorY;
+
+    private LocalDateTime createdAt;
+
+    public RestaurantListView(Long restaurantPk, String restaurantName, Float reviewAvgScore, Integer reviewTotalElements,
+                              String restaurantAddr, Integer restaurantState, String restaurantPic,
+                              BigDecimal restaurantCoorX, BigDecimal restaurantCoorY, LocalDateTime createdAt, Integer isFollow) {
+        this.restaurantPk = restaurantPk;
+        this.restaurantName = restaurantName;
+        this.reviewAvgScore = reviewAvgScore;
+        this.reviewTotalElements = reviewTotalElements;
+        this.restaurantAddr = restaurantAddr;
+        this.restaurantState = restaurantState;
+        this.restaurantPic = restaurantPic;
+        this.restaurantCoorX = restaurantCoorX;
+        this.restaurantCoorY = restaurantCoorY;
+        this.createdAt = createdAt;
+        this.isFollow = isFollow;
+    }
+
+    public RestaurantListView() {
+    }
 }
