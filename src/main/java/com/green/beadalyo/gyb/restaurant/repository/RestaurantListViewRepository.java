@@ -22,12 +22,14 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.createdAt ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
                                                             @Param("yMax") BigDecimal yMax,
+                                                            @Param("search") String search,
                                                             Pageable pageable);
 
 
@@ -42,12 +44,14 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.createdAt ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
                                                             @Param("yMax") BigDecimal yMax,
+                                                            @Param("search") String search,
                                                             @Param("userPk") Long userPk,
                                                             Pageable pageable);
 
@@ -61,11 +65,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.createdAt ASC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
                                                             @Param("yMax") BigDecimal yMax,
+                                                               @Param("search") String search,
                                                             Pageable pageable);
 
     @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
@@ -78,11 +84,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.createdAt ASC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
                                                             @Param("yMax") BigDecimal yMax,
+                                                               @Param("search") String search,
                                                             @Param("userPk") Long userPk,
                                                             Pageable pageable);
 
@@ -98,6 +106,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
     )
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByDistance(@Param("categoryId") Long categoryId,
@@ -107,6 +116,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                                             @Param("yMax") BigDecimal yMax,
                                                                             @Param("latitude") BigDecimal latitude,
                                                                             @Param("longitude") BigDecimal longitude,
+                                                                            @Param("search") String search,
                                                                             Pageable pageable);
 
     @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
@@ -120,6 +130,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
     )
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByDistance(@Param("categoryId") Long categoryId,
@@ -129,6 +140,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                                             @Param("yMax") BigDecimal yMax,
                                                                             @Param("latitude") BigDecimal latitude,
                                                                             @Param("longitude") BigDecimal longitude,
+                                                                            @Param("search") String search,
                                                                             @Param("userPk") Long userPk,
                                                                             Pageable pageable);
 
@@ -146,6 +158,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
     )
     Page<RestaurantListView> findALLByCategoryIdAndCoordinatesSortedByDistance(@Param("xMin") BigDecimal xMin,
@@ -154,7 +167,8 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                                             @Param("yMax") BigDecimal yMax,
                                                                             @Param("latitude") BigDecimal latitude,
                                                                             @Param("longitude") BigDecimal longitude,
-                                                                            Pageable pageable);
+                                                                               @Param("search") String search,
+                                                                               Pageable pageable);
 
 
     @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
@@ -167,6 +181,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))")
     Page<RestaurantListView> findALLByCategoryIdAndCoordinatesSortedByDistance(@Param("xMin") BigDecimal xMin,
                                                                                @Param("xMax") BigDecimal xMax,
@@ -174,6 +189,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                                                @Param("yMax") BigDecimal yMax,
                                                                                @Param("latitude") BigDecimal latitude,
                                                                                @Param("longitude") BigDecimal longitude,
+                                                                               @Param("search") String search,
                                                                                @Param("userPk") Long userPk,
                                                                                Pageable pageable);
 
@@ -189,12 +205,14 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.reviewAvgScore DESC")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,
                                                                          @Param("xMax") BigDecimal xMax,
                                                                          @Param("yMin") BigDecimal yMin,
                                                                          @Param("yMax") BigDecimal yMax,
+                                                                         @Param("search") String search,
                                                                          Pageable pageable);
 
 
@@ -209,12 +227,14 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.reviewAvgScore DESC")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,
                                                                          @Param("xMax") BigDecimal xMax,
                                                                          @Param("yMin") BigDecimal yMin,
                                                                          @Param("yMax") BigDecimal yMax,
+                                                                         @Param("search") String search,
                                                                          @Param("userPk") Long userPk,
                                                                          Pageable pageable);
 
@@ -228,11 +248,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.reviewAvgScore DESC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
                                                                             @Param("yMin") BigDecimal yMin,
                                                                             @Param("yMax") BigDecimal yMax,
+                                                                            @Param("search") String search,
                                                                             Pageable pageable);
 
     @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
@@ -245,11 +267,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
+            "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "ORDER BY r.reviewAvgScore DESC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
                                                                             @Param("yMin") BigDecimal yMin,
                                                                             @Param("yMax") BigDecimal yMax,
+                                                                            @Param("search") String search,
                                                                             @Param("userPk") Long userPk,
                                                                             Pageable pageable);
 
@@ -260,17 +284,9 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
             "FROM RestaurantListView r " +
             "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
-            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
-            "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
-            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
-            "and rf.resFollowPk is not NULL " +
+            "WHERE rf.resFollowPk is not NULL " +
             "AND r.restaurantState IN (1, 2) " +
             "ORDER BY rf.createdAt")
-    Page<RestaurantListView> findFollowedRestaurant(@Param("categoryId") Long categoryId,
-                                                    @Param("xMin") BigDecimal xMin,
-                                                    @Param("xMax") BigDecimal xMax,
-                                                    @Param("yMin") BigDecimal yMin,
-                                                    @Param("yMax") BigDecimal yMax,
-                                                    @Param("userPk") Long userPk,
+    Page<RestaurantListView> findFollowedRestaurant(@Param("userPk") Long userPk,
                                                     Pageable pageable);
 }
