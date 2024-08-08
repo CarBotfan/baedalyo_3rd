@@ -8,8 +8,10 @@ import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.lhn.coupon.model.CouponPostReq;
 import com.green.beadalyo.lhn.coupon.repository.CouponRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,11 @@ public class CouponController {
     // 쿠폰 생성
     @PostMapping
     @Operation(summary = "쿠폰 생성")
+    @PreAuthorize("hasAnyRole('OWNER')")
+    @ApiResponse(
+            description = "<p> code : 1  => 쿠폰 생성 완료 </p>"+
+                    "<p> code : -1  => 주문에 대한 리뷰가 이미 존재합니다 </p>" +
+                    "<p> code : -2 => </p>")
     public ResponseEntity<ResultDto<CouponResponseDto>> createCoupon(@RequestBody CouponPostReq p) {
         try {
             Coupon createdCoupon = couponService.createCoupon(p);
@@ -102,11 +109,23 @@ public class CouponController {
     @PreAuthorize("hasAnyRole('USER')")
     @Operation(summary = "쿠폰 발급")
     public ResultDto<Long> issueCoupon(@PathVariable Long couponId) {
-        Long issuedCoupon = couponService.issueCoupon(couponId);
-
+        int code = 1;
+        String msg = "작성완료";
+        Long issuedCoupon =0L;
+        try {
+            issuedCoupon = couponService.issueCoupon(couponId);
+        }
+        catch (RuntimeException runtimeException){
+            code = -2;
+            msg = runtimeException.getMessage();
+        }
+        catch (Exception e){
+            code = -3;
+            msg = e.getMessage();
+        }
         return ResultDto.<Long>builder()
-                .statusCode(1)
-                .resultMsg("쿠폰 발급 성공")
+                .statusCode(code)
+                .resultMsg(msg)
                 .resultData(issuedCoupon)
                 .build();
     }
@@ -123,6 +142,7 @@ public class CouponController {
                     .resultMsg("쿠폰 상태 변경 완료")
                     .resultData(convertToCouponUserDto(updatedCouponUser))
                     .build());
+
         } catch (Exception e) {
             return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
                     .statusCode(-1)

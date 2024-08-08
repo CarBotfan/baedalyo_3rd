@@ -109,7 +109,7 @@ public class CouponService {
 
     // 쿠폰 발급
     @Transactional
-    public Long issueCoupon(Long couponId) {
+    public Long issueCoupon(Long couponId){
         Long loginUserPk = authenticationFacade.getLoginUserPk();
 
         CouponUser usedCouponUser = couponUserRepository.findByUserIdAndStateAndCouponId(loginUserPk ,2 , couponId);
@@ -120,7 +120,7 @@ public class CouponService {
 
         CouponUser result = couponUserRepository.findByCouponIdAndUserId(couponId, loginUserPk);
         if(result != null) {
-            throw new IllegalArgumentException("이미 발급된 쿠폰입니다.");
+            throw new RuntimeException("이미 발급된 쿠폰입니다.");
         }
 
         Coupon coupon = couponRepository.getReferenceById(couponId);
