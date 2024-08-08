@@ -17,6 +17,7 @@ import java.util.Map;
 @Setter
 public class MyUserDetails implements UserDetails, OAuth2User {
     private MyUser myUser;
+    private boolean needsAdditionalInfo; // 필수 정보가 필요한지 여부
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
