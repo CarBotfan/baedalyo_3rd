@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public SignInRes postSignIn(HttpServletResponse res, User user) throws Exception{
         UserAddrGetRes addrGetRes = null;
-        if(userAddrRepository.existsById(user.getUserPk())) {
+        if(userAddrRepository.existsUserAddrByUser(user)) {
             addrGetRes = new UserAddrGetRes(userAddrRepository.findMainUserAddr(user.getUserPk()));
         }
         MyUser myUser = MyUser.builder()
