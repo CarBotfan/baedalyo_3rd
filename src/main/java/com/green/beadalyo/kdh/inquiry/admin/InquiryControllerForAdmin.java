@@ -27,7 +27,7 @@ public class InquiryControllerForAdmin {
 
 
     @PostMapping("response")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "고객센터 문의답변하기(어드민용)")
     public ResultDto<Integer> postInquiryResponse(@RequestBody PostInquiryResponseForAdminReq p){
 
@@ -52,7 +52,7 @@ public class InquiryControllerForAdmin {
     }
 
     @PutMapping ("response")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "고객센터 문의수정하기(어드민용)")
     public ResultDto<Integer> putInquiryResponse(@RequestBody PostInquiryResponseForAdminReq p){
 
@@ -78,7 +78,7 @@ public class InquiryControllerForAdmin {
 
 
     @GetMapping("inquiry_list")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "문의리스트 불러오기(어드민용)")
     public ResultDto<List<GetInquiryListForAdmin>> getInquiryListForAdmin(){
 
@@ -90,6 +90,7 @@ public class InquiryControllerForAdmin {
             result = service.getInquiryListForAdmins();
         }  catch (Exception e){
             return ResultDto.<List<GetInquiryListForAdmin>>builder()
+
                     .statusCode(-1)
                     .resultMsg("리스트 불러오기 실패")
                     .build();
@@ -103,7 +104,7 @@ public class InquiryControllerForAdmin {
     }
 
     @GetMapping("inquiry_list_finished")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "문의리스트 불러오기(어드민용)", description = "완료된 항목을 불러옵니다.")
     public ResultDto<List<GetInquiryListForAdmin>> getInquiryListFinishedForAdmin(){
 
@@ -128,7 +129,7 @@ public class InquiryControllerForAdmin {
     }
 
     @GetMapping("inquiry_list_unfinished")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "문의리스트 불러오기(어드민용)")
     public ResultDto<List<GetInquiryListForAdmin>> getInquiryListUnFinishedForAdmin(){
 
@@ -153,7 +154,7 @@ public class InquiryControllerForAdmin {
     }
 
     @GetMapping("{inquiry_pk}")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "문의 불러오기(어드민용)")
     public ResultDto<GetInquiryOneForAdmin> getInquiryOneForAdmin(@PathVariable("inquiry_pk") Long inquiryPk){
 
