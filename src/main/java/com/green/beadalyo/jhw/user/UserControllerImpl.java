@@ -9,6 +9,7 @@ import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.*;
 import com.green.beadalyo.jhw.user.model.*;
 import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
+import com.green.beadalyo.kdh.report.ReportRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,6 +45,7 @@ public class UserControllerImpl implements UserController{
     private final AuthenticationFacade authenticationFacade;
     private final PasswordEncoder passwordEncoder;
     private final UserAddrServiceImpl userAddrService;
+    private final ReportRepository reportRepository;
 
     @Override
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
@@ -677,4 +679,28 @@ public class UserControllerImpl implements UserController{
                 .resultData(result)
                 .build();
     }
+
+    @PutMapping("social")
+    @Operation(summary = "소셜 로그인 name, phone 채우기", description = "소셜로그인 이후 필수 값 채우기")
+    @ApiResponse(
+            description =
+                    "<p> 1 :  </p>"+
+                            "<p> -2 :  </p>" +
+                            "<p> -3 :  </p>" +
+                            "<p> -1 :  </p>"
+    )
+    public ResultDto<Integer> putSocialLoginUser(@RequestBody PutSocialLoginReq req) {
+
+        User user = service.putUserEssential(req);
+        service.saveUser(user);
+
+        return ResultDto.<Integer>builder()
+                .statusCode(1)
+                .resultMsg("소셜 로그인 필수 값 설정 완료")
+                .resultData(1)
+                .build();
+
+    }
+
+
 }

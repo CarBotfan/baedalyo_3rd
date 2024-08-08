@@ -145,7 +145,7 @@ public class RestaurantApiController
     }
 
     @GetMapping("followed")
-    @Operation(summary = "주소기반 팔로우한 음식점 리스트 불러오기")
+    @Operation(summary = "팔로우한 음식점 리스트 불러오기")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
             description =
                     "<p> 1 : 정상 </p>"+

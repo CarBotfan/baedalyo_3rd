@@ -253,7 +253,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public User getUserById(String userId)  {
-        return repository.findUserByUserId(userId);
+        return repository.findUserByUserId(userId).orElseThrow();
     }
 
     @Override
@@ -352,6 +352,14 @@ public class UserServiceImpl implements UserService{
         } catch (Exception e) {
             return -1;
         }
+    }
+
+    public User putUserEssential(PutSocialLoginReq req) {
+        User user = getUser(authenticationFacade.getLoginUserPk());
+        user.setUserNickname(req.getUserNickName());
+        user.setUserPhone(req.getUserPhone());
+
+        return user;
     }
 
 }

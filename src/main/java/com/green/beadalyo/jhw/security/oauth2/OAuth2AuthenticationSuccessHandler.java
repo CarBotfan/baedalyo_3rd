@@ -22,8 +22,7 @@ import java.net.URI;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OAuth2AuthenticationSuccessHandler
-        extends SimpleUrlAuthenticationSuccessHandler {
+public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final OAuth2AuthenticationRequestBasedOnCookieRepository repository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -46,8 +45,8 @@ public class OAuth2AuthenticationSuccessHandler
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         //FE가 소셜 로그인시 보내준 redirect_uri 값
         String redirectUri = cookieUtils.getCookie(request
-                                                 , appProperties.getOauth2().getRedirectUriParamCookieName()
-                                                 , String.class);
+                , appProperties.getOauth2().getRedirectUriParamCookieName()
+                , String.class);
 
         // (yaml) app.oauth2.uthorized-redirect-uris 리스트에 없는 Uri인 경우
         if(redirectUri != null && !hasAuthorizedRedirectUri(redirectUri)) {
@@ -59,16 +58,13 @@ public class OAuth2AuthenticationSuccessHandler
         //FE가 원하는 redirect_url값이 저장
         String targetUrl = redirectUri == null ? getDefaultTargetUrl() : redirectUri;
 
-
-        //user_id, nm, pic, access_token를 FE에게 리턴하기 위해 쿼리스트링 만드는 작업
-
-        //MyOAuth2UserService에서 보내준 MyUserDetail를 얻는다.
+        // MyOAuth2UserService에서 보내준 MyUserDetail를 얻는다.
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
 
-        //MyUserDetail로부터 MyUserOAuth2Vo를 얻는다.
+        // MyUserDetail로부터 MyUserOAuth2Vo를 얻는다.
         MyUserOAuth2Vo myUserOAuth2Vo = (MyUserOAuth2Vo)myUserDetails.getMyUser();
 
-        //JWT를 만들기 위해 MyUser 객체화
+        // JWT를 만들기 위해 MyUser 객체화
         MyUser myUser = MyUser.builder()
                 .userPk(myUserOAuth2Vo.getUserPk())
                 .role(myUserOAuth2Vo.getRole())
@@ -77,19 +73,22 @@ public class OAuth2AuthenticationSuccessHandler
         String accessToken = jwtTokenProvider.generateAccessToken(myUser);
         String refreshToken = jwtTokenProvider.generateRefreshToken(myUser);
 
-        //refreshToken은 보안 쿠키를 이용해서 처리(FE가 따로 작업을 하지 않아도 아래 cookie값은 항상 넘어온다.)
+        // refreshToken은 보안 쿠키를 이용해서 처리(FE가 따로 작업을 하지 않아도 아래 cookie값은 항상 넘어온다.)
         int refreshTokenMaxAge = appProperties.getJwt().getRefreshTokenCookieMaxAge();
-        //cookieUtils.deleteCookie(response, appProperties.getJwt().getRefreshTokenCookieName());
         cookieUtils.setCookie(response
-                            , appProperties.getJwt().getRefreshTokenCookieName()
-                            , refreshToken
-                            , refreshTokenMaxAge);
+                , appProperties.getJwt().getRefreshTokenCookieName()
+                , refreshToken
+                , refreshTokenMaxAge);
 
-        //http://localhost:8080/oauth/redirect?user_id=1&nm=홍길동&pic=https://image.jpg&access_token=aslkdjslajf
+        // 추가 정보를 요구하는 경우
+        boolean needsAdditionalInfo = myUserDetails.isNeedsAdditionalInfo();
+
+        // http://localhost:8080/oauth/redirect?user_id=1&nm=홍길동&pic=https://image.jpg&access_token=aslkdjslajf
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("user_name", myUserOAuth2Vo.getNm()).encode()
                 .queryParam("user_pic", myUserOAuth2Vo.getPic())
                 .queryParam("access_token", accessToken)
+                .queryParam("needs_additional_info", needsAdditionalInfo) // 필수 정보 여부 추가
                 .build()
                 .toUriString();
     }
