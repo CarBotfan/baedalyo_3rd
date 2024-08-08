@@ -57,7 +57,8 @@ public class RestaurantApiController
                                     @Nullable @RequestParam Integer page,
                                     @Nullable @RequestParam("order_type") Integer orderType,
                                     @Nullable @RequestParam String addrX,
-                                    @Nullable @RequestParam String addrY)
+                                    @Nullable @RequestParam String addrY,
+                                    @Nullable @RequestParam String search)
     {
         //유효성 검증
         if (categoryId == null || categoryId < 0)
@@ -84,7 +85,7 @@ public class RestaurantApiController
                 y = addr.getAddrCoorY() ;
             }
 
-            Page<RestaurantListView> pageList = service.getRestaurantByCategory(categoryId,x,y,orderType,page) ;
+            Page<RestaurantListView> pageList = service.getRestaurantByCategory(categoryId,x,y,orderType,page, search) ;
             ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList) ;
             return ResultDto.builder().resultData(data).build();
 
@@ -152,40 +153,20 @@ public class RestaurantApiController
                             "<p> -2 : 비 로그인시 addrX, addrY값 필수 </p>" +
                             "<p> -3 : 주소 정보 획득 실패 </p>"
     )
-    public Result getFollowList(@Nullable @RequestParam Integer page,
-                                    @Nullable @RequestParam String addrX,
-                                    @Nullable @RequestParam String addrY)
+    public Result getFollowList(@Nullable @RequestParam Integer page)
     {
         //유효성 검증
         if (page == null || page < 1)
             page = 1;
-        if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
-            return ResultError.builder().statusCode(-2).resultMsg("위경도의 정보를 획득하지 못하였습니다. 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
 
         try {
-            BigDecimal x = null ;
-            BigDecimal y = null ;
-
-            if (addrX != null && addrY != null  ) {
-                x = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrX))); ;
-                y = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrY))); ;
-            } else {
-                UserAddrGetRes addr = userAddrService.getMainUserAddr() ;
-                if (addr == null)
-                    return ResultError.builder().resultMsg("메인 주소의 정보 획득을 실패 했습니다.").statusCode(-3).build();
-                x = addr.getAddrCoorX() ;
-                y = addr.getAddrCoorY() ;
-            }
-
-            Page<RestaurantListView> pageList = service.getFollowRestaurantList(0L, x, y, page);
+            Page<RestaurantListView> pageList = service.getFollowRestaurantList(page);
             ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList);
             return ResultDto.builder().resultData(data).build();
-
         } catch (Exception e) {
             log.error("An error occurred: ", e);
             return ResultError.builder().build();
         }
-
     }
 
 }

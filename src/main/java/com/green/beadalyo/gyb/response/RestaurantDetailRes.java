@@ -41,6 +41,7 @@ public class RestaurantDetailRes
     @Schema(description = "음식점 상태(1 : 영업 중 / 2 : 휴점 중 / 3 : 폐업)")
     private Integer restaurantState ;
     private List<MenuListGetRes> menuList ;
+    private Integer isFollow;
 
     public RestaurantDetailRes(RestaurantDetailView data)
     {
@@ -59,6 +60,7 @@ public class RestaurantDetailRes
             this.closeTime = formatter.format(data.getCloseTime()) ;
         this.reviewTotalElements = data.getReviewTotalElements() ;
         this.reviewScore = data.getReviewScore() ;
+        this.isFollow = data.getIsFollow();
     }
 
 
