@@ -12,6 +12,7 @@ public interface GetReportOneResForAdmin {
     String getReviewPics3();
     String getReviewPics4();
     String getReviewNickName();
+    String getReviewUserPk();
     String getReportResult();
     String getReviewCreatedAt();
 }

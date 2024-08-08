@@ -57,6 +57,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
                             "v.review_pics_3 AS reviewPics3, "+
                             "v.review_pics_4 AS reviewPics4, "+
                             "(SELECT user_nickname FROM user WHERE user_pk = v.user_pk) AS reviewNickName, "+
+                            "(select user_pk FROM user where user_pk = v.user_pk) AS reviewUserPk, "+
                             "r.report_state AS reportState, "+
                             "v.created_at AS reviewCreatedAt, "+
                             "r.report_result AS reportResult "+

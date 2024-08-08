@@ -57,12 +57,12 @@ public class ReportServiceForAdmin {
         reportRepository.delete(reportEntity);
     }
 
-    public ReportEntity makePutReportEntity(PutReportForAdminReq p){
-        ReportEntity reportEntity = reportRepository.getReferenceById(p.getReportPk());
-        reportEntity.setReportTitle(p.getReportTitle());
-        reportEntity.setReportContent(p.getReportContent());
-        return reportEntity;
-    }
+//    public ReportEntity makePutReportEntity(PutReportForAdminReq p){
+//        ReportEntity reportEntity = reportRepository.getReferenceById(p.getReportPk());
+//        reportEntity.setReportTitle(p.getReportTitle());
+//        reportEntity.setReportContent(p.getReportContent());
+//        return reportEntity;
+//    }
 
     public void saveReport(ReportEntity report){
         reportRepository.save(report);
