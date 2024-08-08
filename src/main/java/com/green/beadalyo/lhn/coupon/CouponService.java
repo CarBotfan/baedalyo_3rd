@@ -112,15 +112,16 @@ public class CouponService {
     public Long issueCoupon(Long couponId) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
 
+        CouponUser usedCouponUser = couponUserRepository.findByUserIdAndStateAndCouponId(loginUserPk ,2 , couponId);
+        if (usedCouponUser != null) {
+            throw new IllegalArgumentException("이미 발급받아 사용한 쿠폰입니다.");
+        }
+
+
         CouponUser result = couponUserRepository.findByCouponIdAndUserId(couponId, loginUserPk);
         if(result != null) {
             throw new IllegalArgumentException("이미 발급된 쿠폰입니다.");
         }
-
-
-//        if (couponRepository.existsById(couponId)) {
-//            throw new RuntimeException ("해당 쿠폰이 존재하지 않습니다.");
-//        }
 
         Coupon coupon = couponRepository.getReferenceById(couponId);
         User user = userRepository.findByUserPk(loginUserPk);
@@ -134,53 +135,23 @@ public class CouponService {
         return couponUser.getId();
     }
 
-/*
-    @Transactional
-    public Long issueCoupon(Long couponId) {
-        Long loginUserPk = authenticationFacade.getLoginUserPk();
-
-        if (loginUserPk == null || loginUserPk == 0) {
-            throw new RuntimeException("로그인 해주세요");
-        }
-
-        CouponUser existingCouponUser = couponUserRepository.findByCouponIdAndUserId(couponId, loginUserPk);
-        if (existingCouponUser != null) {
-            throw new IllegalArgumentException("이미 발급된 쿠폰입니다.");
-        }
-
-        Coupon coupon = couponRepository.findById(couponId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰이 존재하지 않습니다."));
-
-        User user = userRepository.findByUserPk(loginUserPk);
-
-        CouponUser couponUser = new CouponUser();
-        couponUser.setCoupon(coupon);
-        couponUser.setUser(user);
-        couponUser.setCreatedAt(LocalDateTime.now());
-        couponUser.setState(1); // 쿠폰 상태 활성화
-
-        couponUserRepository.save(couponUser);
-        return user.getId(); // userId 반환
-    }*/
-
     // 쿠폰 상태 변경
     @Transactional
-    public CouponUser updateCouponStatus(Long couponUserId, int status) {
+    public CouponUser updateCouponStatus(Long couponUserId) {
         CouponUser couponUser = couponUserRepository.findById(couponUserId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰 사용자가 존재하지 않습니다."));
-        couponUser.setState(status);
+        couponUser.setState(2);
         return couponUserRepository.save(couponUser);
     }
 
     // 쿠폰 삭제
     @Transactional
+
     public void deleteCoupon(Long couponId , int state) {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰이 존재하지 않습니다."));
         coupon.setState(state);
         couponRepository.save(coupon);
-
-
 
         // 발급된 쿠폰의 상태를 비활성화로 설정
         List<CouponUser> issuedCoupons = couponUserRepository.findByCouponId(couponId);

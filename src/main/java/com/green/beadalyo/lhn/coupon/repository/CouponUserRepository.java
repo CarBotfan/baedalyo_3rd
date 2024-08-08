@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CouponUserRepository extends JpaRepository<CouponUser, Long> {
 
@@ -17,7 +18,15 @@ public interface CouponUserRepository extends JpaRepository<CouponUser, Long> {
 
     List<CouponUser> findByCouponId(Long couponId);
 
-    Boolean existsCouponUserByCouponAndUser(Coupon coupon, User user);
-
     List<CouponUser> findByUserAndState(User user , int state);
+
+//    Optional<CouponUser> findByCouponIdAndUserIdAndState(Long couponId, Long userId, int state);
+
+    @Query("select cu from CouponUser cu where cu.coupon.id = :couponId and cu.user.userPk = :userPk and cu.state = :state")
+    CouponUser findByUserIdAndStateAndCouponId(@Param("userPk") Long userPk, @Param("state") int state, @Param("couponId") Long couponId);
 }
+
+
+
+
+

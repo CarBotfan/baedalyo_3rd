@@ -7,6 +7,8 @@ import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.lhn.coupon.model.CouponPostReq;
 import com.green.beadalyo.lhn.coupon.repository.CouponRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,12 +21,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/coupons")
 @RequiredArgsConstructor
+@Tag(name = "쿠폰 컨트롤러")
 public class CouponController {
 
     private final CouponService couponService;
 
     // 쿠폰 생성
     @PostMapping
+    @Operation(summary = "쿠폰 생성")
     public ResponseEntity<ResultDto<CouponResponseDto>> createCoupon(@RequestBody CouponPostReq p) {
         try {
             Coupon createdCoupon = couponService.createCoupon(p);
@@ -43,6 +47,7 @@ public class CouponController {
 
     // 가게별 쿠폰 조회
     @GetMapping("/{restaurantId}")
+    @Operation(summary = "가게별 쿠폰 조회")
     public ResponseEntity<ResultDto<List<CouponResponseDto>>> getCouponsByRestaurant(@PathVariable Long restaurantId) {
         try {
             List<Integer> state = new ArrayList<>();
@@ -61,8 +66,22 @@ public class CouponController {
                     .build());
         }
     }
+    //유저가 발급 받은 쿠폰 목록 조회
+    @GetMapping("/user")
+    @Operation(summary = "유저 발급 쿠폰 목록조회")
+    public ResultDto<List<CouponUserResponseDto>> getCouponsByUser() {
+        List<CouponUserResponseDto> coupons = couponService.getCouponByUser();
+
+        return ResultDto.<List<CouponUserResponseDto>>builder()
+                .statusCode(1)
+                .resultMsg("쿠폰 목록조회 완료")
+                .resultData(coupons)
+                .build();
+    }
+
     // 가게 주인이 생성한 쿠폰 목록 조회
     @GetMapping("/owner")
+    @Operation(summary = "가게 주인 쿠폰생성 목록조회")
     public ResultDto<List<CouponResponseDto>> getCouponsByOwner() {
         List<CouponResponseDto> coupons = couponService.getCouponsByOwner();
 //        List<CouponResponseDto> couponResponseDtos = coupons.stream()
@@ -81,6 +100,7 @@ public class CouponController {
     // 쿠폰 발급
     @PostMapping("/{couponId}")
     @PreAuthorize("hasAnyRole('USER')")
+    @Operation(summary = "쿠폰 발급")
     public ResultDto<Long> issueCoupon(@PathVariable Long couponId) {
         Long issuedCoupon = couponService.issueCoupon(couponId);
 
@@ -93,10 +113,11 @@ public class CouponController {
 
 
     // 쿠폰 상태 변경
-    @PutMapping()
-    public ResponseEntity<ResultDto<CouponUserResponseDto>> updateCouponStatus(@RequestParam Long couponUserId, @RequestParam int state) {
+    @PatchMapping
+    @Operation(summary = "사용자 쿠폰 상태 변경")
+    public ResponseEntity<ResultDto<CouponUserResponseDto>> updateCouponStatus(@RequestParam Long couponUserId) {
         try {
-            CouponUser updatedCouponUser = couponService.updateCouponStatus(couponUserId, state);
+            CouponUser updatedCouponUser = couponService.updateCouponStatus(couponUserId);
             return ResponseEntity.ok(ResultDto.<CouponUserResponseDto>builder()
                     .statusCode(1)
                     .resultMsg("쿠폰 상태 변경 완료")
@@ -112,6 +133,7 @@ public class CouponController {
 
     // 쿠폰 삭제
     @DeleteMapping("/{couponId}")
+    @Operation(summary = "가게 쿠폰 삭제")
     public ResponseEntity<ResultDto<CouponResponseDto>> deleteCoupon(@RequestParam Long couponId) {
         try {
             couponService.deleteCoupon(couponId , 2);
