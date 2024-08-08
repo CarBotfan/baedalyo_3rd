@@ -63,7 +63,7 @@ public class UserAddrServiceImpl implements UserAddrService{
 
     @Override
     public UserAddrGetRes getMainUserAddr() throws Exception{
-        if(repository.existsUserAddrByUser(userRepository.findByUserPk(authenticationFacade.getLoginUserPk())) == null) {
+        if(!repository.existsUserAddrByUser(userRepository.findByUserPk(authenticationFacade.getLoginUserPk()))) {
             return null;
         }
         UserAddr addr = repository.findMainUserAddr(authenticationFacade.getLoginUserPk());

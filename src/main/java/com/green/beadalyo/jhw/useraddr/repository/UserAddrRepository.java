@@ -12,6 +12,8 @@ public interface UserAddrRepository extends JpaRepository<UserAddr, Long> {
     @Query("select ua from UserAddr ua WHERE ua.addrDefault = :userPk AND ua.user.userPk = :userPk")
     UserAddr findMainUserAddr(Long userPk);
 
+    Boolean existsUserAddrByAddrDefault(Long addrDefault);
+
     @Modifying
     @Query("update UserAddr ua SET ua.addrDefault = :userPk" +
             " WHERE ua.user.userPk = :userPk AND ua.addrPk = :addrPk")
