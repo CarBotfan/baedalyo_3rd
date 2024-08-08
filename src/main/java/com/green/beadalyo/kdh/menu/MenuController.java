@@ -69,6 +69,7 @@ public class MenuController {
             menuEntity.setMenuPrice(p.getMenuPrice());
             menuEntity.setMenuState(p.getMenuState());
             menuEntity.setMenuCategory(menuCategoryService.getMenuCat(p.getMenuCatPk()));
+            MenuEntity menuEntity = service.makeMenuEntityForPost(p);
             String filename = "" ;
 
             if (pic != null && !pic.isEmpty()) {
@@ -200,12 +201,7 @@ public class MenuController {
         }
 
         try {
-            MenuEntity menuEntity = new MenuEntity();
-            menuEntity.setMenuPk(p.getMenuPk());
-            menuEntity.setMenuContent(p.getMenuContent());
-            menuEntity.setMenuName(p.getMenuName());
-            menuEntity.setMenuPrice(p.getMenuPrice());
-            menuEntity.setMenuState(p.getMenuState());
+            MenuEntity menuEntity = service.makeMenuEntityForPut(p);
             String filename = "";
 
             if (pic != null && !pic.isEmpty()) {

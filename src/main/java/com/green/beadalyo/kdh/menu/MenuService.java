@@ -86,7 +86,6 @@ public class MenuService {
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuEntity.setMenuResPk(restaurant);
 
         //메뉴 이름 중복체크
         List<GetAllMenuNames> menuName = menuRepository.findMenuNameByMenuResPkAndMenuPk(restaurant.getSeq(),menuEntity.getMenuPk());
@@ -104,6 +103,26 @@ public class MenuService {
 
         return menuEntity1.getMenuPk();
     }
+
+    public MenuEntity makeMenuEntityForPost(PostMenuReq p){
+        MenuEntity menuEntity = new MenuEntity();
+        menuEntity.setMenuContent(p.getMenuContent());
+        menuEntity.setMenuName(p.getMenuName());
+        menuEntity.setMenuPrice(p.getMenuPrice());
+        menuEntity.setMenuState(p.getMenuState());
+        return menuEntity;
+    }
+
+    public MenuEntity makeMenuEntityForPut(PutMenuReq p){
+        MenuEntity menuEntity = menuRepository.getReferenceById(p.getMenuPk());
+        menuEntity.setMenuContent(p.getMenuContent());
+        menuEntity.setMenuName(p.getMenuName());
+        menuEntity.setMenuPrice(p.getMenuPrice());
+        menuEntity.setMenuState(p.getMenuState());
+        return menuEntity;
+    }
+
+
     //사진 수정하기
     @Transactional
     public void putPic(MenuEntity menuEntity, MultipartFile pic){
