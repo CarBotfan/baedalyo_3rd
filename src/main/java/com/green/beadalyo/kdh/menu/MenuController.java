@@ -63,13 +63,9 @@ public class MenuController {
         }
 
         try {
-            MenuEntity menuEntity = new MenuEntity();
-            menuEntity.setMenuContent(p.getMenuContent());
-            menuEntity.setMenuName(p.getMenuName());
-            menuEntity.setMenuPrice(p.getMenuPrice());
-            menuEntity.setMenuState(p.getMenuState());
-            menuEntity.setMenuCategory(menuCategoryService.getMenuCat(p.getMenuCatPk()));
             MenuEntity menuEntity = service.makeMenuEntityForPost(p);
+            menuEntity.setMenuCategory(menuCategoryService.getMenuCat(p.getMenuCatPk()));
+
             String filename = "" ;
 
             if (pic != null && !pic.isEmpty()) {
