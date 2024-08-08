@@ -119,9 +119,10 @@ public class RestaurantService
     }
 
     //음식점 상태 전환(영업 <-> 휴점)
-    public Integer toggleState(Long seq) throws Exception
+    public Integer toggleState(User user) throws Exception
     {
-        Restaurant data = repository.findTop1BySeq(seq).orElseThrow(NullPointerException::new);
+
+        Restaurant data = repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
         if (data.getState() == 1) data.setState(2);
         else if (data.getState() == 2) data.setState(1);
         else throw new DataWrongException() ;

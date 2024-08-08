@@ -39,7 +39,12 @@ public class Order {
     private List<OrderMenu> menus ;
 
     @Column(name = "order_price", nullable = false)
+    @Comment("할인전 최종 금액")
     private Integer orderPrice;
+
+    @Column(name = "order_total_price", nullable = false)
+    @Comment("할인후 최종 금액")
+    private Integer totalPrice;
 
     @Column(name = "order_request", length = 500)
     private String orderRequest;

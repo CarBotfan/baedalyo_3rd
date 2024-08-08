@@ -86,20 +86,20 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
             signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
             User user = new User(signUpParam);
-            repository.save(user);
-            userGetRes = new UserGetRes( signUpParam.getUserPk()
-                           , null
-                           , null
-                           , signUpParam.getUserName()
-                            , signUpParam.getUserNickname()
-                            , signUpParam.getUserPic()
-                           , null
-                           , null
-                            , signUpParam.getUserEmail()
-                            , 1
-                            , signUpParam.getUserLoginType()
-                            , null
-                            , null);
+            user = repository.save(user);
+//            userGetRes = new UserGetRes( signUpParam.getUserPk()
+//                           , null
+//                           , null
+//                           , signUpParam.getUserName()
+//                            , signUpParam.getUserNickname()
+//                            , signUpParam.getUserPic()
+//                           , null
+//                           , null
+//                            , signUpParam.getUserEmail()
+//                            , 1
+//                            , signUpParam.getUserLoginType()
+//                            , null
+//                            , null);
         } else { //이미 회원가입 되어 있었음
             if(userGetRes.getUserPic() == null || (userGetRes.getUserPic().startsWith("http") && !userGetRes.getUserPic().equals(oAuth2UserInfo.getProfilePicUrl()))) { //프로필 값이 변경이 되었다면
                 //프로필 사진 변경처리(update)

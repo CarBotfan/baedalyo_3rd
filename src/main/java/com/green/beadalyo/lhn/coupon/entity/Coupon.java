@@ -30,7 +30,7 @@ public class Coupon {
     private String content;
 
     @Column(name = "res_coupon_price")
-    private Long price;
+    private Integer price;
 
     @Column(name = "created_at")
     @CreationTimestamp()

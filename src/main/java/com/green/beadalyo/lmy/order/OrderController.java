@@ -13,10 +13,16 @@ import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.MenuService;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
-import com.green.beadalyo.kdh.menuOption.MenuOptionService;
-import com.green.beadalyo.kdh.menuOption.entity.MenuOption;
+import com.green.beadalyo.kdh.menuoption.MenuOptionService;
+import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
+import com.green.beadalyo.kdh.menuoption.MenuOptionService;
+import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
+import com.green.beadalyo.lhn.coupon.CouponService;
+import com.green.beadalyo.lhn.coupon.entity.Coupon;
+import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
+import com.green.beadalyo.lmy.doneorder.model.PostOrderRes;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import com.green.beadalyo.lmy.order.entity.OrderMenuOption;
@@ -55,6 +61,7 @@ public class OrderController {
     private final MenuService menuService;
     private final UserRepository userRepository;
     private final SSEApiController SSEApiController;
+    private final CouponService couponService ;
 
 
     @PostMapping
@@ -72,17 +79,22 @@ public class OrderController {
                             "<p> -7 : 유저 검증 실패 </p>" +
                             "<p> -8 : 사용 마일리지가 1000이하 </p>" +
                             "<p> -9 : 후불결제에는 마일리지를 사용할 수 없음 </p>" +
-                            "<p> -10 : 유저가 소지한 마일리지가 충분하지 않음. </p>"
+                            "<p> -10 : 유저가 소지한 마일리지가 충분하지 않음. </p>" +
+                            "<p> -11 : 쿠폰이 존재하지 않음 </p>" +
+                            "<p> -12 : 해당 음식점에서 발급된 쿠폰이 아님 </p>" +
+                            "<p> -13 : 쿠폰을 소유한 대상이 아님 </p>" +
+                            "<p> -13 : 쿠폰 최소 금액이 충족되지않음. </p>"
     )
     @Transactional
-    public Result postOrder(@RequestBody OrderPostReq p){
+    public Result postOrder(@RequestBody OrderPostReq p)
+    {
 
         //유저 검증
-        Long userPk = authenticationFacade.getLoginUserPk() ;
+        Long userPk = authenticationFacade.getLoginUserPk();
 
-        User user = null ;
+        User user = null;
         try {
-                user = userService.getUser(userPk);
+            user = userService.getUser(userPk);
 
         } catch (UserNotFoundException e) {
             return ResultError.builder().resultMsg("유저 정보를 찾을수 없습니다.").statusCode(-7).build();
@@ -93,14 +105,14 @@ public class OrderController {
 
         //결제수단 검증
         if (p.getPaymentMethod() == null) {
-            return ResultDto.builder()
+            return ResultError.builder()
                     .statusCode(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.PAYMENT_METHOD_ERROR.getMessage())
                     .build();
         }
         //주문요구사항 길이 검증
         if (500 < p.getOrderRequest().length()) {
-            return ResultDto.<Long>builder()
+            return ResultError.builder()
                     .statusCode(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getCode())
                     .resultMsg(ExceptionMsgDataSet.STRING_LENGTH_ERROR.getMessage())
                     .build();
@@ -114,17 +126,20 @@ public class OrderController {
         //유저가 소유한 마일리지값 검증
         if (user.getMileage() >= p.getUseMileage())
             return ResultError.builder().statusCode(-10).resultMsg("소지한 마일리지가 충분하지 않습니다.").build();
+
         //레스토랑 검증
         final Restaurant res  ;
         try {
              res = restaurantService.getRestaurantDataBySeq(p.getOrderResPk());
 
         } catch (NullPointerException e) {
-            return ResultError.builder().resultMsg("레스토랑이 존재하지 않습니다.").statusCode(-5).build() ;
+            return ResultError.builder().resultMsg("음식점이 존재하지 않습니다.").statusCode(-5).build() ;
         } catch (Exception e) {
             log.error("An error occurred: ", e);
             return ResultError.builder().build();
         }
+
+
         //메뉴 검증
         try {
             boolean checksum = p.getMenu().stream()
@@ -174,17 +189,50 @@ public class OrderController {
                         List<OrderMenuOption> orderMenu = OrderMenuOption.toOrderMenuOptionList(optionList, j);
                         for (OrderMenuOption o : orderMenu)
                         {
-                            totalPrice.updateAndGet(v -> v + (j.getMenuPrice() * j.getMenuCount()));
+                            totalPrice.updateAndGet(v -> v + (o.getOptionPrice() * j.getMenuCount()));
                         }
                         j.setOrderMenuOption(orderMenu);
                     })
             );
 
+            Integer lastPrice = totalPrice.get();
 
+            //쿠폰 검증
+            if (p.getCoupon() != null)
+            {
+                try {
+                    //존재하는지 검증
+                    CouponUser cp = couponService.getCouponUserByPk(p.getCoupon());
+                    //발급된 음식점이 맞는지 검증
+                    if (cp.getCoupon().getRestaurant() != res) return ResultError.builder().resultMsg("쿠폰이 발급된 음식점이 아닙니다.").statusCode(-12).build() ;
+                    //쿠폰의 소유자인지 검증
+                    if (cp.getUser() != user) return ResultError.builder().resultMsg("쿠폰의 소유주가 아닙니다.").statusCode(-13).build() ;
+                    //주문금액이 쿠폰의 최소 금액을 초과했는지 검증
+                    if (cp.getCoupon().getMinOrderAmount() > lastPrice) return ResultError.builder().resultMsg("쿠폰의 최소 금액을 충족하지 못했습니다.").statusCode(-14).build() ;
+                    // 쿠폰 적용
+                    lastPrice -= cp.getCoupon().getPrice() ;
+                    cp.setState(2);
+                    //사용한 쿠폰 값 저장
+                    couponService.save(cp) ;
+                } catch (NullPointerException e) {
+                    return ResultError.builder().resultMsg("쿠폰이 존재하지 않습니다.").statusCode(-11).build();
+                } catch (Exception e){
+                    return ResultError.builder().build();
+                }
+            }
+
+            //마일리지 실 사용 처리
+            lastPrice -= p.getUseMileage() ;
+            user.setMileage(user.getMileage()-p.getUseMileage());
             order.setOrderPrice(totalPrice.get());
+            order.setTotalPrice(lastPrice);
+
+            //데이터 저장
+            userService.save(user);
             orderService.saveOrder(order) ;
+
             if (order.getOrderState() == 2) SSEApiController.sendEmitters("OrderRequest", order.getOrderResPk().getUser());
-            return ResultDto.builder().resultData(order.getOrderPk()).build();
+            return ResultDto.builder().resultData(new PostOrderRes(order.getOrderPrice(), order.getTotalPrice(), order.getOrderPk())).build();
 
 
         } catch (Exception e) {

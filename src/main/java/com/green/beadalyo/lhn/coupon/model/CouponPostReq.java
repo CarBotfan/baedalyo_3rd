@@ -8,7 +8,7 @@ import lombok.Data;
 
 public class CouponPostReq {
 
-    private Long price;
+    private Integer price;
     private String content;
     private String name;
     private Long minOrderAmount;

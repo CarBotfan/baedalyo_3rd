@@ -168,10 +168,11 @@ public class DoneOrderController {
     )
     public ResultDto<DoneOrderGetRes> getDoneOrderInfo(@PathVariable("done_order_pk") Long doneOrderPk) {
         DoneOrderGetRes result = null;
-
+        log.info("{}", doneOrderPk);
         try {
             result = doneOrderService.getDoneOrderInfo(doneOrderPk);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResultDto.<DoneOrderGetRes>builder()
                     .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
                     .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getMessage())

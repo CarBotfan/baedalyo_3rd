@@ -5,10 +5,8 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.Review.entity.Review;
-import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
-import com.green.beadalyo.kdh.admin.entity.ReportEntity;
-import com.green.beadalyo.kdh.admin.repository.ReportRepository;
+import com.green.beadalyo.kdh.report.ReportRepository;
 import com.green.beadalyo.lhn.Review.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -281,29 +279,7 @@ public class ReviewService {
         return result;
     }
 
-//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-    //이거 유저 service에 있어야함
-    public User getUserByPk(Long userPk) {
-        return userRepository.findByUserPk(userPk);
-    }
-
-    public Review getReviewByPk(Long reviewPk) {
-        return repository.getReferenceById(reviewPk);
-    }
-
-    public ReportEntity makeReport(ReportPostReq req) {
-        ReportEntity reportEntity = new ReportEntity();
-        reportEntity.setUserPk(req.getUser());
-        reportEntity.setReviewPk(req.getReview());
-        reportEntity.setReportContent(req.getReportContent());
-        reportEntity.setReportTitle(req.getReportTitle());
-        return reportEntity;
-    }
-
-    public Long saveReport(ReportEntity report){
-        return reportRepository.save(report).getReportPk();
-    }
 }
 
 
