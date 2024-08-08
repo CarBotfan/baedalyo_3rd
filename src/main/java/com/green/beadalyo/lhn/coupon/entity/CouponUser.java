@@ -3,6 +3,7 @@ package com.green.beadalyo.lhn.coupon.entity;
 import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
         }
 )
 @Data
+@ToString
 public class CouponUser {
 
     @Id
