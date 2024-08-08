@@ -120,27 +120,27 @@ public class ReportControllerForAdmin {
                 .build();
     }
 
-    @PutMapping()
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "답변수정하기",description = "답변을 수정합니다.")
-    public ResultDto<Integer> patchAccountSuspension(@RequestBody PutReportForAdminReq p){
-
-        try {
-            ReportEntity reportEntity = service.makePutReportEntity(p);
-            service.saveReport(reportEntity);
-        } catch (Exception e){
-            return ResultDto.<Integer>builder()
-                    .statusCode(-1)
-                    .resultMsg("수정 실패")
-                    .build();
-        }
-
-
-        return ResultDto.<Integer>builder()
-                .statusCode(1)
-                .resultMsg("수정 성공")
-                .resultData(1)
-                .build();
-    }
+//    @PutMapping()
+//    @PreAuthorize("hasAnyRole('ADMIN')")
+//    @Operation(summary = "답변수정하기",description = "답변을 수정합니다.")
+//    public ResultDto<Integer> patchAccountSuspension(@RequestBody PutReportForAdminReq p){
+//
+//        try {
+//            ReportEntity reportEntity = service.makePutReportEntity(p);
+//            service.saveReport(reportEntity);
+//        } catch (Exception e){
+//            return ResultDto.<Integer>builder()
+//                    .statusCode(-1)
+//                    .resultMsg("수정 실패")
+//                    .build();
+//        }
+//
+//
+//        return ResultDto.<Integer>builder()
+//                .statusCode(1)
+//                .resultMsg("수정 성공")
+//                .resultData(1)
+//                .build();
+//    }
 
 }
