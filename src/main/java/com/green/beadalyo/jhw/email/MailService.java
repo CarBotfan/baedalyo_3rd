@@ -1,7 +1,7 @@
 package com.green.beadalyo.jhw.email;
 
 import com.green.beadalyo.jhw.email.model.RedisUtil;
-import com.green.beadalyo.jhw.email.model.UserEntityEmail;
+import com.green.beadalyo.jhw.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class MailService {
     @Autowired
     private RedisUtil redisUtil;
     private int authNumber;
-    private final MailMapper mapper;
+    private final UserRepository userRepository;
 
 
     //추가 되었다.
@@ -52,13 +52,11 @@ public class MailService {
 
     //mail을 어디서 보내는지, 어디로 보내는지 , 인증 번호를 html 형식으로 어떻게 보내는지 작성합니다.
     public String joinEmail(String email) {
-        UserEntityEmail userEntityEmail = mapper.getUserByEmail(email);
-        if (userEntityEmail != null) {
+        if (userRepository.existsByUserEmail(email)) {
             return "이미 등록된 메일입니다!";
         } else try {
             makeRandomNumber();
             String setFrom = "redismailsender@gmail.com"; // email-config에 설정한 자신의 이메일 주소를 입력
-            String toMail = email;
             String title = "회원 가입 인증 이메일 입니다."; // 이메일 제목
             String content =
                     "주문이요 인증 번호입니다." +    //html 형식으로 작성 !
@@ -66,7 +64,7 @@ public class MailService {
                             "인증 번호는 " + authNumber + "입니다." +
                             "<br>" +
                             "유효시간 5분 안에 입력해주세요."; //이메일 내용 삽입
-            mailSend(setFrom, toMail, title, content);
+            mailSend(setFrom, email, title, content);
             return "메일이 발송되었습니다.";
 
         } catch (Exception e) {
