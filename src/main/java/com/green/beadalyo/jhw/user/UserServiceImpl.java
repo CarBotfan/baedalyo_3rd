@@ -98,6 +98,9 @@ public class UserServiceImpl implements UserService{
     public void deleteProfileImage() {
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
         try {
+            if(user.getUserPic() == null) {
+                return;
+            }
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
             File file = new File(delAbsoluteFolderPath, user.getUserPic());
             file.delete();
