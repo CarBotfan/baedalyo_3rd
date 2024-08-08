@@ -1,5 +1,6 @@
 package com.green.beadalyo.lhn.coupon.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,22 +10,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CouponResponseDto {
 
-    // 쿠폰의 고유 ID
+    @Schema(description = "쿠폰의 고유 ID", example = "1")
     private Long id;
 
-    // 쿠폰 이름
+    @Schema(description = "쿠폰 이름", example = "할인 쿠폰")
     private String name;
 
-    // 쿠폰 내용
+    @Schema(description = "쿠폰 내용", example = "오백원깎아드려요")
     private String content;
 
-    // 쿠폰 할인 금액 (고정 금액)
+    @Schema(description = "쿠폰 할인 금액 (고정 금액)", example = "500")
     private Integer price;
 
-    // 쿠폰 생성 일시
+    @Schema(description = "쿠폰 생성 일시", example = "2024-08-08T12:00:00")
     private LocalDateTime createdAt;
 
-    //쿠폰 최소주문금액
+    @Schema(description = "쿠폰 최소주문금액", example = "1000")
     private Long minOrderAmount;
 
     public CouponResponseDto(Long id, String name, String content, Integer price, Long minOrderAmount, LocalDateTime createdAt) {

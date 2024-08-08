@@ -22,7 +22,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.createdAt ASC")
+            "ORDER BY r.createdAt ASC, r.restaurantState ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
@@ -42,7 +42,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.createdAt ASC")
+            "ORDER BY r.createdAt ASC, r.restaurantState ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
@@ -61,7 +61,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.createdAt ASC")
+            "ORDER BY r.createdAt ASC, r.restaurantState ASC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
@@ -78,7 +78,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.createdAt ASC")
+            "ORDER BY r.createdAt ASC, r.restaurantState ASC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
@@ -98,7 +98,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX)))), r.restaurantState ASC"
     )
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByDistance(@Param("categoryId") Long categoryId,
                                                                             @Param("xMin") BigDecimal xMin,
@@ -120,7 +120,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX)))), r.restaurantState ASC"
     )
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByDistance(@Param("categoryId") Long categoryId,
                                                                             @Param("xMin") BigDecimal xMin,
@@ -146,7 +146,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))"
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX)))), r.restaurantState ASC"
     )
     Page<RestaurantListView> findALLByCategoryIdAndCoordinatesSortedByDistance(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
@@ -167,7 +167,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX))))")
+            "ORDER BY (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurantCoorX)) * cos(radians(r.restaurantCoorY) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurantCoorX)))), r.restaurantState ASC")
     Page<RestaurantListView> findALLByCategoryIdAndCoordinatesSortedByDistance(@Param("xMin") BigDecimal xMin,
                                                                                @Param("xMax") BigDecimal xMax,
                                                                                @Param("yMin") BigDecimal yMin,
@@ -189,7 +189,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.reviewAvgScore DESC")
+            "ORDER BY r.reviewAvgScore DESC, r.restaurantState ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,
                                                                          @Param("xMax") BigDecimal xMax,
@@ -209,7 +209,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.reviewAvgScore DESC")
+            "ORDER BY r.reviewAvgScore DESC, r.restaurantState ASC")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,
                                                                          @Param("xMax") BigDecimal xMax,
@@ -228,7 +228,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.reviewAvgScore DESC")
+            "ORDER BY r.reviewAvgScore DESC, r.restaurantState ASC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
                                                                             @Param("yMin") BigDecimal yMin,
@@ -245,7 +245,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY r.reviewAvgScore DESC")
+            "ORDER BY r.reviewAvgScore DESC, r.restaurantState ASC")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
                                                                             @Param("yMin") BigDecimal yMin,
@@ -265,7 +265,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "and rf.resFollowPk is not NULL " +
             "AND r.restaurantState IN (1, 2) " +
-            "ORDER BY rf.createdAt")
+            "ORDER BY rf.createdAt, r.restaurantState ASC")
     Page<RestaurantListView> findFollowedRestaurant(@Param("categoryId") Long categoryId,
                                                     @Param("xMin") BigDecimal xMin,
                                                     @Param("xMax") BigDecimal xMax,
