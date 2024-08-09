@@ -7,12 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MenuCatPositionPatchDto {
-    private Long menuCatPk1;
+    private Long menuCatPk;
     private Long position;
     private Restaurant restaurant;
 
     public MenuCatPositionPatchDto(MenuCatPositionPatchReq p) {
-        this.menuCatPk1 = p.getMenuCatPk1();
+        this.menuCatPk = p.getMenuCatPk();
         this.position = p.getPosition();
     }
 }
