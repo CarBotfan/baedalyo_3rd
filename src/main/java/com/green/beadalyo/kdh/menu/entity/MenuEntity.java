@@ -24,10 +24,6 @@ public class MenuEntity {
     private Long menuPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_res_pk", nullable = false)
-    private Restaurant menuResPk;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_cat_pk")
     private MenuCategory menuCategory;
 

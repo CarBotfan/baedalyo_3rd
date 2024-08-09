@@ -26,25 +26,10 @@ class Item
     private Integer price ;
     private String slug;
     private String description;
+    private String name ;
     private List<SubchoiceSection> subchoices;
-
-    // Getters and Setters
 }
 
-@Data
-class Subchoice {
-    private String slug;
-    private String name;
-    private String price;
-    private boolean soldout;
-    private int deposit_price;
-    private String deposit_description;
-    private int id;
-    private boolean is_deposit;
-    private String description;
-
-    // Getters and Setters
-}
 
 @Data
 class SubchoiceSection {
@@ -58,7 +43,19 @@ class SubchoiceSection {
     private boolean mandatory;
     private int id;
 
-    // Getters and Setters
+}
+
+@Data
+class Subchoice {
+    private String slug;
+    private String name;
+    private String price;
+    private boolean soldout;
+    private int deposit_price;
+    private String deposit_description;
+    private int id;
+    private boolean is_deposit;
+    private String description;
 }
 
 

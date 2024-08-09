@@ -10,6 +10,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -58,11 +59,11 @@ public class WaitingRestaurant {
 
     @Column(name = "res_coor_x")
     @Comment("음식점 위도(X좌표)")
-    private Double coorX;
+    private BigDecimal coorX;
 
     @Column(name = "res_coor_y")
     @Comment("음식점 경도(y좌표)")
-    private Double coorY;
+    private BigDecimal coorY;
 
     @Column(name = "res_open")
     @Comment("오픈 시간")

@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+import java.math.BigDecimal;
+
 import static com.green.beadalyo.common.globalconst.GlobalPattern.*;
 
 @Getter
@@ -62,9 +64,9 @@ public class OwnerSignUpPostReq {
     @Schema(defaultValue = "리뷰 설명")
     private String desc2 ;
     @Schema(defaultValue = "124.014")
-    private Double coorX;
+    private BigDecimal coorX;
     @Schema(defaultValue = "37.017")
-    private Double coorY;
+    private BigDecimal coorY;
     @Schema(defaultValue = "식당 이름")
     @NotBlank(message = "식당 이름을 입력해주세요.")
     private String restaurantName;

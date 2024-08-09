@@ -43,7 +43,6 @@ public class MenuService {
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuEntity.setMenuResPk(restaurant);
         menuEntity.setMenuCategory(menuCat);
 
         //메뉴 이름 중복체크

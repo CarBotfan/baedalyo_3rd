@@ -6,6 +6,7 @@ import com.green.beadalyo.gyb.common.ResultError;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.gyb.sse.SSEApiController;
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
@@ -140,26 +141,28 @@ public class OrderController {
         }
 
 
-        //메뉴 검증
-        try {
-            boolean checksum = p.getMenu().stream()
-                    //req 의 orderMenuPk 를 추출
-                    .map(OrderMenuReq::getMenuPk)
-                    //추출한 값을 menuOptionPk 에 세팅후 검증실행
-                    .allMatch(menuOptionPk ->
-                            //res 의 메뉴 리스트를 스트림하여
-                            res.getMenuList().stream()
-                            //MenuEntity 의 menuPk 를 추출
-                            .map(MenuEntity::getMenuPk)
-                            // 추출한 두 값을 비교하여 매치
-                            .anyMatch(menuPk -> menuPk.equals(menuOptionPk)));
+//        //메뉴 검증
+//        try {
+//            boolean checksum = p.getMenu().stream()
+//                    //req 의 orderMenuPk 를 추출
+//                    .map(OrderMenuReq::getMenuPk)
+//                    //추출한 값을 menuOptionPk 에 세팅후 검증실행
+//                    .allMatch(menuOptionPk ->
+//                            //res 의 메뉴 리스트를 스트림하여
+//                            res.getMenuList().forEach(
+//                                    menuCategory ->
+//                                            menuCategory.getMenuList().stream().map(MenuEntity::getMenuPk)
+//                                            .anyMatch(menuPk -> menuPk.equals(menuOptionPk)));
+//                                    )
+//                            // 추출한 두 값을 비교하여 매치
+//
+//
+//            if (!checksum) return ResultError.builder().statusCode(-6).resultMsg("메뉴 검증에 실패하였습니다.").build();
 
-            if (!checksum) return ResultError.builder().statusCode(-6).resultMsg("메뉴 검증에 실패하였습니다.").build();
-
-        } catch (Exception e) {
-            log.error("An error occurred: ", e);
-            return ResultError.builder().build();
-        }
+//        } catch (Exception e) {
+//            log.error("An error occurred: ", e);
+//            return ResultError.builder().build();
+//        }
 
         try {
             //오더 객체 생성

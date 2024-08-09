@@ -71,8 +71,8 @@ public class Restaurant
     @Comment("사업자 등록번호")
     private String regiNum;
 
-    @Column(name = "res_coor_x")
     @Comment("음식점 위도(X좌표)")
+    @Column(name = "res_coor_x")
     private BigDecimal coorX;
 
     @Column(name = "res_coor_y")
@@ -106,7 +106,7 @@ public class Restaurant
     @UpdateTimestamp
     private LocalDateTime updateDt ;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "menuResPk", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuCategory> menuList = new ArrayList<>(); ;
 
     public Restaurant(RestaurantInsertDto data)
