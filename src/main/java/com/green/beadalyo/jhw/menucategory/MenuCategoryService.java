@@ -68,10 +68,10 @@ public class MenuCategoryService {
 
     @Transactional
     public int patchMenuCatPosition(MenuCatPositionPatchDto dto) {
-        if(!repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk1(), dto.getRestaurant())) {
+        if(!repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())) {
             throw new MenuCatNotFoundException();
         }
-        MenuCategory menuCategory = repository.getReferenceById(dto.getMenuCatPk1());
+        MenuCategory menuCategory = repository.getReferenceById(dto.getMenuCatPk());
         if(menuCategory.getPosition() > dto.getPosition()) {
             List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestaurant(dto.getRestaurant(), dto.getPosition(), menuCategory.getPosition());
             for(MenuCategory mc : list) {
