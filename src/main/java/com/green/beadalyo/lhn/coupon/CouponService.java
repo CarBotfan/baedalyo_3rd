@@ -46,6 +46,7 @@ public class CouponService {
         coupon.setContent(p.getContent());
         coupon.setPrice(p.getPrice());
         coupon.setName(p.getName());
+        coupon.setState(1);
         return couponRepository.save(coupon);
     }
 
