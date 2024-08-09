@@ -3,6 +3,8 @@ package com.green.beadalyo.gyb.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class RestaurantManagePatchReq
 {
@@ -16,10 +18,10 @@ public class RestaurantManagePatchReq
     private String addr ;
 
     @Schema(description = "위도")
-    private Double coorX ;
+    private BigDecimal coorX ;
 
     @Schema(description = "경도")
-    private Double coorY ;
+    private BigDecimal coorY ;
 
     @Schema(description = "음식점 이름")
     private String restaurantName ;

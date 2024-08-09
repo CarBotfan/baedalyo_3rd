@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.menucategory.model;
 
+import com.green.beadalyo.gyb.crollring.ConvertData;
 import com.green.beadalyo.gyb.model.Restaurant;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -40,4 +41,6 @@ public class MenuCategory {
         this.menuCatName = dto.getMenuCatName();
         this.position = dto.getPosition();
     }
+
+
 }

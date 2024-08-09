@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name = "category")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category

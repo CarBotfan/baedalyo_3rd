@@ -59,9 +59,11 @@ public class RestaurantManageRes
         this.reviewDescription = data.getReviewDescription() ;
         this.restaurantState = data.getState() ;
         this.restaurantPic = data.getPic();
-        List<Category> categorys = data.getCategories();
+        List<Category> categories = data.getCategories();
         List<CategoryRes> res = new ArrayList<>();
-        categorys.forEach(category -> {res.add(new CategoryRes(category));}) ;
+        if (categories != null) {
+            categories.forEach(category -> res.add(new CategoryRes(category)));
+        }
         this.categories = res ;
 
     }

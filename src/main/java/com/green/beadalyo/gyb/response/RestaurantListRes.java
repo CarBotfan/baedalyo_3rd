@@ -51,6 +51,9 @@ public class RestaurantListRes
 
     public static ResultPage<RestaurantListRes> toResultPage(Page<RestaurantListView> page)
     {
+        if (page == null) {
+            return new ResultPage<>(Page.empty());
+        }
         List<RestaurantListRes> list = new ArrayList<>() ;
         for (RestaurantListView view : page)
         {list.add(new RestaurantListRes(view));}

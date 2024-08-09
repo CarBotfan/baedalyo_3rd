@@ -2,6 +2,7 @@ package com.green.beadalyo.gyb.model;
 
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.awt.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +24,7 @@ import java.util.List;
 @Table(name = "restaurant")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Restaurant
@@ -70,11 +73,11 @@ public class Restaurant
 
     @Column(name = "res_coor_x")
     @Comment("음식점 위도(X좌표)")
-    private Double coorX;
+    private BigDecimal coorX;
 
     @Column(name = "res_coor_y")
     @Comment("음식점 경도(y좌표)")
-    private Double coorY;
+    private BigDecimal coorY;
 
     @Column(name = "res_open")
     @Comment("오픈 시간")
@@ -104,7 +107,7 @@ public class Restaurant
     private LocalDateTime updateDt ;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "menuResPk", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MenuEntity> menuList = new ArrayList<>(); ;
+    private List<MenuCategory> menuList = new ArrayList<>(); ;
 
     public Restaurant(RestaurantInsertDto data)
     {

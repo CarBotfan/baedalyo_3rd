@@ -3,6 +3,7 @@ package com.green.beadalyo.gyb.dto;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 @Data
@@ -22,9 +23,9 @@ public class RestaurantInsertDto
     //리뷰 설명
     private String desc2 ;
     //위도(X)
-    private Double resCoorX ;
+    private BigDecimal resCoorX ;
     //경도(Y)
-    private Double resCoorY ;
+    private BigDecimal resCoorY ;
     //개점 시간
     private LocalTime openTime ;
     //폐점 시간
