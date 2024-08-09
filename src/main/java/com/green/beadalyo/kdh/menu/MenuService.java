@@ -185,10 +185,10 @@ public class MenuService {
         List<MenuCategory> menuCatList = menuCategoryRepository.findMenuCategoriesByRestaurantOrderByPosition(res);
         List<MenuEntity> menuList = menuRepository.findByMenuResPk(res);
         List<MenuListGetRes> result = new ArrayList<>();
+        List<GetAllMenuRes> noneCatMenuList = new ArrayList<>();
         for (MenuCategory menuCategory : menuCatList) {
             MenuListGetRes menuListGetRes = new MenuListGetRes();
             menuListGetRes.setMenuCategory(new MenuCatDto(menuCategory));
-
             List<GetAllMenuRes> menuDtoList = new ArrayList<>();
             for (MenuEntity menu : menuList) {
                 if (menu.getMenuCategory() != null && menu.getMenuCategory().equals(menuCategory)) {
@@ -198,6 +198,15 @@ public class MenuService {
             menuListGetRes.setMenu(menuDtoList);
             result.add(menuListGetRes);
         }
+        for(MenuEntity menu : menuList) {
+            if(menu.getMenuCategory() == null) {
+                noneCatMenuList.add(new GetAllMenuRes(menu));
+            }
+        }
+        MenuListGetRes menuListGetResNoneCat = new MenuListGetRes();
+        menuListGetResNoneCat.setMenuCategory(null);
+        menuListGetResNoneCat.setMenu(noneCatMenuList);
+        result.add(menuListGetResNoneCat);
         return result;
     }
 

@@ -18,6 +18,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/address")
+@PreAuthorize("hasAnyRole('USER')")
 @RequiredArgsConstructor
 @Tag(name = "유저 주소 컨트롤러")
 public class UserAddrControllerImpl implements UserAddrController{

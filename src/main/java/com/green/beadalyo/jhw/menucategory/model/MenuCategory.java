@@ -1,13 +1,16 @@
 package com.green.beadalyo.jhw.menucategory.model;
 
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.ibatis.annotations.One;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,4 +43,7 @@ public class MenuCategory {
         this.menuCatName = dto.getMenuCatName();
         this.position = dto.getPosition();
     }
+
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = true)
+    private List<MenuEntity> menuList;
 }
