@@ -46,8 +46,13 @@ public class MenuCategoryServiceTest {
         given(repository.existsById(1L)).willReturn(true);
         given(repository.getReferenceById(1L)).willReturn(menuCategory);
 
-        System.out.println(menuCategory.getMenuCatName());
+        System.out.println(menuCategory);
     }
 
+    @Test
+    void patchMenuCat() {
+        Restaurant res = new Restaurant();
+        given(repository.existsByMenuCategoryPkAndRestaurant(1L, res));
+    }
 
 }
