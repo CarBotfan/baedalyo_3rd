@@ -2,6 +2,7 @@ package com.green.beadalyo.lhn.coupon.repository;
 
 
 import com.green.beadalyo.lhn.coupon.entity.Coupon;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
 //    @Query("SELECT c FROM Coupon c WHERE c.restaurant.seq = :restaurantId")
     List<Coupon> findByRestaurant_SeqAndStateIn(Long restaurantId , List<Integer> state);
-//    List<Coupon> findAllByRestaurantId(@Param("restaurantId") Long restaurantId);
+//    List<Coupon> findByRestaurantId(@Param("restaurantId") Long restaurantId);
 }
 
