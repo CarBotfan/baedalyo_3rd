@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -26,6 +27,10 @@ public class FindUserPwReq {
     @NotBlank(message = "아이디를 입력해주세요.")
     @Pattern(regexp = userIdPattern, message = "아이디는 8자 이상이어야 합니다.")
     private final String userId;
+
+    @Schema(defaultValue = "인증번호 재인증")
+    @NotEmpty(message = "인증번호를 입력하세요.")
+    private final String authNum;
 
     @Schema(defaultValue = "비밀번호")
     @NotBlank(message = "비밀번호를 입력해주세요.")
