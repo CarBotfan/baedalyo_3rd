@@ -124,7 +124,7 @@ public class OrderController {
         if (p.getUseMileage() != 0 && p.getUseMileage() < 1000)
             return ResultError.builder().statusCode(-8).resultMsg("사용 마일리지가 정상적이지 않습니다.").build();
         //유저가 소유한 마일리지값 검증
-        if (user.getMileage() >= p.getUseMileage())
+        if (user.getMileage() > p.getUseMileage())
             return ResultError.builder().statusCode(-10).resultMsg("소지한 마일리지가 충분하지 않습니다.").build();
 
         //레스토랑 검증
