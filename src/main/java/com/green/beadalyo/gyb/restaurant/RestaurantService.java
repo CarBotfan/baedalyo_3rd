@@ -101,7 +101,12 @@ public class RestaurantService
     //음식점 뷰 정보 호출(음식점 pk로)
     public RestaurantDetailView getRestaurantDataViewBySeq(Long seq) throws Exception
     {
-        return viewDetailRepository.findByRestaurantPk(seq).orElseThrow(NullPointerException::new);
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return viewDetailRepository.findByRestaurantPk(seq, userPk).orElseThrow(NullPointerException::new);
+        } catch (Exception e) {
+            return viewDetailRepository.findByRestaurantPk(seq).orElseThrow(NullPointerException::new);
+        }
     }
 
     //인서트(사업자 회원가입에서 서비스 호출 필요)
