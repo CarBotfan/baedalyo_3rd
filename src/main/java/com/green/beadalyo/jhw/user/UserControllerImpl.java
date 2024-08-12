@@ -68,6 +68,13 @@ public class UserControllerImpl implements UserController{
         String msg = "가입 성공";
         p.setUserRole("ROLE_USER");
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        Boolean checked = mailService.CheckAuthNum(p.getUserEmail(), p.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         try {
             if(!p.getUserPw().equals(p.getUserPwConfirm())) {
                 throw new PwConfirmFailureException();
@@ -132,6 +139,13 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         p.setUserRole("ROLE_OWNER");
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        Boolean checked = mailService.CheckAuthNum(p.getUserEmail(), p.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         try {
             UserSignUpPostReq req = new UserSignUpPostReq(p);
 
