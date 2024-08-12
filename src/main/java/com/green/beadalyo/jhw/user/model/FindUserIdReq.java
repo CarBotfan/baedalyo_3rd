@@ -16,14 +16,14 @@ public class FindUserIdReq {
     @NotBlank(message = "이름")
     @NotBlank(message = "이름를 입력해주세요.")
     @Schema(defaultValue = "이름")
-    private final String userName;
+    private String userName;
 
     @Schema(defaultValue = "이메일")
     @NotBlank(message = "이메일을 입력해주세요.")
     @Pattern(regexp = userEmailPattern, message = "유효하지 않은 형식의 이메일입니다.")
-    private final String userEmail;
+    private String userEmail;
 
     @Schema(defaultValue = "인증번호 재인증")
     @NotEmpty(message = "인증번호를 입력하세요.")
-    private final String authNum;
+    private String authNum;
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -45,6 +46,10 @@ public class UserSignUpPostReq {
     private String userRole;
     @JsonIgnore
     private Integer userLoginType;
+
+    @Schema(defaultValue = "인증번호 재인증")
+    @NotEmpty(message = "인증번호를 입력하세요.")
+    private String authNum;
 
     public UserSignUpPostReq(OwnerSignUpPostReq p) {
         this.userId = p.getUserId();
