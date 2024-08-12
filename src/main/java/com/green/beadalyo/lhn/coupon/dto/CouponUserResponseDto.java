@@ -28,4 +28,7 @@ public class CouponUserResponseDto {
 
     @Schema(description = "쿠폰 이름", example = "할인 쿠폰")
     private String name;
+
+    @Schema(description = "식당 이름", example = "김치식당")
+    private String resName;
 }

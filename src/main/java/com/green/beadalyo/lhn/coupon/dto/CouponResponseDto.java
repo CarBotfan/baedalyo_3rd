@@ -28,12 +28,16 @@ public class CouponResponseDto {
     @Schema(description = "쿠폰 최소주문금액", example = "1000")
     private Long minOrderAmount;
 
-    public CouponResponseDto(Long id, String name, String content, Integer price, Long minOrderAmount, LocalDateTime createdAt) {
+    @Schema(description = "식당 이름", example = "김치식당")
+    private String resName;
+
+    public CouponResponseDto(Long id, String name, String content, Integer price, Long minOrderAmount, LocalDateTime createdAt , String resName) {
         this.id = id;
         this.name = name;
         this.content = content;
         this.price = price;
         this.createdAt = createdAt;
         this.minOrderAmount = minOrderAmount;
+        this.resName = resName;
     }
 }

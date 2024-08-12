@@ -26,6 +26,9 @@ public class Coupon {
     @JoinColumn(name = "res_pk", nullable = false)
     private Restaurant restaurant;
 
+    @Column(name = "res_name" , nullable = false)
+    private String resName;
+
     @Column(name = "res_coupon_name")
     private String name;
 
@@ -48,6 +51,5 @@ public class Coupon {
     @ColumnDefault("1")
     @Column(name = "coupon_state")
     private int state;
-
 
 }
