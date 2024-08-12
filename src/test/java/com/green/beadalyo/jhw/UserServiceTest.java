@@ -12,7 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @Import(UserServiceImpl.class)
 @ExtendWith(SpringExtension.class)
-class UserServiceTest {
+class
+UserServiceTest {
     @Autowired
     private UserServiceImpl service;
     @Test
