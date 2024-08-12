@@ -113,7 +113,7 @@ public class InquiryControllerForAdmin {
         List<GetInquiryListForAdmin> result = null;
 
         try {
-            result = service.getInquiryListForAdmins();
+            result = service.getInquiryListFinishedForAdmins();
         }  catch (Exception e){
             return ResultDto.<List<GetInquiryListForAdmin>>builder()
                     .statusCode(-1)
@@ -138,7 +138,7 @@ public class InquiryControllerForAdmin {
         List<GetInquiryListForAdmin> result = null;
 
         try {
-            result = service.getInquiryListForAdmins();
+            result = service.getInquiryListUnfinishedForAdmins();
         }  catch (Exception e){
             return ResultDto.<List<GetInquiryListForAdmin>>builder()
                     .statusCode(-1)
