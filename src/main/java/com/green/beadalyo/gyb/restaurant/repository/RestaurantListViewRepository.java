@@ -439,4 +439,29 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
                                                   Pageable pageable);
 
 
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
+            "FROM RestaurantListView r " +
+            "left join ResFollow rf on r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
+            "LEFT JOIN Order o ON o.orderResPk.seq = r.restaurantPk AND o.orderUserPk.userPk = :userPk " +
+            "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
+            "and c.id IS NOT NULL " +
+            "group by r.restaurantPk " +
+            "order by o.createdAt desc ")
+    Page<RestaurantListView> findRecentOrderedList(@Param("xMin") BigDecimal xMin,
+                                                  @Param("xMax") BigDecimal xMax,
+                                                  @Param("yMin") BigDecimal yMin,
+                                                  @Param("yMax") BigDecimal yMax,
+                                                  @Param("userPk") Long userPk,
+                                                  Pageable pageable);
 }
