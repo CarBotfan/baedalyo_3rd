@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.menucategory.model.MenuCatDto;
 import com.green.beadalyo.jhw.menucategory.model.MenuCatInsertDto;
+import com.green.beadalyo.jhw.menucategory.model.MenuCatPatchDto;
 import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestClassOrder;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.awt.*;
 import java.util.List;
 
 @Import(MenuCategoryService.class)
@@ -52,7 +54,23 @@ public class MenuCategoryServiceTest {
     @Test
     void patchMenuCat() {
         Restaurant res = new Restaurant();
-        given(repository.existsByMenuCategoryPkAndRestaurant(1L, res));
+        MenuCategory menuCategory = new MenuCategory();
+        menuCategory.setMenuCatName("TestMenuCategory");
+        menuCategory.setMenuCategoryPk(1L);
+        menuCategory.setRestaurant(res);
+
+        given(repository.existsByMenuCategoryPkAndRestaurant(1L, res)).willReturn(true);
+        given(repository.findByMenuCategoryPkAndRestaurant(1L, res)).willReturn(menuCategory);
+
+        MenuCatPatchDto dto = new MenuCatPatchDto();
+        dto.setMenuCatPk(1L);
+        dto.setRestaurant(res);
+        dto.setMenuCatName("TestSuccess");
+
+        int result = service.patchMenuCat(dto);
+
+        System.out.println(result);
+        System.out.println(menuCategory);
     }
 
 }
