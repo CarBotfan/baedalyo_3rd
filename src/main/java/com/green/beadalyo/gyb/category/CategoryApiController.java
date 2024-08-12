@@ -2,6 +2,7 @@ package com.green.beadalyo.gyb.category;
 
 import com.green.beadalyo.gyb.common.*;
 import com.green.beadalyo.gyb.model.Category;
+import com.green.beadalyo.gyb.request.CategoryUpdateReq;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.model.UserGetRes;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -45,7 +47,7 @@ public class CategoryApiController
                     "<p> -3 : 권한 부족 </p>" +
                     "<p> -4 : 파일 확장자 체크 실패(jpg, png, gif) </p>"
     )
-    public Result putCategory(@RequestPart String str, @RequestPart MultipartFile file)
+    public Result putCategory(@RequestParam String str, @RequestPart MultipartFile file)
     {
 //        User userGetRes = new User().Admin();
         UserGetRes userGetRes = userService.getUserGetResByPk() ;
@@ -84,6 +86,7 @@ public class CategoryApiController
             try {
                 fileUtils.fileDelete(filename) ;
             } catch (Exception e1) {log.error(e1.toString());}
+            e.printStackTrace();
             return ResultError.builder().build();
         }
 
@@ -101,7 +104,7 @@ public class CategoryApiController
                             "<p> -3 : 권한 부족 </p>" +
                             "<p> -4 : 파일 확장자 체크 실패(jpg, png, gif) </p>"
     )
-    public Result updateCategory(@RequestPart String str, @RequestPart MultipartFile file)
+    public Result updateCategory(@RequestPart CategoryUpdateReq p, @RequestPart MultipartFile file)
     {
 //        User userGetRes = new User().Admin();
         UserGetRes userGetRes = userService.getUserGetResByPk() ;
@@ -119,7 +122,7 @@ public class CategoryApiController
             try {
                 if (!fileUtils.checksumExt(List.of(Ext.GIF,Ext.PNG,Ext.JPG,Ext.JPEG) ,file))
                     return ResultError.builder().statusCode(-4).resultMsg("파일은 jpg, gif, png 만 허용됩니다.").build();
-
+                fileUtils.fileDelete(service.getCategory(p.getCatePk()).getCategoryPic());
                 filename = fileUtils.fileInput("category",file) ;
             } catch (Exception e) {
                 log.error("An error occurred: ", e);
@@ -129,12 +132,10 @@ public class CategoryApiController
         }
 
         try {
-            service.InsertCategory(str, filename);
-        } catch (DuplicateKeyException e) {
-            try {
-                fileUtils.fileDelete(filename) ;
-            } catch (Exception e1) {log.error(e1.toString());}
-            return ResultError.builder().statusCode(-5).resultMsg("이미 만들어져있는 카테고리 입니다.").build() ;
+            Category cate = new Category(p.getCateName(), filename);
+            cate.setSeq(p.getCatePk());
+            cate.setCreateAt(LocalDateTime.now());
+            service.updateCategory(cate);
         } catch (Exception e) {
             log.error("An error occurred: ", e);
             try {
