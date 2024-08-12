@@ -15,9 +15,12 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "0) " +
+            "0, CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
-            "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
+            "where (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
@@ -37,9 +40,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
             "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
@@ -60,8 +67,12 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "0) " +
+            "0, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
@@ -79,9 +90,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
             "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
@@ -101,8 +116,12 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "0) " +
+            "0, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
@@ -125,9 +144,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
             "left JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
@@ -155,8 +178,12 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "0) " +
+            "0, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
@@ -178,9 +205,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
             "left join ResFollow rf on r.restaurantPk = rf.resPk.seq  AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
@@ -202,8 +233,12 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "0) " +
+            "0, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
@@ -224,9 +259,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
             "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE (:categoryId = 0 OR r.restaurantPk IN (SELECT m.restaurant.seq FROM MatchingCategoryRestaurant m WHERE m.category.seq = :categoryId)) " +
             "AND r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
@@ -247,8 +286,12 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "0) " +
+            "0, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
@@ -266,9 +309,13 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
             "left join ResFollow rf on r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +
@@ -287,13 +334,109 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
             "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
-            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
             "FROM RestaurantListView r " +
             "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
             "WHERE rf.resFollowPk is not NULL " +
             "AND r.restaurantState IN (1, 2) " +
             "group by r.restaurantPk " +
             "ORDER BY rf.createdAt, r.restaurantState ASC")
     Page<RestaurantListView> findFollowedRestaurant(@Param("userPk") Long userPk,
                                                     Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "0, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
+            "where r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
+            "group by r.restaurantPk " +
+            "ORDER BY r.createdAt desc")
+    Page<RestaurantListView> findNewRestaurantListByCreatedAt(@Param("xMin") BigDecimal xMin,
+                                                                         @Param("xMax") BigDecimal xMax,
+                                                                         @Param("yMin") BigDecimal yMin,
+                                                                         @Param("yMax") BigDecimal yMax,
+                                                                         Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
+            "FROM RestaurantListView r " +
+            "left join ResFollow rf on r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
+            "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
+            "group by r.restaurantPk " +
+            "ORDER BY r.createdAt desc")
+    Page<RestaurantListView> findNewRestaurantListByCreatedAt(@Param("xMin") BigDecimal xMin,
+                                                                            @Param("xMax") BigDecimal xMax,
+                                                                            @Param("yMin") BigDecimal yMin,
+                                                                            @Param("yMax") BigDecimal yMax,
+                                                                            @Param("userPk") Long userPk,
+                                                                            Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "0, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
+            "FROM RestaurantListView r " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
+            "where r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
+            "and c.id is not null " +
+            "group by r.restaurantPk " +
+            "ORDER BY r.createdAt desc")
+    Page<RestaurantListView> findCouponRestaurant(@Param("xMin") BigDecimal xMin,
+                                                              @Param("xMax") BigDecimal xMax,
+                                                              @Param("yMin") BigDecimal yMin,
+                                                              @Param("yMax") BigDecimal yMax,
+                                                              Pageable pageable);
+
+    @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
+            "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantCoorY, r.createdAt, " +
+            "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +
+            "CASE WHEN c.id IS NOT NULL THEN c.price ELSE null END) " +
+            "FROM RestaurantListView r " +
+            "left join ResFollow rf on r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
+            "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
+            "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
+            "where r.restaurantCoorX BETWEEN :xMin AND :xMax " +
+            "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
+            "AND r.restaurantState IN (1, 2) " +
+            "and c.id IS NOT NULL " +
+            "group by r.restaurantPk " +
+            "ORDER BY r.createdAt desc")
+    Page<RestaurantListView> findCouponRestaurant(@Param("xMin") BigDecimal xMin,
+                                                  @Param("xMax") BigDecimal xMax,
+                                                  @Param("yMin") BigDecimal yMin,
+                                                  @Param("yMax") BigDecimal yMax,
+                                                  @Param("userPk") Long userPk,
+                                                  Pageable pageable);
+
+
 }
