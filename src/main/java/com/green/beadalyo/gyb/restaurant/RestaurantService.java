@@ -14,7 +14,6 @@ import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +72,41 @@ public class RestaurantService
                 case 3 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinatesSortedByScore(xMin,xMax,yMin,yMax,search,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,search,pageable);
                 default -> null ;
             };
+        }
+    }
+
+    public Page<RestaurantListView> getNewRestaurant(BigDecimal x, BigDecimal y) throws Exception
+    {
+        Pageable pageable = PageRequest.of(0, 10) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return restaurantListViewRepository.findNewRestaurantListByCreatedAt(xMin,xMax,yMin,yMax,userPk,pageable);
+        } catch (Exception e) {
+            return restaurantListViewRepository.findNewRestaurantListByCreatedAt(xMin,xMax,yMin,yMax,pageable);
+        }
+    }
+
+
+    public Page<RestaurantListView> getCouponRestaurant(BigDecimal x, BigDecimal y, Integer page) throws Exception
+    {
+        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return restaurantListViewRepository.findCouponRestaurant(xMin,xMax,yMin,yMax,userPk,pageable);
+        } catch (Exception e) {
+            return restaurantListViewRepository.findCouponRestaurant(xMin,xMax,yMin,yMax,pageable);
         }
     }
 
