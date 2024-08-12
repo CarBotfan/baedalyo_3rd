@@ -92,6 +92,7 @@ public class RestaurantService
         }
     }
 
+
     public Page<RestaurantListView> getCouponRestaurant(BigDecimal x, BigDecimal y, Integer page) throws Exception
     {
         Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
