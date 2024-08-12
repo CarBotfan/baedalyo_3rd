@@ -34,6 +34,7 @@ public class MenuOptionService {
         entity.setMenu(menuEntity);
         entity.setOptionName(req.getOptionName());
         entity.setOptionPrice(req.getOptionPrice());
+        entity.setOptionState(1);
 
         return entity;
     }
@@ -54,6 +55,7 @@ public class MenuOptionService {
 
     public PostMenuOptionRes makePostMenuOptionRes(MenuOption entity) {
         PostMenuOptionRes res = new PostMenuOptionRes();
+        res.setOptionPk(entity.getSeq());
         res.setOptionName(entity.getOptionName());
         res.setOptionPrice(entity.getOptionPrice());
         res.setOptionMenuPk(entity.getMenu().getMenuPk());
