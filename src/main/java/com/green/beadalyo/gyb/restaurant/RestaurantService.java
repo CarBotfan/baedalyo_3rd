@@ -119,6 +119,18 @@ public class RestaurantService
         return viewListRepository.findFollowedRestaurant(userPk, pageable);
     }
 
+    public Page<RestaurantListView> getRecentOrderedRestaurantList(BigDecimal x, BigDecimal y, Long userPk) throws Exception
+    {
+        Pageable pageable = PageRequest.of(0, 10) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+        return restaurantListViewRepository.findRecentOrderedList(xMin,xMax,yMin,yMax,userPk,pageable);
+    }
+
 
     //음식점 정보 호출
     public Restaurant getRestaurantData(User user) throws Exception
