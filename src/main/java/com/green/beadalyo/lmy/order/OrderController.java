@@ -119,7 +119,9 @@ public class OrderController {
         }
         //후불결제에 마일리지가 들어왔는지 검증
         if (p.getPaymentMethod() == 1 || p.getPaymentMethod() == 2)
-            return ResultError.builder().statusCode(-9).resultMsg("후불결제에는 마일리지를 사용할 수 없습니다.").build();
+            if (p.getUseMileage() > 0) {
+                return ResultError.builder().statusCode(-9).resultMsg("후불결제에는 마일리지를 사용할 수 없습니다.").build();
+            }
         //마일리지 사용시 1000마일리지 미만인지 검증
         if (p.getUseMileage() != 0 && p.getUseMileage() < 1000)
             return ResultError.builder().statusCode(-8).resultMsg("사용 마일리지가 정상적이지 않습니다.").build();
