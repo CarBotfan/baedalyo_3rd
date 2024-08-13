@@ -72,10 +72,10 @@ public class Restaurant
     private String regiNum;
 
     @Comment("음식점 위도(X좌표)")
-    @Column(name = "res_coor_x")
+    @Column(name = "res_coor_x",scale = 10, precision = 20)
     private BigDecimal coorX;
 
-    @Column(name = "res_coor_y")
+    @Column(name = "res_coor_y",scale = 10, precision = 20)
     @Comment("음식점 경도(y좌표)")
     private BigDecimal coorY;
 

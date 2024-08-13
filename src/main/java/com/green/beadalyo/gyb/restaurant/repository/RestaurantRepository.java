@@ -3,6 +3,8 @@ package com.green.beadalyo.gyb.restaurant.repository;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.accept.model.GetUnAcceptRestaurant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,7 +20,12 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long>
     Restaurant findRestaurantByUser(User user);
     Restaurant findRestaurantBySeq(Long seq);
 
-//    @Query(value = "SELECT res_pk AS resPk, " +
+    Page<Restaurant> findByCoorXIsNull(Pageable pageable);
+
+    List<Restaurant> findByCoorXIsNull();
+
+
+    //    @Query(value = "SELECT res_pk AS resPk, " +
 //                        "res_user_pk AS resUserPk, " +
 //                        "res_name AS resName, " +
 //                        "res_regi_num AS resRegiNum, " +
