@@ -237,10 +237,10 @@ public class UserControllerImpl implements UserController{
             if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
+            result = service.postSignIn(res, user);
             if(result.getMainAddr() == null) {
                 statusCode = 2;
             }
-            result = service.postSignIn(res, user);
         } catch(UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();

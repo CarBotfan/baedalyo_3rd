@@ -49,7 +49,7 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
     MenuEntity findByMenuPkAndMenuCategory_Restaurant(Long menuPk, Restaurant menuResPk);
     Boolean existsByMenuPkAndMenuCategory_Restaurant(Long menuPk, Restaurant menuResPk);
 
-    @Query("select m from MenuEntity m where m.menuCategory.restaurant.seq = :menuResPk AND m.menuState in (1, 2)")
+    @Query("select m from MenuEntity m where m.menuCategory.restaurant = :menuResPk AND m.menuState in (1, 2)")
     List<MenuEntity> findByMenuResPk(Restaurant menuResPk);
 
 }
