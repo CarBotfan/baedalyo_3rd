@@ -57,4 +57,11 @@ public class CategoryService
         matchingRepository.delete(data);
     }
 
+    public void updateCategory(Category cate) {
+        if(cate.getCategoryName() == null) {
+            throw new RuntimeException("카테고리 이름을 입력하세요.");
+        }
+        repository.save(cate);
+    }
+
 }

@@ -112,7 +112,7 @@ public class CouponController {
     @Operation(summary = "쿠폰 발급")
     public ResultDto<Long> issueCoupon(@PathVariable Long couponId) {
         int code = 1;
-        String msg = "작성완료";
+        String msg = "발급 완료";
         Long issuedCoupon =0L;
         try {
             issuedCoupon = couponService.issueCoupon(couponId);
@@ -179,7 +179,8 @@ public class CouponController {
                 coupon.getContent(),
                 coupon.getPrice(),
                 coupon.getMinOrderAmount(),
-                coupon.getCreatedAt()
+                coupon.getCreatedAt(),
+                coupon.getResName()
         );
     }
 
@@ -191,7 +192,8 @@ public class CouponController {
                 couponUser.getCoupon().getContent(),
                 couponUser.getCoupon().getPrice(),
                 couponUser.getCoupon().getMinOrderAmount(),
-                couponUser.getCoupon().getName()
+                couponUser.getCoupon().getName(),
+                couponUser.getCoupon().getResName()
         );
 
     }

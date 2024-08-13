@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
@@ -73,5 +74,9 @@ public class OwnerSignUpPostReq {
     @Schema(defaultValue = "사업자 등록번호")
     @NotBlank(message = "사업자 등록번호를 입력해주세요.")
     private String regiNum;
+
+    @Schema(defaultValue = "인증번호 재인증")
+    @NotEmpty(message = "인증번호를 입력하세요.")
+    private String authNum;
 
 }

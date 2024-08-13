@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.apache.ibatis.annotations.One;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,5 +48,10 @@ public class MenuCategory {
     @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = false)
     private List<MenuEntity> menuList;
 
-
+    @PreRemove
+    public void onPreRemove() {
+        for(MenuEntity menu : menuList) {
+            menu.setMenuCategory(null);
+        }
+    }
 }

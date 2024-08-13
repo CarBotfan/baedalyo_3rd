@@ -3,6 +3,7 @@ package com.green.beadalyo.jhw.user;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
+import com.green.beadalyo.jhw.email.MailService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.user.entity.User;
@@ -45,7 +46,7 @@ public class UserControllerImpl implements UserController{
     private final AuthenticationFacade authenticationFacade;
     private final PasswordEncoder passwordEncoder;
     private final UserAddrServiceImpl userAddrService;
-    private final ReportRepository reportRepository;
+    private final MailService mailService;
 
     @Override
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
@@ -67,6 +68,13 @@ public class UserControllerImpl implements UserController{
         String msg = "가입 성공";
         p.setUserRole("ROLE_USER");
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        Boolean checked = mailService.CheckAuthNum(p.getUserEmail(), p.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         try {
             if(!p.getUserPw().equals(p.getUserPwConfirm())) {
                 throw new PwConfirmFailureException();
@@ -131,6 +139,13 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         p.setUserRole("ROLE_OWNER");
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        Boolean checked = mailService.CheckAuthNum(p.getUserEmail(), p.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         try {
             UserSignUpPostReq req = new UserSignUpPostReq(p);
 
@@ -620,6 +635,14 @@ public class UserControllerImpl implements UserController{
         int code = 1;
         String msg = "아이디 찾기 성공";
         String result = null;
+
+        Boolean checked = mailService.CheckAuthNum(req.getUserEmail(), req.getAuthNum());
+        if (!checked) {
+            return ResultDto.<String>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         User user;
         try {
             user = service.getUserByUserNameAndUserEmail(req);
@@ -653,6 +676,13 @@ public class UserControllerImpl implements UserController{
         String msg = "비밀번호가 재설정 되었습니다.";
         Integer result = null;
 
+        Boolean checked = mailService.CheckAuthNum(req.getUserEmail(), req.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         User user;
         try {
             user = service.getUserByUserNameAndUserEmailAndUserId(req);
@@ -684,7 +714,7 @@ public class UserControllerImpl implements UserController{
     @Operation(summary = "소셜 로그인 name, phone 채우기", description = "소셜로그인 이후 필수 값 채우기")
     @ApiResponse(
             description =
-                    "<p> 1 :  </p>"+
+                    "<p> 1 :  </p>" +
                             "<p> -2 :  </p>" +
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"

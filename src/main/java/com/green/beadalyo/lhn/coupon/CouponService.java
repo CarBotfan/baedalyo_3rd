@@ -46,6 +46,8 @@ public class CouponService {
         coupon.setContent(p.getContent());
         coupon.setPrice(p.getPrice());
         coupon.setName(p.getName());
+        coupon.setState(1);
+        coupon.setResName(restaurant.getName());
         return couponRepository.save(coupon);
     }
 
@@ -63,6 +65,7 @@ public class CouponService {
         int state = 1;
         List<CouponUser> list = couponUserRepository.findByUserAndState(user, state);
         List<CouponUserResponseDto> result = new ArrayList<>();
+
         for(CouponUser cu : list) {
             CouponUserResponseDto dto = new CouponUserResponseDto();
             dto.setCouponId(cu.getCoupon().getId());
@@ -71,6 +74,7 @@ public class CouponService {
             dto.setPrice(cu.getCoupon().getPrice());
             dto.setName(cu.getCoupon().getName());
             dto.setMinOrderAmount(cu.getCoupon().getMinOrderAmount());
+            dto.setResName(cu.getCoupon().getResName());
             result.add(dto);
         }
         return  result;
@@ -98,7 +102,8 @@ public class CouponService {
                     list.get(a).getContent(),
                     list.get(a).getPrice(),
                     list.get(a).getMinOrderAmount(),
-                    list.get(a).getCreatedAt()
+                    list.get(a).getCreatedAt(),
+                    list.get(a).getResName()
 
             );
             result.add(data);

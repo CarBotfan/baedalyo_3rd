@@ -14,7 +14,6 @@ import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +75,41 @@ public class RestaurantService
         }
     }
 
+    public Page<RestaurantListView> getNewRestaurant(BigDecimal x, BigDecimal y) throws Exception
+    {
+        Pageable pageable = PageRequest.of(0, 10) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return restaurantListViewRepository.findNewRestaurantListByCreatedAt(xMin,xMax,yMin,yMax,userPk,pageable);
+        } catch (Exception e) {
+            return restaurantListViewRepository.findNewRestaurantListByCreatedAt(xMin,xMax,yMin,yMax,pageable);
+        }
+    }
+
+
+    public Page<RestaurantListView> getCouponRestaurant(BigDecimal x, BigDecimal y, Integer page) throws Exception
+    {
+        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return restaurantListViewRepository.findCouponRestaurant(xMin,xMax,yMin,yMax,userPk,pageable);
+        } catch (Exception e) {
+            return restaurantListViewRepository.findCouponRestaurant(xMin,xMax,yMin,yMax,pageable);
+        }
+    }
+
 
     public Page<RestaurantListView> getFollowRestaurantList(Integer page ) throws Exception
     {
@@ -83,6 +117,18 @@ public class RestaurantService
         Long userPk = authenticationFacade.getLoginUserPk();
 
         return viewListRepository.findFollowedRestaurant(userPk, pageable);
+    }
+
+    public Page<RestaurantListView> getRecentOrderedRestaurantList(BigDecimal x, BigDecimal y, Long userPk) throws Exception
+    {
+        Pageable pageable = PageRequest.of(0, 10) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+        return restaurantListViewRepository.findRecentOrderedList(xMin,xMax,yMin,yMax,userPk,pageable);
     }
 
 
@@ -101,7 +147,12 @@ public class RestaurantService
     //음식점 뷰 정보 호출(음식점 pk로)
     public RestaurantDetailView getRestaurantDataViewBySeq(Long seq) throws Exception
     {
-        return viewDetailRepository.findByRestaurantPk(seq).orElseThrow(NullPointerException::new);
+        try {
+            Long userPk = authenticationFacade.getLoginUserPk();
+            return viewDetailRepository.findByRestaurantPk(seq, userPk).orElseThrow(NullPointerException::new);
+        } catch (Exception e) {
+            return viewDetailRepository.findByRestaurantPk(seq).orElseThrow(NullPointerException::new);
+        }
     }
 
     //인서트(사업자 회원가입에서 서비스 호출 필요)

@@ -32,6 +32,10 @@ public class RestaurantListView {
 
     @Transient
     private Integer isFollow = 0; // Transient 필드로 설정
+    @Transient
+    private Integer isCoupon = 0;
+    @Transient
+    private Integer maxPrice = null;
 
     private BigDecimal restaurantCoorX;
 
@@ -41,7 +45,7 @@ public class RestaurantListView {
 
     public RestaurantListView(Long restaurantPk, String restaurantName, Float reviewAvgScore, Integer reviewTotalElements,
                               String restaurantAddr, Integer restaurantState, String restaurantPic,
-                              BigDecimal restaurantCoorX, BigDecimal restaurantCoorY, LocalDateTime createdAt, Integer isFollow) {
+                              BigDecimal restaurantCoorX, BigDecimal restaurantCoorY, LocalDateTime createdAt, Integer isFollow, Integer isCoupon, Integer maxPrice) {
         this.restaurantPk = restaurantPk;
         this.restaurantName = restaurantName;
         this.reviewAvgScore = reviewAvgScore;
@@ -53,6 +57,9 @@ public class RestaurantListView {
         this.restaurantCoorY = restaurantCoorY;
         this.createdAt = createdAt;
         this.isFollow = isFollow;
+        this.isCoupon = isCoupon;
+        this.maxPrice = maxPrice;
+
     }
 
     public RestaurantListView() {

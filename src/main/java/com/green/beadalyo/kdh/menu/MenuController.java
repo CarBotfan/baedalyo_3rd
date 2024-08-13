@@ -83,6 +83,7 @@ public class MenuController {
                 result = service.postMenu(menuEntity,filename);
 
                 if (pic != null && !pic.isEmpty()) {
+
                     service.postPic(menuEntity, pic);
                 }
 

@@ -37,6 +37,12 @@ public class RestaurantListRes
     @Schema(description = "가게 사진")
     private String restaurantPic ;
 
+    @Schema(description = "상점 쿠폰 여부")
+    private Integer isCoupon;
+
+    @Schema(description = "쿠폰 최대")
+    private Integer maxCoupon;
+
     public RestaurantListRes(RestaurantListView view)
     {
         this.restaurantPk = view.getRestaurantPk() ;
@@ -47,6 +53,8 @@ public class RestaurantListRes
         this.restaurantState = view.getRestaurantState() ;
         this.restaurantPic = view.getRestaurantPic() ;
         this.isFollow = view.getIsFollow() ;
+        this.isCoupon = view.getIsCoupon();
+        this.maxCoupon = view.getMaxPrice();
     }
 
     public static ResultPage<RestaurantListRes> toResultPage(Page<RestaurantListView> page)
