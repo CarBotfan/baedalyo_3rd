@@ -149,10 +149,10 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     public int patchUserInfo(UserInfoPatchDto dto) {
-        if(repository.existsByUserPhone(dto.getUserPhone())) {
+        if(dto.getUserPhone() != null && repository.existsByUserPhone(dto.getUserPhone())) {
             throw new DuplicatedInfoException("전화번호");
         }
-        if(repository.existsByUserNickname(dto.getUserNickname())) {
+        if(dto.getUserNickname() != null && repository.existsByUserNickname(dto.getUserNickname())) {
             throw new DuplicatedInfoException("닉네임");
         }
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
