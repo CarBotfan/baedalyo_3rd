@@ -12,8 +12,6 @@ import java.util.List;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReviewPutReq {
 
-    @Schema(example = "3", description = "사용자의 고유 Pk")
-    private long userPk;
 
     @Schema(example = "123",description = "리뷰의 고유 pk")
     private long reviewPk;
