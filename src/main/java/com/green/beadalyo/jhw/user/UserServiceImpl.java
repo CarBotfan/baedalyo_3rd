@@ -253,7 +253,10 @@ public class UserServiceImpl implements UserService{
     }
 
     public User getUserById(String userId)  {
-        return repository.findUserByUserId(userId).orElseThrow(UserNotFoundException::new);
+        if(!userRepository.existsByUserId(userId)){
+            throw new UserNotFoundException();
+        }
+        return repository.findUserByUserId(userId);
     }
 
     @Override
