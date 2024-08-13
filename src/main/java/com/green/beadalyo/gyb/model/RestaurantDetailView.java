@@ -32,7 +32,7 @@ public class RestaurantDetailView
     private Integer restaurantState;
     private String restaurantPic;
     @Transient
-    private Integer isFollow; // Transient 필드로 설정
+    private Integer isFollow = 0; // Transient 필드로 설정
     private BigDecimal restaurantCoorX ;
     private BigDecimal restaurantCoorY ;
     private LocalDateTime createdAt ;
