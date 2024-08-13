@@ -135,7 +135,7 @@ public class CouponService {
         couponUser.setCoupon(coupon);
         couponUser.setUser(user);
         couponUser.setCreatedAt(LocalDateTime.now());
-        couponUser.setState(1); // 쿠폰 상태 활성화
+        couponUser.setState(1); // 쿠폰 상태 활성화  
          couponUserRepository.save(couponUser);
         return couponUser.getId();
     }
