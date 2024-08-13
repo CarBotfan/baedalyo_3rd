@@ -147,13 +147,12 @@ public class UserControllerImpl implements UserController{
                     .build();
         }
         try {
-            UserSignUpPostReq req = new UserSignUpPostReq(p);
-
             if(!p.getUserPw().equals(p.getUserPwConfirm())) {
                 throw new PwConfirmFailureException();
             }
 
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
+            UserSignUpPostReq req = new UserSignUpPostReq(p);
             User user = new User(req);
             service.duplicatedInfoCheck(user);
             String picName = service.uploadProfileImage(pic);
