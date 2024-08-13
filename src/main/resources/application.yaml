@@ -101,6 +101,7 @@ app:
       - http://localhost:3000/oauth/redirect
     authorization-request-cookie-name: oauth2_auth_request
     redirect-uri-param-cookie-name: redirect_uri
+    cookie-expiry-seconds: 180
 
   jwt:
     secret: ${JWT_SECRET}
