@@ -14,7 +14,7 @@ public class AcceptService {
     private final RestaurantRepository restaurantRepository;
 
     public List<Restaurant> getUnAcceptRestaurant(){
-       return restaurantRepository.findByState(3);
+       return restaurantRepository.findByState(4);
     }
 
     public Integer acceptRestaurant(Long resPk){
