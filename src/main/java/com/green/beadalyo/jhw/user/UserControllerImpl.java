@@ -237,6 +237,9 @@ public class UserControllerImpl implements UserController{
             if(service.checkPassword(p.getUserPw(), user.getUserPw())) {
                 throw new IncorrectPwException();
             }
+            if(result.getMainAddr() == null) {
+                statusCode = 2;
+            }
             result = service.postSignIn(res, user);
         } catch(UserNotFoundException e) {
             statusCode = -2;
@@ -251,9 +254,6 @@ public class UserControllerImpl implements UserController{
             e.printStackTrace();
             statusCode = -1;
             msg = e.getMessage();
-        }
-        if(result.getMainAddr() == null) {
-            statusCode = 2;
         }
         return ResultDto.<SignInRes>builder()
                 .statusCode(statusCode)
