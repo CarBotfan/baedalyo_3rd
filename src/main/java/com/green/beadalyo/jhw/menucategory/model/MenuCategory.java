@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.ibatis.annotations.One;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -15,10 +16,10 @@ import java.util.List;
 
 @Entity
 @Getter
-
 @Setter
 @Table(name = "menu_category")
 @NoArgsConstructor
+@ToString
 public class MenuCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,3 +56,8 @@ public class MenuCategory {
         }
     }
 }
+
+
+
+
+
