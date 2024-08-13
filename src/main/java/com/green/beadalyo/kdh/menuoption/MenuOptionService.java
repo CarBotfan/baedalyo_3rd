@@ -50,7 +50,7 @@ public class MenuOptionService {
         long resUserPk = resUser.getUserPk();
         long userPk = authenticationFacade.getLoginUserPk();
 
-        return resUserPk == userPk;
+        return resUserPk != userPk;
     }
 
     public PostMenuOptionRes makePostMenuOptionRes(MenuOption entity) {

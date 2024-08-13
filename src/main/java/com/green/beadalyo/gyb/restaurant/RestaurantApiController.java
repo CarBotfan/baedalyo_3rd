@@ -158,8 +158,11 @@ public class RestaurantApiController
         if (page == null || page < 1)
             page = 1;
 
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk == 0) return ResultError.builder().statusCode(-1).resultMsg("불러올 유저 정보가 없습니다.").build();
+
         try {
-            Page<RestaurantListView> pageList = service.getFollowRestaurantList(page);
+            Page<RestaurantListView> pageList = service.getFollowRestaurantList(page, userPk);
             ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList);
             return ResultDto.builder().resultData(data).build();
         } catch (Exception e) {
