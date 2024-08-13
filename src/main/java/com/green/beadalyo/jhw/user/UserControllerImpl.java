@@ -631,7 +631,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<String> findUserId(FindUserIdReq req) {
+    public ResultDto<String> findUserId(@RequestBody FindUserIdReq req) {
         int code = 1;
         String msg = "아이디 찾기 성공";
         String result = null;
@@ -671,7 +671,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<Integer> findAndResetPassword(FindUserPwReq req) {
+    public ResultDto<Integer> findAndResetPassword(@RequestBody FindUserPwReq req) {
         int code = 1;
         String msg = "비밀번호가 재설정 되었습니다.";
         Integer result = null;
