@@ -30,7 +30,7 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
             "       WHERE mn.menu_res_Pk = :menuResPk",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPk(@Param("menuResPk")Long MenuResPk);
 
-    Boolean existsByMenuNameAndMenuResPk(String MenuName, Restaurant restaurant) ;
+    Boolean existsByMenuNameAndMenuCategory_Restaurant(String MenuName, Restaurant restaurant) ;
 
     @Query(value = "select   mn.menu_name as menuNames" +
             "      FROM menu mn" +
@@ -46,10 +46,10 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
     void deleteByMenuPkAndMenuResPk(@Param("menuPk") Long menuPk ,@Param("menuResPk") Long menuResPk);
 
 
-    MenuEntity findByMenuPkAndMenuResPk(Long menuPk, Restaurant menuResPk);
-    Boolean existsByMenuPkAndMenuResPk(Long menuPk, Restaurant menuResPk);
+    MenuEntity findByMenuPkAndMenuCategory_Restaurant(Long menuPk, Restaurant menuResPk);
+    Boolean existsByMenuPkAndMenuCategory_Restaurant(Long menuPk, Restaurant menuResPk);
 
-    @Query("select m from MenuEntity m where m.menuResPk = :menuResPk AND m.menuState in (1, 2)")
+    @Query("select m from MenuEntity m where m.menuCategory.restaurant.seq = :menuResPk AND m.menuState in (1, 2)")
     List<MenuEntity> findByMenuResPk(Restaurant menuResPk);
 
 }

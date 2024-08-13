@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -175,8 +176,8 @@ class RestaurantManageApiControllerTest
         Restaurant restaurant = new Restaurant();
         restaurant.setName("Test Restaurant");
         restaurant.setAddress("123 Test Street, Test City");
-        restaurant.setCoorX(37.5665);
-        restaurant.setCoorY(126.9780);
+        restaurant.setCoorX(BigDecimal.valueOf(37.5665));
+        restaurant.setCoorY(BigDecimal.valueOf(126.9780));
         restaurant.setRegiNum("123-45-67891");
         restaurant.setRestaurantDescription("This is a test restaurant.");
         restaurant.setReviewDescription("This restaurant has excellent reviews.");

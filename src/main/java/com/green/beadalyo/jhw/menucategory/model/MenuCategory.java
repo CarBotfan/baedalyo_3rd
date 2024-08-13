@@ -28,7 +28,7 @@ public class MenuCategory {
     @JoinColumn(name = "res_pk", nullable = false)
     private Restaurant restaurant;
 
-    @Column(name = "menu_cat_name", length = 50, nullable = false)
+    @Column(name = "menu_cat_name", length = 2000, nullable = false)
     private String menuCatName;
 
     @Column(name = "position", nullable = false)
@@ -44,6 +44,8 @@ public class MenuCategory {
         this.position = dto.getPosition();
     }
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = false)
     private List<MenuEntity> menuList;
+
+
 }

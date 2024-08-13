@@ -45,15 +45,15 @@ public class Restaurant
     @Comment("음식점 이름")
     private String name;
 
-    @Column(name = "res_description1", length = 300)
+    @Column(name = "res_description1", length = 2000)
     @Comment("가게 설명")
     private String RestaurantDescription;
 
-    @Column(name = "res_description2", length = 300)
+    @Column(name = "res_description2", length = 2000)
     @Comment("가게 설명")
     private String reviewDescription;
 
-    @Column(name = "res_addr" , nullable = false , length = 100)
+    @Column(name = "res_addr" , nullable = false , length = 2000)
     @Comment("음식점 주소")
     private String address;
 
@@ -92,7 +92,7 @@ public class Restaurant
     @ColumnDefault("2")
     private Integer state;
 
-    @Column(name = "res_pic", length = 100)
+    @Column(name = "res_pic", length = 2000)
     @Comment("음식점 사진")
     private String pic ;
 

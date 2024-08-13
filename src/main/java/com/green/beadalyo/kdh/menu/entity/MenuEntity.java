@@ -30,16 +30,16 @@ public class MenuEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "menu")
     private List<MenuOption> optionList ;
 
-    @Column(name = "menu_name", length = 20, nullable = false)
+    @Column(name = "menu_name", length = 2000, nullable = false)
     private String menuName;
 
-    @Column(name = "menu_content")
+    @Column(name = "menu_content", length = 2000)
     private String menuContent;
 
     @Column(nullable = false, name = "menu_price")
     private Integer menuPrice;
 
-    @Column(name = "menu_pic")
+    @Column(name = "menu_pic" , length = 2000)
     private String menuPic;
 
     @ColumnDefault("1")
