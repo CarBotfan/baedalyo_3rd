@@ -30,7 +30,7 @@ public class MenuCategory {
     @JoinColumn(name = "res_pk", nullable = false)
     private Restaurant restaurant;
 
-    @Column(name = "menu_cat_name", length = 50, nullable = false)
+    @Column(name = "menu_cat_name", length = 2000, nullable = false)
     private String menuCatName;
 
     @Column(name = "position", nullable = false)

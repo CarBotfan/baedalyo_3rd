@@ -45,7 +45,7 @@ public class MenuOptionService {
 
     public boolean validateMenuOwner(Long menuPk) {
         MenuEntity menuEntity = menuRepository.getReferenceById(menuPk);
-        Restaurant restaurant = menuEntity.getMenuResPk();
+        Restaurant restaurant = menuEntity.getMenuCategory().getRestaurant();
         User resUser = restaurant.getUser();
         long resUserPk = resUser.getUserPk();
         long userPk = authenticationFacade.getLoginUserPk();

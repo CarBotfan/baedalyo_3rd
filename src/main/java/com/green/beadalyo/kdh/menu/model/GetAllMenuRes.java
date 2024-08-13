@@ -26,7 +26,7 @@ public class GetAllMenuRes {
 
     public GetAllMenuRes(MenuEntity menuEntity) {
         this.menuPk = menuEntity.getMenuPk();
-        this.menuResPk = menuEntity.getMenuResPk().getSeq();
+        this.menuResPk = menuEntity.getMenuCategory().getRestaurant().getSeq();
         this.menuName = menuEntity.getMenuName();
         this.menuContent = menuEntity.getMenuContent();
         this.menuPrice = menuEntity.getMenuPrice();

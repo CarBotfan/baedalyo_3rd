@@ -2,6 +2,7 @@ package com.green.beadalyo.gyb.model;
 
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.awt.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +24,7 @@ import java.util.List;
 @Table(name = "restaurant")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Restaurant
@@ -42,15 +45,15 @@ public class Restaurant
     @Comment("음식점 이름")
     private String name;
 
-    @Column(name = "res_description1", length = 300)
+    @Column(name = "res_description1", length = 2000)
     @Comment("가게 설명")
     private String RestaurantDescription;
 
-    @Column(name = "res_description2", length = 300)
+    @Column(name = "res_description2", length = 2000)
     @Comment("가게 설명")
     private String reviewDescription;
 
-    @Column(name = "res_addr" , nullable = false , length = 100)
+    @Column(name = "res_addr" , nullable = false , length = 2000)
     @Comment("음식점 주소")
     private String address;
 
@@ -68,13 +71,13 @@ public class Restaurant
     @Comment("사업자 등록번호")
     private String regiNum;
 
-    @Column(name = "res_coor_x")
     @Comment("음식점 위도(X좌표)")
-    private Double coorX;
+    @Column(name = "res_coor_x",scale = 10, precision = 20)
+    private BigDecimal coorX;
 
-    @Column(name = "res_coor_y")
+    @Column(name = "res_coor_y",scale = 10, precision = 20)
     @Comment("음식점 경도(y좌표)")
-    private Double coorY;
+    private BigDecimal coorY;
 
     @Column(name = "res_open")
     @Comment("오픈 시간")
@@ -89,7 +92,7 @@ public class Restaurant
     @ColumnDefault("2")
     private Integer state;
 
-    @Column(name = "res_pic", length = 100)
+    @Column(name = "res_pic", length = 2000)
     @Comment("음식점 사진")
     private String pic ;
 
@@ -103,8 +106,8 @@ public class Restaurant
     @UpdateTimestamp
     private LocalDateTime updateDt ;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "menuResPk", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MenuEntity> menuList = new ArrayList<>(); ;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MenuCategory> menuList = new ArrayList<>(); ;
 
     public Restaurant(RestaurantInsertDto data)
     {

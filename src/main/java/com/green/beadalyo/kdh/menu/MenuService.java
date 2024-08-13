@@ -11,7 +11,6 @@ import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
-import com.green.beadalyo.kdh.menuoption.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,11 +42,10 @@ public class MenuService {
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuEntity.setMenuResPk(restaurant);
         menuEntity.setMenuCategory(menuCat);
 
         //메뉴 이름 중복체크
-        if  (menuRepository.existsByMenuNameAndMenuResPk(menuEntity.getMenuName(), restaurant)){
+        if  (menuRepository.existsByMenuNameAndMenuCategory_Restaurant(menuEntity.getMenuName(), restaurant)){
             throw new IllegalArgumentException();
         }
 
@@ -172,10 +170,10 @@ public class MenuService {
 
     @Transactional
     public int patchCategory(MenuPatchCategoryDto dto) {
-        if(!menuRepository.existsByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant()) || !menuCategoryRepository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())){
+        if(!menuRepository.existsByMenuPkAndMenuCategory_Restaurant(dto.getMenuPk(), dto.getRestaurant()) || !menuCategoryRepository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())){
             throw new RuntimeException("DB 정보 조회 실패");
         }
-        MenuEntity menu = menuRepository.findByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant());
+        MenuEntity menu = menuRepository.findByMenuPkAndMenuCategory_Restaurant(dto.getMenuPk(), dto.getRestaurant());
         MenuCategory menuCat = menuCategoryRepository.findByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant());
         menu.setMenuCategory(menuCat);
         return 1;
