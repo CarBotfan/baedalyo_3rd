@@ -158,13 +158,14 @@ public class MenuService {
     }
 
 
-    public int delMenu(MenuEntity menuEntity){
+    @Transactional
+    public int delMenu(Long menuPk){
         Long resUserPk = authenticationFacade.getLoginUserPk();
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuRepository.deleteByMenuPkAndMenuResPk(menuEntity.getMenuPk(), restaurant.getSeq());
+        menuRepository.deleteById(menuPk);
         return 1;
     }
 

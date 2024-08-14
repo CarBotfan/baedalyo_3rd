@@ -249,12 +249,10 @@ public class MenuController {
 
     //실제 메뉴를 삭제하는게 아님! menu_state를 3으로 변경
     public ResultDto<Integer> delMenu(@PathVariable(name = "menu_pk") long menuPk){
-        MenuEntity menuEntity = new MenuEntity();
-        menuEntity.setMenuPk(menuPk);
 
         int result= 0;
         try {
-           result =  service.delMenu(menuEntity);
+           result =  service.delMenu(menuPk);
         }  catch (RuntimeException e){
             return ResultDto.<Integer>builder()
                     .statusCode(-2)
