@@ -124,6 +124,7 @@ public class UserServiceImpl implements UserService{
                 .role(user.getUserRole())
                 .build();
 
+
         String accessToken = jwtTokenProvider.generateAccessToken(myUser);
         String refreshToken = jwtTokenProvider.generateRefreshToken(myUser);
 
