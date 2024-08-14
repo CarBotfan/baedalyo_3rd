@@ -208,7 +208,7 @@ public class MenuService {
         return result;
     }
 
-    public MenuEntity getMenuByOptionPk(Long optionPk) {return menuRepository.getReferenceById(menuOptionRepository.getReferenceById(optionPk).getSeq());}
+    public MenuEntity getMenuByOptionPk(Long optionPk) {return menuRepository.getReferenceById(menuOptionRepository.getReferenceById(optionPk).getMenu().getMenuPk());}
     public MenuEntity getMenuByMenuPk(Long menuPk) {return menuRepository.getReferenceById(menuPk);}
 }
 
