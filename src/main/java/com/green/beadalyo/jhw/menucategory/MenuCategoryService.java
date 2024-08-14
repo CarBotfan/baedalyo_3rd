@@ -53,6 +53,7 @@ public class MenuCategoryService {
                 mc.setPosition(mc.getPosition() - 1);
             }
         }
+
         repository.delete(menuCat);
         return 1;
     }
