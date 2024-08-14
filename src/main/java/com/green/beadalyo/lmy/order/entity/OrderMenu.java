@@ -25,7 +25,7 @@ public class OrderMenu {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_pk", nullable = false)
-    private Order orderPk;
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_pk", nullable = false)
@@ -48,7 +48,7 @@ public class OrderMenu {
 
     public OrderMenu(MenuEntity data, Order order, Integer count)
     {
-        this.orderPk = order ;
+        this.order = order ;
         this.menuPk = data ;
         this.menuName = data.getMenuName() ;
         this.menuPrice = data.getMenuPrice() ;

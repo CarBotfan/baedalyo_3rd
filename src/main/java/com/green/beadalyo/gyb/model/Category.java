@@ -43,5 +43,10 @@ public class Category
         this.categoryPic = categoryPic;
     }
 
+    @PreRemove
+    public void onPreRemove()
+    {
+        this.restaurants.clear();
+    }
 
 }

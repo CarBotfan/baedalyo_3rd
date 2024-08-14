@@ -1,74 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+<!--//주문하기 API로 주문데이터를 보낸후 리턴되는 PK를 customData에 첨부-->
+<!--{-->
+<!--    "order_res_pk": 1,-->
+<!--    "order_request": "요청사항",-->
+<!--    "payment_method": "결제수단 키",-->
+<!--    "order_phone": "전화번호",-->
+<!--    "order_address": "배달주소",-->
+<!--    "menu": [-->
+<!--        {-->
+<!--        "menu_pk": 9007199254740991,-->
+<!--        "menu_count": 1073741824,-->
+<!--        "menu_option_pk": [-->
+<!--            9007199254740991-->
+<!--        ]-->
+<!--        }-->
+<!--    ],-->
+<!--    "use_mileage": 1073741824,-->
+<!--    "coupon": [n,n,n,n]-->
+<!--}-->
 
-</head>
-<body>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Document</title>-->
+<!--    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
+<!--    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>-->
 
-<!--기본 로직
-        /api/order 로 주문정보를 전송 후 반환되는 OrderPK 고유 번호를 결제모듈의 customData 에 첨부하여 보냄.
-        즉 결제 준비(/api/order/) -> 실 결제 -> 결제완료 훅을 전송받을시 결제 완료로 상태변경 및 SSE 로 갱신요청 -> 갱신
-        후불 결제(1, 2)의 경우 실 결제 부분은 스킵되고 바로 SSE 로 갱신요청이 전송 됨.
--->
-    <select id="testselect">
-<!--    data-int 값은 주문 보낼때 paymentMethod 에 첨부해서 보내기 -->
-        <option value="" data-int="1">후불 현금결제</option>
-        <option value="" data-int="2">후불 신용카드 결제</option>
-        <option value="CARD" data-int="3">통합모듈</option>
-        <option value="TRANSFER" data-int="4">실시간 계좌이체</option>
-        <option value="VIRTUAL_ACCOUNT" data-int="5">가상계좌</option>
-        <option value="MOBILE" data-int="6">휴대폰 소액결제</option>
-    </select>
-    <button id="testinsurance">
-        버튼
-    </button>
-    <script>
-        $("#testinsurance").click( async function()
-        {
+<!--</head>-->
+<!--<body>-->
 
-            let payment = $("#testselect").val() ;
+<!--&lt;!&ndash;기본 로직-->
+<!--        /api/order 로 주문정보를 전송 후 반환되는 OrderPK 고유 번호를 결제모듈의 customData 에 첨부하여 보냄.-->
+<!--        즉 결제 준비(/api/order/) -> 실 결제 -> 결제완료 훅을 전송받을시 결제 완료로 상태변경 및 SSE 로 갱신요청 -> 갱신-->
+<!--        후불 결제(1, 2)의 경우 실 결제 부분은 스킵되고 바로 SSE 로 갱신요청이 전송 됨.-->
+<!--&ndash;&gt;-->
+<!--    <select id="testselect">-->
+<!--&lt;!&ndash;    data-int 값은 주문 보낼때 paymentMethod 에 첨부해서 보내기 &ndash;&gt;-->
+<!--        <option value="" data-int="1">후불 현금결제</option>-->
+<!--        <option value="" data-int="2">후불 신용카드 결제</option>-->
+<!--        <option value="CARD" data-int="3">통합모듈</option>-->
+<!--        <option value="TRANSFER" data-int="4">실시간 계좌이체</option>-->
+<!--        <option value="VIRTUAL_ACCOUNT" data-int="5">가상계좌</option>-->
+<!--        <option value="MOBILE" data-int="6">휴대폰 소액결제</option>-->
+<!--    </select>-->
+<!--    <button id="testinsurance">-->
+<!--        버튼-->
+<!--    </button>-->
+<!--    <script>-->
+<!--        $("#testinsurance").click( async function()-->
+<!--        {-->
 
-            let pay
-            switch (payment) {
-                case "VIRTUAL_ACCOUNT":
-                    pay = { virtualAccount: { accountExpiry: { validHours : 1 } } };
-                    break;
-                case "MOBILE":
-                    pay = { productType: "DIGITAL" };
-                    break;
-                default:
-                    pay = {};
-                    break;
-            }
-            console.log(pay)
-            const response = await PortOne.requestPayment({
-                // Store ID 설정
-                storeId: "store-fea01fbe-7f7a-4c41-9ab7-7ca7249ebc2a",
-                // 채널 키 설정
-                channelKey: "channel-key-fb10d184-0d73-441a-98cf-b354125c63f4",
-                paymentId: `payment-${crypto.randomUUID()}`,
-                orderName: "나이키 와플 트레이너 2 SD",
-                totalAmount: 100,
-                currency: "CURRENCY_KRW",
-                payMethod: payment,
-                ...pay,
-                customer: {
-                    customerId: "", //JWT 토큰 첨부
-                },
-                customData: "", // 주문 API 전송 후 리턴되는 고유 PK 첨부
-                redirectUrl: "http://localhost:8080/",// 결제완료후 이동되는 페이지 URL
-            });
-            console.log(response) ;
-        })
+<!--            let payment = $("#testselect").val() ;-->
+
+<!--            let pay-->
+<!--            switch (payment) {-->
+<!--                case "VIRTUAL_ACCOUNT":-->
+<!--                    pay = { virtualAccount: { accountExpiry: { validHours : 1 } } };-->
+<!--                    break;-->
+<!--                case "MOBILE":-->
+<!--                    pay = { productType: "DIGITAL" };-->
+<!--                    break;-->
+<!--                default:-->
+<!--                    pay = {};-->
+<!--                    break;-->
+<!--            }-->
+<!--            console.log(pay)-->
+<!--            const response = await PortOne.requestPayment({-->
+<!--                // Store ID 설정-->
+<!--                storeId: "store-fea01fbe-7f7a-4c41-9ab7-7ca7249ebc2a",-->
+<!--                // 채널 키 설정-->
+<!--                channelKey: "channel-key-fb10d184-0d73-441a-98cf-b354125c63f4",-->
+<!--                paymentId: `payment-${crypto.randomUUID()}`,-->
+<!--                orderName: "나이키 와플 트레이너 2 SD",-->
+<!--                totalAmount: 100,-->
+<!--                currency: "CURRENCY_KRW",-->
+<!--                payMethod: payment,-->
+<!--                ...pay,-->
+<!--                customer: {-->
+<!--                    customerId: "", //JWT 토큰 첨부-->
+<!--                },-->
+<!--                customData: "", // 주문 API 전송 후 리턴되는 고유 PK 첨부-->
+<!--                redirectUrl: "http://localhost:8080/",// 결제완료후 이동되는 페이지 URL-->
+<!--            });-->
+<!--            console.log(response) ;-->
+<!--        })-->
 
 
-    </script>
+<!--    </script>-->
 
 
-</body>
-</html>
+<!--</body>-->
+<!--</html>-->

@@ -2,9 +2,12 @@ package com.green.beadalyo.jhw.menucategory.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.green.beadalyo.kdh.menu.model.MenuListGetRes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +17,7 @@ public class MenuCatGetRes {
     private Long MenuCatPk;
     private String menuCatName;
     private Long position;
+    private List<MenuListGetRes> list ;
 
     public MenuCatGetRes(MenuCategory menuCat) {
         this.MenuCatPk = menuCat.getMenuCategoryPk();

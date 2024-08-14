@@ -12,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -72,7 +73,7 @@ public class DoneOrder {
     public DoneOrder(Order data)
     {
         this.userPk = data.getOrderUserPk() ;
-        this.resPk = data.getOrderResPk() ;
+        this.resPk = data.getOrderRes() ;
         this.orderPrice = data.getOrderPrice() ;
         this.orderRequest = data.getOrderRequest() ;
         this.orderPhone = data.getOrderPhone() ;
@@ -80,7 +81,7 @@ public class DoneOrder {
         this.paymentMethod = data.getPaymentMethod() ;
         this.orderMethod = data.getOrderMethod() ;
         this.useMileage = data.getUseMileage() ;
-        this.doneOrderMenus = null ;
+        this.doneOrderMenus = new ArrayList<>();
         data.getMenus().forEach(menu -> {
             DoneOrderMenu doneMenu = new DoneOrderMenu(menu) ;
             doneMenu.setDoneOrderPk(this);
