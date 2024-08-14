@@ -146,12 +146,12 @@ spring:
     username: ${MAIL.USERNAME}
     password: ${MAIL.PASSWORD}
 
-server:
-  port: ${PROD.SSL.SERVER.PORT}
-  ssl:
-    key-store: ${PROD.SSL.KEY.STORE}
-    key-store-password: ${PROD.SSL.PASSWORD}
-    key-password: ${PROD.SSL.PASSWORD}
+#server:
+#  port: ${PROD.SSL.SERVER.PORT}
+#  ssl:
+#    key-store: ${PROD.SSL.KEY.STORE}
+#    key-store-password: ${PROD.SSL.PASSWORD}
+#    key-password: ${PROD.SSL.PASSWORD}
 
 file:
   dir: ${PROD.FILE.DIRECTORY}
