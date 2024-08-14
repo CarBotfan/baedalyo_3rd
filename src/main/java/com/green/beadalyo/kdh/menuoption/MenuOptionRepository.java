@@ -14,7 +14,7 @@ public interface MenuOptionRepository extends JpaRepository<MenuOption, Long>
     @Query(value = "SELECT new com.green.beadalyo.kdh.menuoption.model.GetMenuOptionRes" +
             "(o.seq, o.menu.menuPk, o.optionName, o.optionPrice, o.optionState, o.createdAt, o.updatedAt) " +
             "FROM MenuOption o " +
-            "WHERE o.menu.menuPk = :menuPk AND o.optionState = 1 OR o.optionState = 2")
+            "WHERE o.menu.menuPk = :menuPk AND (o.optionState = 1 OR o.optionState = 2)")
     List<GetMenuOptionRes> findMenuOptionResByMenu(Long menuPk);
 
     MenuOption findMenuOptionBySeq(Long seq);
