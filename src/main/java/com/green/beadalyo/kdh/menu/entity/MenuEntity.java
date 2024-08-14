@@ -54,5 +54,9 @@ public class MenuEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @PreRemove
+    public void preRemove() {
+        this.menuCategory = null;
+    }
 
 }

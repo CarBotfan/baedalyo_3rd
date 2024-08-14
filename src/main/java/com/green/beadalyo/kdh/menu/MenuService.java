@@ -165,7 +165,8 @@ public class MenuService {
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuRepository.deleteById(menuPk);
+        MenuEntity menu = menuRepository.getReferenceById(menuPk);
+        menuRepository.delete(menu);
         return 1;
     }
 
