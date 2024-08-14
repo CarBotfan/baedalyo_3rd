@@ -286,7 +286,7 @@ public class RestaurantManageApiController
         }
 
         try {
-            User user = userService.getUser(seq) ;
+            User user = userService.getUser(userSeq) ;
             restaurant = service.getRestaurantData(user) ;
         } catch (UserNotFoundException e) {
             return ResultError.builder().statusCode(-2).resultMsg("유저 정보 조회 실패").build();
