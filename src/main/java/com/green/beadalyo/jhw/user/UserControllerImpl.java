@@ -699,7 +699,7 @@ public class UserControllerImpl implements UserController{
                     .build();
         }
 
-        user.setUserPw(req.getUserPw());
+        user.setUserPw(passwordEncoder.encode(req.getUserPw()));
         result = service.saveUser(user);
 
         return ResultDto.<Integer>builder()
