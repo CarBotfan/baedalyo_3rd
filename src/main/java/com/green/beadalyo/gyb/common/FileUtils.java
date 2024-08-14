@@ -93,7 +93,7 @@ public class FileUtils
         try {
             // 파일을 지정된 경로로 복사
             file.transferTo(newFile);
-            return "/" + path + "/" + filename;
+            return path + "/" + filename;
         } catch (IOException e) {
             e.printStackTrace();
             return null;

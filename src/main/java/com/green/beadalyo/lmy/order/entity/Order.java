@@ -2,9 +2,6 @@ package com.green.beadalyo.lmy.order.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
-import com.green.beadalyo.kdh.menu.entity.MenuEntity;
-import com.green.beadalyo.lmy.order.model.OrderMenuEntity;
-import com.green.beadalyo.lmy.order.model.OrderMenuReq;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -33,9 +30,9 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_res_pk", nullable = false)
-    private Restaurant orderResPk;
+    private Restaurant orderRes;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "orderPk", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
     private List<OrderMenu> menus ;
 
     @Column(name = "order_price", nullable = false)
@@ -79,7 +76,7 @@ public class Order {
     public Order(OrderPostReq data, User user, Restaurant res)
     {
         this.orderUserPk = user ;
-        this.orderResPk = res ;
+        this.orderRes = res ;
         this.menus = null ;
         this.orderPrice = 0 ;
         this.orderRequest = data.getOrderRequest() ;

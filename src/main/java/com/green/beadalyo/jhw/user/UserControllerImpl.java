@@ -202,6 +202,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PostMapping("/sign-in")
+    @Tag(name = "로그인", description = "This is a prioritized API")
     @Operation(summary = "로그인", description = "회원 로그인")
     @ApiResponse(
             description =

@@ -1,13 +1,12 @@
 package com.green.beadalyo.lmy.order;
 
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
-import com.green.beadalyo.gyb.sse.SSEApiController;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
+import com.green.beadalyo.kdh.menu.model.OrderMenuRes;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
-import com.green.beadalyo.lmy.doneorder.entity.DoneOrderMenu;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import com.green.beadalyo.lmy.order.entity.Order;
@@ -19,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,15 +132,15 @@ public class OrderService {
 
     public List<OrderMenu> getOrderMenuEntities(Long orderPk) {
         return orderMenuRepository
-                .findOrderMenusByOrderPk(orderRepository.getReferenceById(orderPk));
+                .findOrderMenusByOrder(orderRepository.getReferenceById(orderPk));
     }
 
 
     public void saveDoneOrder(Order order, long userPk, Integer isDone) {
         DoneOrder doneOrder = new DoneOrder(order);
         doneOrder.setDoneOrderState(isDone);
-        if (isDone == 2) {setCanceller(doneOrder, userPk);}
-//        return doneOrderRepository.save(doneOrder);
+        if (isDone == 2) setCanceller(doneOrder, userPk);
+        doneOrderRepository.save(doneOrder);
     }
 
 //    public void saveDoneOrderMenuBatch(List<OrderMenu> menus, DoneOrder doneOrder) {
@@ -171,48 +170,33 @@ public class OrderService {
         long userPk = authenticationFacade.getLoginUserPk();
         List<Order> orders = orderRepository.findByOrderUserPk_UserPkOrderByCreatedAtDesc(userPk);
 
-        return orders.stream().map(order -> {
-            OrderMiniGetRes res = new OrderMiniGetRes();
-            res.setOrderPk(order.getOrderPk());
-            res.setResPk(order.getOrderResPk().getSeq());
-            res.setResPic(order.getOrderResPk().getPic());
-            res.setResName(order.getOrderResPk().getName());
-            res.setOrderPrice(order.getOrderPrice());
-            res.setOrderState(order.getOrderState());
-            res.setCreatedAt(order.getCreatedAt());
-
-            List<String> menuNames = orderMenuRepository.findByOrderPk(order)
-                    .stream()
-                    .map(OrderMenu::getMenuName)
-                    .collect(Collectors.toList());
-            res.setMenuName(menuNames);
-
-            return res;
-        }).collect(Collectors.toList());
+        return orders.stream().map(OrderMiniGetRes::new).collect(Collectors.toList());
     }
 
 
     public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk) {
         List<OrderMiniGetRes> result = orderRepository.findNonConfirmOrdersByResPk(resPk);
-
-        for (OrderMiniGetRes item : result) {
-            List<String> menuNames = orderMenuRepository.findMenuNamesByOrderPk(item.getOrderPk());
-            item.setMenuName(menuNames);
-        }
-
-        return result;
+        return code(result);
     }
 
     public List<OrderMiniGetRes> getResConfirmOrderList(Long resPk){
 
         List<OrderMiniGetRes> result = orderRepository.findConfirmOrdersByResPk(resPk);
+        return code(result);
+    }
 
+    private List<OrderMiniGetRes> code(List<OrderMiniGetRes> result)
+    {
         for (OrderMiniGetRes item : result) {
-            List<String> menuNames = orderMenuRepository.findMenuNamesByOrderPk(item.getOrderPk());
-            item.setMenuName(menuNames);
+            List<OrderMenu> menuNames = orderMenuRepository.findByOrder_OrderPk(item.getOrderPk());
+            List<OrderMenuRes> list = new ArrayList<>();
+            menuNames.forEach(orderMenu -> {
+                OrderMenuRes data = new OrderMenuRes(orderMenu) ;
+                list.add(data);
+            });
+            item.setMenuList(list);
         }
-
-        return result;
+        return result ;
     }
 
     public OrderGetRes getOrderInfo(Long orderPk) {
