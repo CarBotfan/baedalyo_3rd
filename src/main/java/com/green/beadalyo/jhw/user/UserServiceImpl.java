@@ -91,18 +91,21 @@ public class UserServiceImpl implements UserService{
             e.printStackTrace();
             throw new FileUploadFailedException();
         }
-        return fileName;
+        return "pic/" + fileName;
     }
 
     @Transactional
     public void deleteProfileImage() {
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        StringBuilder sb = new StringBuilder();
         try {
             if(user.getUserPic() == null) {
                 return;
             }
+            sb.append(user.getUserPic());
+            sb.delete(0,4);
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, user.getUserPic());
+            File file = new File(delAbsoluteFolderPath, sb.toString());
             file.delete();
         } catch (Exception e) {
             throw new FileUploadFailedException();
