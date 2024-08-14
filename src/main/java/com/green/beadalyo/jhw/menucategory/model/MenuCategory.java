@@ -26,8 +26,8 @@ public class MenuCategory {
     @Column(name = "menu_cat_pk")
     private Long menuCategoryPk;
 
-    @ManyToOne
-    @JoinColumn(name = "res_pk", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "res_pk")
     private Restaurant restaurant;
 
     @Column(name = "menu_cat_name", length = 2000, nullable = false)
@@ -46,14 +46,12 @@ public class MenuCategory {
         this.position = dto.getPosition();
     }
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = false)
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = true)
     private List<MenuEntity> menuList;
 
     @PreRemove
     public void onPreRemove() {
-        for(MenuEntity menu : menuList) {
-            menu.setMenuCategory(null);
-        }
+        this.restaurant = null;
     }
 }
 
