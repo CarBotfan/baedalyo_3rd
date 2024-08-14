@@ -31,7 +31,6 @@ public class MailService {
         if (redisUtil.getData(authNum) == null) {
             return false;
         } else if (redisUtil.getData(authNum).equals(email)) {
-            redisUtil.deleteData(authNum);
             return true;
         } else {
             return false;
