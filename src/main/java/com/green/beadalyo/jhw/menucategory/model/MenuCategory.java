@@ -46,12 +46,15 @@ public class MenuCategory {
         this.position = dto.getPosition();
     }
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = false)
     private List<MenuEntity> menuList;
 
     @PreRemove
     public void onPreRemove() {
         this.restaurant = null;
+        for(MenuEntity menu : menuList) {
+            menu.setMenuState(3);
+        }
     }
 }
 
