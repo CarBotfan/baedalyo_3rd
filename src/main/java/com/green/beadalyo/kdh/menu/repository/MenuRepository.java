@@ -32,9 +32,10 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
 
     Boolean existsByMenuNameAndMenuCategory_Restaurant(String MenuName, Restaurant restaurant) ;
 
-    @Query(value = "select   mn.menu_name as menuNames" +
-            "      FROM menu mn" +
-            "       WHERE mn.menu_res_Pk = :menuResPk and mn.menu_pk != :menuPk",nativeQuery = true)
+    @Query(value = "select mn.menu_name as menuNames " +
+            "FROM menu mn " +
+            "JOIN menu_category c on c.menu_cat_pk = mn.menu_cat_pk " +
+            "WHERE c.res_pk = :menuResPk and mn.menu_pk != :menuPk ",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPkAndMenuPk(@Param("menuResPk")Long MenuResPk,
                                                            @Param("menuPk")Long menuPk);
 

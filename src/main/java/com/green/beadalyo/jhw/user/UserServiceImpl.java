@@ -339,7 +339,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req) throws Exception {
+    public User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req){
         return repository.findByUserEmailAndUserNameAndUserId(req.getUserEmail(), req.getUserName(), req.getUserId());
     }
 
