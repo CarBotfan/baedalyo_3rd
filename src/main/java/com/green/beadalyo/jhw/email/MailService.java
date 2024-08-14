@@ -74,6 +74,9 @@ public class MailService {
     }
 
     public String findJoinEmail(String email) {
+        if  (!userRepository.existsByUserEmail(email)) {
+            return "등록된 메일을 입력해 주세요";
+        }
         try {
             makeRandomNumber();
             String setFrom = "redismailsender@gmail.com"; // email-config에 설정한 자신의 이메일 주소를 입력
