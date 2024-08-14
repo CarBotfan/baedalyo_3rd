@@ -15,13 +15,9 @@ import com.green.beadalyo.kdh.menu.MenuService;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menuoption.MenuOptionService;
 import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
-import com.green.beadalyo.kdh.menuoption.MenuOptionService;
-import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
 import com.green.beadalyo.lhn.coupon.CouponService;
-import com.green.beadalyo.lhn.coupon.entity.Coupon;
 import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
-import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.model.PostOrderRes;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
@@ -33,6 +29,7 @@ import com.green.beadalyo.lmy.order.model.OrderPostReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -142,26 +139,28 @@ public class OrderController {
         }
 
 
-        //메뉴 검증
-        try {
-            boolean checksum = p.getMenu().stream()
-                    //req 의 orderMenuPk 를 추출
-                    .map(OrderMenuReq::getMenuPk)
-                    //추출한 값을 menuOptionPk 에 세팅후 검증실행
-                    .allMatch(menuOptionPk ->
-                            //res 의 메뉴 리스트를 스트림하여
-                            res.getMenuList().stream()
-                            //MenuEntity 의 menuPk 를 추출
-                            .map(MenuEntity::getMenuPk)
-                            // 추출한 두 값을 비교하여 매치
-                            .anyMatch(menuPk -> menuPk.equals(menuOptionPk)));
+//        //메뉴 검증
+//        try {
+//            boolean checksum = p.getMenu().stream()
+//                    //req 의 orderMenuPk 를 추출
+//                    .map(OrderMenuReq::getMenuPk)
+//                    //추출한 값을 menuOptionPk 에 세팅후 검증실행
+//                    .allMatch(menuOptionPk ->
+//                            //res 의 메뉴 리스트를 스트림하여
+//                            res.getMenuList().forEach(
+//                                    menuCategory ->
+//                                            menuCategory.getMenuList().stream().map(MenuEntity::getMenuPk)
+//                                            .anyMatch(menuPk -> menuPk.equals(menuOptionPk)));
+//                                    )
+//                            // 추출한 두 값을 비교하여 매치
+//
+//
+//            if (!checksum) return ResultError.builder().statusCode(-6).resultMsg("메뉴 검증에 실패하였습니다.").build();
 
-            if (!checksum) return ResultError.builder().statusCode(-6).resultMsg("메뉴 검증에 실패하였습니다.").build();
-
-        } catch (Exception e) {
-            log.error("An error occurred: ", e);
-            return ResultError.builder().build();
-        }
+//        } catch (Exception e) {
+//            log.error("An error occurred: ", e);
+//            return ResultError.builder().build();
+//        }
 
         try {
             //오더 객체 생성
@@ -233,7 +232,7 @@ public class OrderController {
             userService.save(user);
             orderService.saveOrder(order) ;
 
-            if (order.getOrderState() == 2) SSEApiController.sendEmitters("OrderRequest", order.getOrderResPk().getUser());
+            if (order.getOrderState() == 2) SSEApiController.sendEmitters("OrderRequest", order.getOrderRes().getUser());
             return ResultDto.builder().resultData(new PostOrderRes(order.getOrderPrice(), order.getTotalPrice(), order.getOrderPk())).build();
 
 
@@ -269,30 +268,39 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 주문 취소 성공 </p>"+
+                            "<p> -8 : 주문 취소 할 데이터가 없음 </p>" +
                             "<p> -9 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
                             "<p> -10 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
                             "<p> -5 : 주문 취소 실패 </p>"
     )
     @Transactional
-    public ResultDto<Integer> cancelOrder(@PathVariable("order_pk") Long orderPk) {
+    public Result cancelOrder(@PathVariable("order_pk") Long orderPk) {
 
         long userPk = authenticationFacade.getLoginUserPk();
 
-        if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 1){
-            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()
-                    && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
-                return ResultDto.<Integer>builder()
-                        .statusCode(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getCode())
-                        .resultMsg(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getMessage())
-                        .build();
+        try {
+            if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 1) {
+                if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()
+                        && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
+                    return ResultDto.<Integer>builder()
+                            .statusCode(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getCode())
+                            .resultMsg(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getMessage())
+                            .build();
+                }
+            } else if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 2) {
+                if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()) {
+                    return ResultDto.<Integer>builder()
+                            .statusCode(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getCode())
+                            .resultMsg(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getMessage()).build();
+                }
             }
-        } else if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 2){
-            if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()) {
-                return ResultDto.<Integer>builder()
-                        .statusCode(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getCode())
-                        .resultMsg(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getMessage()).build();
-            }
+        } catch (EntityNotFoundException e) {
+            return  ResultError.builder().resultMsg("취소할 데이터가 존재하지 않습니다.").statusCode(-8).build();
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
         }
+
 
         Order order = orderService.getOrderEntity(orderPk);
         orderService.saveDoneOrder(order, userPk,2);
@@ -321,7 +329,7 @@ public class OrderController {
         int result = -1;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()) {
+        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()) {
             return ResultDto.<Integer>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage()).build();
@@ -483,7 +491,7 @@ public class OrderController {
         OrderGetRes result = null;
 
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()
+        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()
                 && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
             return ResultDto.<OrderGetRes>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
@@ -519,7 +527,7 @@ public class OrderController {
         Integer result = -1;
 
         long resUserPk = authenticationFacade.getLoginUserPk();
-        if (resUserPk != orderService.getOrderByOrderPk(orderPk).getOrderResPk().getUser().getUserPk()) {
+        if (resUserPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()) {
             return ResultDto.<Integer>builder()
                     .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
                     .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())

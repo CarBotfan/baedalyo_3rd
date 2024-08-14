@@ -1,28 +1,30 @@
 package com.green.beadalyo.kdh.menuoption.model;
 
+import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class GetMenuOptionRes {
     private long optionPk;
-    private long optionMenuPk;
+    private long menuPk;
     private String optionName;
     private int optionPrice;
     private int optionState;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    public GetMenuOptionRes(long optionPk, long optionMenuPk, String optionName, int optionPrice, int optionState, LocalDateTime createdAt, LocalDateTime updatedAt) {
+
+    public GetMenuOptionRes(long optionPk, long menuPk, String optionName, int optionPrice, int optionState) {
         this.optionPk = optionPk;
-        this.optionMenuPk = optionMenuPk;
+        this.menuPk = menuPk;
         this.optionName = optionName;
         this.optionPrice = optionPrice;
         this.optionState = optionState;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+
+    }
+
+    public GetMenuOptionRes(MenuOption data)
+    {
+
     }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name = "category")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category
@@ -42,5 +43,10 @@ public class Category
         this.categoryPic = categoryPic;
     }
 
+    @PreRemove
+    public void onPreRemove()
+    {
+        this.restaurants.clear();
+    }
 
 }

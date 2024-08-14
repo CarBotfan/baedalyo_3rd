@@ -50,6 +50,8 @@ public class OAuth2AuthenticationRequestBasedOnCookieRepository
             this.removeAuthorizationRequestCookies(response);
             return;
         }
+
+        System.out.println(authorizationRequest);
         cookieUtils.setCookie(response
                 , appProperties.getOauth2().getAuthorizationRequestCookieName()
                 , authorizationRequest

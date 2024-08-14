@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.ibatis.annotations.One;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -15,10 +16,10 @@ import java.util.List;
 
 @Entity
 @Getter
-
 @Setter
 @Table(name = "menu_category")
 @NoArgsConstructor
+@ToString
 public class MenuCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +30,7 @@ public class MenuCategory {
     @JoinColumn(name = "res_pk", nullable = false)
     private Restaurant restaurant;
 
-    @Column(name = "menu_cat_name", length = 50, nullable = false)
+    @Column(name = "menu_cat_name", length = 2000, nullable = false)
     private String menuCatName;
 
     @Column(name = "position", nullable = false)
@@ -45,7 +46,7 @@ public class MenuCategory {
         this.position = dto.getPosition();
     }
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = false)
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = true)
     private List<MenuEntity> menuList;
 
     @PreRemove
@@ -55,3 +56,8 @@ public class MenuCategory {
         }
     }
 }
+
+
+
+
+
