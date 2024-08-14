@@ -141,6 +141,7 @@ public class MenuController {
             Restaurant res = restaurantService.getRestaurantData(user);
             result = service.getMenuList(res);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return ResultDto.<List<MenuListGetRes>>builder()
                     .statusCode(-2)
                     .resultMsg("소유한 가게가 없음")

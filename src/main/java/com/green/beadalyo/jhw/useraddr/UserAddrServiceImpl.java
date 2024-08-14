@@ -90,15 +90,6 @@ public class UserAddrServiceImpl implements UserAddrService{
         p.setSignedUserPk(authenticationFacade.getLoginUserPk());
         UserAddr userAddr = repository.getReferenceById(p.getAddrPk());
         repository.delete(userAddr);
-        if(getMainUserAddr() == null) {
-            List<UserAddrGetRes> list = getUserAddrList();
-            if(!list.isEmpty()) {
-                MainUserAddrPatchReq req = new MainUserAddrPatchReq();
-                req.setSignedUserPk(authenticationFacade.getLoginUserPk());
-                req.setChangeAddrPk(list.get(0).getAddrPk());
-                patchMainUserAddr(req);
-            }
-        }
         return 1;
     }
 

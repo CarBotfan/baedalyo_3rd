@@ -158,8 +158,11 @@ public class RestaurantApiController
         if (page == null || page < 1)
             page = 1;
 
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk == 0) return ResultError.builder().statusCode(-1).resultMsg("불러올 유저 정보가 없습니다.").build();
+
         try {
-            Page<RestaurantListView> pageList = service.getFollowRestaurantList(page);
+            Page<RestaurantListView> pageList = service.getFollowRestaurantList(page, userPk);
             ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList);
             return ResultDto.builder().resultData(data).build();
         } catch (Exception e) {
@@ -223,6 +226,11 @@ public class RestaurantApiController
             @Nullable @RequestParam String addrX,
             @Nullable @RequestParam String addrY)
     {
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk == 0) {
+            return ResultError.builder().statusCode(-1).resultMsg("유저 정보를 획득하지 못했습니다.").build();
+        }
+
         //유효성 검증
         if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
             return ResultError.builder().statusCode(-2).resultMsg("위경도의 정보를 획득하지 못하였습니다. 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
@@ -240,13 +248,6 @@ public class RestaurantApiController
                     return ResultError.builder().resultMsg("메인 주소의 정보 획득을 실패 했습니다.").statusCode(-3).build();
                 x = addr.getAddrCoorX() ;
                 y = addr.getAddrCoorY() ;
-            }
-
-            Long userPk = null;
-            try {
-                userPk = authenticationFacade.getLoginUserPk();
-            } catch (Exception e) {
-                return ResultError.builder().resultMsg("유저 정보가 존재하지 않습니다.").statusCode(-1).build();
             }
 
             Page<RestaurantListView> pageList = service.getRecentOrderedRestaurantList(x,y, userPk) ;

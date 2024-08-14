@@ -61,7 +61,7 @@ spring:
               - name
               - email
               - profile_image
-            client-name: Kakao
+            client-name: naver
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize    #소셜 로그인 버튼을 눌렀을 때 이동할 URL
@@ -97,8 +97,12 @@ app:
   oauth2:
     baseUri: /oauth2/authorization
     authorizedRedirectUris:
-      - http://localhost:8080/oauth2/callback
-      - http://localhost:3000/oauth2/callback
+      - http://localhost:8080/oauth/redirect
+      - http://localhost:3000/oauth/redirect
+    authorization-request-cookie-name: oauth2_auth_request
+    redirect-uri-param-cookie-name: redirect_uri
+    cookie-expiry-seconds: 180
+
   jwt:
     secret: ${JWT_SECRET}
 

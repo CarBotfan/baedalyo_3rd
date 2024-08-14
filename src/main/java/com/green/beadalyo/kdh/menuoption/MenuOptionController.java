@@ -32,7 +32,7 @@ public class MenuOptionController {
     public ResultDto<PostMenuOptionRes> postMenuOption(@RequestBody PostMenuOptionReq req){
         PostMenuOptionRes result = null;
 
-        if (!service.validateMenuOwner(req.getOptionMenuPk())) {
+        if (service.validateMenuOwner(req.getOptionMenuPk())) {
             return ResultDto.<PostMenuOptionRes>builder()
                     .statusCode(-8)
                     .resultMsg("상점 주인의 접근이 아닙니다")
@@ -76,7 +76,7 @@ public class MenuOptionController {
     public ResultDto<PutMenuOptionRes> putMenuOption(@RequestBody PutMenuOptionReq p){
         PutMenuOptionRes result = null;
 
-        if (!service.validateMenuOwner(menuService.getMenuByOptionPk(p.getOptionPk()).getMenuPk())) {
+        if (service.validateMenuOwner(menuService.getMenuByOptionPk(p.getOptionPk()).getMenuPk())) {
             return ResultDto.<PutMenuOptionRes>builder()
                     .statusCode(-8)
                     .resultMsg("상점 주인의 접근이 아닙니다")
@@ -106,7 +106,7 @@ public class MenuOptionController {
     public ResultDto<Integer> toggleMenuOption(@PathVariable("option_pk") Long optionPk){
         Integer result = 1;
 
-        if (!service.validateMenuOwner(menuService.getMenuByOptionPk(optionPk).getMenuPk())) {
+        if (service.validateMenuOwner(menuService.getMenuByOptionPk(optionPk).getMenuPk())) {
             return ResultDto.<Integer>builder()
                     .statusCode(-8)
                     .resultMsg("상점 주인의 접근이 아닙니다")
@@ -135,7 +135,7 @@ public class MenuOptionController {
     public ResultDto<Integer> delMenuOption(@PathVariable("option_pk") Long optionPk){
         int result = 1;
 
-        if (!service.validateMenuOwner(menuService.getMenuByOptionPk(optionPk).getMenuPk())) {
+        if (service.validateMenuOwner(menuService.getMenuByOptionPk(optionPk).getMenuPk())) {
             return ResultDto.<Integer>builder()
                     .statusCode(-8)
                     .resultMsg("상점 주인의 접근이 아닙니다")

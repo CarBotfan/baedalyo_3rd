@@ -16,4 +16,6 @@ public interface MenuOptionRepository extends JpaRepository<MenuOption, Long>
             "FROM MenuOption o " +
             "WHERE o.menu.menuPk = :menuPk AND o.optionState = 1 OR o.optionState = 2")
     List<GetMenuOptionRes> findMenuOptionResByMenu(Long menuPk);
+
+    MenuOption findMenuOptionBySeq(Long seq);
 }

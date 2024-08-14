@@ -87,6 +87,7 @@ public class User {
         this.userEmail = p.getUserEmail();
         this.userRole = p.getUserRole();
         this.userState = 1;
+        this.mileage = 0;
         this.userLoginType = p.getUserLoginType();
     }
 

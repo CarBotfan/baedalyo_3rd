@@ -147,13 +147,12 @@ public class UserControllerImpl implements UserController{
                     .build();
         }
         try {
-            UserSignUpPostReq req = new UserSignUpPostReq(p);
-
             if(!p.getUserPw().equals(p.getUserPwConfirm())) {
                 throw new PwConfirmFailureException();
             }
 
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
+            UserSignUpPostReq req = new UserSignUpPostReq(p);
             User user = new User(req);
             service.duplicatedInfoCheck(user);
             String picName = service.uploadProfileImage(pic);
@@ -238,6 +237,9 @@ public class UserControllerImpl implements UserController{
                 throw new IncorrectPwException();
             }
             result = service.postSignIn(res, user);
+            if(result.getMainAddr() == null) {
+                statusCode = 2;
+            }
         } catch(UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();
@@ -251,9 +253,6 @@ public class UserControllerImpl implements UserController{
             e.printStackTrace();
             statusCode = -1;
             msg = e.getMessage();
-        }
-        if(result.getMainAddr() == null) {
-            statusCode = 2;
         }
         return ResultDto.<SignInRes>builder()
                 .statusCode(statusCode)
@@ -631,7 +630,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<String> findUserId(FindUserIdReq req) {
+    public ResultDto<String> findUserId(@RequestBody FindUserIdReq req) {
         int code = 1;
         String msg = "아이디 찾기 성공";
         String result = null;
@@ -671,7 +670,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<Integer> findAndResetPassword(FindUserPwReq req) {
+    public ResultDto<Integer> findAndResetPassword(@RequestBody FindUserPwReq req) {
         int code = 1;
         String msg = "비밀번호가 재설정 되었습니다.";
         Integer result = null;
