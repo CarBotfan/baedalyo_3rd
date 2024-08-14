@@ -187,8 +187,9 @@ public class UserServiceImpl implements UserService{
             throw new PwConfirmFailureException();
         }
         try {
-            p.setNewPw(passwordEncoder.encode(p.getNewPw()));
+            p.setNewPw(passwordEncoder.encode(p.getNewPwConfirm()));
             user.setUserPw(p.getNewPw());
+            repository.save(user);
             result = 1;
         } catch(Exception e) {
             e.printStackTrace();
