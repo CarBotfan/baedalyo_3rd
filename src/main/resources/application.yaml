@@ -49,6 +49,7 @@ spring:
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"   # redirect-uri: http://localhost:8080/login/oauth2/code/kakao 와 같은 의미
             scope:
               - profile_nickname
+              - account_email
               - profile_image
             client-name: Kakao
           naver:

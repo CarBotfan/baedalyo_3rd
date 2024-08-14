@@ -18,7 +18,7 @@ public interface RestaurantDetailViewRepository extends JpaRepository<Restaurant
             "r.closeTime, r.openTime, r.restaurantAddr, r.restaurantPic, r.restaurantState, r.restaurantCoorX, r.restaurantCoorY, r.createdAt, " +
             "CASE WHEN rf.resFollowPk IS NOT NULL THEN 1 ELSE 0 END) " +
             "FROM RestaurantDetailView r " +
-            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq and rf.userPk = :userPk " +
+            "LEFT JOIN ResFollow rf ON r.restaurantPk = rf.resPk.seq and rf.userPk.userPk = :userPk " +
             "WHERE r.restaurantPk = :seq " +
             "group by r.restaurantPk")
     Optional<RestaurantDetailView> findByRestaurantPk(Long seq, Long userPk);
