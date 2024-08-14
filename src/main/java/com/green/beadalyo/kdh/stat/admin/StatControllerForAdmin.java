@@ -26,7 +26,7 @@ public class StatControllerForAdmin {
     private final StatServiceForAdmin service;
 
     @GetMapping("month_sales")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "가게의 월 매출을 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
             "<p> 1 : 월 매출 불러오기 완료 </p>"+
             "<p> -1 : 월 매출 불러오기 실패 </p>"+
@@ -63,7 +63,7 @@ public class StatControllerForAdmin {
     }
 
     @GetMapping("month_order_count")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "가게의 월 주문수를 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
             "<p> 1 : 월 주문 수 불러오기 완료 </p>"+
             "<p> -1 : 월 주문 수 불러오기 실패 </p>"+
@@ -98,7 +98,7 @@ public class StatControllerForAdmin {
     }
 
     @GetMapping("daily_sales")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "가게의 일일 매출을 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
             "<p> 1 : 일일 매출 불러오기 완료 </p>"+
             "<p> -1 : 일일 매출 불러오기 실패 </p>"+
@@ -135,7 +135,7 @@ public class StatControllerForAdmin {
     }
 
     @GetMapping("daily_order_count")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "가게의 일일 주문 수를 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
             "<p> 1 : 일일 주문 수 불러오기 완료 </p>"+
             "<p> -1 : 일일 주문 수 불러오기 실패 </p>"+
@@ -172,7 +172,7 @@ public class StatControllerForAdmin {
     }
 
     @GetMapping("daily_sign_up_count")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "일일 회원가입수를 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
             "<p> 1 : 일일 회원가입수 불러오기 완료 </p>"+
             "<p> -1 : 일일 회원가입수 불러오기 실패 </p>")
@@ -198,7 +198,7 @@ public class StatControllerForAdmin {
                 .build();
     }
     @GetMapping("month_sign_up_count")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "달별 회원가입수를 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
             "<p> 1 : 달별 회원가입수 불러오기 완료 </p>"+
             "<p> -1 : 달별 회원가입수 불러오기 실패 </p>")
@@ -225,7 +225,7 @@ public class StatControllerForAdmin {
     }
 
     @GetMapping("daily_sign_out_count")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "일일 회원탈퇴수를 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
             "<p> 1 : 일일 회원탈퇴수 불러오기 완료 </p>"+
 
@@ -253,7 +253,7 @@ public class StatControllerForAdmin {
     }
 
     @GetMapping("month_sign_out_count")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "달별 회원탈퇴수를 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
             "<p> 1 : 달별 회원탈퇴수 불러오기 완료 </p>"+
             "<p> -1 : 달별 회원탈퇴수 불러오기 실패 </p>")

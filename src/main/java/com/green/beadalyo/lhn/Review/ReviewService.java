@@ -254,10 +254,10 @@ public class ReviewService {
     // 리뷰에 사진 추가
     private void addPicsToReview(ReviewGetRes review) {
         List<String> pics = new ArrayList<>();
-        if (review.getReviewPics1() != null) pics.add(review.getReviewPics1());
-        if (review.getReviewPics2() != null) pics.add(review.getReviewPics2());
-        if (review.getReviewPics3() != null) pics.add(review.getReviewPics3());
-        if (review.getReviewPics4() != null) pics.add(review.getReviewPics4());
+        if (review.getReviewPics1() != null) pics.add("/pic"+review.getReviewPics1());
+        if (review.getReviewPics2() != null) pics.add("/pic"+review.getReviewPics2());
+        if (review.getReviewPics3() != null) pics.add("/pic"+review.getReviewPics3());
+        if (review.getReviewPics4() != null) pics.add("/pic"+review.getReviewPics4());
 
         review.setPics(pics);
     }

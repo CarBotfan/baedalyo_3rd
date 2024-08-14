@@ -1,6 +1,7 @@
 package com.green.beadalyo.kdh.menu.repository;
 
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.GetAllMenuNames;
 import com.green.beadalyo.kdh.menu.model.GetAllMenuResInterface;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -30,11 +32,12 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
             "       WHERE mn.menu_res_Pk = :menuResPk",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPk(@Param("menuResPk")Long MenuResPk);
 
-    Boolean existsByMenuNameAndMenuCategory_Restaurant(String MenuName, Restaurant restaurant) ;
+    Boolean existsByMenuNameAndMenuCategoryAndMenuStateIn(String MenuName, MenuCategory menuCategory, Collection<Integer> menuCol);
 
-    @Query(value = "select   mn.menu_name as menuNames" +
-            "      FROM menu mn" +
-            "       WHERE mn.menu_res_Pk = :menuResPk and mn.menu_pk != :menuPk",nativeQuery = true)
+    @Query(value = "select mn.menu_name as menuNames " +
+            "FROM menu mn " +
+            "JOIN menu_category c on c.menu_cat_pk = mn.menu_cat_pk " +
+            "WHERE c.res_pk = :menuResPk and mn.menu_pk != :menuPk ",nativeQuery = true)
     List<GetAllMenuNames> findMenuNameByMenuResPkAndMenuPk(@Param("menuResPk")Long MenuResPk,
                                                            @Param("menuPk")Long menuPk);
 

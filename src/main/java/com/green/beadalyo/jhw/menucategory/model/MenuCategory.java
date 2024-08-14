@@ -26,8 +26,8 @@ public class MenuCategory {
     @Column(name = "menu_cat_pk")
     private Long menuCategoryPk;
 
-    @ManyToOne
-    @JoinColumn(name = "res_pk", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "res_pk")
     private Restaurant restaurant;
 
     @Column(name = "menu_cat_name", length = 2000, nullable = false)
@@ -51,8 +51,9 @@ public class MenuCategory {
 
     @PreRemove
     public void onPreRemove() {
+        this.restaurant = null;
         for(MenuEntity menu : menuList) {
-            menu.setMenuCategory(null);
+            menu.setMenuState(3);
         }
     }
 }

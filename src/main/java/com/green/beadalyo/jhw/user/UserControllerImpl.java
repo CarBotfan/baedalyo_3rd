@@ -684,9 +684,9 @@ public class UserControllerImpl implements UserController{
                     .build();
         }
         User user;
-        try {
-            user = service.getUserByUserNameAndUserEmailAndUserId(req);
-        } catch (Exception e) {
+
+        user = service.getUserByUserNameAndUserEmailAndUserId(req);
+        if  (user == null ) {
             return ResultDto.<Integer>builder()
                     .statusCode(-2)
                     .resultMsg("해당 유저를 찾을 수 없음")
@@ -700,7 +700,7 @@ public class UserControllerImpl implements UserController{
                     .build();
         }
 
-        user.setUserPw(req.getUserPw());
+        user.setUserPw(passwordEncoder.encode(req.getUserPw()));
         result = service.saveUser(user);
 
         return ResultDto.<Integer>builder()

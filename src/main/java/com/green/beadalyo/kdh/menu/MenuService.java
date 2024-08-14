@@ -45,7 +45,8 @@ public class MenuService {
         menuEntity.setMenuCategory(menuCat);
 
         //메뉴 이름 중복체크
-        if  (menuRepository.existsByMenuNameAndMenuCategory_Restaurant(menuEntity.getMenuName(), restaurant)){
+        Collection<Integer> stateCol = List.of(1, 2);
+        if  (menuRepository.existsByMenuNameAndMenuCategoryAndMenuStateIn(menuEntity.getMenuName(), menuCat, stateCol)){
             throw new IllegalArgumentException();
         }
 
@@ -158,13 +159,15 @@ public class MenuService {
     }
 
 
-    public int delMenu(MenuEntity menuEntity){
+    @Transactional
+    public int delMenu(Long menuPk){
         Long resUserPk = authenticationFacade.getLoginUserPk();
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuRepository.deleteByMenuPkAndMenuResPk(menuEntity.getMenuPk(), restaurant.getSeq());
+        MenuEntity menu = menuRepository.getReferenceById(menuPk);
+        menu.setMenuState(3);
         return 1;
     }
 

@@ -27,7 +27,7 @@ public class MenuEntity {
     @JoinColumn(name = "menu_cat_pk")
     private MenuCategory menuCategory;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "menu")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "menu", orphanRemoval = true)
     private List<MenuOption> optionList ;
 
     @Column(name = "menu_name", length = 2000, nullable = false)
@@ -54,5 +54,9 @@ public class MenuEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @PreRemove
+    public void preRemove() {
+        this.menuCategory = null;
+    }
 
 }

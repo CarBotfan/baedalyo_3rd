@@ -22,7 +22,7 @@ public class InquiryEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_pk", nullable = false)
-    private User userPk;
+    private User user;
 
     @Column(name = "inquiry_title", nullable = false)
     private String inquiryTitle;
