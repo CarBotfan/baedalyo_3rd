@@ -57,17 +57,18 @@ public class RestaurantListRes
         this.maxCoupon = view.getMaxPrice();
     }
 
-    public static ResultPage<RestaurantListRes> toResultPage(Page<RestaurantListView> page)
-    {
+    public static ResultPage<RestaurantListRes> toResultPage(Page<RestaurantListView> page) {
         if (page == null) {
             return new ResultPage<>(Page.empty());
         }
-        List<RestaurantListRes> list = new ArrayList<>() ;
-        for (RestaurantListView view : page)
-        {list.add(new RestaurantListRes(view));}
 
-        PageImpl<RestaurantListRes> pageImpl = new PageImpl<>(list) ;
-        return new ResultPage<>(pageImpl) ;
+        List<RestaurantListRes> list = new ArrayList<>();
+        for (RestaurantListView view : page) {
+            list.add(new RestaurantListRes(view));
+        }
+
+        Page<RestaurantListRes> pageRes = new PageImpl<>(list, page.getPageable(), page.getTotalElements());
+        return new ResultPage<>(pageRes);
     }
 
 }
