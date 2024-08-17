@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -12,7 +13,8 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
                 description = "Second Project",
                 version = "v1"
         ),
-        security = @SecurityRequirement(name = "authorization")
+        security = @SecurityRequirement(name = "authorization"),
+        servers = @Server(url = "/")
 )
 @SecurityScheme(
         type = SecuritySchemeType.HTTP
