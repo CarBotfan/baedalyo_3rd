@@ -19,7 +19,7 @@ public interface InquiryRepository extends JpaRepository<InquiryEntity, Long> {
                             "i.created_at AS createdAt "+
                             "FROM inquiry i "+
                             "where i.user_pk = :userPk "+
-                            "AND i.inquiry_state = 1"+
+//                            "AND i.inquiry_state = 1"+
                             "ORDER BY i.inquiry_pk DESC",nativeQuery = true)
      List<GetInquiryListForUser> findInquiryListByUserPk(Long userPk);
 
