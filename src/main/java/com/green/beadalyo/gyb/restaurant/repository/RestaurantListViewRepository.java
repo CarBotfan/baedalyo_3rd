@@ -65,7 +65,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
 
     @Query("SELECT new com.green.beadalyo.gyb.model.RestaurantListView( " +
             "r.restaurantPk, r.restaurantName, r.reviewAvgScore, r.reviewTotalElements, " +
-            "r.restaurantAddr, r.restaurantState, r.restaurantPic, r.restaurantCoorX, " +
+            "r.restaurantAddr, r.restaurantState, r.restaurantPic,r.restaurantCoorX, " +
             "r.restaurantCoorY, r.createdAt, " +
             "0, " +
             "CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END, " +

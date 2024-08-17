@@ -8,11 +8,13 @@ import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lmy.order.OrderService;
 import com.green.beadalyo.lmy.order.entity.Order;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
+@Hidden
 @RestController
 @RequestMapping("payment")
 @RequiredArgsConstructor

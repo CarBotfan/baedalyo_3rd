@@ -80,7 +80,7 @@ public class OrderController {
                             "<p> -11 : 쿠폰이 존재하지 않음 </p>" +
                             "<p> -12 : 해당 음식점에서 발급된 쿠폰이 아님 </p>" +
                             "<p> -13 : 쿠폰을 소유한 대상이 아님 </p>" +
-                            "<p> -13 : 쿠폰 최소 금액이 충족되지않음. </p>"
+                            "<p> -14 : 쿠폰 최소 금액이 충족되지않음. </p>"
     )
     @Transactional
     public Result postOrder(@RequestBody OrderPostReq p)

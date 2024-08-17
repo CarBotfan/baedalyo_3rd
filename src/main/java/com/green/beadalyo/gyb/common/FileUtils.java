@@ -17,6 +17,7 @@ import java.util.UUID;
 public class FileUtils
 {
 
+    private final String SITE = "https://zumuniyo.shop" ;
     private final String absolutePath  ;
 
     public FileUtils(@Value("${file.dir}") String dir)
@@ -93,7 +94,7 @@ public class FileUtils
         try {
             // 파일을 지정된 경로로 복사
             file.transferTo(newFile);
-            return path + "/" + filename;
+            return SITE +"/pic/" + path + "/" + filename;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -105,7 +106,8 @@ public class FileUtils
     {
         try {
             // 경로 조합
-            Path filePath = Paths.get(absolutePath , fileName);
+            String sub = fileName.replace(SITE+"/pic/" , "") ;
+            Path filePath = Paths.get(absolutePath , sub);
             File fileToDelete = filePath.toFile();
 
             // 파일 존재 여부 확인

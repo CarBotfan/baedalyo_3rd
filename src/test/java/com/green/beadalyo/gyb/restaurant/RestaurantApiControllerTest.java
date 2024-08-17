@@ -91,7 +91,7 @@ class RestaurantApiControllerTest
                 new BigDecimal("37.7749"),
                 new BigDecimal("-122.4194"),
                 LocalDateTime.now().minusDays(5),
-                1
+                1,1,1
         ));
 
         restaurants.add(new RestaurantListView(
@@ -105,7 +105,7 @@ class RestaurantApiControllerTest
                 new BigDecimal("34.0522"),
                 new BigDecimal("-118.2437"),
                 LocalDateTime.now().minusDays(10),
-                0
+                0,1,1
         ));
 
         restaurants.add(new RestaurantListView(
@@ -119,7 +119,7 @@ class RestaurantApiControllerTest
                 new BigDecimal("40.7128"),
                 new BigDecimal("-74.0060"),
                 LocalDateTime.now().minusDays(2),
-                1
+                1,1,1
         ));
         Page<RestaurantListView> pageList = new PageImpl<>(restaurants); // PageImpl에 실제 데이터를 넣어줍니다.
 
@@ -169,7 +169,7 @@ class RestaurantApiControllerTest
     @Test
     void getFollowList_shouldReturnFollowedRestaurants() throws Exception {
         Page<RestaurantListView> pageList = new PageImpl<>(Collections.emptyList());
-        when(restaurantService.getFollowRestaurantList(any(Integer.class))).thenReturn(pageList);
+        when(restaurantService.getFollowRestaurantList(any(Integer.class),any())).thenReturn(pageList);
 
         mockMvc.perform(get("/api/restaurant/followed")
                         .param("page", "1"))
