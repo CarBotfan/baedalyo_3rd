@@ -72,7 +72,7 @@ public class DoneOrder {
 
     public DoneOrder(Order data)
     {
-        this.userPk = data.getOrderUserPk() ;
+        this.userPk = data.getOrderUser() ;
         this.resPk = data.getOrderRes() ;
         this.orderPrice = data.getOrderPrice() ;
         this.orderRequest = data.getOrderRequest() ;

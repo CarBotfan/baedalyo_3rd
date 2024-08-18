@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.order.entity;
 
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.lmy.order.model.OrderMenuReq;
 import jakarta.persistence.*;
@@ -46,13 +47,26 @@ public class OrderMenu {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public OrderMenu(MenuEntity data, Order order, Integer count)
+    public OrderMenu(MenuEntity data, Order order, Integer count, List<Long> optionPk)
     {
         this.order = order ;
         this.menuPk = data ;
         this.menuName = data.getMenuName() ;
         this.menuPrice = data.getMenuPrice() ;
         this.menuCount = count ;
+        this.orderMenuOption = new ArrayList<>();
+        optionPk.forEach(menuOption -> {
+            data.getOptionList().stream()
+                    .filter(optionReq -> menuOption.equals(optionReq.getSeq()))
+                    .forEach(option -> {
+                        OrderMenuOption orderMenuOption = new OrderMenuOption();
+                        orderMenuOption.setOrderMenu(this);
+                        orderMenuOption.setOptionName(option.getOptionName());
+                        orderMenuOption.setOptionPrice(option.getOptionPrice());
+                        this.orderMenuOption.add(orderMenuOption);
+                    });
+        });
+
     }
 
     public static List<OrderMenu> toOrderMenuList(List<MenuEntity> list, Order order, List<OrderMenuReq> menu)
@@ -67,7 +81,7 @@ public class OrderMenu {
                 .filter(menuReq -> menuEntity.getMenuPk().equals(menuReq.getMenuPk()))
                 .findFirst()
                 .ifPresent(j -> {
-                    orderMenuList.add(new OrderMenu(menuEntity,order, j.getMenuCount()));
+                    orderMenuList.add(new OrderMenu(menuEntity,order, j.getMenuCount(),j.getMenuOptionPk()));
                 })
         );
         return orderMenuList;

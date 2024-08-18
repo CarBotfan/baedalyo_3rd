@@ -50,6 +50,7 @@ public class RestaurantDetailView
         this.openTime = openTime;
         this.restaurantAddr = restaurantAddr;
         this.restaurantPic = restaurantPic;
+
         this.restaurantState = restaurantState;
         this.restaurantCoorX = restaurantCoorX;
         this.isFollow = isFollow;

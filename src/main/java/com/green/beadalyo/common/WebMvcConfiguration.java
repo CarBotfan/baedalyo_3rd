@@ -37,7 +37,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                             return requestedResource;
                         }
 
-                        return new ClassPathResource("/");
+                        return new ClassPathResource("/static/index.html");
                     }
                 });
     }

@@ -9,6 +9,7 @@ import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+@Hidden
 @RestController
 @RequestMapping("api/convert")
 @RequiredArgsConstructor

@@ -12,12 +12,12 @@ import java.util.List;
 
 public interface OrderMenuRepository extends JpaRepository<OrderMenu, Long> {
     List<OrderMenu> findOrderMenusByOrder(Order orderPk);
-    List<OrderMenu> findByOrder_OrderPk(Long orderPk);
-
-    @Query("SELECT om.menuName FROM OrderMenu om WHERE om.order.orderPk = :orderPk")
-    List<String> findMenuNamesByOrderPk(@Param("orderPk") Long orderPk);
-
-    @Query("SELECT new com.green.beadalyo.lmy.order.model.MenuInfoDto(om.menuName, om.menuPrice) " +
-            "FROM OrderMenu om WHERE om.order.orderPk = :orderPk")
-    List<MenuInfoDto> findMenuInfoByOrderPk(@Param("orderPk") Long orderPk);
+//    List<OrderMenu> findByOrder_OrderPk(Long orderPk);
+//
+//    @Query("SELECT om.menuName FROM OrderMenu om WHERE om.order.orderPk = :orderPk")
+//    List<String> findMenuNamesByOrderPk(@Param("orderPk") Long orderPk);
+//
+//    @Query("SELECT new com.green.beadalyo.lmy.order.model.MenuInfoDto(om.menuName, om.menuPrice) " +
+//            "FROM OrderMenu om WHERE om.order.orderPk = :orderPk")
+//    List<MenuInfoDto> findMenuInfoByOrderPk(@Param("orderPk") Long orderPk);
 }

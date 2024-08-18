@@ -152,7 +152,7 @@ public class RestaurantService
     public RestaurantDetailView getRestaurantDataViewBySeq(Long seq) throws Exception
     {
 
-        Long userPk = authenticationFacade.getLoginUserPk();
+        long userPk = authenticationFacade.getLoginUserPk();
         if (userPk != 0) {
             return viewDetailRepository.findByRestaurantPk(seq, userPk).orElseThrow(NullPointerException::new);
         } else {

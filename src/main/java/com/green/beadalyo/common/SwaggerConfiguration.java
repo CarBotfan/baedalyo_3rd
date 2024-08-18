@@ -6,6 +6,13 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.tags.Tag;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -23,4 +30,14 @@ import io.swagger.v3.oas.annotations.servers.Server;
         , bearerFormat = "JWT"
         , scheme = "Bearer"
 )
-public class SwaggerConfiguration {}
+@Configuration
+public class SwaggerConfiguration {
+        @Bean
+        public OpenAPI sortTagsAlphabetically() {
+                return new OpenAPI()
+                        .tags(Collections.singletonList(
+                                new Tag().name("로그인")
+                        ));
+        }
+}
+

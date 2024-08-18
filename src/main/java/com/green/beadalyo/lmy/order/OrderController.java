@@ -3,6 +3,7 @@ package com.green.beadalyo.lmy.order;
 import com.green.beadalyo.gyb.common.Result;
 import com.green.beadalyo.gyb.common.ResultDto;
 import com.green.beadalyo.gyb.common.ResultError;
+import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
 import com.green.beadalyo.gyb.sse.SSEApiController;
@@ -18,30 +19,27 @@ import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
 import com.green.beadalyo.lhn.coupon.CouponService;
 import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lmy.dataset.ExceptionMsgDataSet;
+import com.green.beadalyo.lmy.doneorder.DoneOrderService;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.model.PostOrderRes;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import com.green.beadalyo.lmy.order.entity.OrderMenuOption;
-import com.green.beadalyo.lmy.order.model.OrderGetRes;
 import com.green.beadalyo.lmy.order.model.OrderMenuReq;
 import com.green.beadalyo.lmy.order.model.OrderMiniGetRes;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-
-
-import static com.green.beadalyo.lmy.dataset.ResponseDataSet.*;
-
 
 
 @RestController
@@ -59,6 +57,7 @@ public class OrderController {
     private final UserRepository userRepository;
     private final SSEApiController SSEApiController;
     private final CouponService couponService ;
+    private final DoneOrderService doneOrderService;
 
 
     @PostMapping
@@ -80,7 +79,7 @@ public class OrderController {
                             "<p> -11 : 쿠폰이 존재하지 않음 </p>" +
                             "<p> -12 : 해당 음식점에서 발급된 쿠폰이 아님 </p>" +
                             "<p> -13 : 쿠폰을 소유한 대상이 아님 </p>" +
-                            "<p> -13 : 쿠폰 최소 금액이 충족되지않음. </p>"
+                            "<p> -14 : 쿠폰 최소 금액이 충족되지않음. </p>"
     )
     @Transactional
     public Result postOrder(@RequestBody OrderPostReq p)
@@ -175,26 +174,33 @@ public class OrderController {
             //메뉴 Entity 를 OrderMenu 로 전환
             List<OrderMenu> orderMenus = OrderMenu.toOrderMenuList(menu, order, p.getMenu());
             //order 에 세팅
-            order.setMenus(orderMenus);
             for (OrderMenu i : orderMenus)
             {
                 totalPrice.updateAndGet(v -> v + (i.getMenuPrice() * i.getMenuCount()));
+                i.getOrderMenuOption().forEach(o -> {
+                    totalPrice.updateAndGet(v -> v+ (o.getOptionPrice() * i.getMenuCount()) ) ;
+                }) ;
             }
-            //메뉴 옵션 설정
-            p.getMenu().forEach(i ->
-                orderMenus.stream()
-                    .filter(j -> i.getMenuPk().equals(j.getOrderMenuPk()))
-                    .findFirst()
-                    .ifPresent(j -> {
-                        List<MenuOption> optionList = menuOptionService.getListIn(i.getMenuOptionPk());
-                        List<OrderMenuOption> orderMenu = OrderMenuOption.toOrderMenuOptionList(optionList, j);
-                        for (OrderMenuOption o : orderMenu)
-                        {
-                            totalPrice.updateAndGet(v -> v + (o.getOptionPrice() * j.getMenuCount()));
-                        }
-                        j.setOrderMenuOption(orderMenu);
-                    })
-            );
+
+//            //메뉴 옵션 설정
+//            p.getMenu().forEach(i ->
+//                orderMenus.stream()
+//                    .filter(j -> i.getMenuPk().equals(j.getOrderMenuPk()))
+//                    .findFirst()
+//                    .ifPresent(q -> {
+//                        List<MenuOption> optionList = menuOptionService.getListIn(i.getMenuOptionPk());
+//                        List<OrderMenuOption> orderMenu = OrderMenuOption.toOrderMenuOptionList(optionList, q);
+//                        for (OrderMenuOption o : orderMenu)
+//                        {
+//                            totalPrice.updateAndGet(v -> v + (o.getOptionPrice() * q.getMenuCount()));
+//                            System.out.println("작동 체크 123");
+//                        }
+//                        q.setOrderMenuOption(orderMenu);
+//
+//
+//                    })
+//            );
+            order.setMenus(orderMenus);
 
             Integer lastPrice = totalPrice.get();
 
@@ -212,6 +218,7 @@ public class OrderController {
                     if (cp.getCoupon().getMinOrderAmount() > lastPrice) return ResultError.builder().resultMsg("쿠폰의 최소 금액을 충족하지 못했습니다.").statusCode(-14).build() ;
                     // 쿠폰 적용
                     lastPrice -= cp.getCoupon().getPrice() ;
+                    if (lastPrice < 0) lastPrice = 0 ;
                     cp.setState(2);
                     //사용한 쿠폰 값 저장
                     couponService.save(cp) ;
@@ -244,23 +251,9 @@ public class OrderController {
 
 
 
-//        List<Map<String, Object>> menuList = orderService.getMenuDetails(p.getMenuPk());
-//        p.setOrderUserPk(authenticationFacade.getLoginUserPk());
-//        int totalPrice = orderService.calculateTotalPrice(p.getMenuPk());
-//        p.setOrderPrice(totalPrice);
-//
-//        Order order = orderService.saveOrder(p);
-//
-//        List<Map<String, Object>> orderMenuList = orderService.createOrderMenuList(p, menuList);
-//
-//        orderService.saveOrderMenuBatch(orderMenuList, order);
-//
-//        return ResultDto.<Long>builder()
-//                .statusCode(SUCCESS_CODE)
-//                .resultMsg(POST_ORDER_SUCCESS)
-//                .resultData(order.getOrderPk())
-//                .build();
+
     }
+
 
     @PutMapping("cancel/list/{order_pk}")
     @Operation(summary = "주문취소 하기")
@@ -268,88 +261,88 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 주문 취소 성공 </p>"+
-                            "<p> -8 : 주문 취소 할 데이터가 없음 </p>" +
-                            "<p> -9 : 접수전의 주문은 주문자, 상점주인만 취소 가능합니다 </p>" +
-                            "<p> -10 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>" +
-                            "<p> -5 : 주문 취소 실패 </p>"
+                    "<p> -1 : 실패 </p>" +
+                    "<p> -2 : 로그인 정보 확인 실패 </p>" +
+                    "<p> -3 : 주문 확인 실패 </p>" +
+                    "<p> -4 : 주문의 소유주가 아님 </p>" +
+                    "<p> -10 : 접수중인 주문은 상점 주인만 취소 가능합니다 </p>"
     )
-    @Transactional
     public Result cancelOrder(@PathVariable("order_pk") Long orderPk) {
-
         long userPk = authenticationFacade.getLoginUserPk();
-
         try {
-            if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 1) {
-                if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()
-                        && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
-                    return ResultDto.<Integer>builder()
-                            .statusCode(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getCode())
-                            .resultMsg(ExceptionMsgDataSet.NO_NON_CONFIRM_CANCEL_AUTHENTICATION.getMessage())
-                            .build();
-                }
-            } else if (orderService.getOrderByOrderPk(orderPk).getOrderState() == 2) {
-                if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()) {
-                    return ResultDto.<Integer>builder()
-                            .statusCode(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getCode())
-                            .resultMsg(ExceptionMsgDataSet.NO_CONFIRM_CANCEL_AUTHENTICATION.getMessage()).build();
-                }
-            }
-        } catch (EntityNotFoundException e) {
-            return  ResultError.builder().resultMsg("취소할 데이터가 존재하지 않습니다.").statusCode(-8).build();
+            //유저 획득
+            User user = userService.getUser(userPk);
+            Order order = orderService.getOrderInfo(orderPk) ;
+            User owner = order.getOrderRes().getUser() ;
+
+            //소유권 체크
+            if (order.getOrderUser() != user && user != owner && !user.getUserRole().equals("USER_ADMIN"))
+                return ResultError.builder().statusCode(-4).resultMsg("주문의 소유주가 아닙니다.").build();
+
+            //권한 별 기능 구현
+            if (order.getOrderState() == 3 && user != owner)
+                return ResultError.builder().statusCode(-9).resultMsg("접수 중인 주문은 상점 주인만 취소 가능 합니다.").build();
+
+            DoneOrder doneOrder = new DoneOrder(order) ;
+            doneOrder.setDoneOrderState(2);
+            doneOrderService.save(doneOrder);
+            orderService.deleteOrder(order);
+
+            return ResultDto.builder().build();
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
+        } catch (NullPointerException e) {
+            return ResultError.builder().statusCode(-3).resultMsg("주문이 존재하지 않습니다.").build();
         } catch (Exception e) {
             log.error("An error occurred: ", e);
             return ResultError.builder().build();
         }
 
 
-        Order order = orderService.getOrderEntity(orderPk);
-        orderService.saveDoneOrder(order, userPk,2);
-
-//        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
-//        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
-
-        orderService.deleteOrder(orderPk);
-
-        return ResultDto.<Integer>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(CANCEL_ORDER_SUCCESS)
-                .resultData(1)
-                .build();
     }
+
 
     @PutMapping("owner/done/{order_pk}")
     @Operation(summary = "주문완료 하기")
     @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
-                    "<p> 1 : 주문 완료 성공 </p>"+
-                            "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"
+                    "<p> 1 : 주문 완료 성공 </p>" +
+                    "<p> -1 : 실패 </p>" +
+                    "<p> -2 : 로그인 정보 확인 실패 </p>" +
+                    "<p> -3 : 주문 확인 실패 </p>" +
+                    "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"
     )
-    public ResultDto<Integer> completeOrder(@PathVariable("order_pk") Long orderPk) {
-        int result = -1;
-
+    public Result completeOrder(@PathVariable("order_pk") Long orderPk)
+    {
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()) {
-            return ResultDto.<Integer>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage()).build();
+
+        try {
+            // 유저 획득
+            User user = userService.getUser(userPk);
+            Order order = orderService.getOrderInfo(orderPk) ;
+
+            //권한 체크
+            if (user != order.getOrderUser())
+                return ResultError.builder().statusCode(-8).resultMsg("상점 주인의 접근이 아닙니다.").build();
+
+            DoneOrder doneOrder = new DoneOrder(order) ;
+            doneOrder.setDoneOrderState(1);
+            doneOrderService.save(doneOrder);
+            orderService.deleteOrder(order);
+
+            return ResultDto.builder().build();
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
+        } catch (NullPointerException e) {
+            return ResultError.builder().statusCode(-3).resultMsg("주문이 존재하지 않습니다.").build();
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
         }
 
-        Order order = orderService.getOrderEntity(orderPk);
-        orderService.saveDoneOrder(order, userPk,1);
-
-//        List<OrderMenu> orderMenuList = orderService.getOrderMenuEntities(orderPk);
-//        orderService.saveDoneOrderMenuBatch(orderMenuList, doneOrder);
-
-        orderService.deleteOrder(orderPk);
-
-
-        return ResultDto.<Integer>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(COMPLETE_ORDER_SUCCESS)
-                .resultData(result)
-                .build();
     }
+
 
     @GetMapping("user/list")
     @Operation(summary = "유저의 진행중인 주문 불러오기")
@@ -357,32 +350,35 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 유저의 진행중인 주문 불러오기 완료 </p>"+
-                            "<p> -6 : 주문 정보 불러오기 실패 </p>"+
-                            "<p> -7 : 불러올 주문 정보가 없음 </p>"
+                    "<p> -1 : 실패 </p>" +
+                    "<p> -2 : 로그인 정보 획득 실패 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getUserOrderList() {
-        List<OrderMiniGetRes> result = null;
+    public Result getUserOrderList()
+    {
+        long userPk = authenticationFacade.getLoginUserPk();
 
         try {
-            result = orderService.getUserOrderList();
-        } catch (RuntimeException e) {
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getCode())
-                    .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_FAIL.getMessage()).build();
-        }
+            // 유저 획득
+            User user = userService.getUser(userPk);
+            List<Order> data = orderService.getOrderListByUser(user);
+            List<OrderMiniGetRes> list = new ArrayList<>();
+            data.forEach(order -> {
+                OrderMiniGetRes res = new OrderMiniGetRes(order) ;
+                list.add(res) ;
+            });
 
-        if (result == null || result.isEmpty()) {
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getCode())
-                    .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getMessage()).build();
-        }
+            return ResultDto.builder().resultData(list).build();
 
-        return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(USER_ORDER_LIST_SUCCESS)
-                .resultData(result)
-                .build();
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
     }
+
+
+
 
     @GetMapping("owner/noconfirm/list")
     @Operation(summary = "상점의 접수 전 주문정보 불러오기")
@@ -390,130 +386,113 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 상점의 접수 전 주문정보 불러오기 완료 </p>"+
-                            "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
-                            "<p> -7 : 불러올 주문 정보가 없음 </p>"
+                    "<p> -1 : 실패</p>"+
+                    "<p> -2 : 로그인 정보 획득 실패 </p>"+
+                    "<p> -3 : 레스토랑 정보 획득 실패 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResNonConfirmOrderList() {
-        List<OrderMiniGetRes> result = null;
-
+    public Result getResNonConfirmOrderList() {
         long userPk = authenticationFacade.getLoginUserPk();
 
-        Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
+            // 유저 획득
+            User user = userService.getUser(userPk);
+            Restaurant rest = restaurantService.getRestaurantData(user) ;
+            List<Order> data = orderService.getOrderListByRestaurantAndState(rest,2);
+
+            List<OrderMiniGetRes> list = new ArrayList<>();
+            data.forEach(order -> {
+                OrderMiniGetRes res = new OrderMiniGetRes(order) ;
+                list.add(res) ;
+            });
+
+            return ResultDto.builder().resultData(list).build();
+
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
+        } catch (DataNotFoundException e) {
+            return ResultError.builder().statusCode(-3).resultMsg("레스토랑 정보를 찾지 못했습니다.").build();
         } catch (Exception e) {
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
         }
-
-        if (userPk != resPk.getUser().getUserPk()){
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
-        }
-
-        result = orderService.getResNonConfirmOrderList(resPk.getSeq());
-
-
-        if (result == null || result.isEmpty()) {
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getCode())
-                    .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getMessage())
-                    .build();
-        }
-
-        return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(RES_ORDER_NO_CONFIRM_LIST_SUCCESS)
-                .resultData(result)
-                .build();
     }
+
+
 
     @GetMapping("owner/confirm/list")
     @Operation(summary = "상점의 접수 후 주문정보 불러오기")
     @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @ApiResponse(
             description =
-                    "<p> 1 : 상점의 접수 후 주문정보 불러오기 완료 </p>"+
-                            "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"+
-                            "<p> -7 : 불러올 주문 정보가 없음 </p>"
+                    "<p> 1 : 상점의 접수 전 주문정보 불러오기 완료 </p>"+
+                    "<p> -1 : 실패</p>"+
+                    "<p> -2 : 로그인 정보 획득 실패 </p>"+
+                    "<p> -3 : 레스토랑 정보 획득 실패 </p>"
     )
-    public ResultDto<List<OrderMiniGetRes>> getResConfirmOrderList() {
-        List<OrderMiniGetRes> result = null;
-
+    public Result getResConfirmOrderList() {
         long userPk = authenticationFacade.getLoginUserPk();
 
-        Restaurant resPk = null;
         try {
-            resPk = restaurantService.getRestaurantData(userRepository.getReferenceById(userPk));
+            // 유저 획득
+            User user = userService.getUser(userPk);
+            Restaurant rest = restaurantService.getRestaurantData(user) ;
+            List<Order> data = orderService.getOrderListByRestaurantAndState(rest,3);
+
+            List<OrderMiniGetRes> list = new ArrayList<>();
+            data.forEach(order -> {
+                OrderMiniGetRes res = new OrderMiniGetRes(order) ;
+                list.add(res) ;
+            });
+
+            return ResultDto.builder().resultData(list).build();
+
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
+        } catch (DataNotFoundException e) {
+            return ResultError.builder().statusCode(-3).resultMsg("레스토랑 정보를 찾지 못했습니다.").build();
         } catch (Exception e) {
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
         }
-
-        if (userPk != resPk.getUser().getUserPk()){
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
-        }
-
-            result = orderService.getResConfirmOrderList(resPk.getSeq());
-
-        if (result == null || result.isEmpty()) {
-            return ResultDto.<List<OrderMiniGetRes>>builder()
-                    .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getCode())
-                    .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getMessage())
-                    .build();
-        }
-
-        return ResultDto.<List<OrderMiniGetRes>>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(RES_ORDER_CONFIRM_LIST_SUCCESS)
-                .resultData(result)
-                .build();
     }
+
+
 
     @GetMapping("{order_pk}")
     @Operation(summary = "주문정보 상세보기")
     @ApiResponse(
             description =
                     "<p> 1 : 주문정보 상세보기 완료 </p>"+
-                            "<p> -6 : 주문 정보 불러오기 실패 </p>"+
-                            "<p> -7 : 불러올 주문 정보가 없음 </p>"
+                    "<p> -1 : 실패</p>"+
+                    "<p> -2 : 로그인 정보 획득 실패 </p>"+
+                    "<p> -3 : 레스토랑 정보 획득 실패 </p>" +
+                    "<p> -4 : 유저 소유권 확인 실패 </p>"
+
     )
-    public ResultDto<OrderGetRes> getOrderInfo(@PathVariable("order_pk") Long orderPk) {
-        OrderGetRes result = null;
-
+    public Result getOrderInfo(@PathVariable("order_pk") Long orderPk) {
         long userPk = authenticationFacade.getLoginUserPk();
-        if (userPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()
-                && userPk != orderService.getOrderByOrderPk(orderPk).getOrderUserPk().getUserPk()) {
-            return ResultDto.<OrderGetRes>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
+
+        try {
+            // 유저 획득
+            User user = userService.getUser(userPk);
+            Order data = orderService.getOrderBySeq(orderPk);
+            //소유권 검증
+            if (user != data.getOrderUser())
+                return ResultError.builder().statusCode(-4).resultMsg("해당 주문의 소유자가 아닙니다.").build();
+
+            OrderMiniGetRes res = new OrderMiniGetRes(data) ;
+            return ResultDto.builder().resultData(res).build();
+
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
+        } catch (DataNotFoundException e) {
+            return ResultError.builder().statusCode(-3).resultMsg("레스토랑 정보를 찾지 못했습니다.").build();
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
         }
-
-        result = orderService.getOrderInfo(orderPk);
-
-        if (result == null) {
-            return ResultDto.<OrderGetRes>builder()
-                    .statusCode(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getCode())
-                    .resultMsg(ExceptionMsgDataSet.GET_ORDER_LIST_NON.getMessage())
-                    .build();
-        }
-
-        return ResultDto.<OrderGetRes>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(ORDER_INFO_SUCCESS)
-                .resultData(result)
-                .build();
     }
+
 
     @PatchMapping("owner/confirm/{order_pk}")
     @Operation(summary = "주문 접수하기")
@@ -521,26 +500,39 @@ public class OrderController {
     @ApiResponse(
             description =
                     "<p> 1 : 주문 접수 완료 </p>"+
-                            "<p> -8 : 상점 주인의 접근이 아닙니다 </p>"
+                    "<p> -1 : 실패 </p>"+
+                    "<p> -2 : 로그인 정보 획득 실패 </p>"+
+                    "<p> -3 : 주문 정보 획득 실패 </p>" +
+                    "<p> -8 : 상점 주인의 접근이 아닙니다. </p>"
     )
-    public ResultDto<Integer> confirmOrder(@PathVariable("order_pk") Long orderPk){
-        Integer result = -1;
+    public Result confirmOrder(@PathVariable("order_pk") Long orderPk)
+    {
+        long userPk = authenticationFacade.getLoginUserPk();
 
-        long resUserPk = authenticationFacade.getLoginUserPk();
-        if (resUserPk != orderService.getOrderByOrderPk(orderPk).getOrderRes().getUser().getUserPk()) {
-            return ResultDto.<Integer>builder()
-                    .statusCode(ExceptionMsgDataSet.NO_AUTHENTICATION.getCode())
-                    .resultMsg(ExceptionMsgDataSet.NO_AUTHENTICATION.getMessage())
-                    .build();
+        try {
+            // 유저 획득
+            User user = userService.getUser(userPk);
+            Order data = orderService.getOrderBySeq(orderPk);
+            Restaurant rest = data.getOrderRes() ;
+            //오너 검증
+            if (user != rest.getUser())
+                return ResultError.builder().statusCode(-8).resultMsg("상점 주인의 접근이 아닙니다.").build();
+
+            data.setOrderState(3);
+            orderService.saveOrder(data);
+
+            return ResultDto.builder().build();
+
+        } catch (UserNotFoundException e) {
+            return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
+        } catch (DataNotFoundException e) {
+            return ResultError.builder().statusCode(-3).resultMsg("주문 정보를 찾지 못했습니다.").build();
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
         }
-
-        result = orderService.confirmOrder(orderPk);
-
-        return ResultDto.<Integer>builder()
-                .statusCode(SUCCESS_CODE)
-                .resultMsg(CONFIRM_ORDER_SUCCESS)
-                .resultData(result)
-                .build();
     }
+
+
 }
 

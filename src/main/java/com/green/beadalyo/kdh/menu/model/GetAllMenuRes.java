@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menuoption.model.GetMenuOptionRes;
+import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,7 +18,7 @@ import java.util.List;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GetAllMenuRes {
     private long menuPk;
-    private long menuResPk;
+//    private long menuResPk;
     private String menuName;
     private String menuContent;
     private int menuPrice;
@@ -29,7 +30,7 @@ public class GetAllMenuRes {
 
     public GetAllMenuRes(MenuEntity menuEntity) {
         this.menuPk = menuEntity.getMenuPk();
-        this.menuResPk = menuEntity.getMenuCategory().getRestaurant().getSeq();
+//        this.menuResPk = menuEntity.getMenuCategory().getRestaurant().getSeq();
         this.menuName = menuEntity.getMenuName();
         this.menuContent = menuEntity.getMenuContent();
         this.menuPrice = menuEntity.getMenuPrice();
@@ -38,4 +39,5 @@ public class GetAllMenuRes {
         this.createdAt = menuEntity.getCreatedAt();
         this.updatedAt = menuEntity.getUpdatedAt();
     }
+
 }

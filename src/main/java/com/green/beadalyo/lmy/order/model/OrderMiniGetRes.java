@@ -1,9 +1,9 @@
 package com.green.beadalyo.lmy.order.model;
 
 import com.green.beadalyo.gyb.model.Restaurant;
-import com.green.beadalyo.kdh.menu.model.MenuListGetRes;
 import com.green.beadalyo.kdh.menu.model.OrderMenuRes;
 import com.green.beadalyo.lmy.order.entity.Order;
+import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +21,7 @@ public class OrderMiniGetRes {
     private Integer orderPrice;
     private Integer orderState;
     private LocalDateTime createdAt;
-    private List<OrderMenuRes> menuList;
+    private List<OrderMenuRes> menus;
 
     public OrderMiniGetRes(Long orderPk, Long resPk, String resPic, String resName, Integer orderPrice, Integer orderState, LocalDateTime createdAt) {
         this.orderPk = orderPk;
@@ -43,12 +43,13 @@ public class OrderMiniGetRes {
         this.orderPrice = data.getOrderPrice();
         this.orderState = data.getOrderState();
         this.createdAt = data.getCreatedAt();
-        this.menuList = new ArrayList<>();
+        this.menus = new ArrayList<>();
         data.getMenus().forEach(orderMenu ->
-                {
-                    OrderMenuRes i = new OrderMenuRes(orderMenu) ;
+            {
+                OrderMenuRes orderMenus = new OrderMenuRes(orderMenu);
+                this.menus.add(orderMenus) ;
 
-                }
+            }
         );
 
 

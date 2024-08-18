@@ -30,6 +30,7 @@ public class RestaurantListView {
 
     private String restaurantPic;
 
+
     @Transient
     private Integer isFollow = 0; // Transient 필드로 설정
     @Transient
