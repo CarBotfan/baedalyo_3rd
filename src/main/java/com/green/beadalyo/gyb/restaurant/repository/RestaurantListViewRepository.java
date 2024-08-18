@@ -451,7 +451,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "left join ResFollow rf on r.restaurantPk = rf.resPk.seq AND rf.userPk.userPk = :userPk " +
             "LEFT JOIN Coupon c ON c.restaurant.seq = r.restaurantPk " +
             "AND c.price = (SELECT MAX(c2.price) FROM Coupon c2 WHERE c2.restaurant.seq = r.restaurantPk) " +
-            "LEFT JOIN Order o ON o.orderRes.seq = r.restaurantPk AND o.orderUserPk.userPk = :userPk " +
+            "LEFT JOIN Order o ON o.orderRes.seq = r.restaurantPk AND o.orderUser.userPk = :userPk " +
             "WHERE r.restaurantCoorX BETWEEN :xMin AND :xMax " +
             "AND r.restaurantCoorY BETWEEN :yMin AND :yMax " +
             "AND r.restaurantState IN (1, 2) " +

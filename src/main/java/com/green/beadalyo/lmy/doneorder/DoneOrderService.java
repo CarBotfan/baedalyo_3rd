@@ -31,6 +31,11 @@ public class DoneOrderService {
     private final AuthenticationFacade authenticationFacade;
     private final UserRepository userRepository;
 
+    public void save(DoneOrder doneOrder)
+    {
+        doneOrderRepository.save(doneOrder);
+    }
+
     @Transactional
     public Map<String, Object> getDoneOrderByUserPk(Paging p) {
         long userPk = authenticationFacade.getLoginUserPk();

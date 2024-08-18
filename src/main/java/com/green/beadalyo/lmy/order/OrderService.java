@@ -1,24 +1,23 @@
 package com.green.beadalyo.lmy.order;
 
+import com.green.beadalyo.gyb.common.exception.DataNotFoundException;
+import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
-import com.green.beadalyo.kdh.menu.model.OrderMenuRes;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
-import com.green.beadalyo.lmy.order.model.*;
 import com.green.beadalyo.lmy.order.repository.OrderMenuRepository;
 import com.green.beadalyo.lmy.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +29,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMenuRepository orderMenuRepository;
     private final DoneOrderRepository doneOrderRepository;
-    private final DoneOrderMenuRepository doneOrderMenuRepository;
-    private final MenuRepository menuRepository;
     private final UserRepository userRepository;
-    private final RestaurantRepository restaurantRepository;
-    private final AuthenticationFacade authenticationFacade;
 
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡValidation 전용ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
     public Order getOrderByOrderPk(long orderPk){
@@ -43,27 +38,27 @@ public class OrderService {
 
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡPost Orderㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-    public List<Map<String, Object>> getMenuDetails(List<Long> menuPkList) {
-        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
-        return menus.stream()
-                .map(menu -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("menu_pk", menu.getMenuPk());
-                    map.put("menu_name", menu.getMenuName());
-                    map.put("menu_price", menu.getMenuPrice());
-                    return map;
-                })
-                .collect(Collectors.toList());
-    }
+//    public List<Map<String, Object>> getMenuDetails(List<Long> menuPkList) {
+//        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
+//        return menus.stream()
+//                .map(menu -> {
+//                    Map<String, Object> map = new HashMap<>();
+//                    map.put("menu_pk", menu.getMenuPk());
+//                    map.put("menu_name", menu.getMenuName());
+//                    map.put("menu_price", menu.getMenuPrice());
+//                    return map;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
 
-    public int calculateTotalPrice(List<Long> menuPkList) {
-        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
-        return menus.stream()
-                .filter(menu -> menuPkList.contains(menu.getMenuPk()))
-                .mapToInt(MenuEntity::getMenuPrice)
-                .sum();
-    }
+//    public int calculateTotalPrice(List<Long> menuPkList) {
+//        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuPkList);
+//        return menus.stream()
+//                .filter(menu -> menuPkList.contains(menu.getMenuPk()))
+//                .mapToInt(MenuEntity::getMenuPrice)
+//                .sum();
+//    }
 
 
 //    public Order saveOrder(OrderPostReq p) {
@@ -86,7 +81,10 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-
+    public void deleteOrder(Order order)
+    {
+        orderRepository.delete(order);
+    }
 
 //    public List<Map<String, Object>> createOrderMenuList(OrderPostReq p, List<Map<String, Object>> menuList) {
 //        return p.getMenuPk().stream().map(menuPk -> {
@@ -164,47 +162,51 @@ public class OrderService {
 
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ Get Order + @ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-
-    @Transactional
-    public List<OrderMiniGetRes> getUserOrderList() {
-        long userPk = authenticationFacade.getLoginUserPk();
-        List<Order> orders = orderRepository.findByOrderUserPk_UserPkOrderByCreatedAtDesc(userPk);
-
-        return orders.stream().map(OrderMiniGetRes::new).collect(Collectors.toList());
-    }
-
-
-    public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk) {
-        List<OrderMiniGetRes> result = orderRepository.findNonConfirmOrdersByResPk(resPk);
-        return code(result);
-    }
-
-    public List<OrderMiniGetRes> getResConfirmOrderList(Long resPk){
-
-        List<OrderMiniGetRes> result = orderRepository.findConfirmOrdersByResPk(resPk);
-        return code(result);
-    }
-
-    private List<OrderMiniGetRes> code(List<OrderMiniGetRes> result)
+    public List<Order> getOrderListByUser(User user)
     {
-        for (OrderMiniGetRes item : result) {
-            List<OrderMenu> menuNames = orderMenuRepository.findByOrder_OrderPk(item.getOrderPk());
-            List<OrderMenuRes> list = new ArrayList<>();
-            menuNames.forEach(orderMenu -> {
-                OrderMenuRes data = new OrderMenuRes(orderMenu) ;
-                list.add(data);
-            });
-            item.setMenuList(list);
-        }
-        return result ;
+        return orderRepository.findByOrderUser(user) ;
     }
 
-    public OrderGetRes getOrderInfo(Long orderPk) {
-        OrderGetRes result = orderRepository.getOrderInfo(orderPk);
-        List<MenuInfoDto> menuInfoList = orderMenuRepository.findMenuInfoByOrderPk(orderPk);
-        result.setMenuInfoList(menuInfoList);
+    public List<Order> getOrderListByRestaurantAndState(Restaurant rest, Integer state)
+    {
+        return orderRepository.findByOrderResAndOrderState(rest, state) ;
+    }
 
-        return result;
+    public Order getOrderBySeq(Long seq) throws Exception
+    {
+        return orderRepository.findById(seq).orElseThrow(DataNotFoundException::new) ;
+    }
+
+//    @Transactional
+//    public List<OrderMiniGetRes> getUserOrderList() {
+//        long userPk = authenticationFacade.getLoginUserPk();
+//        List<Order> orders = orderRepository.findByOrderUserPk_UserPkOrderByCreatedAtDesc(userPk);
+//
+//        return orders.stream().map(OrderMiniGetRes::new).collect(Collectors.toList());
+//    }
+//
+//
+//    public List<OrderMiniGetRes> getResNonConfirmOrderList(Long resPk) {
+//        List<OrderMiniGetRes> result = orderRepository.findNonConfirmOrdersByResPk(resPk);
+//        return code(result);
+//    }
+//
+//    public List<OrderMiniGetRes> getResConfirmOrderList(Long resPk){
+//
+//        List<OrderMiniGetRes> result = orderRepository.findConfirmOrdersByResPk(resPk);
+//        return code(result);
+//    }
+//
+//    private List<OrderMiniGetRes> code(List<OrderMiniGetRes> result)
+//    {
+//        for (OrderMiniGetRes item : result) {
+//            List<OrderMenu> menuNames = orderMenuRepository.findByOrder_OrderPk(item.getOrderPk());
+//        }
+//        return result ;
+//    }
+
+    public Order getOrderInfo(Long orderPk) throws Exception {
+        return orderRepository.findByOrderPk(orderPk).orElseThrow(NullPointerException::new);
     }
 
     public int confirmOrder(long orderPk) {

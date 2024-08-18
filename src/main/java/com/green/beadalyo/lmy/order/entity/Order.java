@@ -26,14 +26,14 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_user_pk", nullable = false)
-    private User orderUserPk;
+    private User orderUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_res_pk", nullable = false)
     private Restaurant orderRes;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
-    private List<OrderMenu> menus ;
+    private List<OrderMenu> menus;
 
     @Column(name = "order_price", nullable = false)
     @Comment("할인전 최종 금액")
@@ -75,7 +75,7 @@ public class Order {
 
     public Order(OrderPostReq data, User user, Restaurant res)
     {
-        this.orderUserPk = user ;
+        this.orderUser = user ;
         this.orderRes = res ;
         this.menus = null ;
         this.orderPrice = 0 ;

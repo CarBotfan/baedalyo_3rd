@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.order.entity;
 
+import com.green.beadalyo.jhw.menucategory.model.MenuCategory;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.lmy.order.model.OrderMenuReq;
 import jakarta.persistence.*;

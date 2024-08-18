@@ -3,7 +3,6 @@ package com.green.beadalyo.kdh.menu.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
-import com.green.beadalyo.lmy.order.entity.OrderMenuOption;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -19,19 +18,32 @@ public class OrderMenuRes
     private Integer orderMenuCount ;
     private List<OrderMenuOptionRes> menuOptions ;
 
+//    public OrderMenuRes(OrderCategory data)
+//    {
+//        this.orderMenuPk = data.getOrderMenuPk();
+//        this.orderMenuName = data.getMenuName() ;
+//        this.orderMenuCount = data.getMenuCount() ;
+//        this.orderMenuPrice = data.getMenuPrice() ;
+//        this.menuOptions = new ArrayList<>();
+//        for (OrderMenuOption i : data.getOrderMenuOption()) {
+//            OrderMenuOptionRes option = new OrderMenuOptionRes(i);
+//            option.setOptionMenuPk(data.getOrderMenuPk());
+//            menuOptions.add(option);
+//        }
+//
+//    }
+
     public OrderMenuRes(OrderMenu data)
     {
-        this.orderMenuPk = data.getOrderMenuPk();
+        this.orderMenuPk = data.getOrderMenuPk() ;
         this.orderMenuName = data.getMenuName() ;
-        this.orderMenuCount = data.getMenuCount() ;
         this.orderMenuPrice = data.getMenuPrice() ;
-        this.menuOptions = new ArrayList<>();
-        for (OrderMenuOption i : data.getOrderMenuOption()) {
-            OrderMenuOptionRes option = new OrderMenuOptionRes(i);
-            option.setOptionMenuPk(data.getOrderMenuPk());
-            menuOptions.add(option);
-        }
-
+        this.orderMenuCount = data.getMenuCount() ;
+        this.menuOptions = new ArrayList<>() ;
+        data.getOrderMenuOption().forEach(orderMenuOption ->{
+            OrderMenuOptionRes orderMenuOptionRes = new OrderMenuOptionRes(orderMenuOption) ;
+            menuOptions.add(orderMenuOptionRes) ;
+        });
     }
 
 }
