@@ -174,26 +174,33 @@ public class OrderController {
             //메뉴 Entity 를 OrderMenu 로 전환
             List<OrderMenu> orderMenus = OrderMenu.toOrderMenuList(menu, order, p.getMenu());
             //order 에 세팅
-            order.setMenus(orderMenus);
             for (OrderMenu i : orderMenus)
             {
                 totalPrice.updateAndGet(v -> v + (i.getMenuPrice() * i.getMenuCount()));
+                i.getOrderMenuOption().forEach(o -> {
+                    totalPrice.updateAndGet(v -> v+ (o.getOptionPrice() * i.getMenuCount()) ) ;
+                }) ;
             }
-            //메뉴 옵션 설정
-            p.getMenu().forEach(i ->
-                orderMenus.stream()
-                    .filter(j -> i.getMenuPk().equals(j.getOrderMenuPk()))
-                    .findFirst()
-                    .ifPresent(j -> {
-                        List<MenuOption> optionList = menuOptionService.getListIn(i.getMenuOptionPk());
-                        List<OrderMenuOption> orderMenu = OrderMenuOption.toOrderMenuOptionList(optionList, j);
-                        for (OrderMenuOption o : orderMenu)
-                        {
-                            totalPrice.updateAndGet(v -> v + (o.getOptionPrice() * j.getMenuCount()));
-                        }
-                        j.setOrderMenuOption(orderMenu);
-                    })
-            );
+
+//            //메뉴 옵션 설정
+//            p.getMenu().forEach(i ->
+//                orderMenus.stream()
+//                    .filter(j -> i.getMenuPk().equals(j.getOrderMenuPk()))
+//                    .findFirst()
+//                    .ifPresent(q -> {
+//                        List<MenuOption> optionList = menuOptionService.getListIn(i.getMenuOptionPk());
+//                        List<OrderMenuOption> orderMenu = OrderMenuOption.toOrderMenuOptionList(optionList, q);
+//                        for (OrderMenuOption o : orderMenu)
+//                        {
+//                            totalPrice.updateAndGet(v -> v + (o.getOptionPrice() * q.getMenuCount()));
+//                            System.out.println("작동 체크 123");
+//                        }
+//                        q.setOrderMenuOption(orderMenu);
+//
+//
+//                    })
+//            );
+            order.setMenus(orderMenus);
 
             Integer lastPrice = totalPrice.get();
 
@@ -211,6 +218,7 @@ public class OrderController {
                     if (cp.getCoupon().getMinOrderAmount() > lastPrice) return ResultError.builder().resultMsg("쿠폰의 최소 금액을 충족하지 못했습니다.").statusCode(-14).build() ;
                     // 쿠폰 적용
                     lastPrice -= cp.getCoupon().getPrice() ;
+                    if (lastPrice < 0) lastPrice = 0 ;
                     cp.setState(2);
                     //사용한 쿠폰 값 저장
                     couponService.save(cp) ;
@@ -473,7 +481,6 @@ public class OrderController {
                 return ResultError.builder().statusCode(-4).resultMsg("해당 주문의 소유자가 아닙니다.").build();
 
             OrderMiniGetRes res = new OrderMiniGetRes(data) ;
-
             return ResultDto.builder().resultData(res).build();
 
         } catch (UserNotFoundException e) {

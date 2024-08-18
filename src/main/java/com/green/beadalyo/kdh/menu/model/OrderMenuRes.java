@@ -42,8 +42,10 @@ public class OrderMenuRes
         this.menuOptions = new ArrayList<>() ;
         data.getOrderMenuOption().forEach(orderMenuOption ->{
             OrderMenuOptionRes orderMenuOptionRes = new OrderMenuOptionRes(orderMenuOption) ;
+            orderMenuOptionRes.setOptionMenuPk(this.orderMenuPk);
             menuOptions.add(orderMenuOptionRes) ;
         });
+
     }
 
 }
