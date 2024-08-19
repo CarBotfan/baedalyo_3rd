@@ -131,7 +131,7 @@ spring:
     activate:
       on-profile: tdd
   datasource:
-    url: ${TDD.DB_URL}
+    url: ${TDD.DB.URL}
   sql:
     init:
       mode: always
