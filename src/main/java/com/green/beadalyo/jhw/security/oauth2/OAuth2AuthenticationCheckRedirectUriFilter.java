@@ -27,7 +27,7 @@ public class OAuth2AuthenticationCheckRedirectUriFilter extends OncePerRequestFi
             throws ServletException, IOException {
 
         String requestUri = request.getRequestURI();    // 호스트값 제외한 uri를 리턴 (ex. http://localhost:8080/aaa/bbb 여기서 "/aaa/bbb" 를 리턴
-        log.info("requestUri : {}", requestUri);
+        log.debug("requestUri : {}", requestUri);
 
         String baseUri = appProperties.getOauth2().getBaseUri();
         if (baseUri == null || baseUri.isEmpty()) {
