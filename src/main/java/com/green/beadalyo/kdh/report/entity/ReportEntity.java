@@ -5,6 +5,7 @@ import com.green.beadalyo.lhn.Review.entity.Review;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -21,10 +22,12 @@ public class ReportEntity {
     @Column(name = "report_pk")
     private Long reportPk;
 
-    @ManyToOne
+    @ToString.Exclude
+@ManyToOne
     @JoinColumn(name = "review_pk", nullable = false)
     private Review reviewPk;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "user_pk",nullable = false)
     private User user;

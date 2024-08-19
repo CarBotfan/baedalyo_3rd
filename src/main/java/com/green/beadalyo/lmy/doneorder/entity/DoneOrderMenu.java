@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class DoneOrderMenu {
     @Column(name = "done_order_menu_pk")
     private Long doneOrderMenuPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "done_order_pk",nullable = false)
     private DoneOrder doneOrderPk;
@@ -29,6 +31,7 @@ public class DoneOrderMenu {
     @OneToMany(fetch = FetchType.EAGER,orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "doneOrderMenu")
     private List<DoneOrderMenuOption> doneMenuOption ;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "menu_pk", nullable = false)
     private MenuEntity menuPk;

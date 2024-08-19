@@ -1,5 +1,8 @@
 package com.green.beadalyo.lmy.doneorder.model;
 
+import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrderMenu;
 import com.green.beadalyo.lmy.order.model.MenuInfoDto;
 import lombok.Data;
 import lombok.Getter;
@@ -29,5 +32,18 @@ public class DoneOrderMiniGetResUser {
         this.doneOrderState = doneOrderState;
         this.createdAt = createdAt;
         this.reviewState = reviewState;
+    }
+
+    public DoneOrderMiniGetResUser(DoneOrder data)
+    {
+        this.doneOrderPk = data.getDoneOrderPk() ;
+        Restaurant res = data.getResPk() ;
+        this.resPk = res.getSeq() ;
+        this.resPic = res.getPic() ;
+        this.resName = res.getName() ;
+        this.orderPrice = data.getOrderPrice() ;
+        this.doneOrderState = data.getDoneOrderState() ;
+        this.createdAt = data.getCreatedAt().toString() ;
+        this.menuInfoDtos = data.getDoneOrderMenus().stream().map(MenuInfoDto::new).toList() ;
     }
 }

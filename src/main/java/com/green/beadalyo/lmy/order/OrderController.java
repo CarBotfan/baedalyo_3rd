@@ -175,6 +175,10 @@ public class OrderController {
                     p.getMenu().stream()
                     .map(OrderMenuReq::getMenuPk)
                     .toList());
+//            p.getMenu().forEach(orderMenuReq -> {
+//
+//            });
+//            List<MenuEntity> menu = menuService.getInMenuData()
             //메뉴 Entity 를 OrderMenu 로 전환
             List<OrderMenu> orderMenus = OrderMenu.toOrderMenuList(menu, order, p.getMenu());
             //order 에 세팅
@@ -304,7 +308,7 @@ public class OrderController {
             doneOrderService.save(doneOrder);
             orderService.deleteOrder(order);
 
-            return ResultDto.builder().build();
+            return ResultDto.builder().resultData(doneOrder.getDoneOrderPk()).build();
         } catch (UserNotFoundException e) {
             return ResultError.builder().statusCode(-2).resultMsg("로그인 정보를 찾지 못했습니다.").build();
         } catch (NullPointerException e) {

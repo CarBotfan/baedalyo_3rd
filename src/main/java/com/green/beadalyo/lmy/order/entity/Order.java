@@ -6,6 +6,7 @@ import com.green.beadalyo.lmy.order.model.OrderPostReq;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,10 +25,12 @@ public class Order {
     private Long orderPk;
 
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_user_pk", nullable = false)
     private User orderUser;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_res_pk", nullable = false)
     private Restaurant orderRes;
