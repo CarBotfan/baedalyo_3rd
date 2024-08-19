@@ -1,128 +1,151 @@
 package com.green.beadalyo.jhw.menucategory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.BDDMockito.given;
-
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.jhw.menucategory.exception.MenuCatNotFoundException;
 import com.green.beadalyo.jhw.menucategory.model.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestClassOrder;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Import(MenuCategoryService.class)
-@ExtendWith(SpringExtension.class)
-public class MenuCategoryServiceTest {
-    @MockBean private MenuCategoryRepository repository;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-    @Autowired
+public class MenuCategoryServiceTest {
+
+    @InjectMocks
     private MenuCategoryService service;
 
-    @Test
-    void getMenuCatCount() {
-        Restaurant restaurant = new Restaurant();
-        restaurant.setSeq(1L);
-        MenuCategory menuCat1 = new MenuCategory();
-        MenuCategory menuCat2 = new MenuCategory();
-        MenuCategory menuCat3 = new MenuCategory();
-        given(repository.countMenuCategories(restaurant)).willReturn((long) List.of(menuCat1, menuCat2, menuCat3).size());
-        Long count = service.getMenuCatCount(restaurant);
-        System.out.println(count);
+    @Mock
+    private MenuCategoryRepository repository;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void GetMenuCat() {
+    @Transactional
+    void insertMenuCat_ShouldInsertMenuCategory_WhenValidData() {
+        MenuCatInsertDto dto = new MenuCatInsertDto();
+        dto.setMenuCatName("새 카테고리");
+        dto.setPosition(1L);
+        dto.setRestaurant(new Restaurant());
+
+        service.insertMenuCat(dto);
+
+        MenuCategory menuCat = new MenuCategory(dto);
+        verify(repository, times(1)).save(menuCat);
+    }
+
+    @Test
+    void getMenuCatCount_ShouldReturnCount_WhenValidRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        Long count = 5L;
+        when(repository.countMenuCategories(restaurant)).thenReturn(count);
+
+        Long result = service.getMenuCatCount(restaurant);
+
+        assertEquals(count, result);
+    }
+
+    @Test
+    void getMenuCatList_ShouldReturnList_WhenValidRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        List<MenuCategory> menuCategories = new ArrayList<>();
+        when(repository.findMenuCategoriesByRestaurantOrderByPosition(restaurant)).thenReturn(menuCategories);
+
+        List<MenuCategory> result = service.getMenuCatList(restaurant);
+
+        assertEquals(menuCategories, result);
+    }
+
+    @Test
+    void getMenuCat_ShouldReturnMenuCategory_WhenValidId() {
+        Long menuCatPk = 1L;
         MenuCategory menuCategory = new MenuCategory();
-        menuCategory.setMenuCategoryPk(1L);
-        menuCategory.setMenuCatName("Test1");
-        menuCategory.setPosition(1L);
-        given(repository.existsById(1L)).willReturn(true);
-        given(repository.getReferenceById(1L)).willReturn(menuCategory);
+        when(repository.existsById(menuCatPk)).thenReturn(true);
+        when(repository.getReferenceById(menuCatPk)).thenReturn(menuCategory);
 
-        System.out.println(menuCategory.getMenuCatName());
+        MenuCategory result = service.getMenuCat(menuCatPk);
+
+        assertEquals(menuCategory, result);
     }
 
     @Test
-    void deleteMenuCat() {
-        Restaurant restaurant = new Restaurant();
-        MenuCategory menuCat1 = new MenuCategory();
-        menuCat1.setPosition(1L);
-        menuCat1.setMenuCategoryPk(1L);
-        MenuCategory menuCat2 = new MenuCategory();
-        menuCat2.setPosition(2L);
-        menuCat2.setMenuCategoryPk(2L);
-        MenuCategory menuCat3 = new MenuCategory();
-        menuCat3.setPosition(3L);
-        menuCat3.setMenuCategoryPk(3L);
-        given(repository.existsByMenuCategoryPkAndRestaurant(2L, restaurant)).willReturn(true);
-        given(repository.findByMenuCategoryPkAndRestaurant(2L, restaurant)).willReturn(menuCat2);
-        given(repository.findMenuCategoriesByRestaurantOrderByPosition(restaurant)).willReturn(List.of(menuCat1, menuCat2, menuCat3));
-        service.deleteMenuCat(2L, restaurant);
+    void getMenuCat_ShouldThrowException_WhenCategoryNotFound() {
+        Long menuCatPk = 1L;
+        when(repository.existsById(menuCatPk)).thenReturn(false);
 
-        System.out.println(List.of(menuCat1, menuCat3));
+        MenuCatNotFoundException thrown = assertThrows(MenuCatNotFoundException.class, () -> {
+            service.getMenuCat(menuCatPk);
+        });
+
+        assertNotNull(thrown);
     }
 
     @Test
-    void patchMenuCat() {
+    @Transactional
+    void deleteMenuCat_ShouldDeleteCategory_WhenValidId() {
+        Long menuCatPk = 1L;
         Restaurant restaurant = new Restaurant();
-        MenuCategory menuCat1 = new MenuCategory();
-        menuCat1.setMenuCatName("Test");
-        menuCat1.setMenuCategoryPk(1L);
+        MenuCategory menuCategory = new MenuCategory();
+        List<MenuCategory> menuCategories = new ArrayList<>();
+        menuCategories.add(menuCategory);
 
-        given(repository.existsByMenuCategoryPkAndRestaurant(1L, restaurant)).willReturn(true);
-        given(repository.findByMenuCategoryPkAndRestaurant(1L, restaurant)).willReturn(menuCat1);
+        when(repository.existsByMenuCategoryPkAndRestaurant(menuCatPk, restaurant)).thenReturn(true);
+        when(repository.findByMenuCategoryPkAndRestaurant(menuCatPk, restaurant)).thenReturn(menuCategory);
+        when(repository.findMenuCategoriesByRestaurantOrderByPosition(restaurant)).thenReturn(menuCategories);
 
+        int result = service.deleteMenuCat(menuCatPk, restaurant);
+
+        assertEquals(1, result);
+        verify(repository, times(1)).delete(menuCategory);
+    }
+
+    @Test
+    @Transactional
+    void patchMenuCat_ShouldUpdateCategory_WhenValidDto() {
         MenuCatPatchDto dto = new MenuCatPatchDto();
         dto.setMenuCatPk(1L);
-        dto.setMenuCatName("TestSuccess");
-        dto.setRestaurant(restaurant);
+        dto.setMenuCatName("수정된 카테고리");
+        Restaurant restaurant = new Restaurant();
 
-        service.patchMenuCat(dto);
+        when(repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), restaurant)).thenReturn(true);
+        MenuCategory menuCategory = new MenuCategory();
+        when(repository.findByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), restaurant)).thenReturn(menuCategory);
 
-        System.out.println(menuCat1.getMenuCatName());
+        int result = service.patchMenuCat(dto);
+
+        assertEquals(1, result);
+        assertEquals(dto.getMenuCatName(), menuCategory.getMenuCatName());
     }
 
     @Test
-    void patchMenuCatPosition() {
+    @Transactional
+    void patchMenuCatPosition_ShouldUpdateCategoryPosition_WhenValidDto() {
+        MenuCatPositionPatchDto dto = new MenuCatPositionPatchDto();
+        dto.setMenuCatPk(1L);
+        dto.setPosition(2L);
         Restaurant restaurant = new Restaurant();
 
-        MenuCatPositionPatchDto dto1 = new MenuCatPositionPatchDto();
-        dto1.setMenuCatPk(1L);
-        dto1.setRestaurant(restaurant);
-        dto1.setPosition(3L);
+        when(repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), restaurant)).thenReturn(true);
+        MenuCategory menuCategory = new MenuCategory();
+        menuCategory.setPosition(1L);
+        when(repository.getReferenceById(dto.getMenuCatPk())).thenReturn(menuCategory);
 
-        MenuCatPositionPatchDto dto2 = new MenuCatPositionPatchDto();
-        dto2.setMenuCatPk(3L);
-        dto2.setRestaurant(restaurant);
-        dto2.setPosition(1L);
+        List<MenuCategory> categoriesBetween = new ArrayList<>();
+        categoriesBetween.add(menuCategory);
+        when(repository.findMenuCategoriesByPositionBetweenAndRestaurant(restaurant, dto.getPosition(), menuCategory.getPosition())).thenReturn(categoriesBetween);
 
-        MenuCategory menuCat1 = new MenuCategory();
-        menuCat1.setPosition(1L);
-        menuCat1.setMenuCategoryPk(1L);
-        MenuCategory menuCat2 = new MenuCategory();
-        menuCat2.setPosition(2L);
-        menuCat2.setMenuCategoryPk(2L);
-        MenuCategory menuCat3 = new MenuCategory();
-        menuCat3.setPosition(3L);
-        menuCat3.setMenuCategoryPk(3L);
+        int result = service.patchMenuCatPosition(dto);
 
-        List<MenuCategory> list = List.of(menuCat1, menuCat2, menuCat3);
-
-        given(repository.existsByMenuCategoryPkAndRestaurant(1L, restaurant)).willReturn(true);
-        given(repository.existsByMenuCategoryPkAndRestaurant(3L, restaurant)).willReturn(true);
-        given(repository.getReferenceById(1L)).willReturn(menuCat1);
-        given(repository.findMenuCategoriesByPositionBetweenAndRestaurant(restaurant, 1L, 3L)).willReturn(List.of(menuCat1, menuCat2, menuCat3));
-
-        service.patchMenuCatPosition(dto1);
-
-        System.out.println(list);
-
-
+        assertEquals(1, result);
+        assertEquals(dto.getPosition(), menuCategory.getPosition());
     }
 }

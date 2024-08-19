@@ -83,7 +83,7 @@ class RestaurantServiceTest
         when(viewListRepository.findFollowedRestaurant(anyLong(), any(Pageable.class)))
                 .thenReturn(expectedPage);
 
-        Page<RestaurantListView> result = restaurantService.getFollowRestaurantList(1);
+        Page<RestaurantListView> result = restaurantService.getFollowRestaurantList(1, 1L);
 
         assertEquals(expectedPage, result);
     }
