@@ -26,11 +26,13 @@ public class CouponUser {
     @Column(name = "res_coupon_user_pk")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_coupon_pk", nullable = false)
     private Coupon coupon;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_pk", nullable = false)
     private User user;
 

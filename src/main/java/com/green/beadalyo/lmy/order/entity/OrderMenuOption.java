@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class OrderMenuOption
 {
 
@@ -23,6 +24,7 @@ public class OrderMenuOption
     @Column(name = "order_menu_option_pk")
     private Long seq ;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_menu_pk")
     private OrderMenu orderMenu ;

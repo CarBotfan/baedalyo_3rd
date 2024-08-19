@@ -6,6 +6,7 @@ import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -20,14 +21,17 @@ public class Review {
     @Column(name = "review_pk")
     private Long reviewPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "done_order_pk", nullable = false)
     private DoneOrder doneOrderPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_pk", nullable = false)
     private User userPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_pk", nullable = false)
     private Restaurant resPk;

@@ -36,7 +36,8 @@ public class Restaurant
     @Comment("고유 번호")
     private Long seq;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+@ManyToOne(fetch = FetchType.LAZY)
     @Comment("소유자 정보")
     @JoinColumn(name = "res_user_pk")
     private User user;

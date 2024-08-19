@@ -4,10 +4,7 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lmy.order.entity.Order;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -27,10 +24,12 @@ public class DoneOrder {
     @Column(name = "done_order_pk")
     private Long doneOrderPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_pk", nullable = false, referencedColumnName = "user_pk")
-    private User userPk;
+    private User user;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_pk", nullable = false, referencedColumnName = "res_pk")
     private Restaurant resPk;
@@ -72,7 +71,7 @@ public class DoneOrder {
 
     public DoneOrder(Order data)
     {
-        this.userPk = data.getOrderUser() ;
+        this.user = data.getOrderUser() ;
         this.resPk = data.getOrderRes() ;
         this.orderPrice = data.getOrderPrice() ;
         this.orderRequest = data.getOrderRequest() ;

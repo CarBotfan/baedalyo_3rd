@@ -26,7 +26,8 @@ public class MenuCategory {
     @Column(name = "menu_cat_pk")
     private Long menuCategoryPk;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_pk")
     private Restaurant restaurant;
 

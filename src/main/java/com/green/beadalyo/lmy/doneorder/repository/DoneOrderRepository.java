@@ -1,5 +1,6 @@
 package com.green.beadalyo.lmy.doneorder.repository;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.model.*;
 import org.springframework.data.domain.Page;
@@ -14,14 +15,18 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query(value = "SELECT " +
             "o.doneOrderPk , r.seq as resPK, r.pic as resPic, r.name as resName, o.orderPrice as orderPrice, o.doneOrderState as doneOrderState, o.createdAt as createdAt " +
             "FROM DoneOrder o JOIN o.resPk r " +
-            "WHERE o.userPk.userPk = :userPk")
+            "WHERE o.user.userPk = :userPk")
     Page<DoneOrderMiniGetResUser> findDoneOrdersByUserPk(@Param("userPk") Long userPk, Pageable pageable);
 
-    @Query("SELECT COUNT(o) FROM DoneOrder o WHERE o.userPk.userPk = :userPk")
+    Page<DoneOrder> findByUser(User user, Pageable pageable);
+
+    @Query("SELECT COUNT(o) FROM DoneOrder o WHERE o.user.userPk = :userPk")
     Integer countByUserPk(@Param("userPk") Long userPk);
 
     @Query("SELECT COUNT(r) FROM Review r WHERE r.doneOrderPk = :doneOrderPk")
     Integer countReviewsByDoneOrderPk(@Param("doneOrderPk") Long doneOrderPk);
+
+    Integer countByDoneOrderPk(Long doneOrderPk);
 
     @Query(value = "SELECT new com.green.beadalyo.lmy.doneorder.model.DoneOrderMiniGetRes(o.doneOrderPk, r.seq, r.pic, r.name, o.orderPrice, o.doneOrderState, o.createdAt) " +
             "FROM DoneOrder o JOIN Restaurant r ON o.resPk.seq = r.seq WHERE o.resPk.seq = :resPk AND o.doneOrderState = 1",
@@ -39,7 +44,7 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     @Query("SELECT o FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk")
     DoneOrder findByDoneOrderPk(@Param("doneOrderPk") Long doneOrderPk);
 
-    @Query("SELECT o.userPk.userPk FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk")
+    @Query("SELECT o.user.userPk FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk")
     Long getDoneOrderUser(@Param("doneOrderPk") Long doneOrderPk);
 
     @Query("SELECT r.user.userPk FROM Restaurant r WHERE r.seq = (SELECT o.resPk.seq FROM DoneOrder o WHERE o.doneOrderPk = :doneOrderPk)")

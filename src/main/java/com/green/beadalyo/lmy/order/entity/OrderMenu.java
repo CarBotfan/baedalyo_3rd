@@ -7,10 +7,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Entity
@@ -24,10 +26,12 @@ public class OrderMenu {
     @Column(name = "order_menu_pk")
     private Long orderMenuPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_pk", nullable = false)
     private Order order;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_pk", nullable = false)
     private MenuEntity menuPk;
@@ -72,18 +76,19 @@ public class OrderMenu {
     public static List<OrderMenu> toOrderMenuList(List<MenuEntity> list, Order order, List<OrderMenuReq> menu)
     {
         List<OrderMenu> orderMenuList = new ArrayList<>();
-//        for(MenuEntity menu : list)
-//        {
-//            orderMenuList.add(new OrderMenu(menu,order));
-//        }
-        list.forEach(menuEntity ->
-            menu.stream()
-                .filter(menuReq -> menuEntity.getMenuPk().equals(menuReq.getMenuPk()))
-                .findFirst()
-                .ifPresent(j -> {
-                    orderMenuList.add(new OrderMenu(menuEntity,order, j.getMenuCount(),j.getMenuOptionPk()));
-                })
-        );
+
+        list.forEach(menuEntity -> {
+            for (OrderMenuReq orderMenuReq : menu) {
+                if (orderMenuReq.getMenuPk().equals(menuEntity.getMenuPk())) {
+                    OrderMenu data = new OrderMenu(menuEntity, order, orderMenuReq.getMenuCount(), orderMenuReq.getMenuOptionPk()) ;
+                    orderMenuList.add(data);
+                    menu.remove(orderMenuReq) ;
+                    break;
+                }
+            }
+
+        });
+
         return orderMenuList;
     }
 

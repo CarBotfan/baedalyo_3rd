@@ -3,6 +3,7 @@ package com.green.beadalyo.lhn.Review.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -16,6 +17,7 @@ public class ReviewComment {
     private Long reviewCommentPk;
 
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_pk",nullable = false)
     private Review reviewPk;
