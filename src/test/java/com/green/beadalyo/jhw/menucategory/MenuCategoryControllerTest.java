@@ -71,9 +71,11 @@ public class MenuCategoryControllerTest {
     void postMenuCat_ShouldReturnError_WhenDataNotFoundException() throws Exception {
         MenuCatPostReq request = new MenuCatPostReq();
         request.setMenuCategoryName("새 카테고리");
+        User testUser = new User();
 
         when(authenticationFacade.getLoginUserPk()).thenReturn(1L);
-        when(restaurantService.getRestaurantData(new User())).thenThrow(new DataNotFoundException("식당 정보를 찾을 수 없음"));
+        when(userService.getUser(1L)).thenReturn(testUser);
+        when(restaurantService.getRestaurantData(testUser)).thenThrow(new DataNotFoundException("식당 정보를 찾을 수 없음"));
 
         ResultDto<Integer> response = controller.postMenuCat(request);
 
@@ -166,7 +168,7 @@ public class MenuCategoryControllerTest {
         when(authenticationFacade.getLoginUserPk()).thenReturn(1L);
         when(userService.getUser(1L)).thenReturn(new User());
         when(restaurantService.getRestaurantData(any(User.class))).thenReturn(new Restaurant());
-        when(service.deleteMenuCat(menuCatPk, any(Restaurant.class))).thenThrow(new MenuCatNotFoundException());
+        when(service.deleteMenuCat(eq(menuCatPk), any(Restaurant.class))).thenThrow(new MenuCatNotFoundException());
 
         ResultDto<Integer> response = controller.deleteMenuCat(menuCatPk);
 

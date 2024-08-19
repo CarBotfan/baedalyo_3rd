@@ -40,7 +40,8 @@ public class MenuCategoryServiceTest {
         service.insertMenuCat(dto);
 
         MenuCategory menuCat = new MenuCategory(dto);
-        verify(repository, times(1)).save(menuCat);
+
+        verify(repository).save(menuCat);
     }
 
     @Test
