@@ -169,8 +169,12 @@ public class MenuCategoryServiceTest {
         MenuCategory menuCategory3 = new MenuCategory();
         menuCategory3.setPosition(3L);
 
-        List<MenuCategory> categoriesBetween = List.of(menuCategory1, menuCategory2, menuCategory3);
-        when(repository.findMenuCategoriesByPositionBetweenAndRestaurant(restaurant, dto.getPosition(), menuCategory1.getPosition())).thenReturn(categoriesBetween);
+        List<MenuCategory> categoriesBetween = new ArrayList<>();
+        categoriesBetween.add(menuCategory1);
+        categoriesBetween.add(menuCategory2);
+        categoriesBetween.add(menuCategory3);
+        System.out.println((categoriesBetween.get(categoriesBetween.size() - 1).getPosition()));
+        when(repository.findMenuCategoriesByPositionBetweenAndRestaurant(restaurant, menuCategory1.getPosition(), dto.getPosition())).thenReturn(categoriesBetween);
 
         int result = service.patchMenuCatPosition(dto);
 
