@@ -101,6 +101,7 @@ app:
       - http://localhost:8080/oauth/redirect
       - http://localhost:3000/oauth/redirect
       - http://zumuniyo.shop/oauth/redirect
+      - https://zumuniyo.shop/oauth/redirect
     authorization-request-cookie-name: oauth2_auth_request
     redirect-uri-param-cookie-name: redirect_uri
     cookie-expiry-seconds: 180
