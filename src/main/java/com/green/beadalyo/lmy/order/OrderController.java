@@ -118,6 +118,10 @@ public class OrderController {
             if (p.getUseMileage() > 0) {
                 return ResultError.builder().statusCode(-9).resultMsg("후불결제에는 마일리지를 사용할 수 없습니다.").build();
             }
+        if (p.getPaymentMethod() == 1 || p.getPaymentMethod() == 2)
+            if (p.getCoupon() != null) {
+                return ResultError.builder().statusCode(-9).resultMsg("후불결제에는 쿠폰을 사용할 수 없습니다.").build();
+            }
         //마일리지 사용시 1000마일리지 미만인지 검증
         if (p.getUseMileage() != 0 && p.getUseMileage() < 1000)
             return ResultError.builder().statusCode(-8).resultMsg("사용 마일리지가 정상적이지 않습니다.").build();
@@ -241,6 +245,12 @@ public class OrderController {
                 order.setOrderState(2);
                 SSEApiController.sendEmitters("test",res.getUser());
             }
+            //주문 타입이 후불 결제일시 결제 완료 처리 후 알림 전송
+            if (order.getPaymentMethod() == 1 || p.getPaymentMethod() == 2)
+            {
+                order.setOrderState(2);
+                SSEApiController.sendEmitters("test",res.getUser());
+            }
             //데이터 저장
             userService.save(user);
             orderService.saveOrder(order) ;
@@ -329,7 +339,7 @@ public class OrderController {
             Order order = orderService.getOrderInfo(orderPk) ;
 
             //권한 체크
-            if (user != order.getOrderUser())
+            if (user != order.getOrderRes().getUser())
                 return ResultError.builder().statusCode(-8).resultMsg("상점 주인의 접근이 아닙니다.").build();
 
             DoneOrder doneOrder = new DoneOrder(order) ;
