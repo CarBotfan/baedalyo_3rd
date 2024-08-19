@@ -1,6 +1,6 @@
 package com.green.beadalyo.lmy.order;
 
-public class OrderControllerRegacy
+public class OrderControllerLegacy
 {
 
     //        List<Map<String, Object>> menuList = orderService.getMenuDetails(p.getMenuPk());
