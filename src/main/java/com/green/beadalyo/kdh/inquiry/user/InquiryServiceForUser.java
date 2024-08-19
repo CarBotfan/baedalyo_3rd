@@ -5,15 +5,18 @@ import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.inquiry.InquiryRepository;
 import com.green.beadalyo.kdh.inquiry.entity.InquiryEntity;
-import com.green.beadalyo.kdh.inquiry.user.model.GetInquiryListForUser;
-import com.green.beadalyo.kdh.inquiry.user.model.GetInquiryOneForUser;
-import com.green.beadalyo.kdh.inquiry.user.model.PostInquiryForUserReq;
-import com.green.beadalyo.kdh.inquiry.user.model.PutInquiryForUserReq;
+import com.green.beadalyo.kdh.inquiry.user.model.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.green.beadalyo.gyb.common.ConstVariable.PAGE_SIZE;
 
 @Service
 @RequiredArgsConstructor
@@ -53,8 +56,34 @@ public class InquiryServiceForUser {
         return entity;
     }
 
-    public List<GetInquiryListForUser> getInquiryListForUser(Long userPk){
-        return inquiryRepository.findInquiryListByUserPk(userPk);
+    public Page<InquiryEntity> getInquiryListForUsers(Long userPk, Integer page){
+        Pageable pageable = PageRequest.of(page-1, 10);
+        User user = getUserByPk(userPk);
+        return inquiryRepository.findByUserOrderByInquiryPkDesc(user, pageable);
+    }
+
+    public List<GetInquiryListForUser> makeGetInquiryListForUser(Page<InquiryEntity> pageEntity) {
+        List<GetInquiryListForUser> result = new ArrayList<>();
+        for (InquiryEntity inquiry : pageEntity) {
+            GetInquiryListForUser getInquiryListForUser = new GetInquiryListForUser(
+                    inquiry.getInquiryPk(),
+                    inquiry.getCreatedAt(),
+                    inquiry.getInquiryState(),
+                    inquiry.getInquiryTitle(),
+                    inquiry.getUpdatedAt()
+            );
+            result.add(getInquiryListForUser);
+        }
+        return result;
+    }
+
+    public InquiryListDto makeInquiryListDto(InquiryListDto inquiryListDto, Page<InquiryEntity> pageEntity,
+                                             List<GetInquiryListForUser> resultList ){
+        inquiryListDto.setTotalPage(pageEntity.getTotalPages());
+        inquiryListDto.setTotalElements(pageEntity.getNumberOfElements());
+        inquiryListDto.setResult(resultList);
+
+        return inquiryListDto;
     }
 
     public GetInquiryOneForUser getInquiryOneForUser(Long inquiryPk){

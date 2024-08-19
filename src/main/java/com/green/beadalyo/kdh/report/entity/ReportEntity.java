@@ -27,7 +27,7 @@ public class ReportEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_pk",nullable = false)
-    private User userPk;
+    private User user;
 
     @Column(name = "report_title",nullable = false)
     private String reportTitle;

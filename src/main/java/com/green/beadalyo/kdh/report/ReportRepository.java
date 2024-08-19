@@ -1,10 +1,13 @@
 package com.green.beadalyo.kdh.report;
 
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.report.entity.ReportEntity;
 import com.green.beadalyo.kdh.report.admin.model.GetReportListResForAdmin;
 import com.green.beadalyo.kdh.report.admin.model.GetReportOneResForAdmin;
 import com.green.beadalyo.kdh.report.user.model.GetReportListResForUser;
 import com.green.beadalyo.kdh.report.user.model.GetReportOneResForUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,39 +15,12 @@ import java.util.List;
 
 public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
 
-    @Query(value = "SELECT r.report_pk AS reportPK, "+
-                        "r.report_title AS reportTitle, "+
-                        "r.report_state AS reportState, "+
-                        "r.updated_at AS updatedAt, "+
-                        "(SELECT user_nickname "+
-                        "FROM user "+
-                        "WHERE user_pk = r.user_pk) AS reportUserNickname, "+
-                        "r.created_at AS createdAt "+
-                        "FROM report r "+
-                        "ORDER BY r.report_pk DESC",nativeQuery = true)
-    List<GetReportListResForAdmin> findReportListForAdmin();
 
-@Query(value =      "SELECT r.report_pk AS reportPK, "+
-                            "r.report_title AS reportTitle, "+
-                            "r.report_state AS reportState, "+
-                            "r.updated_at AS updatedAt, "+
-                            "(SELECT user_nickname FROM user WHERE user_pk = r.user_pk) AS reportUserNickname, "+
-                            "r.created_at AS createdAt "+
-                            "FROM report r "+
-                            "where r.report_state = 2 "+
-                            "ORDER BY r.report_pk DESC",nativeQuery = true)
-    List<GetReportListResForAdmin> findReportFinishedListForAdmin();
+    Page<ReportEntity> findAllByOrderByReportPkDesc(Pageable pageable);
 
-    @Query(value = "SELECT r.report_pk AS reportPK, "+
-                    "r.report_title AS reportTitle, "+
-                    "r.report_state AS reportState, "+
-                    "r.updated_at AS updatedAt, "+
-                    "(SELECT user_nickname FROM user WHERE user_pk = r.user_pk) AS reportUserNickname, "+
-                    "r.created_at AS createdAt "+
-                    "FROM report r "+
-                    "where r.report_state = 1 "+
-                    "ORDER BY r.report_pk DESC",nativeQuery = true)
-    List<GetReportListResForAdmin> findReportUnFinishedListForAdmin();
+    Page<ReportEntity> findByUserOrderByReportPkDesc(User user, Pageable pageable);
+
+    Page<ReportEntity> findByReportStateOrderByReportPkDesc(Integer state, Pageable pageable);
 
     @Query(value = "SELECT   r.report_title AS reportTitle, "+
                             "r.report_content AS reportContent, "+
@@ -67,15 +43,6 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
                             )
     GetReportOneResForAdmin findReportOneByReportPkForAdmin(Long reportPk);
 
-    @Query(value = "SELECT   r.report_pk AS reportPK, "+
-                            "r.report_title AS reportTitle, "+
-                            "r.report_state AS reportState, "+
-                            "r.updated_at AS updatedAt, "+
-                            "r.created_at AS createdAt "+
-                            "FROM report  r "+
-                            "WHERE r.user_pk = :userPk "+
-                            "ORDER BY r.report_pk desc",nativeQuery = true)
-    List<GetReportListResForUser> findReportListForUser(Long userPk);
 
     @Query(value = "SELECT   r.report_title AS reportTitle, "+
                             "r.report_content AS reportContent, "+

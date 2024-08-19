@@ -4,14 +4,12 @@ import com.green.beadalyo.gyb.common.ResultDto;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.inquiry.entity.InquiryEntity;
-import com.green.beadalyo.kdh.inquiry.user.model.GetInquiryListForUser;
-import com.green.beadalyo.kdh.inquiry.user.model.GetInquiryOneForUser;
-import com.green.beadalyo.kdh.inquiry.user.model.PostInquiryForUserReq;
-import com.green.beadalyo.kdh.inquiry.user.model.PutInquiryForUserReq;
+import com.green.beadalyo.kdh.inquiry.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,26 +82,35 @@ public class InquiryControllerForUser {
                 .resultData(result).build();
     }
 
-    @GetMapping("inquiry_list")
+    @GetMapping("inquiry_list/{page}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "문의리스트 불러오기(유저용)")
-    public ResultDto<List<GetInquiryListForUser>> getInquiryListForUser(){
+    public ResultDto<InquiryListDto> getInquiryListForUser(@PathVariable Integer page){
+
+        if (page == null || page < 0 ){
+            page = 1;
+        }
+
+        InquiryListDto result = new InquiryListDto();
 
         Long userPk = authenticationFacade.getLoginUserPk();
 
-        List<GetInquiryListForUser> result = null;
-
         try {
-            result = service.getInquiryListForUser(userPk);
+            Page<InquiryEntity> pageEntity  = service.getInquiryListForUsers(userPk, page);
+
+            List<GetInquiryListForUser> resultList = service.makeGetInquiryListForUser(pageEntity);
+
+            result = service.makeInquiryListDto(result, pageEntity, resultList);
+
         }  catch (Exception e){
-            return ResultDto.<List<GetInquiryListForUser>>builder()
+            return ResultDto.<InquiryListDto>builder()
                     .statusCode(-1)
                     .resultMsg("리스트 불러오기 실패")
                     .build();
         }
 
 
-        return ResultDto.<List<GetInquiryListForUser>>builder()
+        return ResultDto.<InquiryListDto>builder()
                 .statusCode(1)
                 .resultMsg("리스트 불러오기 완료")
                 .resultData(result).build();
