@@ -18,7 +18,7 @@ public class SSEApiController
 
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>() ;
 
-    private final Map<User,SseEmitter> syncUser = new HashMap<>() ;
+    private final Map<Long,SseEmitter> syncUser = new HashMap<>() ;
     private final AuthenticationFacade authenticationFacade;
     private final UserServiceImpl userService;
 
@@ -38,7 +38,7 @@ public class SSEApiController
         Long userPk = authenticationFacade.getLoginUserPk() ;
         User user = userService.getUser(userPk) ;
 
-        syncUser.put(user,emitter);
+        syncUser.put(userPk,emitter);
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(( ) -> emitters.remove(emitter));
         sendEmitters("연결 완료", user);
@@ -47,9 +47,11 @@ public class SSEApiController
 
 
     public void sendEmitters(String str, User user) {
+
         List<SseEmitter> deadEmitters = new ArrayList<>();
+        SseEmitter emt = syncUser.get(user.getUserPk()) ;
         emitters.forEach(emitter -> {
-            SseEmitter emt = syncUser.get(user) ;
+
             if (emt != emitter)  return ;
             try {
                 emitter.send(SseEmitter.event().data("SSE Event - " + str));
