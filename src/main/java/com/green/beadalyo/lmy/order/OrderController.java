@@ -477,7 +477,7 @@ public class OrderController {
             User user = userService.getUser(userPk);
             Order data = orderService.getOrderBySeq(orderPk);
             //소유권 검증
-            if (user != data.getOrderUser())
+            if (user != data.getOrderUser() && user != data.getOrderRes().getUser())
                 return ResultError.builder().statusCode(-4).resultMsg("해당 주문의 소유자가 아닙니다.").build();
 
             OrderMiniGetRes res = new OrderMiniGetRes(data) ;
