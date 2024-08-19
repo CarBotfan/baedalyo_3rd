@@ -41,8 +41,15 @@ public class ResFollowController {
         Integer code = 1;
         String msg = null;
         Integer result = 1;
-
-        User user = userService.getUser(authenticationFacade.getLoginUserPk());
+        User user = null;
+        try {
+            user = userService.getUser(authenticationFacade.getLoginUserPk());
+        } catch(Exception e) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-3)
+                    .resultMsg(e.getMessage())
+                    .build();
+        }
         Restaurant restaurant = resFollowService.getRes(resPk);
         if (restaurant == null) {
             return ResultDto.<Integer>builder()

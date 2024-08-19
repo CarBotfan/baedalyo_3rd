@@ -221,7 +221,7 @@ public class UserServiceImpl implements UserService{
         return !passwordEncoder.matches(password1, password2);
     }
 
-    public User getUser(Long userPk) {
+    public User getUser(Long userPk) throws Exception{
         if(!repository.existsById(userPk)) {
             throw new UserNotFoundException();
         }
@@ -360,7 +360,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public User putUserEssential(PutSocialLoginReq req) {
-        User user = getUser(authenticationFacade.getLoginUserPk());
+        User user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
         user.setUserNickname(req.getUserNickName());
         user.setUserPhone(req.getUserPhone());
 
