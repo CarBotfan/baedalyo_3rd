@@ -99,7 +99,9 @@ app:
     baseUri: /oauth/authorization
     authorizedRedirectUris:
       - http://localhost:8080/oauth/redirect
-      - http://localhost:3000/oauth/redirect
+      - https://jumuniyo.gybproject.com/oauth/redirect
+      - http://zumuniyo.shop/login/oauth2/code/google
+      - https://zumuniyo.shop/login/oauth2/code/google
       - http://zumuniyo.shop/oauth/redirect
       - https://zumuniyo.shop/oauth/redirect
     authorization-request-cookie-name: oauth2_auth_request
