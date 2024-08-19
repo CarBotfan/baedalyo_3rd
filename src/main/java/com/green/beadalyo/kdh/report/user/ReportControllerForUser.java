@@ -35,12 +35,11 @@ public class ReportControllerForUser {
     public ResultDto<Integer> postReport(@RequestBody PostReportForUserReq p){
 
         Review review = service.getReviewByPk(p.getReviewPk());
-        User user = userService.getUser(authenticationFacade.getLoginUserPk());
-        p.setReview(review);
-        p.setUser(user);
 
         try {
-
+            User user = userService.getUser(authenticationFacade.getLoginUserPk());
+            p.setReview(review);
+            p.setUser(user);
             ReportEntity reportEntity = service.makeReportForPost(p);
             service.saveReport(reportEntity);
 

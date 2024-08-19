@@ -3,6 +3,7 @@ package com.green.beadalyo.gyb.sse;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +37,13 @@ public class SSEApiController
         emitters.add(emitter);
 
         Long userPk = authenticationFacade.getLoginUserPk() ;
-        User user = userService.getUser(userPk) ;
+        User user = null ;
+        try {
+            user = userService.getUser(userPk);
+        } catch(Exception e) {
 
+            return null;
+        }
         syncUser.put(userPk,emitter);
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(( ) -> emitters.remove(emitter));

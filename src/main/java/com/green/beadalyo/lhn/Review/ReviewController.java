@@ -110,14 +110,14 @@ public class ReviewController {
                     .resultMsg("로그인한 유저가 존재하지 않음")
                     .build();
         }
-        User user = userService.getUser(facade.getLoginUserPk());
-        ReviewGetDto req = new ReviewGetDto();
-        req.setPage(page);
+        ReviewGetListResponse result = null;
         int code = 1;
         String msg = "불러오기 완료";
-        ReviewGetListResponse result = null;
         try {
             // 로그인된 사용자의 역할에 따라 다른 메서드를 호출
+            User user = userService.getUser(facade.getLoginUserPk());
+            ReviewGetDto req = new ReviewGetDto();
+            req.setPage(page);
             String userRole = facade.getLoginUserRole();
             if ("ROLE_OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
                 req.setRestaurant(restaurantService.getRestaurantData(user));

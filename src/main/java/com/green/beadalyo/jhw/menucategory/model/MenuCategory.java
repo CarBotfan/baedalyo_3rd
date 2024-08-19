@@ -52,8 +52,10 @@ public class MenuCategory {
     @PreRemove
     public void onPreRemove() {
         this.restaurant = null;
-        for(MenuEntity menu : menuList) {
-            menu.setMenuState(3);
+        if(menuList != null) {
+            for(MenuEntity menu : menuList) {
+                menu.setMenuState(3);
+            }
         }
     }
 }

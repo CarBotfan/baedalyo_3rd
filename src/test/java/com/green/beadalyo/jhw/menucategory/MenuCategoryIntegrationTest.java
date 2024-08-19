@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)  // 실제 데이터베이스 사용
+
 @ActiveProfiles("tdd")  // 테스트 프로파일 사용
 public class MenuCategoryIntegrationTest {
 
