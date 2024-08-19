@@ -39,9 +39,15 @@ public class MenuCategoryServiceTest {
 
         service.insertMenuCat(dto);
 
-        MenuCategory menuCat = new MenuCategory(dto);
+        MenuCategory expectedMenuCat = new MenuCategory(dto);
 
-        verify(repository).save(menuCat);
+        verify(repository).save(argThat(menuCat ->
+                menuCat.getMenuCategoryPk() == null &&
+                        menuCat.getRestaurant().equals(expectedMenuCat.getRestaurant()) &&
+                        menuCat.getMenuCatName().equals(expectedMenuCat.getMenuCatName()) &&
+                        menuCat.getPosition().equals(expectedMenuCat.getPosition()) &&
+                        menuCat.getCreatedAt() == null
+        ));
     }
 
     @Test
@@ -93,9 +99,18 @@ public class MenuCategoryServiceTest {
     @Test
     @Transactional
     void deleteMenuCat_ShouldDeleteCategory_WhenValidId() {
+        MenuCatInsertDto dto = new MenuCatInsertDto();
+        dto.setMenuCatName("새 카테고리");
+        dto.setPosition(1L);
+        dto.setRestaurant(new Restaurant());
+
+        service.insertMenuCat(dto);
+
+        MenuCategory expectedMenuCat = new MenuCategory(dto);
+
         Long menuCatPk = 1L;
         Restaurant restaurant = new Restaurant();
-        MenuCategory menuCategory = new MenuCategory();
+        MenuCategory menuCategory = new MenuCategory(dto);
         List<MenuCategory> menuCategories = new ArrayList<>();
         menuCategories.add(menuCategory);
 
@@ -103,10 +118,16 @@ public class MenuCategoryServiceTest {
         when(repository.findByMenuCategoryPkAndRestaurant(menuCatPk, restaurant)).thenReturn(menuCategory);
         when(repository.findMenuCategoriesByRestaurantOrderByPosition(restaurant)).thenReturn(menuCategories);
 
+
         int result = service.deleteMenuCat(menuCatPk, restaurant);
 
         assertEquals(1, result);
-        verify(repository, times(1)).delete(menuCategory);
+        verify(repository, times(1)).delete(argThat(menuCat ->
+                menuCat.getMenuCategoryPk() == null &&
+                        menuCat.getRestaurant().equals(expectedMenuCat.getRestaurant()) &&
+                        menuCat.getMenuCatName().equals(expectedMenuCat.getMenuCatName()) &&
+                        menuCat.getPosition().equals(expectedMenuCat.getPosition()) &&
+                        menuCat.getCreatedAt() == null));
     }
 
     @Test
@@ -116,6 +137,7 @@ public class MenuCategoryServiceTest {
         dto.setMenuCatPk(1L);
         dto.setMenuCatName("수정된 카테고리");
         Restaurant restaurant = new Restaurant();
+        dto.setRestaurant(restaurant);
 
         when(repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), restaurant)).thenReturn(true);
         MenuCategory menuCategory = new MenuCategory();
@@ -134,19 +156,20 @@ public class MenuCategoryServiceTest {
         dto.setMenuCatPk(1L);
         dto.setPosition(2L);
         Restaurant restaurant = new Restaurant();
+        dto.setRestaurant(restaurant);
 
         when(repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), restaurant)).thenReturn(true);
-        MenuCategory menuCategory = new MenuCategory();
-        menuCategory.setPosition(1L);
-        when(repository.getReferenceById(dto.getMenuCatPk())).thenReturn(menuCategory);
+        MenuCategory menuCategory1 = new MenuCategory();
+        menuCategory1.setPosition(1L);
+        when(repository.getReferenceById(dto.getMenuCatPk())).thenReturn(menuCategory1);
 
         List<MenuCategory> categoriesBetween = new ArrayList<>();
-        categoriesBetween.add(menuCategory);
-        when(repository.findMenuCategoriesByPositionBetweenAndRestaurant(restaurant, dto.getPosition(), menuCategory.getPosition())).thenReturn(categoriesBetween);
+        categoriesBetween.add(menuCategory1);
+        when(repository.findMenuCategoriesByPositionBetweenAndRestaurant(restaurant, dto.getPosition(), menuCategory1.getPosition())).thenReturn(categoriesBetween);
 
         int result = service.patchMenuCatPosition(dto);
 
         assertEquals(1, result);
-        assertEquals(dto.getPosition(), menuCategory.getPosition());
+        assertEquals(dto.getPosition(), menuCategory1.getPosition());
     }
 }
