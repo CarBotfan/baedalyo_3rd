@@ -27,6 +27,8 @@ spring:
     redis:
       port: ${DEFAULT.REDIS.PORT}
       host: ${DEFAULT.REDIS.HOST}
+      repositories:
+        enabled: false
   mail:
     username: ${MAIL.USERNAME}
     password: ${MAIL.PASSWORD}
