@@ -24,26 +24,22 @@ public class MenuEntity {
     private Long menuPk;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_res_pk", nullable = false)
-    private Restaurant menuResPk;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_cat_pk")
     private MenuCategory menuCategory;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "menu")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "menu", orphanRemoval = true)
     private List<MenuOption> optionList ;
 
-    @Column(name = "menu_name", length = 20, nullable = false)
+    @Column(name = "menu_name", length = 2000, nullable = false)
     private String menuName;
 
-    @Column(name = "menu_content")
+    @Column(name = "menu_content", length = 2000)
     private String menuContent;
 
     @Column(nullable = false, name = "menu_price")
     private Integer menuPrice;
 
-    @Column(name = "menu_pic")
+    @Column(name = "menu_pic" , length = 2000)
     private String menuPic;
 
     @ColumnDefault("1")
@@ -58,5 +54,9 @@ public class MenuEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @PreRemove
+    public void preRemove() {
+        this.menuCategory = null;
+    }
 
 }

@@ -28,7 +28,7 @@ public class MenuOption
     @JoinColumn(nullable = false, name = "option_menu_pk")
     private MenuEntity menu ;
 
-    @Column(name = "option_name", nullable = false , length = 20)
+    @Column(name = "option_name", nullable = false , length = 2000)
     @Comment("옵션 이름")
     private String optionName ;
 

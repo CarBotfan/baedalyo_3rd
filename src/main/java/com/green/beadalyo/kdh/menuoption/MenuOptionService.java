@@ -34,6 +34,7 @@ public class MenuOptionService {
         entity.setMenu(menuEntity);
         entity.setOptionName(req.getOptionName());
         entity.setOptionPrice(req.getOptionPrice());
+        entity.setOptionState(1);
 
         return entity;
     }
@@ -44,16 +45,17 @@ public class MenuOptionService {
 
     public boolean validateMenuOwner(Long menuPk) {
         MenuEntity menuEntity = menuRepository.getReferenceById(menuPk);
-        Restaurant restaurant = menuEntity.getMenuResPk();
+        Restaurant restaurant = menuEntity.getMenuCategory().getRestaurant();
         User resUser = restaurant.getUser();
         long resUserPk = resUser.getUserPk();
         long userPk = authenticationFacade.getLoginUserPk();
 
-        return resUserPk == userPk;
+        return resUserPk != userPk;
     }
 
     public PostMenuOptionRes makePostMenuOptionRes(MenuOption entity) {
         PostMenuOptionRes res = new PostMenuOptionRes();
+        res.setOptionPk(entity.getSeq());
         res.setOptionName(entity.getOptionName());
         res.setOptionPrice(entity.getOptionPrice());
         res.setOptionMenuPk(entity.getMenu().getMenuPk());
@@ -64,16 +66,19 @@ public class MenuOptionService {
 
     public PutMenuOptionRes makePutMenuOptionRes(MenuOption entity) {
         PutMenuOptionRes res = new PutMenuOptionRes();
+        res.setOptionPk(entity.getSeq());
         res.setOptionName(entity.getOptionName());
         res.setOptionPrice(entity.getOptionPrice());
         res.setOptionMenuPk(entity.getMenu().getMenuPk());
         res.setOptionPrice(entity.getOptionPrice());
         res.setOptionState(entity.getOptionState());
+        res.setCreatedAt(entity.getCreatedAt().toString());
+        res.setUpdatedAt(entity.getUpdatedAt().toString());
         return res;
     }
 
     public MenuOption updateOptionEntity(PutMenuOptionReq req) {
-        MenuOption entity = menuOptionRepository.getReferenceById(req.getOptionPk());
+        MenuOption entity = menuOptionRepository.findMenuOptionBySeq(req.getOptionPk());
         entity.setOptionName(req.getOptionName());
         entity.setOptionPrice(req.getOptionPrice());
         return entity;

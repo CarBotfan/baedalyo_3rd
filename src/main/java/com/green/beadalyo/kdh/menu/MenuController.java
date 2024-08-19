@@ -83,6 +83,7 @@ public class MenuController {
                 result = service.postMenu(menuEntity,filename);
 
                 if (pic != null && !pic.isEmpty()) {
+
                     service.postPic(menuEntity, pic);
                 }
 
@@ -140,6 +141,7 @@ public class MenuController {
             Restaurant res = restaurantService.getRestaurantData(user);
             result = service.getMenuList(res);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return ResultDto.<List<MenuListGetRes>>builder()
                     .statusCode(-2)
                     .resultMsg("소유한 가게가 없음")
@@ -247,12 +249,10 @@ public class MenuController {
 
     //실제 메뉴를 삭제하는게 아님! menu_state를 3으로 변경
     public ResultDto<Integer> delMenu(@PathVariable(name = "menu_pk") long menuPk){
-        MenuEntity menuEntity = new MenuEntity();
-        menuEntity.setMenuPk(menuPk);
 
         int result= 0;
         try {
-           result =  service.delMenu(menuEntity);
+           result =  service.delMenu(menuPk);
         }  catch (RuntimeException e){
             return ResultDto.<Integer>builder()
                     .statusCode(-2)

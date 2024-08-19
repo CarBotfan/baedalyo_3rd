@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MenuCatPositionPatchReq {
-    private Long menuCatPk1;
+    private Long menuCatPk;
     private Long position;
 }

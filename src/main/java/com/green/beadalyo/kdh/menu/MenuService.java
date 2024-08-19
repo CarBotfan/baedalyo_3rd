@@ -11,7 +11,6 @@ import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.menu.entity.MenuEntity;
 import com.green.beadalyo.kdh.menu.model.*;
 import com.green.beadalyo.kdh.menu.repository.MenuRepository;
-import com.green.beadalyo.kdh.menuoption.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,11 +42,11 @@ public class MenuService {
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuEntity.setMenuResPk(restaurant);
         menuEntity.setMenuCategory(menuCat);
 
         //메뉴 이름 중복체크
-        if  (menuRepository.existsByMenuNameAndMenuResPk(menuEntity.getMenuName(), restaurant)){
+        Collection<Integer> stateCol = List.of(1, 2);
+        if  (menuRepository.existsByMenuNameAndMenuCategoryAndMenuStateIn(menuEntity.getMenuName(), menuCat, stateCol)){
             throw new IllegalArgumentException();
         }
 
@@ -160,22 +159,24 @@ public class MenuService {
     }
 
 
-    public int delMenu(MenuEntity menuEntity){
+    @Transactional
+    public int delMenu(Long menuPk){
         Long resUserPk = authenticationFacade.getLoginUserPk();
         Restaurant restaurant = restaurantRepository.findRestaurantByUser(userRepository.getReferenceById(resUserPk));
         if (restaurant == null){
             throw new RuntimeException();
         }
-        menuRepository.deleteByMenuPkAndMenuResPk(menuEntity.getMenuPk(), restaurant.getSeq());
+        MenuEntity menu = menuRepository.getReferenceById(menuPk);
+        menu.setMenuState(3);
         return 1;
     }
 
     @Transactional
     public int patchCategory(MenuPatchCategoryDto dto) {
-        if(!menuRepository.existsByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant()) || !menuCategoryRepository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())){
+        if(!menuRepository.existsByMenuPkAndMenuCategory_Restaurant(dto.getMenuPk(), dto.getRestaurant()) || !menuCategoryRepository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())){
             throw new RuntimeException("DB 정보 조회 실패");
         }
-        MenuEntity menu = menuRepository.findByMenuPkAndMenuResPk(dto.getMenuPk(), dto.getRestaurant());
+        MenuEntity menu = menuRepository.findByMenuPkAndMenuCategory_Restaurant(dto.getMenuPk(), dto.getRestaurant());
         MenuCategory menuCat = menuCategoryRepository.findByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant());
         menu.setMenuCategory(menuCat);
         return 1;
@@ -185,10 +186,10 @@ public class MenuService {
         List<MenuCategory> menuCatList = menuCategoryRepository.findMenuCategoriesByRestaurantOrderByPosition(res);
         List<MenuEntity> menuList = menuRepository.findByMenuResPk(res);
         List<MenuListGetRes> result = new ArrayList<>();
+        List<GetAllMenuRes> noneCatMenuList = new ArrayList<>();
         for (MenuCategory menuCategory : menuCatList) {
             MenuListGetRes menuListGetRes = new MenuListGetRes();
             menuListGetRes.setMenuCategory(new MenuCatDto(menuCategory));
-
             List<GetAllMenuRes> menuDtoList = new ArrayList<>();
             for (MenuEntity menu : menuList) {
                 if (menu.getMenuCategory() != null && menu.getMenuCategory().equals(menuCategory)) {
@@ -198,10 +199,19 @@ public class MenuService {
             menuListGetRes.setMenu(menuDtoList);
             result.add(menuListGetRes);
         }
+        for(MenuEntity menu : menuList) {
+            if(menu.getMenuCategory() == null) {
+                noneCatMenuList.add(new GetAllMenuRes(menu));
+            }
+        }
+        MenuListGetRes menuListGetResNoneCat = new MenuListGetRes();
+        menuListGetResNoneCat.setMenuCategory(null);
+        menuListGetResNoneCat.setMenu(noneCatMenuList);
+        result.add(menuListGetResNoneCat);
         return result;
     }
 
-    public MenuEntity getMenuByOptionPk(Long optionPk) {return menuRepository.getReferenceById(menuOptionRepository.getReferenceById(optionPk).getSeq());}
+    public MenuEntity getMenuByOptionPk(Long optionPk) {return menuRepository.getReferenceById(menuOptionRepository.getReferenceById(optionPk).getMenu().getMenuPk());}
     public MenuEntity getMenuByMenuPk(Long menuPk) {return menuRepository.getReferenceById(menuPk);}
 }
 

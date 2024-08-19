@@ -13,7 +13,6 @@ import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.useraddr.UserAddrServiceImpl;
 import com.green.beadalyo.jhw.useraddr.model.UserAddrGetRes;
 import com.green.beadalyo.kdh.menu.MenuService;
-import com.green.beadalyo.kdh.menu.model.GetAllMenuReq;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -159,8 +158,11 @@ public class RestaurantApiController
         if (page == null || page < 1)
             page = 1;
 
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk == 0) return ResultError.builder().statusCode(-1).resultMsg("불러올 유저 정보가 없습니다.").build();
+
         try {
-            Page<RestaurantListView> pageList = service.getFollowRestaurantList(page);
+            Page<RestaurantListView> pageList = service.getFollowRestaurantList(page, userPk);
             ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList);
             return ResultDto.builder().resultData(data).build();
         } catch (Exception e) {
@@ -168,5 +170,139 @@ public class RestaurantApiController
             return ResultError.builder().build();
         }
     }
+
+    @GetMapping("new10")
+    @Operation(summary = "근처 최근에 생긴 음식점 10개")
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
+            description =
+                    "<p> 1 : 정상 </p>"+
+                            "<p> -1 : 실패 </p>"+
+                            "<p> -2 : 비 로그인시 addrX, addrY값 필수 </p>" +
+                            "<p> -3 : 주소 정보 획득 실패 </p>"
+    )
+    public Result getNewList(
+                             @Nullable @RequestParam String addrX,
+                             @Nullable @RequestParam String addrY)
+    {
+        //유효성 검증
+        if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
+            return ResultError.builder().statusCode(-2).resultMsg("위경도의 정보를 획득하지 못하였습니다. 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
+
+        try {
+            BigDecimal x = null ;
+            BigDecimal y = null ;
+
+            if (addrX != null && addrY != null  ) {
+                x = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrX))); ;
+                y = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrY))); ;
+            } else {
+                UserAddrGetRes addr = userAddrService.getMainUserAddr() ;
+                if (addr == null)
+                    return ResultError.builder().resultMsg("메인 주소의 정보 획득을 실패 했습니다.").statusCode(-3).build();
+                x = addr.getAddrCoorX() ;
+                y = addr.getAddrCoorY() ;
+            }
+
+            Page<RestaurantListView> pageList = service.getNewRestaurant(x,y) ;
+            ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList) ;
+            return ResultDto.builder().resultData(data).build();
+
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
+    }
+
+    @GetMapping("recent")
+    @Operation(summary = "최근에 주문한 음식점")
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
+            description =
+                    "<p> 1 : 정상 </p>"+
+                            "<p> -1 : 실패 </p>"+
+                            "<p> -2 : 비 로그인시 addrX, addrY값 필수 </p>" +
+                            "<p> -3 : 주소 정보 획득 실패 </p>"
+    )
+    public Result getRecentOrderedList(
+            @Nullable @RequestParam String addrX,
+            @Nullable @RequestParam String addrY)
+    {
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk == 0) {
+            return ResultError.builder().statusCode(-1).resultMsg("유저 정보를 획득하지 못했습니다.").build();
+        }
+
+        //유효성 검증
+        if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
+            return ResultError.builder().statusCode(-2).resultMsg("위경도의 정보를 획득하지 못하였습니다. 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
+
+        try {
+            BigDecimal x = null ;
+            BigDecimal y = null ;
+
+            if (addrX != null && addrY != null  ) {
+                x = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrX))); ;
+                y = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrY))); ;
+            } else {
+                UserAddrGetRes addr = userAddrService.getMainUserAddr() ;
+                if (addr == null)
+                    return ResultError.builder().resultMsg("메인 주소의 정보 획득을 실패 했습니다.").statusCode(-3).build();
+                x = addr.getAddrCoorX() ;
+                y = addr.getAddrCoorY() ;
+            }
+
+            Page<RestaurantListView> pageList = service.getRecentOrderedRestaurantList(x,y, userPk) ;
+            ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList) ;
+            return ResultDto.builder().resultData(data).build();
+
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
+    }
+
+    @GetMapping("coupon")
+    @Operation(summary = "쿠폰 이벤트 중인 상점")
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ResultDto.class)) ,
+            description =
+                    "<p> 1 : 정상 </p>"+
+                            "<p> -1 : 실패 </p>"+
+                            "<p> -2 : 비 로그인시 addrX, addrY값 필수 </p>" +
+                            "<p> -3 : 주소 정보 획득 실패 </p>"
+    )
+    public Result getCouponResList(@Nullable @RequestParam Integer page,
+                             @Nullable @RequestParam String addrX,
+                             @Nullable @RequestParam String addrY)
+    {
+        //유효성 검증
+        if (page == null || page < 1)
+            page = 1;
+        if (authenticationFacade.getLoginUserPk() == 0 && (addrX == null || addrY == null))
+            return ResultError.builder().statusCode(-2).resultMsg("위경도의 정보를 획득하지 못하였습니다. 로그인 하거나 addrX, addrY의 값을 입력해 주세요.").build();
+
+        try {
+            BigDecimal x = null ;
+            BigDecimal y = null ;
+
+            if (addrX != null && addrY != null  ) {
+                x = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrX))); ;
+                y = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(addrY))); ;
+            } else {
+                UserAddrGetRes addr = userAddrService.getMainUserAddr() ;
+                if (addr == null)
+                    return ResultError.builder().resultMsg("메인 주소의 정보 획득을 실패 했습니다.").statusCode(-3).build();
+                x = addr.getAddrCoorX() ;
+                y = addr.getAddrCoorY() ;
+            }
+
+            Page<RestaurantListView> pageList = service.getCouponRestaurant(x,y,page) ;
+            ResultPage<RestaurantListRes> data = RestaurantListRes.toResultPage(pageList) ;
+            return ResultDto.builder().resultData(data).build();
+
+        } catch (Exception e) {
+            log.error("An error occurred: ", e);
+            return ResultError.builder().build();
+        }
+    }
+
 
 }

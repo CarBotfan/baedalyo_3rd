@@ -2,9 +2,7 @@ package com.green.beadalyo.lmy.order.entity;
 
 import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,7 +13,8 @@ import java.util.List;
 @Table(name = "order_menu_option")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class OrderMenuOption
 {
 

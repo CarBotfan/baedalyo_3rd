@@ -33,6 +33,17 @@ public class MailController {
                 .resultData(result).build();
     }
 
+    @PostMapping("/find")
+    @Operation(summary = "인증번호 메일 발송")
+    public ResultDto<String> findMailSend(@RequestBody @Valid EmailRequestDto emailDto) {
+
+        String result = mailService.findJoinEmail(emailDto.getEmail());
+        return ResultDto.<String>builder()
+                .statusCode(1)
+                .resultMsg(result)
+                .resultData(result).build();
+    }
+
     @PostMapping("/auth_check")
     @Operation(summary = "인증번호 체크")
     @ApiResponse(

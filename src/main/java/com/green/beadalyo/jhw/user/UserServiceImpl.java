@@ -91,18 +91,21 @@ public class UserServiceImpl implements UserService{
             e.printStackTrace();
             throw new FileUploadFailedException();
         }
-        return fileName;
+        return "pic/" + fileName;
     }
 
     @Transactional
     public void deleteProfileImage() {
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
+        StringBuilder sb = new StringBuilder();
         try {
             if(user.getUserPic() == null) {
                 return;
             }
+            sb.append(user.getUserPic());
+            sb.delete(0,4);
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, user.getUserPic());
+            File file = new File(delAbsoluteFolderPath, sb.toString());
             file.delete();
         } catch (Exception e) {
             throw new FileUploadFailedException();
@@ -120,6 +123,7 @@ public class UserServiceImpl implements UserService{
                 .userPk(user.getUserPk())
                 .role(user.getUserRole())
                 .build();
+
 
         String accessToken = jwtTokenProvider.generateAccessToken(myUser);
         String refreshToken = jwtTokenProvider.generateRefreshToken(myUser);
@@ -149,10 +153,10 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     public int patchUserInfo(UserInfoPatchDto dto) {
-        if(repository.existsByUserPhone(dto.getUserPhone())) {
+        if(dto.getUserPhone() != null && repository.existsByUserPhone(dto.getUserPhone())) {
             throw new DuplicatedInfoException("전화번호");
         }
-        if(repository.existsByUserNickname(dto.getUserNickname())) {
+        if(dto.getUserNickname() != null && repository.existsByUserNickname(dto.getUserNickname())) {
             throw new DuplicatedInfoException("닉네임");
         }
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
@@ -183,8 +187,9 @@ public class UserServiceImpl implements UserService{
             throw new PwConfirmFailureException();
         }
         try {
-            p.setNewPw(passwordEncoder.encode(p.getNewPw()));
+            p.setNewPw(passwordEncoder.encode(p.getNewPwConfirm()));
             user.setUserPw(p.getNewPw());
+            repository.save(user);
             result = 1;
         } catch(Exception e) {
             e.printStackTrace();
@@ -253,7 +258,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public User getUserById(String userId)  {
-        return repository.findUserByUserId(userId).orElseThrow();
+        return repository.findUserByUserId(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -335,7 +340,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req) throws Exception {
+    public User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req){
         return repository.findByUserEmailAndUserNameAndUserId(req.getUserEmail(), req.getUserName(), req.getUserId());
     }
 

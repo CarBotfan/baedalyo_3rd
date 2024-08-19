@@ -1,5 +1,6 @@
 package com.green.beadalyo.jhw.user.entity;
 
+import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.model.UserInfoPatchDto;
 import com.green.beadalyo.jhw.user.model.UserSignUpPostReq;
 import jakarta.persistence.*;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -73,6 +75,9 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true,mappedBy = "user")
+    private List<Restaurant> restaurant ;
+
     public User(UserSignUpPostReq p) {
         this.userId = p.getUserId();
         this.userPw = p.getUserPw();
@@ -82,6 +87,7 @@ public class User {
         this.userEmail = p.getUserEmail();
         this.userRole = p.getUserRole();
         this.userState = 1;
+        this.mileage = 0;
         this.userLoginType = p.getUserLoginType();
     }
 

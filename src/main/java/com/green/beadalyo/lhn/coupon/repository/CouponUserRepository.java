@@ -24,6 +24,8 @@ public interface CouponUserRepository extends JpaRepository<CouponUser, Long> {
 
     @Query("select cu from CouponUser cu where cu.coupon.id = :couponId and cu.user.userPk = :userPk and cu.state = :state")
     CouponUser findByUserIdAndStateAndCouponId(@Param("userPk") Long userPk, @Param("state") int state, @Param("couponId") Long couponId);
+
+
 }
 
 

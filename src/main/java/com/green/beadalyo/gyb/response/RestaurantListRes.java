@@ -37,6 +37,12 @@ public class RestaurantListRes
     @Schema(description = "가게 사진")
     private String restaurantPic ;
 
+    @Schema(description = "상점 쿠폰 여부")
+    private Integer isCoupon;
+
+    @Schema(description = "쿠폰 최대")
+    private Integer maxCoupon;
+
     public RestaurantListRes(RestaurantListView view)
     {
         this.restaurantPk = view.getRestaurantPk() ;
@@ -47,16 +53,22 @@ public class RestaurantListRes
         this.restaurantState = view.getRestaurantState() ;
         this.restaurantPic = view.getRestaurantPic() ;
         this.isFollow = view.getIsFollow() ;
+        this.isCoupon = view.getIsCoupon();
+        this.maxCoupon = view.getMaxPrice();
     }
 
-    public static ResultPage<RestaurantListRes> toResultPage(Page<RestaurantListView> page)
-    {
-        List<RestaurantListRes> list = new ArrayList<>() ;
-        for (RestaurantListView view : page)
-        {list.add(new RestaurantListRes(view));}
+    public static ResultPage<RestaurantListRes> toResultPage(Page<RestaurantListView> page) {
+        if (page == null) {
+            return new ResultPage<>(Page.empty());
+        }
 
-        PageImpl<RestaurantListRes> pageImpl = new PageImpl<>(list) ;
-        return new ResultPage<>(pageImpl) ;
+        List<RestaurantListRes> list = new ArrayList<>();
+        for (RestaurantListView view : page) {
+            list.add(new RestaurantListRes(view));
+        }
+
+        Page<RestaurantListRes> pageRes = new PageImpl<>(list, page.getPageable(), page.getTotalElements());
+        return new ResultPage<>(pageRes);
     }
 
 }

@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+
+import java.math.BigDecimal;
 
 import static com.green.beadalyo.common.globalconst.GlobalPattern.*;
 
@@ -62,14 +65,18 @@ public class OwnerSignUpPostReq {
     @Schema(defaultValue = "리뷰 설명")
     private String desc2 ;
     @Schema(defaultValue = "124.014")
-    private Double coorX;
+    private BigDecimal coorX;
     @Schema(defaultValue = "37.017")
-    private Double coorY;
+    private BigDecimal coorY;
     @Schema(defaultValue = "식당 이름")
     @NotBlank(message = "식당 이름을 입력해주세요.")
     private String restaurantName;
     @Schema(defaultValue = "사업자 등록번호")
     @NotBlank(message = "사업자 등록번호를 입력해주세요.")
     private String regiNum;
+
+    @Schema(defaultValue = "인증번호 재인증")
+    @NotEmpty(message = "인증번호를 입력하세요.")
+    private String authNum;
 
 }

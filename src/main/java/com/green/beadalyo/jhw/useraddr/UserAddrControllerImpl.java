@@ -18,6 +18,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/address")
+@PreAuthorize("hasAnyRole('USER')")
 @RequiredArgsConstructor
 @Tag(name = "유저 주소 컨트롤러")
 public class UserAddrControllerImpl implements UserAddrController{
@@ -195,7 +196,15 @@ public class UserAddrControllerImpl implements UserAddrController{
         String msg = "삭제 완료";
         int statusCode = 1;
         log.info("{}", p.getAddrPk());
-        try { result = service.deleteUserAddr(p); }
+        try {
+            result = service.deleteUserAddr(p);
+            List<UserAddrGetRes> list = service.getUserAddrList();
+            if(!list.isEmpty()) {
+                MainUserAddrPatchReq req = new MainUserAddrPatchReq();
+                req.setChangeAddrPk(list.get(0).getAddrPk());
+                service.patchMainUserAddr(req);
+            }
+        }
         catch (Exception e) {
             e.printStackTrace();
             msg = e.getMessage();

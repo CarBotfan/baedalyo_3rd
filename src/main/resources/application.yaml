@@ -8,7 +8,7 @@ spring:
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
@@ -38,6 +38,7 @@ spring:
           google:
             client-id: ${SOCIAL.GOOGLE.CLIENT_ID}
             client-secret: ${SOCIAL.GOOGLE.SECRET}
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"   # redirect-uri: http://localhost:8080/login/oauth2/code/kakao 와 같은 의미
             scope:
               - email
               - profile
@@ -49,6 +50,7 @@ spring:
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"   # redirect-uri: http://localhost:8080/login/oauth2/code/kakao 와 같은 의미
             scope:
               - profile_nickname
+              - account_email
               - profile_image
             client-name: Kakao
           naver:
@@ -61,7 +63,7 @@ spring:
               - name
               - email
               - profile_image
-            client-name: Kakao
+            client-name: naver
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize    #소셜 로그인 버튼을 눌렀을 때 이동할 URL
@@ -95,10 +97,18 @@ file:
 
 app:
   oauth2:
-    baseUri: /oauth2/authorization
+    baseUri: /oauth/authorization
     authorizedRedirectUris:
-      - http://localhost:8080/oauth2/callback
-      - http://localhost:3000/oauth2/callback
+      - http://localhost:8080/oauth/redirect
+      - https://jumuniyo.gybproject.com/oauth/redirect
+      - https://zumuniyo.shop/login/oauth2/code/google
+      - https://zumuniyo.shop/login/oauth2/code/naver
+      - https://zumuniyo.shop/login/oauth2/code/kakao
+      - https://zumuniyo.shop/oauth/redirect
+    authorization-request-cookie-name: oauth2_auth_request
+    redirect-uri-param-cookie-name: redirect_uri
+    cookie-expiry-seconds: 180
+
   jwt:
     secret: ${JWT_SECRET}
 
@@ -146,12 +156,12 @@ spring:
     username: ${MAIL.USERNAME}
     password: ${MAIL.PASSWORD}
 
-server:
-  port: ${PROD.SSL.SERVER.PORT}
-  ssl:
-    key-store: ${PROD.SSL.KEY.STORE}
-    key-store-password: ${PROD.SSL.PASSWORD}
-    key-password: ${PROD.SSL.PASSWORD}
+#server:
+#  port: ${PROD.SSL.SERVER.PORT}
+#  ssl:
+#    key-store: ${PROD.SSL.KEY.STORE}
+#    key-store-password: ${PROD.SSL.PASSWORD}
+#    key-password: ${PROD.SSL.PASSWORD}
 
 file:
   dir: ${PROD.FILE.DIRECTORY}

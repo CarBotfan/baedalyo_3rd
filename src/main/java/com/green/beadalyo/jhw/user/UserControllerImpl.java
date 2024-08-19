@@ -3,6 +3,7 @@ package com.green.beadalyo.jhw.user;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.gyb.dto.RestaurantInsertDto;
 import com.green.beadalyo.gyb.restaurant.RestaurantService;
+import com.green.beadalyo.jhw.email.MailService;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.security.SignInProviderType;
 import com.green.beadalyo.jhw.user.entity.User;
@@ -45,7 +46,7 @@ public class UserControllerImpl implements UserController{
     private final AuthenticationFacade authenticationFacade;
     private final PasswordEncoder passwordEncoder;
     private final UserAddrServiceImpl userAddrService;
-    private final ReportRepository reportRepository;
+    private final MailService mailService;
 
     @Override
     @PostMapping(value = "/sign-up", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE
@@ -67,6 +68,13 @@ public class UserControllerImpl implements UserController{
         String msg = "가입 성공";
         p.setUserRole("ROLE_USER");
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        Boolean checked = mailService.CheckAuthNum(p.getUserEmail(), p.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         try {
             if(!p.getUserPw().equals(p.getUserPwConfirm())) {
                 throw new PwConfirmFailureException();
@@ -131,14 +139,20 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         p.setUserRole("ROLE_OWNER");
         p.setUserLoginType(SignInProviderType.LOCAL.getValue());
+        Boolean checked = mailService.CheckAuthNum(p.getUserEmail(), p.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         try {
-            UserSignUpPostReq req = new UserSignUpPostReq(p);
-
             if(!p.getUserPw().equals(p.getUserPwConfirm())) {
                 throw new PwConfirmFailureException();
             }
 
             p.setUserPw(passwordEncoder.encode(p.getUserPw()));
+            UserSignUpPostReq req = new UserSignUpPostReq(p);
             User user = new User(req);
             service.duplicatedInfoCheck(user);
             String picName = service.uploadProfileImage(pic);
@@ -188,6 +202,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PostMapping("/sign-in")
+    @Tag(name = "로그인")
     @Operation(summary = "로그인", description = "회원 로그인")
     @ApiResponse(
             description =
@@ -223,6 +238,9 @@ public class UserControllerImpl implements UserController{
                 throw new IncorrectPwException();
             }
             result = service.postSignIn(res, user);
+            if(result.getMainAddr() == null) {
+                statusCode = 2;
+            }
         } catch(UserNotFoundException e) {
             statusCode = -2;
             msg = e.getMessage();
@@ -236,9 +254,6 @@ public class UserControllerImpl implements UserController{
             e.printStackTrace();
             statusCode = -1;
             msg = e.getMessage();
-        }
-        if(result.getMainAddr() == null) {
-            statusCode = 2;
         }
         return ResultDto.<SignInRes>builder()
                 .statusCode(statusCode)
@@ -616,10 +631,18 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<String> findUserId(FindUserIdReq req) {
+    public ResultDto<String> findUserId(@RequestBody FindUserIdReq req) {
         int code = 1;
         String msg = "아이디 찾기 성공";
         String result = null;
+
+        Boolean checked = mailService.CheckAuthNum(req.getUserEmail(), req.getAuthNum());
+        if (!checked) {
+            return ResultDto.<String>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         User user;
         try {
             user = service.getUserByUserNameAndUserEmail(req);
@@ -648,15 +671,22 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<Integer> findAndResetPassword(FindUserPwReq req) {
+    public ResultDto<Integer> findAndResetPassword(@RequestBody FindUserPwReq req) {
         int code = 1;
         String msg = "비밀번호가 재설정 되었습니다.";
         Integer result = null;
 
+        Boolean checked = mailService.CheckAuthNum(req.getUserEmail(), req.getAuthNum());
+        if (!checked) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+                    .build();
+        }
         User user;
-        try {
-            user = service.getUserByUserNameAndUserEmailAndUserId(req);
-        } catch (Exception e) {
+
+        user = service.getUserByUserNameAndUserEmailAndUserId(req);
+        if  (user == null ) {
             return ResultDto.<Integer>builder()
                     .statusCode(-2)
                     .resultMsg("해당 유저를 찾을 수 없음")
@@ -670,7 +700,7 @@ public class UserControllerImpl implements UserController{
                     .build();
         }
 
-        user.setUserPw(req.getUserPw());
+        user.setUserPw(passwordEncoder.encode(req.getUserPw()));
         result = service.saveUser(user);
 
         return ResultDto.<Integer>builder()
@@ -684,7 +714,7 @@ public class UserControllerImpl implements UserController{
     @Operation(summary = "소셜 로그인 name, phone 채우기", description = "소셜로그인 이후 필수 값 채우기")
     @ApiResponse(
             description =
-                    "<p> 1 :  </p>"+
+                    "<p> 1 :  </p>" +
                             "<p> -2 :  </p>" +
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"

@@ -32,7 +32,7 @@ public class RestaurantDetailView
     private Integer restaurantState;
     private String restaurantPic;
     @Transient
-    private Integer isFollow; // Transient 필드로 설정
+    private Integer isFollow = 0; // Transient 필드로 설정
     private BigDecimal restaurantCoorX ;
     private BigDecimal restaurantCoorY ;
     private LocalDateTime createdAt ;
@@ -50,6 +50,7 @@ public class RestaurantDetailView
         this.openTime = openTime;
         this.restaurantAddr = restaurantAddr;
         this.restaurantPic = restaurantPic;
+
         this.restaurantState = restaurantState;
         this.restaurantCoorX = restaurantCoorX;
         this.isFollow = isFollow;

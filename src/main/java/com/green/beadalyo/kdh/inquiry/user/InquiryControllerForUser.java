@@ -11,11 +11,12 @@ import com.green.beadalyo.kdh.inquiry.user.model.PutInquiryForUserReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/user/inquiry")
@@ -115,7 +116,8 @@ public class InquiryControllerForUser {
 
 
         boolean checkUser = service.checkUser(inquiryPk);
-        if (!checkUser){
+        log.info("asdasd:",checkUser);
+        if (checkUser == false ){
             return ResultDto.<GetInquiryOneForUser>builder()
                     .statusCode(-2)
                     .resultMsg("작성자가 아닙니다.")

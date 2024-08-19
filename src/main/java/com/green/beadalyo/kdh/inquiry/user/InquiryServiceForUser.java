@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class InquiryServiceForUser {
         InquiryEntity entity = new InquiryEntity();
         entity.setInquiryTitle(p.getInquiryTitle());
         entity.setInquiryContent(p.getInquiryContent());
-        entity.setUserPk(p.getUser());
+        entity.setUser(p.getUser());
         entity.setInquiryState(1);
 
         return entity;
@@ -42,12 +43,12 @@ public class InquiryServiceForUser {
 
     public InquiryEntity makeInquiryForPut(PutInquiryForUserReq p){
         InquiryEntity entity = inquiryRepository.getReferenceById(p.getInquiryPk());
-        if (entity.getUserPk() != p.getUser()){
+        if (entity.getUser() != p.getUser()){
             throw new RuntimeException();
         }
         entity.setInquiryTitle(p.getInquiryTitle());
         entity.setInquiryContent(p.getInquiryContent());
-        entity.setUserPk(p.getUser());
+        entity.setUser(p.getUser());
 
         return entity;
     }
@@ -62,15 +63,20 @@ public class InquiryServiceForUser {
     public boolean checkUser(Long inquiryPk){
         Long userPk = authenticationFacade.getLoginUserPk();
         InquiryEntity inquiryEntity = inquiryRepository.getReferenceById(inquiryPk);
-        if (inquiryEntity.getUserPk().getUserPk() != userPk){
+        if (!inquiryEntity.getUser().getUserPk().equals(userPk) ){
             return false;
         }
+//        Optional<InquiryEntity> inquiryEntity = inquiryRepository.findById(inquiryPk);
+//        Long entityUserPk = inquiryEntity.get().getUser().getUserPk();
+//        if (!entityUserPk.equals(userPk)) {
+//            return false;
+//        }
         return true;
     }
 
     public void delInquiry(Long inquiryPk){
         InquiryEntity inquiryEntity = inquiryRepository.getReferenceById(inquiryPk);
-        if (inquiryEntity.getInquiryPk() == 2){
+        if (inquiryEntity.getInquiryState() == 2){
             throw new RuntimeException();
         }
         inquiryRepository.delete(inquiryEntity);

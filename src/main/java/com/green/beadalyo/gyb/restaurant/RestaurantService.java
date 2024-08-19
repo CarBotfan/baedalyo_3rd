@@ -14,7 +14,6 @@ import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,33 +55,84 @@ public class RestaurantService
         BigDecimal xMax = x.add(range);
         BigDecimal yMin = y.subtract(range);
         BigDecimal yMax = y.add(range);
-        try {
-            Long userPk = authenticationFacade.getLoginUserPk();
-            return switch (orderType)
-            {
-                case 1 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinates(xMin,xMax,yMin,yMax,search,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,search,userPk,pageable);
-                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,search,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,search,userPk,pageable);
-                case 3 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinatesSortedByScore(xMin,xMax,yMin,yMax,search,userPk,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,search,userPk,pageable);
-                default -> null ;
+
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != 0) {
+            return switch (orderType) {
+                case 1 ->
+                        seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinates(xMin, xMax, yMin, yMax, search, userPk, pageable) : viewListRepository.findByCategoryIdAndCoordinates(seq, xMin, xMax, yMin, yMax, search, userPk, pageable);
+                case 2 ->
+                        seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin, xMax, yMin, yMax, x, y, search, userPk, pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq, xMin, xMax, yMin, yMax, x, y, search, userPk, pageable);
+                case 3 ->
+                        seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinatesSortedByScore(xMin, xMax, yMin, yMax, search, userPk, pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin, xMax, yMin, yMax, search, userPk, pageable);
+                default -> null;
             };
-        } catch (Exception e) {
-            return switch (orderType)
-            {
-                case 1 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinates(xMin,xMax,yMin,yMax,search,pageable) : viewListRepository.findByCategoryIdAndCoordinates(seq,xMin,xMax,yMin,yMax,search,pageable);
-                case 2 -> seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin,xMax,yMin,yMax,x,y,search,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq,xMin,xMax,yMin,yMax,x,y,search,pageable) ;
-                case 3 -> seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinatesSortedByScore(xMin,xMax,yMin,yMax,search,pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin,xMax,yMin,yMax,search,pageable);
-                default -> null ;
+        } else {
+            return switch (orderType) {
+                case 1 ->
+                        seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinates(xMin, xMax, yMin, yMax, search, pageable) : viewListRepository.findByCategoryIdAndCoordinates(seq, xMin, xMax, yMin, yMax, search, pageable);
+                case 2 ->
+                        seq == 0 ? viewListRepository.findALLByCategoryIdAndCoordinatesSortedByDistance(xMin, xMax, yMin, yMax, x, y, search, pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByDistance(seq, xMin, xMax, yMin, yMax, x, y, search, pageable);
+                case 3 ->
+                        seq == 0 ? viewListRepository.findAllByCategoryIdAndCoordinatesSortedByScore(xMin, xMax, yMin, yMax, search, pageable) : viewListRepository.findByCategoryIdAndCoordinatesSortedByScore(seq, xMin, xMax, yMin, yMax, search, pageable);
+                default -> null;
             };
         }
     }
 
+    public Page<RestaurantListView> getNewRestaurant(BigDecimal x, BigDecimal y) throws Exception
+    {
+        Pageable pageable = PageRequest.of(0, 10) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
 
-    public Page<RestaurantListView> getFollowRestaurantList(Integer page ) throws Exception
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != 0) {
+            return restaurantListViewRepository.findNewRestaurantListByCreatedAt(xMin, xMax, yMin, yMax, userPk, pageable);
+        } else {
+            return restaurantListViewRepository.findNewRestaurantListByCreatedAt(xMin, xMax, yMin, yMax, pageable);
+        }
+    }
+
+
+    public Page<RestaurantListView> getCouponRestaurant(BigDecimal x, BigDecimal y, Integer page) throws Exception
+    {
+        Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+
+        Long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != 0) {
+            return restaurantListViewRepository.findCouponRestaurant(xMin, xMax, yMin, yMax, userPk, pageable);
+        } else {
+            return restaurantListViewRepository.findCouponRestaurant(xMin, xMax, yMin, yMax, pageable);
+        }
+    }
+
+
+    public Page<RestaurantListView> getFollowRestaurantList(Integer page, Long userPk ) throws Exception
     {
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE) ;
-        Long userPk = authenticationFacade.getLoginUserPk();
-
         return viewListRepository.findFollowedRestaurant(userPk, pageable);
+    }
+
+    public Page<RestaurantListView> getRecentOrderedRestaurantList(BigDecimal x, BigDecimal y, Long userPk) throws Exception
+    {
+        Pageable pageable = PageRequest.of(0, 10) ;
+        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal xMin = x.subtract(range);
+        BigDecimal xMax = x.add(range);
+        BigDecimal yMin = y.subtract(range);
+        BigDecimal yMax = y.add(range);
+
+        return restaurantListViewRepository.findRecentOrderedList(xMin,xMax,yMin,yMax,userPk,pageable);
     }
 
 
@@ -101,7 +151,13 @@ public class RestaurantService
     //음식점 뷰 정보 호출(음식점 pk로)
     public RestaurantDetailView getRestaurantDataViewBySeq(Long seq) throws Exception
     {
-        return viewDetailRepository.findByRestaurantPk(seq).orElseThrow(NullPointerException::new);
+
+        long userPk = authenticationFacade.getLoginUserPk();
+        if (userPk != 0) {
+            return viewDetailRepository.findByRestaurantPk(seq, userPk).orElseThrow(NullPointerException::new);
+        } else {
+            return viewDetailRepository.findByRestaurantPk(seq).orElseThrow(NullPointerException::new);
+        }
     }
 
     //인서트(사업자 회원가입에서 서비스 호출 필요)
@@ -127,7 +183,6 @@ public class RestaurantService
     //음식점 상태 전환(영업 <-> 휴점)
     public Integer toggleState(User user) throws Exception
     {
-
         Restaurant data = repository.findTop1ByUser(user).orElseThrow(NullPointerException::new);
         if (data.getState() == 1) data.setState(2);
         else if (data.getState() == 2) data.setState(1);
