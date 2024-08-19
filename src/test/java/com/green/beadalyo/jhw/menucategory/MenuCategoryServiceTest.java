@@ -154,7 +154,7 @@ public class MenuCategoryServiceTest {
     void patchMenuCatPosition_ShouldUpdateCategoryPosition_WhenValidDto() {
         MenuCatPositionPatchDto dto = new MenuCatPositionPatchDto();
         dto.setMenuCatPk(1L);
-        dto.setPosition(2L);
+        dto.setPosition(3L);
         Restaurant restaurant = new Restaurant();
         dto.setRestaurant(restaurant);
 
@@ -163,8 +163,13 @@ public class MenuCategoryServiceTest {
         menuCategory1.setPosition(1L);
         when(repository.getReferenceById(dto.getMenuCatPk())).thenReturn(menuCategory1);
 
-        List<MenuCategory> categoriesBetween = new ArrayList<>();
-        categoriesBetween.add(menuCategory1);
+        MenuCategory menuCategory2 = new MenuCategory();
+        menuCategory2.setPosition(2L);
+
+        MenuCategory menuCategory3 = new MenuCategory();
+        menuCategory3.setPosition(3L);
+
+        List<MenuCategory> categoriesBetween = List.of(menuCategory1, menuCategory2, menuCategory3);
         when(repository.findMenuCategoriesByPositionBetweenAndRestaurant(restaurant, dto.getPosition(), menuCategory1.getPosition())).thenReturn(categoriesBetween);
 
         int result = service.patchMenuCatPosition(dto);

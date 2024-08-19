@@ -82,7 +82,7 @@ public class MenuCategoryService {
             }
         } else if(menuCategory.getPosition() < dto.getPosition()) {
             List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestaurant(dto.getRestaurant(), menuCategory.getPosition(), dto.getPosition());
-            if(list.get(list.size()-1).getPosition() < dto.getPosition()) {
+            if((list.size() <= 1 && dto.getPosition() > 1) || list.get(list.size()-1).getPosition() < dto.getPosition()) {
                 throw new RuntimeException("올바르지 않은 위치입니다");
             }
             for(MenuCategory mc : list) {
