@@ -20,6 +20,8 @@ public class OrderMiniGetRes {
     private String resName;
     private Integer orderPrice;
     private Integer orderState;
+    private String orderAddress ;
+    private String orderPhone ;
     private LocalDateTime createdAt;
     private List<OrderMenuRes> menus;
 
@@ -43,6 +45,8 @@ public class OrderMiniGetRes {
         this.orderPrice = data.getOrderPrice();
         this.orderState = data.getOrderState();
         this.createdAt = data.getCreatedAt();
+        this.orderAddress = data.getOrderAddress();
+        this.orderPhone = data.getOrderPhone();
         this.menus = new ArrayList<>();
         data.getMenus().forEach(orderMenu ->
             {
