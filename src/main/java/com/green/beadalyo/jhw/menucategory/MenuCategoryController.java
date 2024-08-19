@@ -37,6 +37,7 @@ public class MenuCategoryController {
     public ResultDto<Integer> postMenuCat(@RequestBody MenuCatPostReq p) {
         int result = 0;
         int statusCode = 1;
+
         String msg = "카테고리 등록 완료";
         try {
             User user = userService.getUser(authenticationFacade.getLoginUserPk());
