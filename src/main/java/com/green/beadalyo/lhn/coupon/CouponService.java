@@ -75,7 +75,32 @@ public class CouponService {
             dto.setName(cu.getCoupon().getName());
             dto.setMinOrderAmount(cu.getCoupon().getMinOrderAmount());
             dto.setResName(cu.getCoupon().getResName());
+            dto.setResPk(cu.getCoupon().getRestaurant().getSeq());
             result.add(dto);
+        }
+        return  result;
+    }
+
+    // 유저 쿠폰 사용한 목록 조회
+    @Transactional(readOnly = true)
+    public List<CouponUserResponseDto> getCouponByUse() {
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        User user = userRepository.findByUserPk(loginUserPk);
+
+        int state = 2; // 사용한 쿠폰 state
+        List<CouponUser> list = couponUserRepository.findByUserAndState(user, state);
+        List<CouponUserResponseDto> result = new ArrayList<>();
+
+        for(CouponUser cu : list) {
+            CouponUserResponseDto dto1 = new CouponUserResponseDto();
+            dto1.setCouponId(cu.getCoupon().getId());
+            dto1.setId(cu.getId());
+            dto1.setContent(cu.getCoupon().getContent());
+            dto1.setPrice(cu.getCoupon().getPrice());
+            dto1.setName(cu.getCoupon().getName());
+            dto1.setMinOrderAmount(cu.getCoupon().getMinOrderAmount());
+            dto1.setResName(cu.getCoupon().getResName());
+            result.add(dto1);
         }
         return  result;
     }

@@ -87,6 +87,20 @@ public class CouponController {
                 .build();
     }
 
+    //유저가 사용한 쿠폰목록 조회
+    @GetMapping("/use")
+    @Operation(summary = "유저 발급 쿠폰 목록조회")
+    public ResultDto<List<CouponUserResponseDto>> getCouponByUse() {
+        List<CouponUserResponseDto> coupons = couponService.getCouponByUse();
+
+        return ResultDto.<List<CouponUserResponseDto>>builder()
+                .statusCode(1)
+                .resultMsg("쿠폰 목록조회 완료")
+                .resultData(coupons)
+                .build();
+    }
+
+
     // 가게 주인이 생성한 쿠폰 목록 조회
     @GetMapping("/owner")
     @Operation(summary = "가게 주인 쿠폰생성 목록조회")
@@ -193,7 +207,8 @@ public class CouponController {
                 couponUser.getCoupon().getPrice(),
                 couponUser.getCoupon().getMinOrderAmount(),
                 couponUser.getCoupon().getName(),
-                couponUser.getCoupon().getResName()
+                couponUser.getCoupon().getResName(),
+                couponUser.getCoupon().getRestaurant().getSeq()
         );
 
     }
