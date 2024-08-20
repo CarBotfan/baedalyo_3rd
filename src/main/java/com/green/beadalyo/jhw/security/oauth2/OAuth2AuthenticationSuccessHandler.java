@@ -80,8 +80,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // 리디렉션 URL에 쿼리 파라미터를 추가하여 구성
         return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("user_name", myUserOAuth2Vo.getNm()) // 닉네임 추가
+                .queryParam("user_nickname", myUserOAuth2Vo.getNm()) // 닉네임 추가
                 .queryParam("user_pic", myUserOAuth2Vo.getPic()) // 프로필 사진 추가
+                .queryParam("user_email", myUserOAuth2Vo.getEmail())
                 .queryParam("access_token", accessToken) // 엑세스 토큰 추가
                 .queryParam("needs_additional_info", needsAdditionalInfo) // 추가 정보 필요 여부 추가
                 .encode()
