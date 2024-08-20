@@ -84,6 +84,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("user_nickname", myUserOAuth2Vo.getNm()).encode()
                 .queryParam("user_pic", myUserOAuth2Vo.getPic())
+                .queryParam("user_email", myUserOAuth2Vo.getEmail())
                 .queryParam("access_token", accessToken)
                 .queryParam("needs_additional_info", myUserDetails.isNeedsAdditionalInfo()) // 필수 정보 여부 추가
                 .build()
