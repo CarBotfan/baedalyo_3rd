@@ -123,7 +123,7 @@ public class InquiryControllerForUser {
 
 
         boolean checkUser = service.checkUser(inquiryPk);
-        log.info("asdasd:",checkUser);
+        log.debug("asdasd:",checkUser);
         if (checkUser == false ){
             return ResultDto.<GetInquiryOneForUser>builder()
                     .statusCode(-2)

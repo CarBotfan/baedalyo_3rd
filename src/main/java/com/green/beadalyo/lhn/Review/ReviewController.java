@@ -48,7 +48,7 @@ public class ReviewController {
     )
     public ResultDto<Long> postReview( @RequestPart ReviewPostReq p,
                                        @RequestPart(required = false) List<MultipartFile> pics) {
-        log.info("list size : {}", pics);
+        log.debug("list size : {}", pics);
         int code = 1;
         String msg = "작성 완료";
         long result = 0;

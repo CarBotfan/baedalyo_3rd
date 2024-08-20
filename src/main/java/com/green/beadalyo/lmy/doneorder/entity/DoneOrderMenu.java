@@ -28,7 +28,7 @@ public class DoneOrderMenu {
     @JoinColumn(name = "done_order_pk",nullable = false)
     private DoneOrder doneOrderPk;
 
-    @OneToMany(fetch = FetchType.EAGER,orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "doneOrderMenu")
+    @OneToMany(fetch = FetchType.LAZY,orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "doneOrderMenu")
     private List<DoneOrderMenuOption> doneMenuOption ;
 
     @ToString.Exclude

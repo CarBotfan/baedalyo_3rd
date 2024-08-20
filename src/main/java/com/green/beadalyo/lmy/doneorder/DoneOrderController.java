@@ -165,7 +165,7 @@ public class DoneOrderController {
     )
     public ResultDto<DoneOrderGetRes> getDoneOrderInfo(@PathVariable("done_order_pk") Long doneOrderPk) {
         DoneOrderGetRes result = null;
-        log.info("{}", doneOrderPk);
+        log.debug("{}", doneOrderPk);
         try {
             result = doneOrderService.getDoneOrderInfo(doneOrderPk);
         } catch (Exception e) {

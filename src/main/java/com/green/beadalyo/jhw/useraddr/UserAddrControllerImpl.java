@@ -195,7 +195,7 @@ public class UserAddrControllerImpl implements UserAddrController{
         int result = 0;
         String msg = "삭제 완료";
         int statusCode = 1;
-        log.info("{}", p.getAddrPk());
+        log.debug("{}", p.getAddrPk());
         try {
             result = service.deleteUserAddr(p);
             List<UserAddrGetRes> list = service.getUserAddrList();
