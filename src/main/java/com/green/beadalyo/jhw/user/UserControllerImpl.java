@@ -722,6 +722,14 @@ public class UserControllerImpl implements UserController{
     public ResultDto<Integer> putSocialLoginUser(@RequestBody PutSocialLoginReq req) {
 
         User user = service.putUserEssential(req);
+        try {
+            service.duplicatedPhoneCheck(user);
+        } catch (DuplicatedInfoException e) {
+            return ResultDto.<Integer>builder()
+                    .statusCode(-11)
+                    .resultMsg(e.getMessage())
+                    .build();
+        }
         service.saveUser(user);
 
         return ResultDto.<Integer>builder()
