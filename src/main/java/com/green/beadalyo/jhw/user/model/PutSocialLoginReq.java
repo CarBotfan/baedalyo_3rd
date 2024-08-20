@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class PutSocialLoginReq {
-    private String userNickName;
+    private String userName;
     private String userPhone;
 }
