@@ -285,6 +285,14 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    public void duplicatedPhoneCheck(User user) {
+        if(repository.existsByUserPhone(user.getUserPhone())) {
+            throw new DuplicatedInfoException("전화번호");
+        }
+    }
+
+
+
     public void logoutToken(HttpServletRequest request, HttpServletResponse response) {
 
 //        String token = jwtTokenProvider.resolveToken(request);
