@@ -5,6 +5,7 @@ import com.green.beadalyo.gyb.model.Category;
 import com.green.beadalyo.gyb.request.RestaurantManagePatchReq;
 import com.green.beadalyo.jhw.user.entity.User;
 import jakarta.persistence.*;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,6 +25,7 @@ public class WaitingRestaurant {
     @Column(name = "waiting_res_pk")
     private Long waitingResPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @Comment("소유자 정보")
     @JoinColumn(name = "res_user_pk")

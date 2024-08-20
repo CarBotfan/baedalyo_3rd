@@ -50,7 +50,7 @@ public class RestaurantService
     public Page<RestaurantListView> getRestaurantByCategory(Long seq, BigDecimal x, BigDecimal y, Integer orderType, Integer page, String search ) throws Exception
     {
         Pageable pageable = PageRequest.of(page-1, PAGE_SIZE) ;
-        BigDecimal range = BigDecimal.valueOf(0.09);
+        BigDecimal range = BigDecimal.valueOf(0.03);
         BigDecimal xMin = x.subtract(range);
         BigDecimal xMax = x.add(range);
         BigDecimal yMin = y.subtract(range);

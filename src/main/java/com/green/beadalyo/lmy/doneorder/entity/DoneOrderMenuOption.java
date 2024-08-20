@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class DoneOrderMenuOption
     @Column(name = "done_order_menu_option_pk")
     private Long seq ;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "done_order_menu_pk",nullable = false)
     private DoneOrderMenu doneOrderMenu;

@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -153,9 +155,37 @@ public class MenuService {
     }
 
     //특정 메뉴 pk 로 메뉴 데이터 불러오기
-    public List<MenuEntity> getInMenuData(List<Long> menuIds)
-    {
-        return menuRepository.findByMenuPkIn(menuIds);
+    public List<MenuEntity> getInMenuData(List<Long> menuIds) {
+        List<MenuEntity> menus = menuRepository.findByMenuPkIn(menuIds);
+
+        if (menuIds.size() != menus.size()) {
+            // 중복된 menuIds 검출
+            Map<Long, Long> duplicates = menuIds.stream()
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                    .entrySet().stream()
+                    .filter(entry -> entry.getValue() > 1)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            // 결과 리스트에 중복된 값만큼 MenuEntity 추가
+            List<MenuEntity> finalResults = new ArrayList<>(menus);
+
+            duplicates.forEach((menuId, count) -> {
+                MenuEntity menuEntity = menus.stream()
+                        .filter(menu -> menu.getMenuPk().equals(menuId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (menuEntity != null) {
+                    for (long i = 1; i < count; i++) {
+                        finalResults.add(menuEntity);
+                    }
+                }
+            });
+
+            return finalResults;
+        }
+
+        return menus;
     }
 
 

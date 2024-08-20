@@ -72,6 +72,9 @@ public class MenuCategoryService {
         if(!repository.existsByMenuCategoryPkAndRestaurant(dto.getMenuCatPk(), dto.getRestaurant())) {
             throw new MenuCatNotFoundException();
         }
+        if(dto.getPosition() == 0L) {
+            throw new RuntimeException("올바르지 않은 위치입니다");
+        }
         MenuCategory menuCategory = repository.getReferenceById(dto.getMenuCatPk());
         if(menuCategory.getPosition() > dto.getPosition()) {
             List<MenuCategory> list = repository.findMenuCategoriesByPositionBetweenAndRestaurant(dto.getRestaurant(), dto.getPosition(), menuCategory.getPosition());

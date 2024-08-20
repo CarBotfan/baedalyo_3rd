@@ -22,7 +22,8 @@ public class Coupon {
     @Column(name = "res_coupon_pk")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_pk", nullable = false)
     private Restaurant restaurant;
 

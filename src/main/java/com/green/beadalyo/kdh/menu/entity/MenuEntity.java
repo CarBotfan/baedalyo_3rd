@@ -6,6 +6,7 @@ import com.green.beadalyo.kdh.menuoption.entity.MenuOption;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name = "menu")
 public class MenuEntity {
     @Id
@@ -23,6 +25,7 @@ public class MenuEntity {
     @Column(name = "menu_pk")
     private Long menuPk;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_cat_pk")
     private MenuCategory menuCategory;

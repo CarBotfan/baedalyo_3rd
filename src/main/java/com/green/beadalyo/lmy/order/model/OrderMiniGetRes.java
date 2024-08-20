@@ -20,9 +20,11 @@ public class OrderMiniGetRes {
     private String resName;
     private Integer orderPrice;
     private Integer orderState;
+    private String orderRequest ;
     private String orderAddress ;
     private String orderPhone ;
     private LocalDateTime createdAt;
+    private Integer paymentMethod ;
     private List<OrderMenuRes> menus;
 
     public OrderMiniGetRes(Long orderPk, Long resPk, String resPic, String resName, Integer orderPrice, Integer orderState, LocalDateTime createdAt) {
@@ -47,6 +49,8 @@ public class OrderMiniGetRes {
         this.createdAt = data.getCreatedAt();
         this.orderAddress = data.getOrderAddress();
         this.orderPhone = data.getOrderPhone();
+        this.paymentMethod = data.getPaymentMethod();
+        this.orderRequest = data.getOrderRequest();
         this.menus = new ArrayList<>();
         data.getMenus().forEach(orderMenu ->
             {

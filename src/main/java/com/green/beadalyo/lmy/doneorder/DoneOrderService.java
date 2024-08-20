@@ -1,6 +1,5 @@
 package com.green.beadalyo.lmy.doneorder;
 
-import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
@@ -11,13 +10,11 @@ import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import com.green.beadalyo.lmy.order.model.MenuInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,21 +37,25 @@ public class DoneOrderService {
     public Map<String, Object> getDoneOrderByUserPk(Paging p) {
         long userPk = authenticationFacade.getLoginUserPk();
 
+        User user = userRepository.findByUserPk(userPk) ;
         Pageable pageable = PageRequest.of(p.getPage(), p.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<DoneOrderMiniGetResUser> result = doneOrderRepository.findDoneOrdersByUserPk(userPk, pageable);
+        Page<DoneOrder> result = doneOrderRepository.findByUser(user, pageable);
+        List<DoneOrderMiniGetResUser> list = new ArrayList<>();
+        result.forEach(doneOrder -> {
+            DoneOrderMiniGetResUser i = new DoneOrderMiniGetResUser(doneOrder) ;
+            list.add(i) ;
+        });
 
         Map<String, Object> resultMap = new HashMap<>();
 
-        if (result != null) {
-            for (DoneOrderMiniGetResUser item : result.getContent()) {
-                item.setReviewState(doneOrderRepository.countReviewsByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 0 : 1);
-                List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
-                item.setMenuInfoDtos(result2);
-            }
-
-            resultMap.put("maxPage", result.getTotalPages());
-            resultMap.put("contents", result.getContent());
+        for (DoneOrderMiniGetResUser item : list) {
+            item.setReviewState(doneOrderRepository.countByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 0 : 1);
+            List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
+            item.setMenuInfoDtos(result2);
         }
+
+        resultMap.put("maxPage", result.getTotalPages());
+        resultMap.put("contents", list);
 
         return resultMap;
     }
@@ -108,7 +109,7 @@ public class DoneOrderService {
         DoneOrder doneOrder1 = doneOrderRepository.getReferenceById(doneOrderPk);
 
         if (userPk != doneOrder1.getResPk().getUser().getUserPk()
-                && userPk != doneOrder1.getUserPk().getUserPk()) {
+                && userPk != doneOrder1.getUser().getUserPk()) {
             throw new IllegalArgumentException("주문과 관련된 유저만 열람 가능합니다.");
         }
 
@@ -119,7 +120,7 @@ public class DoneOrderService {
 
         DoneOrderGetRes result = new DoneOrderGetRes();
         result.setDoneOrderPk(doneOrder.getDoneOrderPk());
-        result.setUserPk(doneOrder.getUserPk().getUserPk());
+        result.setUserPk(doneOrder.getUser().getUserPk());
         result.setResPk(doneOrder.getResPk().getSeq());
         result.setResName(doneOrder.getResPk().getName());
         result.setOrderAddress(doneOrder.getOrderAddress());
