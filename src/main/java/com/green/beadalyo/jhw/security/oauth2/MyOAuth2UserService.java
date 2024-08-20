@@ -67,6 +67,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             signUpParam.setUserNickname(oAuth2UserInfo.getName());
             signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
             signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
+            signUpParam.setUserRole("ROLE_USER");
             user = new User(signUpParam);
             user = repository.save(user);
         }
