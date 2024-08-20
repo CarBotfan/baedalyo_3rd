@@ -243,23 +243,15 @@ public class OrderController {
             order.setOrderPrice(totalPrice.get());
             order.setTotalPrice(lastPrice);
 
-            //주문금액이 0일시 결제 완료 처리 후 알림 전송
-            if (lastPrice < 0)
-            {
-                order.setOrderState(2);
-                SSEApiController.sendEmitters("test",res.getUser());
-            }
-            //주문 타입이 후불 결제일시 결제 완료 처리 후 알림 전송
-            if (order.getPaymentMethod() == 1 || p.getPaymentMethod() == 2)
-            {
-                order.setOrderState(2);
-                SSEApiController.sendEmitters("test",res.getUser());
-            }
+            //주문금액이 0일시 결제 완료 처리
+            if (lastPrice < 0) {order.setOrderState(2);}
+            //주문 타입이 후불 결제일시 결제 완료 처리
+            else if (order.getPaymentMethod() == 1 || p.getPaymentMethod() == 2) {order.setOrderState(2);}
             //데이터 저장
             userService.save(user);
             orderService.saveOrder(order) ;
 
-            if (order.getOrderState() == 2) SSEApiController.sendEmitters("OrderRequest", order.getOrderRes().getUser());
+            if (order.getOrderState() == 2) SSEApiController.sendEmitters("주문 요청 들어옴", order.getOrderRes().getUser());
             return ResultDto.builder().resultData(new PostOrderRes(order.getOrderPrice(), order.getTotalPrice(), order.getOrderPk())).build();
 
 

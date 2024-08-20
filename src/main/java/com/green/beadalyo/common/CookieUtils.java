@@ -31,7 +31,6 @@ public class CookieUtils {
 
     //요청 header에 내가 원하는 쿠키를 찾는 메소드
     public Cookie getCookie(HttpServletRequest req, String name) {
-        System.out.println("asdasd"+name);
         Cookie[] cookies = req.getCookies(); //요청에서 모든 쿠키 정보를 받는다.
         if (cookies != null && cookies.length > 0) { //쿠키 정보가 있고 쿠키가 하나 이상 있다면
             for (Cookie cookie : cookies) {
