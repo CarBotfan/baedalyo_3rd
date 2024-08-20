@@ -285,8 +285,8 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    public void duplicatedPhoneCheck(User user) {
-        if(repository.existsByUserPhone(user.getUserPhone())) {
+    public void duplicatedPhoneCheck(String phone) {
+        if(repository.existsByUserPhone(phone)) {
             throw new DuplicatedInfoException("전화번호");
         }
     }
