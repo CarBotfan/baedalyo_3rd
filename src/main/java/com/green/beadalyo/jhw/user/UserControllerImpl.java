@@ -729,8 +729,6 @@ public class UserControllerImpl implements UserController{
                 .resultMsg("소셜 로그인 필수 값 설정 완료")
                 .resultData(1)
                 .build();
-
     }
-
 
 }

@@ -361,7 +361,7 @@ public class UserServiceImpl implements UserService{
 
     public User putUserEssential(PutSocialLoginReq req) {
         User user = repository.findByUserPk(authenticationFacade.getLoginUserPk());
-        user.setUserNickname(req.getUserNickName());
+        user.setUserName(req.getUserName());
         user.setUserPhone(req.getUserPhone());
 
         return user;
