@@ -715,7 +715,7 @@ public class UserControllerImpl implements UserController{
     @ApiResponse(
             description =
                     "<p> 1 :  </p>" +
-                            "<p> -2 :  </p>" +
+                            "<p> -11 : 중복된 핸드폰 번호 </p>" +
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
