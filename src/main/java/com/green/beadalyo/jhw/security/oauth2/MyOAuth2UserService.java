@@ -62,11 +62,18 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             user = optionalUser.get();
         } else { //회원가입 처리
             UserSignUpPostReq signUpParam = new UserSignUpPostReq();
-            signUpParam.setUserLoginType(signInProviderType.getValue());
-            signUpParam.setUserId(oAuth2UserInfo.getId());
-            signUpParam.setUserName(oAuth2UserInfo.getName());
-            signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
-            signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
+            try { signUpParam.setUserLoginType(signInProviderType.getValue());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserId(oAuth2UserInfo.getId());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserName(oAuth2UserInfo.getName());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
+            } catch (Exception ignored) {}
+
+
             user = new User(signUpParam);
             user = repository.save(user);
         }
