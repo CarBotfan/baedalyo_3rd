@@ -80,4 +80,5 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         signInUser.setNeedsAdditionalInfo(needsAdditionalInfo);
         return signInUser;
     }
+
 }
