@@ -11,6 +11,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
+    hikari:
+      maximum-pool-size : 20
+      leakDetectionThreshold : 2000
     url: ${DEFAULT.DB_URL}
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
     username: ${DEFAULT.DB_USERNAME}
