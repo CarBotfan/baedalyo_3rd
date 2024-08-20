@@ -1,9 +1,11 @@
 package com.green.beadalyo.gyb.sse;
 
+import ch.qos.logback.classic.Logger;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.exception.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
+@Slf4j
 public class SSEApiController
 {
 
@@ -43,6 +46,7 @@ public class SSEApiController
 
             return null;
         }
+        log.info("체크 포인트 : {}", user == null ? "null" : user.getUserPk());
         syncUser.put(userPk,emitter);
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(( ) -> emitters.remove(emitter));
