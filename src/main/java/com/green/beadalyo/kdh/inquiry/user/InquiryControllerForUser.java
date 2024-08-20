@@ -123,8 +123,7 @@ public class InquiryControllerForUser {
 
 
         boolean checkUser = service.checkUser(inquiryPk);
-        log.debug("asdasd:",checkUser);
-        if (checkUser == false ){
+        if (!checkUser){
             return ResultDto.<GetInquiryOneForUser>builder()
                     .statusCode(-2)
                     .resultMsg("작성자가 아닙니다.")

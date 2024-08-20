@@ -42,17 +42,16 @@ public class SSEApiController
 
         SseEmitter emitter = new SseEmitter((long) 7200 * 1000);
         emitters.add(emitter);
-        MyUserDetails userData = (MyUserDetails) jwtTokenProvider.getUserDetailsFromToken(token) ;
-        Long userPk = userData.getMyUser().getUserPk();
-        User user = null;
+        User user;
         try {
+            MyUserDetails userData = (MyUserDetails) jwtTokenProvider.getUserDetailsFromToken(token) ;
+            Long userPk = userData.getMyUser().getUserPk();
             user = userService.getUser(userPk);
+            syncUser.put(userPk, emitter);
+            if (user == null) return null ;
         } catch (Exception e) {
-
             return null;
         }
-        log.info("체크 포인트 : {}", user == null ? "null" : user.getUserPk());
-        syncUser.put(userPk, emitter);
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(() -> emitters.remove(emitter));
         sendEmitters("연결 완료", user);
