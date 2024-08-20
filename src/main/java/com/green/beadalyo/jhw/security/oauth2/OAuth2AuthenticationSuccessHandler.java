@@ -80,15 +80,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 , refreshToken
                 , refreshTokenMaxAge);
 
-        // 추가 정보를 요구하는 경우
-        boolean needsAdditionalInfo = myUserDetails.isNeedsAdditionalInfo();
-
         // http://localhost:8080/oauth/redirect?user_id=1&nm=홍길동&pic=https://image.jpg&access_token=aslkdjslajf
         return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("user_name", myUserOAuth2Vo.getNm()).encode()
+                .queryParam("user_nickname", myUserOAuth2Vo.getNm()).encode()
                 .queryParam("user_pic", myUserOAuth2Vo.getPic())
                 .queryParam("access_token", accessToken)
-                .queryParam("needs_additional_info", needsAdditionalInfo) // 필수 정보 여부 추가
+                .queryParam("needs_additional_info", myUserDetails.isNeedsAdditionalInfo()) // 필수 정보 여부 추가
                 .build()
                 .toUriString();
     }
