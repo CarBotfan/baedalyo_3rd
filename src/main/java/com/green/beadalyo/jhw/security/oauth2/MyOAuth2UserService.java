@@ -35,6 +35,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         } catch (AuthenticationException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new InternalAuthenticationServiceException(e.getMessage(), e.getCause());
         }
     }
