@@ -64,15 +64,16 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             UserSignUpPostReq signUpParam = new UserSignUpPostReq();
             signUpParam.setUserLoginType(signInProviderType.getValue());
             signUpParam.setUserId(oAuth2UserInfo.getId());
-            signUpParam.setUserName(oAuth2UserInfo.getName());
+            signUpParam.setUserNickname(oAuth2UserInfo.getName());
             signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
             signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
+            signUpParam.setUserRole("ROLE_USER");
             user = new User(signUpParam);
             user = repository.save(user);
         }
 
         boolean needsAdditionalInfo = user.getUserNickname() == null || user.getUserPhone() == null;
-        MyUserOAuth2Vo myUserOAuth2Vo = new MyUserOAuth2Vo(user.getUserPk(), "ROLE_USER", user.getUserName(), user.getUserPic());
+        MyUserOAuth2Vo myUserOAuth2Vo = new MyUserOAuth2Vo(user.getUserPk(), "ROLE_USER", user.getUserNickname(), user.getUserPic(), user.getUserEmail());
 
         MyUserDetails signInUser = new MyUserDetails();
         signInUser.setMyUser(myUserOAuth2Vo);
