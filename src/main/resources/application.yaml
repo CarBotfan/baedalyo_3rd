@@ -62,7 +62,7 @@ spring:
             authorization-grant-type: authorization_code        # 권한 부여 유형 (인가 코드 -> access-token 을 받는 방식을 선택)
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"   # redirect-uri: http://localhost:8080/login/oauth2/code/NAVER 와 같은 의미
             scope:
-              - name
+              - nickname
               - email
               - profile_image
             client-name: naver
