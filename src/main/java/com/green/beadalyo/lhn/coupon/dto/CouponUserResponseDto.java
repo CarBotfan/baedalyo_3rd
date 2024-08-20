@@ -31,4 +31,6 @@ public class CouponUserResponseDto {
 
     @Schema(description = "식당 이름", example = "김치식당")
     private String resName;
+
+    private Long resPk;
 }
