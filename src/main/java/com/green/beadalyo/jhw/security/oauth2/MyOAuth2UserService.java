@@ -72,7 +72,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         boolean needsAdditionalInfo = user.getUserNickname() == null || user.getUserPhone() == null;
-        MyUserOAuth2Vo myUserOAuth2Vo = new MyUserOAuth2Vo(user.getUserPk(), "ROLE_USER", user.getUserName(), user.getUserPic(), user.getUserEmail());
+        MyUserOAuth2Vo myUserOAuth2Vo = new MyUserOAuth2Vo(user.getUserPk(), "ROLE_USER", user.getUserNickname(), user.getUserPic(), user.getUserEmail());
 
         MyUserDetails signInUser = new MyUserDetails();
         signInUser.setMyUser(myUserOAuth2Vo);
