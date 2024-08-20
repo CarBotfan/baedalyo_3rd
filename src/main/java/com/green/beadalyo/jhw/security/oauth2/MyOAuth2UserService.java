@@ -67,7 +67,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             } catch (Exception ignored) {}
             try { signUpParam.setUserId(oAuth2UserInfo.getId());
             } catch (Exception ignored) {}
-            try { signUpParam.setUserName(oAuth2UserInfo.getName());
+            try { signUpParam.setUserNickname(oAuth2UserInfo.getName());
             } catch (Exception ignored) {}
             try { signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
             } catch (Exception ignored) {}
@@ -79,7 +79,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             user = repository.save(user);
         }
 
-        boolean needsAdditionalInfo = user.getUserNickname() == null || user.getUserPhone() == null;
+        boolean needsAdditionalInfo = user.getUserName() == null || user.getUserPhone() == null;
         MyUserOAuth2Vo myUserOAuth2Vo = new MyUserOAuth2Vo(user.getUserPk(), "ROLE_USER", user.getUserNickname(), user.getUserPic(), user.getUserEmail());
 
         MyUserDetails signInUser = new MyUserDetails();
