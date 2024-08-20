@@ -631,7 +631,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<String> findUserId(@RequestBody FindUserIdReq req) {
+    public ResultDto<String> findUserId(@Valid@RequestBody FindUserIdReq req) {
         int code = 1;
         String msg = "아이디 찾기 성공";
         String result = null;
@@ -671,7 +671,7 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<Integer> findAndResetPassword(@RequestBody FindUserPwReq req) {
+    public ResultDto<Integer> findAndResetPassword(@Valid@RequestBody FindUserPwReq req) {
         int code = 1;
         String msg = "비밀번호가 재설정 되었습니다.";
         Integer result = null;
@@ -719,17 +719,17 @@ public class UserControllerImpl implements UserController{
                             "<p> -3 :  </p>" +
                             "<p> -1 :  </p>"
     )
-    public ResultDto<Integer> putSocialLoginUser(@RequestBody PutSocialLoginReq req) {
-
-        User user = service.putUserEssential(req);
+    public ResultDto<Integer> putSocialLoginUser(@Valid @RequestBody PutSocialLoginReq req) {
         try {
-            service.duplicatedPhoneCheck(user);
+            service.duplicatedPhoneCheck(req.getUserPhone());
         } catch (DuplicatedInfoException e) {
             return ResultDto.<Integer>builder()
                     .statusCode(-11)
                     .resultMsg(e.getMessage())
                     .build();
         }
+
+        User user = service.putUserEssential(req);
         service.saveUser(user);
 
         return ResultDto.<Integer>builder()
