@@ -101,6 +101,7 @@ app:
   oauth2:
     baseUri: /oauth/authorization
     authorizedRedirectUris:
+      - http://localhost:3000/oauth/redirect
       - http://localhost:8080/oauth/redirect
       - https://jumuniyo.gybproject.com/oauth/redirect
       - https://zumuniyo.shop/login/oauth2/code/google
