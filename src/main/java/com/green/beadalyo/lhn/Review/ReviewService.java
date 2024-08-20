@@ -275,7 +275,7 @@ public class ReviewService {
         Map<String, Object> map = new HashMap<>();
         map.put("total Page", list.getTotalPages());
         map.put("page", result);
-        log.info("{}", map);
+        log.debug("{}", map);
         return result;
     }
 

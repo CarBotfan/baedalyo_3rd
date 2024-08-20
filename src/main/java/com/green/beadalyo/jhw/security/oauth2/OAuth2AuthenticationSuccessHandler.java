@@ -36,7 +36,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
         String targetUrl = determineTargetUrl(request, response, authentication); //리다이렉트 할 Url 얻음
-        log.info("targetUrl: {}", targetUrl);
+        log.debug("targetUrl: {}", targetUrl);
         clearAuthenticationAttributes(request, response); //리다이렉트 전 사용했던 자료 삭제
         getRedirectStrategy().sendRedirect(request, response, targetUrl); //리다이렉트 실행
     }
@@ -53,7 +53,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             throw new IllegalArgumentException("인증되지 않은 Redirect URI입니다.");
         }
 
-        log.info("determineTargetUrl > getDefaultTargetUrl(): {}", getDefaultTargetUrl());
+        log.debug("determineTargetUrl > getDefaultTargetUrl(): {}", getDefaultTargetUrl());
 
         //FE가 원하는 redirect_url값이 저장
         String targetUrl = redirectUri == null ? getDefaultTargetUrl() : redirectUri;
@@ -101,8 +101,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     //우리가 설정한 redirect-uri인지 체크
     private boolean hasAuthorizedRedirectUri(String uri) {
         URI savedCookieRedirectUri = URI.create(uri);
-        log.info("savedCookieRedirectUri.getHost(): {}", savedCookieRedirectUri.getHost());
-        log.info("savedCookieRedirectUri.getPort(): {}", savedCookieRedirectUri.getPort());
+        log.debug("savedCookieRedirectUri.getHost(): {}", savedCookieRedirectUri.getHost());
+        log.debug("savedCookieRedirectUri.getPort(): {}", savedCookieRedirectUri.getPort());
 
         for(String redirectUri : appProperties.getOauth2().getAuthorizedRedirectUris()) {
             URI authorizedUri = URI.create(redirectUri);

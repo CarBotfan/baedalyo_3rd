@@ -35,7 +35,6 @@ public class SSEApiController
 
         SseEmitter emitter = new SseEmitter((long)7200*1000);
         emitters.add(emitter);
-
         Long userPk = authenticationFacade.getLoginUserPk() ;
         User user = null ;
         try {

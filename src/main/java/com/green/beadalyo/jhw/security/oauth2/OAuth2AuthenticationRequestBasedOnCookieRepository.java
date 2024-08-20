@@ -36,7 +36,7 @@ public class OAuth2AuthenticationRequestBasedOnCookieRepository
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        log.info("CookieRepository - loadAuthorizationRequest");
+        log.debug("CookieRepository - loadAuthorizationRequest");
         return cookieUtils.getCookie(request
                                     , appProperties.getOauth2().getAuthorizationRequestCookieName()
                                     , OAuth2AuthorizationRequest.class
@@ -45,7 +45,7 @@ public class OAuth2AuthenticationRequestBasedOnCookieRepository
 
     @Override
     public void saveAuthorizationRequest (OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
-        log.info("CookieRepository - saveAuthorizationRequest");
+        log.debug("CookieRepository - saveAuthorizationRequest");
         if(authorizationRequest == null) { //
             this.removeAuthorizationRequestCookies(response);
             return;
@@ -59,7 +59,7 @@ public class OAuth2AuthenticationRequestBasedOnCookieRepository
 
         //FE로 돌아갈 redirect 주소값 (즉, FE가 redirect_uri 파라미터로 백엔드에 보내준 값)
         String redirectUriAfterLogin = request.getParameter(appProperties.getOauth2().getRedirectUriParamCookieName());
-        log.info("redirectUriAfterLogin: {}", redirectUriAfterLogin);
+        log.debug("redirectUriAfterLogin: {}", redirectUriAfterLogin);
         if(StringUtils.isNotBlank(redirectUriAfterLogin)) {
             cookieUtils.setCookie(response
                     , appProperties.getOauth2().getRedirectUriParamCookieName()
@@ -71,12 +71,12 @@ public class OAuth2AuthenticationRequestBasedOnCookieRepository
 
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
-        log.info("CookieRepository - removeAuthorizationRequest");
+        log.debug("CookieRepository - removeAuthorizationRequest");
         return this.loadAuthorizationRequest(request); //null
     }
 
     public void removeAuthorizationRequestCookies(HttpServletResponse response) {
-        log.info("CookieRepository - removeAuthorizationRequestCookies");
+        log.debug("CookieRepository - removeAuthorizationRequestCookies");
         cookieUtils.deleteCookie(response, appProperties.getOauth2().getAuthorizationRequestCookieName());
         cookieUtils.deleteCookie(response, appProperties.getOauth2().getRedirectUriParamCookieName());
     }
