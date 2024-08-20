@@ -30,7 +30,7 @@ public class MenuEntity {
     @JoinColumn(name = "menu_cat_pk")
     private MenuCategory menuCategory;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "menu", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "menu", orphanRemoval = true)
     private List<MenuOption> optionList ;
 
     @Column(name = "menu_name", length = 2000, nullable = false)

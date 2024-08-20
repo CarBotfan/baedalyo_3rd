@@ -36,7 +36,7 @@ public class OrderMenu {
     @JoinColumn(name = "menu_pk", nullable = false)
     private MenuEntity menuPk;
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "orderMenu")
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "orderMenu")
     private List<OrderMenuOption> orderMenuOption;
 
     @Column(name = "menu_name", length = 20, nullable = false)

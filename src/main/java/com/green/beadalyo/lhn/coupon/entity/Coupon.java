@@ -43,7 +43,7 @@ public class Coupon {
     @CreationTimestamp()
     private LocalDateTime createdAt;
 
-    @OneToMany(fetch = FetchType.EAGER , mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY , mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CouponUser> couponUser;
 
     @Column(name = "min_order_amount")

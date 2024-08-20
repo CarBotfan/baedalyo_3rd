@@ -107,7 +107,7 @@ public class Restaurant
     @UpdateTimestamp
     private LocalDateTime updateDt ;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuCategory> menuList = new ArrayList<>(); ;
 
     public Restaurant(RestaurantInsertDto data)

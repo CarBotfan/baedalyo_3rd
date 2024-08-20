@@ -34,7 +34,7 @@ public class DoneOrder {
     @JoinColumn(name = "res_pk", nullable = false, referencedColumnName = "res_pk")
     private Restaurant resPk;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "doneOrderPk")
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "doneOrderPk")
     private List<DoneOrderMenu> doneOrderMenus;
 
     @Column(name = "order_price", nullable = false)

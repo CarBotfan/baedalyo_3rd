@@ -35,7 +35,7 @@ public class Order {
     @JoinColumn(name = "order_res_pk", nullable = false)
     private Restaurant orderRes;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
     private List<OrderMenu> menus;
 
     @Column(name = "order_price", nullable = false)
