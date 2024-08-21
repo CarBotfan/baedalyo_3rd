@@ -38,4 +38,5 @@ public class UserInfoGetRes {
         this.userEmail = user.getUserEmail();
     }
 
+
 }
