@@ -143,12 +143,20 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserInfoGetRes getUserInfo(User user) throws Exception{
-        long userPk = authenticationFacade.getLoginUserPk();
         if(user.getUserState() == 3) {
             throw new UserNotFoundException();
         }
         return new UserInfoGetRes(user);
 
+    }
+
+    public UserInfoGetRes getUserInfoSocial(User user) throws Exception{
+        if(user.getUserState() == 3) {
+            throw new UserNotFoundException();
+        }
+        UserInfoGetRes userInfo = new UserInfoGetRes(user);
+        userInfo.setUserId(user.getUserEmail());
+        return userInfo;
     }
 
     @Transactional

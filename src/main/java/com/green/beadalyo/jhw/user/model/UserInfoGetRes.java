@@ -37,4 +37,5 @@ public class UserInfoGetRes {
         this.userPhone = user.getUserPhone();
         this.userEmail = user.getUserEmail();
     }
+
 }

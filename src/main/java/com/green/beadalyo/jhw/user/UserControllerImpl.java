@@ -461,7 +461,11 @@ public class UserControllerImpl implements UserController{
         int statusCode = 1;
         try {
             User user = service.getUser(authenticationFacade.getLoginUserPk());
-            result = service.getUserInfo(user);
+            if (user.getUserLoginType() == 1) {
+                result = service.getUserInfo(user);
+            } else {
+                result = service.getUserInfoSocial(user);
+            }
             result.setMainAddr(userAddrService.getMainUserAddr());
         }
         catch(UserNotFoundException e) {
