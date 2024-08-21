@@ -6,6 +6,7 @@ import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.lhn.Review.model.*;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +18,6 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(nativeQuery = true, value = "INSERT INTO review (review_pk, done_order_pk, user_pk, res_pk, review_contents, review_rating, review_pics_1, review_pics_2, review_pics_3, review_pics_4) VALUES (:reviewPk, :doneOrderPk, :userPk, (SELECT res_pk FROM done_order WHERE done_order_pk = :p.doneOrderPk), :p.reviewContents, :p.reviewRating, :p.reviewPics1, :p.reviewPics2, :p.reviewPics3, :p.reviewPics4)")
     void insertReview( ReviewPostReq p);
-
 
 
     // 사장님 답글
@@ -63,8 +63,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     void putReview(@Param("p") ReviewPutReq p);
 
                    // 주문에 대한 리뷰 존재 여부 확인
-                   @Query(nativeQuery = true, value = "SELECT COUNT(*) > 0 FROM review WHERE done_order_pk = :orderPk AND review_state = 1")
+    @Query(nativeQuery = true, value = "SELECT COUNT(*) > 0 FROM review WHERE done_order_pk = :orderPk AND review_state = 1")
     boolean ReviewExistForOrder(@Param("orderPk") Long orderPk);
+
+    boolean existsReviewByDoneOrderPkAndReviewState(@Param("doneOrderPk")DoneOrder doneOrderPk, @Param("reviewState") Integer reviewState);
 
     // 리뷰 작성자 확인
     @Query(nativeQuery = true, value = "SELECT user_pk FROM review WHERE review_pk = :reviewPk AND review_state = 1")

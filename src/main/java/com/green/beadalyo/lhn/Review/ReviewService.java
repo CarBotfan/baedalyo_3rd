@@ -8,6 +8,7 @@ import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.report.ReportRepository;
 import com.green.beadalyo.lhn.Review.model.*;
+import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,10 +34,12 @@ public class ReviewService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
+    private final DoneOrderRepository doneOrderRepository;
 
 
 
     private final Integer REVIEW_PER_PAGE = 20;
+    private final ReviewRepository reviewRepository;
 
     // 리뷰 작성
     @Transactional
@@ -44,7 +47,7 @@ public class ReviewService {
         long userPk = authenticationFacade.getLoginUserPk();
         p.setUserPk(userPk);
 
-        if (repository.ReviewExistForOrder(p.getDoneOrderPk())) {
+        if (repository.existsReviewByDoneOrderPkAndReviewState(doneOrderRepository.findByDoneOrderPk(p.getDoneOrderPk()), 1)) {
             log.warn("주문에 대한 리뷰가 이미 존재합니다");
             throw new IllegalArgumentException("주문에 대한 리뷰가 이미 존재합니다");
         }
