@@ -20,6 +20,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     void insertReview( ReviewPostReq p);
 
 
+    Integer countReviewByDoneOrderPk(DoneOrder doneOrderPk);
+
+
     // 사장님 답글
     @Query(nativeQuery = true, value = "INSERT INTO review_comment (review_pk, comment_content) VALUES (:p.reviewPk, :p.commentContent)")
     Long postReviewReply(@Param("p") ReviewReplyReq p);
