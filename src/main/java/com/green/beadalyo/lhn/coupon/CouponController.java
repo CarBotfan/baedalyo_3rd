@@ -89,7 +89,7 @@ public class CouponController {
 
     //유저가 사용한 쿠폰목록 조회
     @GetMapping("/use")
-    @Operation(summary = "유저 발급 쿠폰 목록조회")
+    @Operation(summary = "유저가 사용한 쿠폰 목록 조회")
     public ResultDto<List<CouponUserResponseDto>> getCouponByUse() {
         List<CouponUserResponseDto> coupons = couponService.getCouponByUse();
 
