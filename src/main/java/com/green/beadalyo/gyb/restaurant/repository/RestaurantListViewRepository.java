@@ -26,7 +26,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%) " +
             "group by r.restaurantPk " +
-            "order BY r.restaurantState ASC, FUNCTION('RAND()') ")
+            "order BY r.restaurantState ASC, FUNCTION('RAND') ")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
@@ -53,7 +53,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "group by r.restaurantPk " +
-            "order BY r.restaurantState ASC, FUNCTION('RAND()')")
+            "order BY r.restaurantState ASC, FUNCTION('RAND')")
     Page<RestaurantListView> findByCategoryIdAndCoordinates(@Param("categoryId") Long categoryId,
                                                             @Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
@@ -78,7 +78,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "group by r.restaurantPk " +
-            "order BY r.restaurantState ASC, FUNCTION('RAND()')")
+            "order BY r.restaurantState ASC, FUNCTION('RAND')")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
@@ -102,7 +102,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "group by r.restaurantPk " +
-            "order BY r.restaurantState ASC, FUNCTION('RAND()')")
+            "order BY r.restaurantState ASC, FUNCTION('RAND')")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinates(@Param("xMin") BigDecimal xMin,
                                                             @Param("xMax") BigDecimal xMax,
                                                             @Param("yMin") BigDecimal yMin,
@@ -245,7 +245,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "group by r.restaurantPk " +
-            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND()')")
+            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND')")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,
                                                                          @Param("xMax") BigDecimal xMax,
@@ -272,7 +272,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "group by r.restaurantPk " +
-            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND()')")
+            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND')")
     Page<RestaurantListView> findByCategoryIdAndCoordinatesSortedByScore(@Param("categoryId") Long categoryId,
                                                                          @Param("xMin") BigDecimal xMin,
                                                                          @Param("xMax") BigDecimal xMax,
@@ -297,7 +297,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "group by r.restaurantPk " +
-            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND()')")
+            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND')")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
                                                                             @Param("yMin") BigDecimal yMin,
@@ -321,7 +321,7 @@ public interface RestaurantListViewRepository extends JpaRepository<RestaurantLi
             "AND r.restaurantState IN (1, 2) " +
             "AND (:search IS NULL OR r.restaurantName LIKE %:search% OR r.restaurantAddr LIKE %:search%)" +
             "group by r.restaurantPk " +
-            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND()')")
+            "ORDER BY r.restaurantState ASC, r.reviewAvgScore DESC, FUNCTION('RAND')")
     Page<RestaurantListView> findAllByCategoryIdAndCoordinatesSortedByScore(@Param("xMin") BigDecimal xMin,
                                                                             @Param("xMax") BigDecimal xMax,
                                                                             @Param("yMin") BigDecimal yMin,
