@@ -229,11 +229,17 @@ public class UserServiceImpl implements UserService{
         return !passwordEncoder.matches(password1, password2);
     }
 
+    @Transactional
     public User getUser(Long userPk) throws Exception{
         if(!repository.existsById(userPk)) {
             throw new UserNotFoundException();
         }
         return repository.getReferenceById(userPk);
+    }
+
+    @Transactional
+    public User getUserEager(Long userPk) throws Exception{
+        return repository.findById(userPk).orElse(null);
     }
 
 

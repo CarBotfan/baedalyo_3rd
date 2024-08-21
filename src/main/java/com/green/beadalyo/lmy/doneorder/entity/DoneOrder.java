@@ -2,6 +2,7 @@ package com.green.beadalyo.lmy.doneorder.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lmy.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -59,6 +62,11 @@ public class DoneOrder {
     @Column(name = "done_order_state")
     private Integer doneOrderState;
 
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "use_coupon_pk")
+    private CouponUser coupon ;
+
     @Column(name = "canceller")
     private String canceller;
 
@@ -81,6 +89,7 @@ public class DoneOrder {
         this.orderMethod = data.getOrderMethod() ;
         this.useMileage = data.getUseMileage() ;
         this.doneOrderMenus = new ArrayList<>();
+        this.coupon = data.getCoupon() ;
         data.getMenus().forEach(menu -> {
             DoneOrderMenu doneMenu = new DoneOrderMenu(menu) ;
             doneMenu.setDoneOrderPk(this);

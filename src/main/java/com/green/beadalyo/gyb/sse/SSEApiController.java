@@ -46,7 +46,7 @@ public class SSEApiController
         try {
             MyUserDetails userData = (MyUserDetails) jwtTokenProvider.getUserDetailsFromToken(token) ;
             Long userPk = userData.getMyUser().getUserPk();
-            user = userService.getUser(userPk);
+            user = userService.getUserEager(userPk);
             syncUser.put(userPk, emitter);
             if (user == null) return null ;
         } catch (Exception e) {
