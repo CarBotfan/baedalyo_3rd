@@ -35,6 +35,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         } catch (AuthenticationException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new InternalAuthenticationServiceException(e.getMessage(), e.getCause());
         }
     }
@@ -62,17 +63,23 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             user = optionalUser.get();
         } else { //회원가입 처리
             UserSignUpPostReq signUpParam = new UserSignUpPostReq();
-            signUpParam.setUserLoginType(signInProviderType.getValue());
-            signUpParam.setUserId(oAuth2UserInfo.getId());
-            signUpParam.setUserNickname(oAuth2UserInfo.getName());
-            signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
-            signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
-            signUpParam.setUserRole("ROLE_USER");
+            try { signUpParam.setUserLoginType(signInProviderType.getValue());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserId(oAuth2UserInfo.getId());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserNickname(oAuth2UserInfo.getName());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserPic(oAuth2UserInfo.getProfilePicUrl());
+            } catch (Exception ignored) {}
+            try { signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
+            } catch (Exception ignored) {}
+
+
             user = new User(signUpParam);
             user = repository.save(user);
         }
 
-        boolean needsAdditionalInfo = user.getUserNickname() == null || user.getUserPhone() == null;
+        boolean needsAdditionalInfo = user.getUserName() == null || user.getUserPhone() == null;
         MyUserOAuth2Vo myUserOAuth2Vo = new MyUserOAuth2Vo(user.getUserPk(), "ROLE_USER", user.getUserNickname(), user.getUserPic(), user.getUserEmail());
 
         MyUserDetails signInUser = new MyUserDetails();
@@ -80,4 +87,5 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         signInUser.setNeedsAdditionalInfo(needsAdditionalInfo);
         return signInUser;
     }
+
 }

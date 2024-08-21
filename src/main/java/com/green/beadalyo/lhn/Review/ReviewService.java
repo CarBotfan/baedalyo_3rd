@@ -2,12 +2,15 @@ package com.green.beadalyo.lhn.Review;
 
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.report.ReportRepository;
 import com.green.beadalyo.lhn.Review.model.*;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
+import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,10 +36,13 @@ public class ReviewService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
+    private final DoneOrderRepository doneOrderRepository;
+    private final RestaurantRepository restaurantRepository;
 
 
 
     private final Integer REVIEW_PER_PAGE = 20;
+    private final ReviewRepository reviewRepository;
 
     // 리뷰 작성
     @Transactional
@@ -44,7 +50,7 @@ public class ReviewService {
         long userPk = authenticationFacade.getLoginUserPk();
         p.setUserPk(userPk);
 
-        if (repository.ReviewExistForOrder(p.getDoneOrderPk())) {
+        if (repository.existsReviewByDoneOrderPkAndReviewState(doneOrderRepository.findByDoneOrderPk(p.getDoneOrderPk()), 1)) {
             log.warn("주문에 대한 리뷰가 이미 존재합니다");
             throw new IllegalArgumentException("주문에 대한 리뷰가 이미 존재합니다");
         }
@@ -57,39 +63,80 @@ public class ReviewService {
         }
 
         // 파일 처리
-        String[] picNames = new String[4];
+        List<String> picNames = new ArrayList<>();
         if (pics != null && !pics.isEmpty()) {
             if (pics.size() > 4) {
                 throw new IllegalArgumentException("파일 개수는 4개 까지만 가능합니다");
             }
-            for (int i = 0; i < pics.size(); i++) {
-                MultipartFile file = pics.get(i);
-                String picName = fileUtils.makeRandomFileName(file.getOriginalFilename());
-                picNames[i] = "reviews/" + picName;
+            for (MultipartFile pic : pics) {
+                String picName = fileUtils.makeRandomFileName(pic.getOriginalFilename());
+                picNames.add("/reviews/"+picName);
                 try {
                     String targetPath = "/reviews/" + picName;
-                    fileUtils.transferTo(file, targetPath);
+                    fileUtils.transferTo(pic, targetPath);
                 } catch (Exception e) {
-                    log.error("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);
+                    log.error("파일 저장 중 오류 발생: " + pic.getOriginalFilename(), e);
                 }
             }
-            p.setReviewPics1(picNames[0]);
-            p.setReviewPics2(picNames[1]);
-            p.setReviewPics3(picNames[2]);
-            p.setReviewPics4(picNames[3]);
-        } else {
-            p.setReviewPics1(null);
-            p.setReviewPics2(null);
-            p.setReviewPics3(null);
-            p.setReviewPics4(null);
+            for (int i = 0; i < picNames.size(); i++) {
+                String reviewPicUrl = "https://zumuniyo.shop/pic" + picNames.get(i);
+                switch (i) {
+                    case 0:
+                        p.setReviewPics1(reviewPicUrl);
+                        break;
+                    case 1:
+                        p.setReviewPics2(reviewPicUrl);
+                        break;
+                    case 2:
+                        p.setReviewPics3(reviewPicUrl);
+                        break;
+                    case 3:
+                        p.setReviewPics4(reviewPicUrl);
+                        break;
+                }
+            }
+//            for (int i = 0; i < pics.size(); i++) {
+//                MultipartFile file = pics.get(i);
+//                String picName = fileUtils.makeRandomFileName(file.getOriginalFilename());
+//                picNames[i] = "reviews/" + picName;
+//                try {
+//                    String targetPath = "/reviews/" + picName;
+//                    fileUtils.transferTo(file, targetPath);
+//                } catch (Exception e) {
+//                    log.error("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);
+//                }
+//            }
+//            p.setReviewPics1("https://zumuniyo.shop/pic"+picNames[0]);
+//            p.setReviewPics2("https://zumuniyo.shop/pic"+picNames[1]);
+//            p.setReviewPics3("https://zumuniyo.shop/pic"+picNames[2]);
+//            p.setReviewPics4("https://zumuniyo.shop/pic"+picNames[3]);
         }
 
         if (p.getReviewRating() < 1 || p.getReviewRating() > 5) {
             throw new IllegalArgumentException("별점은 1에서 5까지가 최대");
         }
 
-        repository.insertReview(p);
+        Review review = makeReview(p);
+        reviewRepository.save(review);
+
         return userPk;
+    }
+
+    public Review makeReview(ReviewPostReq p) {
+        Review review = new Review();
+        DoneOrder doneOrder = doneOrderRepository.findByDoneOrderPk(p.getDoneOrderPk());
+        review.setReviewPk(p.getReviewPk());
+        review.setDoneOrderPk(doneOrder);
+        review.setUserPk(userRepository.findByUserPk(p.getUserPk()));
+        review.setResPk(doneOrder.getResPk());
+        review.setReviewContents(p.getReviewContents());
+        review.setReviewRating(p.getReviewRating());
+        review.setReviewPics1(p.getReviewPics1());
+        review.setReviewPics2(p.getReviewPics2());
+        review.setReviewPics3(p.getReviewPics3());
+        review.setReviewPics4(p.getReviewPics4());
+
+        return review;
     }
 
     // 사장님 리뷰 답글
@@ -254,10 +301,10 @@ public class ReviewService {
     // 리뷰에 사진 추가
     private void addPicsToReview(ReviewGetRes review) {
         List<String> pics = new ArrayList<>();
-        if (review.getReviewPics1() != null) pics.add("/pic"+review.getReviewPics1());
-        if (review.getReviewPics2() != null) pics.add("/pic"+review.getReviewPics2());
-        if (review.getReviewPics3() != null) pics.add("/pic"+review.getReviewPics3());
-        if (review.getReviewPics4() != null) pics.add("/pic"+review.getReviewPics4());
+        if (review.getReviewPics1() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics1());
+        if (review.getReviewPics2() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics2());
+        if (review.getReviewPics3() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics3());
+        if (review.getReviewPics4() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics4());
 
         review.setPics(pics);
     }
@@ -275,7 +322,7 @@ public class ReviewService {
         Map<String, Object> map = new HashMap<>();
         map.put("total Page", list.getTotalPages());
         map.put("page", result);
-        log.info("{}", map);
+        log.debug("{}", map);
         return result;
     }
 

@@ -169,6 +169,7 @@ public class MenuCategoryIntegrationTest {
 
     @Test
     void patchMenuCatPosition_ShouldThrowException_WhenInvalidPosition() {
+
         // Given
         MenuCategory cat1 = createAndSaveMenuCategory(restaurant, "Category 1", 1L);
 

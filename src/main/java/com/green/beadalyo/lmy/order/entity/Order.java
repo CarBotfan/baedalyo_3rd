@@ -2,6 +2,7 @@ package com.green.beadalyo.lmy.order.entity;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.jhw.user.entity.User;
+import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lmy.order.model.OrderPostReq;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -35,7 +36,7 @@ public class Order {
     @JoinColumn(name = "order_res_pk", nullable = false)
     private Restaurant orderRes;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
     private List<OrderMenu> menus;
 
     @Column(name = "order_price", nullable = false)
@@ -71,6 +72,10 @@ public class Order {
     @Column(name = "use_mileage", nullable = false)
     @ColumnDefault("0")
     private Integer useMileage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_pk")
+    private CouponUser coupon ;
 
     @Column(name = "created_at", nullable = true)
     @CreationTimestamp

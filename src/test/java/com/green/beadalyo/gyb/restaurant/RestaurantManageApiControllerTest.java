@@ -85,7 +85,7 @@ class RestaurantManageApiControllerTest
 
 
     @Test
-    public void testGetManageData_UserNotFound() throws Exception{
+    public void testGetManageData_UserNotFound() throws Exception {
         long userPk = 1L;
         when(authenticationFacade.getLoginUserPk()).thenReturn(userPk);
         when(userService.getUser(userPk)).thenThrow(new UserNotFoundException());

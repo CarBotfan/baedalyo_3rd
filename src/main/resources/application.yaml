@@ -1,5 +1,4 @@
 spring:
-
   config:
     #optional: .env 파일이 없어도 컴파일 에러가 발생 X
     #file: 파일을 import하겠다
@@ -12,6 +11,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
+    hikari:
+      maximum-pool-size : 20
+      leakDetectionThreshold : 2000
     url: ${DEFAULT.DB_URL}
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
     username: ${DEFAULT.DB_USERNAME}
@@ -101,6 +103,7 @@ app:
   oauth2:
     baseUri: /oauth/authorization
     authorizedRedirectUris:
+      - http://localhost:3000/oauth/redirect
       - http://localhost:8080/oauth/redirect
       - https://jumuniyo.gybproject.com/oauth/redirect
       - https://zumuniyo.shop/login/oauth2/code/google

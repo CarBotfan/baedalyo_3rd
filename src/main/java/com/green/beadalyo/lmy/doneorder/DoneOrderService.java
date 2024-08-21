@@ -49,7 +49,7 @@ public class DoneOrderService {
         Map<String, Object> resultMap = new HashMap<>();
 
         for (DoneOrderMiniGetResUser item : list) {
-            item.setReviewState(doneOrderRepository.countByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 0 : 1);
+            item.setReviewState(doneOrderRepository.countByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 1 : 0);
             List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
@@ -130,7 +130,7 @@ public class DoneOrderService {
         result.setDoneOrderState(doneOrder.getDoneOrderState());
         result.setPaymentMethod(doneOrder.getPaymentMethod());
         result.setCreatedAt(doneOrder.getCreatedAt());
-
+        result.setCoupon(doneOrder.getCoupon());
         List<MenuInfoDto> menuInfoList = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(doneOrderPk);
         result.setMenuInfoList(menuInfoList);
 
