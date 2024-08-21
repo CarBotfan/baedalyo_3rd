@@ -73,10 +73,10 @@ public class ReviewService {
                     log.error("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);
                 }
             }
-            p.setReviewPics1(picNames[0]);
-            p.setReviewPics2(picNames[1]);
-            p.setReviewPics3(picNames[2]);
-            p.setReviewPics4(picNames[3]);
+            p.setReviewPics1("https://zumuniyo.shop/pic"+picNames[0]);
+            p.setReviewPics2("https://zumuniyo.shop/pic"+picNames[1]);
+            p.setReviewPics3("https://zumuniyo.shop/pic"+picNames[2]);
+            p.setReviewPics4("https://zumuniyo.shop/pic"+picNames[3]);
         } else {
             p.setReviewPics1(null);
             p.setReviewPics2(null);
@@ -254,10 +254,10 @@ public class ReviewService {
     // 리뷰에 사진 추가
     private void addPicsToReview(ReviewGetRes review) {
         List<String> pics = new ArrayList<>();
-        if (review.getReviewPics1() != null) pics.add("/pic"+review.getReviewPics1());
-        if (review.getReviewPics2() != null) pics.add("/pic"+review.getReviewPics2());
-        if (review.getReviewPics3() != null) pics.add("/pic"+review.getReviewPics3());
-        if (review.getReviewPics4() != null) pics.add("/pic"+review.getReviewPics4());
+        if (review.getReviewPics1() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics1());
+        if (review.getReviewPics2() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics2());
+        if (review.getReviewPics3() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics3());
+        if (review.getReviewPics4() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics4());
 
         review.setPics(pics);
     }

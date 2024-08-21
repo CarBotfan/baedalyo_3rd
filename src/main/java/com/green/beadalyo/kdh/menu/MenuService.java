@@ -66,7 +66,7 @@ public class MenuService {
     @Transactional
     public void postPic(MenuEntity menuEntity, MultipartFile pic){
         String path = String.format("menu/%d", menuEntity.getMenuPk());
-        menuEntity.setMenuPic(path + "/"+ menuEntity.getMenuPic());
+        menuEntity.setMenuPic("https://zumuniyo.shop/"+path + "/"+ menuEntity.getMenuPic());
 
         menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
         try {
