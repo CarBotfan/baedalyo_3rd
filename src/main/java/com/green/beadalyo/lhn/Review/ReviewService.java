@@ -161,7 +161,7 @@ public class ReviewService {
     // 사장이 보는 자기 가게의 리뷰와 답글들
     public ReviewGetListResponse getOwnerReviews(ReviewGetDto p) {
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
-        Page<Review> page = repository.findReviewsByResPk(p.getRestaurant(), pageable);
+        Page<Review> page = repository.findByResPkOrderByCreatedAt(p.getRestaurant(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
@@ -174,7 +174,7 @@ public class ReviewService {
 
     public ReviewGetListResponse getCustomerReviews(ReviewGetDto p) {
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
-        Page<Review> page = repository.findReviewsByUserPk(p.getUser(), pageable);
+        Page<Review> page = repository.findByUserPkOrderByCreatedAt(p.getUser(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
@@ -312,7 +312,7 @@ public class ReviewService {
     public List<ReviewGetRes> reviewPagingTest(Restaurant res, Integer page) {
 
         Pageable pageable = PageRequest.of(page - 1, REVIEW_PER_PAGE);
-        Page<Review> list = repository.findReviewsByResPk(res, pageable);
+        Page<Review> list = repository.findByResPkOrderByCreatedAt(res, pageable);
         List<ReviewGetRes> result = new ArrayList<>();
         for(Review rev : list.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);

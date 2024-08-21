@@ -47,16 +47,12 @@ public class ReviewGetRes {
     @Schema(example = "감사" ,description = "사장님의 리뷰에 대한 답변")
     private ReviewReplyRes reply;
 
-    @JsonIgnore
     private String reviewPics1;
 
-    @JsonIgnore
     private String reviewPics2;
 
-    @JsonIgnore
     private String reviewPics3;
 
-    @JsonIgnore
     private String reviewPics4;
 
     private String resName;
