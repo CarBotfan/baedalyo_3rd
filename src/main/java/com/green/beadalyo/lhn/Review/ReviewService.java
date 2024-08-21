@@ -30,9 +30,6 @@ public class ReviewService {
     private final ReviewFilter filter;
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
-    private final UserService userService;
-    private final UserRepository userRepository;
-    private final ReportRepository reportRepository;
 
 
 
@@ -137,22 +134,22 @@ public class ReviewService {
 
         return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
     }
-    private List<ReviewGetRes> getReviewGetRes(long resPk) {
-        List<ReviewGetRes> reviews = repository.getReviewsRestaurant(resPk);
+//    private List<ReviewGetRes> getReviewGetRes(long resPk) {
+//        List<ReviewGetRes> reviews = repository.getReviewsRestaurant(resPk);
+//
+//        for (ReviewGetRes review : reviews) {
+//            addPicsToReview(review);
+//            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
+//            review.setReply(reply);
+//            review.setNickName(repository.selectUserNickName(review.getUserPk()));
+//        }
+//
+//        return reviews;
+//    }
 
-        for (ReviewGetRes review : reviews) {
-            addPicsToReview(review);
-            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
-            review.setReply(reply);
-            review.setNickName(repository.selectUserNickName(review.getUserPk()));
-        }
-
-        return reviews;
-    }
-
-    public List<ReviewGetRes> getReviewListByResPk(long resPk) {
-        return getReviewGetRes(resPk);
-    }
+//    public List<ReviewGetRes> getReviewListByResPk(long resPk) {
+//        return getReviewGetRes(resPk);
+//    }
 
     // 사장님 답글 수정
     public void updReviewReply(ReviewReplyUpdReq p) {
@@ -251,16 +248,16 @@ public class ReviewService {
         repository.deleteReviewReply(reviewCommentPk);
     }
 
-    // 리뷰에 사진 추가
-    private void addPicsToReview(ReviewGetRes review) {
-        List<String> pics = new ArrayList<>();
-        if (review.getReviewPics1() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics1());
-        if (review.getReviewPics2() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics2());
-        if (review.getReviewPics3() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics3());
-        if (review.getReviewPics4() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics4());
-
-        review.setPics(pics);
-    }
+//    // 리뷰에 사진 추가
+//    private void addPicsToReview(ReviewGetRes review) {
+//        List<String> pics = new ArrayList<>();
+//        if (review.getReviewPics1() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics1());
+//        if (review.getReviewPics2() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics2());
+//        if (review.getReviewPics3() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics3());
+//        if (review.getReviewPics4() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics4());
+//
+//        review.setPics(pics);
+//    }
 
     public List<ReviewGetRes> reviewPagingTest(Restaurant res, Integer page) {
 
