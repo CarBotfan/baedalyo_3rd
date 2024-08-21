@@ -252,7 +252,7 @@ public class OrderController {
             userService.save(user);
             orderService.saveOrder(order) ;
 
-            if (order.getOrderState() == 2) SSEApiController.sendEmitters("주문 요청 들어옴", order.getOrderRes().getUser());
+            if (order.getOrderState() == 2) SSEApiController.sendEmitters("주문 요청 들어옴", order.getOrderRes().getUser().getUserPk());
             return ResultDto.builder().resultData(new PostOrderRes(order.getOrderPrice(), order.getTotalPrice(), order.getOrderPk())).build();
 
 
@@ -295,10 +295,13 @@ public class OrderController {
 
             DoneOrder doneOrder = new DoneOrder(order) ;
             doneOrder.setDoneOrderState(2);
-            CouponUser coupon = doneOrder.getCoupon() ;
-            coupon.setState(1);
-            couponService.save(coupon) ;
-            doneOrder.setCoupon(null);
+            if (doneOrder.getCoupon() != null)
+            {
+                CouponUser coupon = doneOrder.getCoupon() ;
+                coupon.setState(1);
+                couponService.save(coupon) ;
+                doneOrder.setCoupon(null);
+            }
             doneOrderService.save(doneOrder);
             orderService.deleteOrder(order);
 

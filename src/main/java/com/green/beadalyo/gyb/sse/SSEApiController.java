@@ -42,27 +42,26 @@ public class SSEApiController
 
         SseEmitter emitter = new SseEmitter((long) 7200 * 1000);
         emitters.add(emitter);
-        User user;
+        Long userPk ;
         try {
             MyUserDetails userData = (MyUserDetails) jwtTokenProvider.getUserDetailsFromToken(token) ;
-            Long userPk = userData.getMyUser().getUserPk();
-            user = userService.getUserEager(userPk);
+
+            userPk = userData.getMyUser().getUserPk();
             syncUser.put(userPk, emitter);
-            if (user == null) return null ;
         } catch (Exception e) {
             return null;
         }
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(() -> emitters.remove(emitter));
-        sendEmitters("연결 완료", user);
+        sendEmitters("연결 완료", userPk);
         return emitter;
     }
 
 
-    public void sendEmitters(String str, User user) {
+    public void sendEmitters(String str, Long userPk) {
 
         List<SseEmitter> deadEmitters = new ArrayList<>();
-        SseEmitter emt = syncUser.get(user.getUserPk()) ;
+        SseEmitter emt = syncUser.get(userPk) ;
         emitters.forEach(emitter -> {
 
             if (emt != emitter)  return ;
