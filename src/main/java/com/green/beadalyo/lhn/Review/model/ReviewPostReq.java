@@ -37,17 +37,17 @@ public class ReviewPostReq {
 
     @JsonIgnore
     @Schema(description = "리뷰 이미지 파일 경로 1")
-    private String reviewPics1;
+    private String reviewPics1 = null;
 
     @JsonIgnore
     @Schema(description = "리뷰 이미지 파일 경로 2")
-    private String reviewPics2;
+    private String reviewPics2 = null;
 
     @JsonIgnore
     @Schema(description = "리뷰 이미지 파일 경로 3")
-    private String reviewPics3;
+    private String reviewPics3 = null;
 
     @JsonIgnore
     @Schema(description = "리뷰 이미지 파일 경로 4")
-    private String reviewPics4;
+    private String reviewPics4 = null;
 }

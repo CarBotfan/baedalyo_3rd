@@ -60,31 +60,53 @@ public class ReviewService {
         }
 
         // 파일 처리
-        String[] picNames = new String[4];
+        List<String> picNames = new ArrayList<>();
         if (pics != null && !pics.isEmpty()) {
             if (pics.size() > 4) {
                 throw new IllegalArgumentException("파일 개수는 4개 까지만 가능합니다");
             }
-            for (int i = 0; i < pics.size(); i++) {
-                MultipartFile file = pics.get(i);
-                String picName = fileUtils.makeRandomFileName(file.getOriginalFilename());
-                picNames[i] = "reviews/" + picName;
+            for (MultipartFile pic : pics) {
+                String picName = fileUtils.makeRandomFileName(pic.getOriginalFilename());
+                picNames.add("/reviews/"+picName);
                 try {
                     String targetPath = "/reviews/" + picName;
-                    fileUtils.transferTo(file, targetPath);
+                    fileUtils.transferTo(pic, targetPath);
                 } catch (Exception e) {
-                    log.error("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);
+                    log.error("파일 저장 중 오류 발생: " + pic.getOriginalFilename(), e);
                 }
             }
-            p.setReviewPics1("https://zumuniyo.shop/pic"+picNames[0]);
-            p.setReviewPics2("https://zumuniyo.shop/pic"+picNames[1]);
-            p.setReviewPics3("https://zumuniyo.shop/pic"+picNames[2]);
-            p.setReviewPics4("https://zumuniyo.shop/pic"+picNames[3]);
-        } else {
-            p.setReviewPics1(null);
-            p.setReviewPics2(null);
-            p.setReviewPics3(null);
-            p.setReviewPics4(null);
+            for (int i = 0; i < picNames.size(); i++) {
+                String reviewPicUrl = "https://zumuniyo.shop/pic" + picNames.get(i);
+                switch (i) {
+                    case 0:
+                        p.setReviewPics1(reviewPicUrl);
+                        break;
+                    case 1:
+                        p.setReviewPics2(reviewPicUrl);
+                        break;
+                    case 2:
+                        p.setReviewPics3(reviewPicUrl);
+                        break;
+                    case 3:
+                        p.setReviewPics4(reviewPicUrl);
+                        break;
+                }
+            }
+//            for (int i = 0; i < pics.size(); i++) {
+//                MultipartFile file = pics.get(i);
+//                String picName = fileUtils.makeRandomFileName(file.getOriginalFilename());
+//                picNames[i] = "reviews/" + picName;
+//                try {
+//                    String targetPath = "/reviews/" + picName;
+//                    fileUtils.transferTo(file, targetPath);
+//                } catch (Exception e) {
+//                    log.error("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);
+//                }
+//            }
+//            p.setReviewPics1("https://zumuniyo.shop/pic"+picNames[0]);
+//            p.setReviewPics2("https://zumuniyo.shop/pic"+picNames[1]);
+//            p.setReviewPics3("https://zumuniyo.shop/pic"+picNames[2]);
+//            p.setReviewPics4("https://zumuniyo.shop/pic"+picNames[3]);
         }
 
         if (p.getReviewRating() < 1 || p.getReviewRating() > 5) {
