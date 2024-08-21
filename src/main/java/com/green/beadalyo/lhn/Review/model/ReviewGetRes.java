@@ -60,10 +60,10 @@ public class ReviewGetRes {
         this.createdAt = review.getCreatedAt();
         this.updatedAt = review.getUpdatedAt();
         this.pics = new ArrayList<>();
-        try { pics.add(review.getReviewPics1());} catch (Exception ignored) {}
-        try { pics.add(review.getReviewPics2());} catch (Exception ignored) {}
-        try { pics.add(review.getReviewPics3());} catch (Exception ignored) {}
-        try { pics.add(review.getReviewPics4());} catch (Exception ignored) {}
+        if (review.getReviewPics1() != null) pics.add(review.getReviewPics1());
+        if (review.getReviewPics2() != null) pics.add(review.getReviewPics2());
+        if (review.getReviewPics3() != null) pics.add(review.getReviewPics3());
+        if (review.getReviewPics4() != null) pics.add(review.getReviewPics4());
         this.resName = review.getResPk().getName();
     }
 }
