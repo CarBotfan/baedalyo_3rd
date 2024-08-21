@@ -10,6 +10,7 @@ import com.green.beadalyo.kdh.report.user.model.*;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,7 @@ public class ReportControllerForUser {
     @PostMapping()
     @Operation(summary = "리뷰 신고기능", description = "리뷰를 신고합니다.")
     @PreAuthorize("hasAnyRole('USER','OWNER')")
-    public ResultDto<Integer> postReport(@RequestBody PostReportForUserReq p){
+    public ResultDto<Integer> postReport(@Valid @RequestBody PostReportForUserReq p){
 
         Review review = service.getReviewByPk(p.getReviewPk());
 
@@ -57,7 +58,7 @@ public class ReportControllerForUser {
     @PutMapping()
     @Operation(summary = "리뷰 신고수정 기능", description = "신고사항을 수정합니다.")
     @PreAuthorize("hasAnyRole('USER','OWNER')")
-    public ResultDto<Integer> putReport(@RequestBody PutReportForUserReq p){
+    public ResultDto<Integer> putReport(@Valid @RequestBody PutReportForUserReq p){
 
 
         boolean checkUser = service.checkUser(p.getReportPk());
