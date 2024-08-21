@@ -2,6 +2,7 @@ package com.green.beadalyo.lmy.order.model;
 
 import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.kdh.menu.model.OrderMenuRes;
+import com.green.beadalyo.lhn.coupon.entity.CouponUser;
 import com.green.beadalyo.lmy.order.entity.Order;
 import com.green.beadalyo.lmy.order.entity.OrderMenu;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class OrderMiniGetRes {
     private String orderRequest ;
     private String orderAddress ;
     private String orderPhone ;
+    private CouponRes orderCoupon;
     private LocalDateTime createdAt;
     private Integer paymentMethod ;
     private List<OrderMenuRes> menus;
@@ -51,6 +53,8 @@ public class OrderMiniGetRes {
         this.orderPhone = data.getOrderPhone();
         this.paymentMethod = data.getPaymentMethod();
         this.orderRequest = data.getOrderRequest();
+        if (data.getCoupon() != null)
+            this.orderCoupon = new CouponRes(data.getCoupon()) ;
         this.menus = new ArrayList<>();
         data.getMenus().forEach(orderMenu ->
             {
@@ -63,4 +67,20 @@ public class OrderMiniGetRes {
 
     }
 
+}
+
+@Data
+class CouponRes{
+    private String couponName ;
+    private Long couponPk ;
+    private Integer couponPrice ;
+    private String couponRestaurant ;
+
+    public CouponRes(CouponUser data)
+    {
+        this.couponName = data.getCoupon().getName() ;
+        this.couponPk = data.getId() ;
+        this.couponPrice = data.getCoupon().getPrice() ;
+        this.couponRestaurant = data.getCoupon().getRestaurant().getName() ;
+    }
 }

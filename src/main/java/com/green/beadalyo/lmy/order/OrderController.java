@@ -230,6 +230,7 @@ public class OrderController {
                     cp.setState(2);
                     //사용한 쿠폰 값 저장
                     couponService.save(cp) ;
+                    order.setCoupon(cp);
                 } catch (NullPointerException e) {
                     return ResultError.builder().resultMsg("쿠폰이 존재하지 않습니다.").statusCode(-11).build();
                 } catch (Exception e){
@@ -259,9 +260,6 @@ public class OrderController {
             log.error("An error occurred: ", e);
             return ResultError.builder().build();
         }
-
-
-
 
 
     }
@@ -297,6 +295,10 @@ public class OrderController {
 
             DoneOrder doneOrder = new DoneOrder(order) ;
             doneOrder.setDoneOrderState(2);
+            CouponUser coupon = doneOrder.getCoupon() ;
+            coupon.setState(1);
+            couponService.save(coupon) ;
+            doneOrder.setCoupon(null);
             doneOrderService.save(doneOrder);
             orderService.deleteOrder(order);
 
@@ -338,8 +340,10 @@ public class OrderController {
             if (user != order.getOrderRes().getUser())
                 return ResultError.builder().statusCode(-8).resultMsg("상점 주인의 접근이 아닙니다.").build();
 
+
             DoneOrder doneOrder = new DoneOrder(order) ;
             doneOrder.setDoneOrderState(1);
+
             doneOrderService.save(doneOrder);
             orderService.deleteOrder(order);
 

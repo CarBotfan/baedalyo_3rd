@@ -130,7 +130,7 @@ public class DoneOrderService {
         result.setDoneOrderState(doneOrder.getDoneOrderState());
         result.setPaymentMethod(doneOrder.getPaymentMethod());
         result.setCreatedAt(doneOrder.getCreatedAt());
-
+        result.setCoupon(doneOrder.getCoupon());
         List<MenuInfoDto> menuInfoList = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(doneOrderPk);
         result.setMenuInfoList(menuInfoList);
 
