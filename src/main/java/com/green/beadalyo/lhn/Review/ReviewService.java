@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,6 +46,8 @@ public class ReviewService {
 
     private final Integer REVIEW_PER_PAGE = 20;
     private final ReviewRepository reviewRepository;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // 리뷰 작성
     @Transactional
@@ -165,6 +170,7 @@ public class ReviewService {
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
@@ -178,6 +184,7 @@ public class ReviewService {
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
@@ -316,6 +323,7 @@ public class ReviewService {
         List<ReviewGetRes> result = new ArrayList<>();
         for(Review rev : list.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             result.add(revRes);
         }

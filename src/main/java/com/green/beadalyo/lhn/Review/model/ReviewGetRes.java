@@ -9,6 +9,7 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Setter
 
 public class ReviewGetRes {
+
     @Schema(description = "리뷰의 고유 pk")
     private long reviewPk;
 
@@ -39,7 +41,7 @@ public class ReviewGetRes {
     private int reviewState;
 
     @Schema(description = "리뷰 생성 일자")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     @Schema(description = "리뷰 수정 일자")
     private LocalDateTime updatedAt;
@@ -57,7 +59,7 @@ public class ReviewGetRes {
         this.nickName = review.getUserPk().getUserNickname();
         this.reviewContents = review.getReviewContents();
         this.reviewRating = review.getReviewRating();
-        this.createdAt = review.getCreatedAt();
+        this.createdAt = review.getCreatedAt().toString();
         this.updatedAt = review.getUpdatedAt();
         this.pics = new ArrayList<>();
         if (review.getReviewPics1() != null) pics.add(review.getReviewPics1());
