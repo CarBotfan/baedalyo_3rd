@@ -33,7 +33,7 @@ public class ReviewGetRes {
 
 
     @Schema(description = "리뷰 이미지 파일 경로 목록")
-    private List<String> pics = new ArrayList<>();
+    private List<String> pics;
 
     @Schema(example = "1",description = "리뷰 상태")
     private int reviewState;
@@ -47,13 +47,7 @@ public class ReviewGetRes {
     @Schema(example = "감사" ,description = "사장님의 리뷰에 대한 답변")
     private ReviewReplyRes reply;
 
-    private String reviewPics1;
 
-    private String reviewPics2;
-
-    private String reviewPics3;
-
-    private String reviewPics4;
 
     private String resName;
 
@@ -65,10 +59,11 @@ public class ReviewGetRes {
         this.reviewRating = review.getReviewRating();
         this.createdAt = review.getCreatedAt();
         this.updatedAt = review.getUpdatedAt();
-        this.reviewPics1 = review.getReviewPics1();
-        this.reviewPics2 = review.getReviewPics2();
-        this.reviewPics3 = review.getReviewPics3();
-        this.reviewPics4 = review.getReviewPics4();
+        this.pics = new ArrayList<>();
+        try { pics.add(review.getReviewPics1());} catch (Exception ignored) {}
+        try { pics.add(review.getReviewPics2());} catch (Exception ignored) {}
+        try { pics.add(review.getReviewPics3());} catch (Exception ignored) {}
+        try { pics.add(review.getReviewPics4());} catch (Exception ignored) {}
         this.resName = review.getResPk().getName();
     }
 }
