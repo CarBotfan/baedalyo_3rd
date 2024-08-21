@@ -91,21 +91,18 @@ public class UserServiceImpl implements UserService{
             e.printStackTrace();
             throw new FileUploadFailedException();
         }
-        return "pic/" + fileName;
+        return "https://zumuniyo.shop/pic/" + fileName;
     }
 
     @Transactional
     public void deleteProfileImage() {
         User user = repository.getReferenceById(authenticationFacade.getLoginUserPk());
-        StringBuilder sb = new StringBuilder();
         try {
             if(user.getUserPic() == null) {
                 return;
             }
-            sb.append(user.getUserPic());
-            sb.delete(0,4);
             String delAbsoluteFolderPath = String.format("%s", customFileUtils.uploadPath);
-            File file = new File(delAbsoluteFolderPath, sb.toString());
+            File file = new File(delAbsoluteFolderPath, user.getUserPic().split("pic/")[1]);
             file.delete();
         } catch (Exception e) {
             throw new FileUploadFailedException();
