@@ -2,12 +2,14 @@ package com.green.beadalyo.lhn.Review;
 
 import com.green.beadalyo.common.CustomFileUtils;
 import com.green.beadalyo.gyb.model.Restaurant;
+import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.report.ReportRepository;
 import com.green.beadalyo.lhn.Review.model.*;
+import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
     private final DoneOrderRepository doneOrderRepository;
+    private final RestaurantRepository restaurantRepository;
 
 
 
@@ -113,8 +116,27 @@ public class ReviewService {
             throw new IllegalArgumentException("별점은 1에서 5까지가 최대");
         }
 
-        repository.insertReview(p);
+        Review review = makeReview(p);
+        reviewRepository.save(review);
+
         return userPk;
+    }
+
+    public Review makeReview(ReviewPostReq p) {
+        Review review = new Review();
+        DoneOrder doneOrder = doneOrderRepository.findByDoneOrderPk(p.getDoneOrderPk());
+        review.setReviewPk(p.getReviewPk());
+        review.setDoneOrderPk(doneOrder);
+        review.setUserPk(userRepository.findByUserPk(p.getUserPk()));
+        review.setResPk(doneOrder.getResPk());
+        review.setReviewContents(p.getReviewContents());
+        review.setReviewRating(p.getReviewRating());
+        review.setReviewPics1(p.getReviewPics1());
+        review.setReviewPics2(p.getReviewPics2());
+        review.setReviewPics3(p.getReviewPics3());
+        review.setReviewPics4(p.getReviewPics4());
+
+        return review;
     }
 
     // 사장님 리뷰 답글
