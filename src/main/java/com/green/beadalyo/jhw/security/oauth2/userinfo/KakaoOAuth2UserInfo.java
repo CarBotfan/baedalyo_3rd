@@ -21,12 +21,12 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
 
     @Override
     public String getEmail() {
-        return attributes.get("account_email").toString();
+        return attributes.get("email").toString();
     }
 
     @Override
     public String getProfilePicUrl() {
         Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-        return properties == null ? null : properties.get("thumbnail_image").toString();
+        return properties == null ? null : properties.get("profile_image_url").toString();
     }
 }
