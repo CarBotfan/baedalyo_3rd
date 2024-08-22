@@ -24,8 +24,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByUserId(String userId);
     User findByUserEmail(String userEmail);
     User findByUserPk(Long userPk);
-    User findByUserEmailAndUserName(String userEmail, String userName);
-    User findByUserEmailAndUserNameAndUserId(String userEmail, String userName, String userId);
+    Optional<User> findByUserEmailAndUserName(String userEmail, String userName);
+    Optional<User> findByUserEmailAndUserNameAndUserId(String userEmail, String userName, String userId);
 
 
     //어드민 통계부분에서 쓸 부분입니당

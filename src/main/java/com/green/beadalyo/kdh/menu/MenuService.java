@@ -66,16 +66,16 @@ public class MenuService {
     @Transactional
     public void postPic(MenuEntity menuEntity, MultipartFile pic){
         String path = String.format("menu/%d", menuEntity.getMenuPk());
-        menuEntity.setMenuPic("https://zumuniyo.shop/"+path + "/"+ menuEntity.getMenuPic());
-
-        menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
         try {
             customFileUtils.makeFolder(path);
-            customFileUtils.transferTo(pic,menuEntity.getMenuPic());
+            customFileUtils.transferTo(pic,path + "/" + menuEntity.getMenuPic());
         } catch (Exception e){
             e.printStackTrace();
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
         }
+        menuEntity.setMenuPic("https://zumuniyo.shop/pic/"+ path + "/" + menuEntity.getMenuPic());
+
+        menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
     }
     //메뉴 수정하기
     @Transactional
@@ -129,17 +129,17 @@ public class MenuService {
     public void putPic(MenuEntity menuEntity, MultipartFile pic){
 
         String path = String.format("menu/%d", menuEntity.getMenuPk());
-        menuEntity.setMenuPic(path + "/"+ menuEntity.getMenuPic());
-
-        menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
         try {
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
             customFileUtils.makeFolder(path);
-            customFileUtils.transferTo(pic,menuEntity.getMenuPic());
+            customFileUtils.transferTo(pic,path + "/" + menuEntity.getMenuPic());
         } catch (Exception e){
             e.printStackTrace();
             customFileUtils.deleteFolder(customFileUtils.uploadPath + path);
         }
+        menuEntity.setMenuPic(path + "/"+ menuEntity.getMenuPic());
+
+        menuRepository.updateMenuPic(menuEntity.getMenuPic(), menuEntity.getMenuPk());
     }
 
 

@@ -5,6 +5,7 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.kdh.report.user.ReportServiceForUser;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.report.ReportRepository;
@@ -36,11 +37,10 @@ public class ReviewService {
     private final ReviewFilter filter;
     private final CustomFileUtils fileUtils;
     private final AuthenticationFacade authenticationFacade;
-    private final UserService userService;
     private final UserRepository userRepository;
-    private final ReportRepository reportRepository;
     private final DoneOrderRepository doneOrderRepository;
-    private final RestaurantRepository restaurantRepository;
+    private final ReportServiceForUser reportServiceForUser;
+
 
 
 
@@ -172,6 +172,8 @@ public class ReviewService {
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
             revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
+            revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPk(
+                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk())) == 0 ? 1 : 0);
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
@@ -186,6 +188,8 @@ public class ReviewService {
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
             revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
+            revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPk(
+                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk())) == 0 ? 1 : 0);
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }

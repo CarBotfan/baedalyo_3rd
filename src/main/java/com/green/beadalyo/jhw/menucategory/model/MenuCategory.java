@@ -27,7 +27,7 @@ public class MenuCategory {
     private Long menuCategoryPk;
 
     @ToString.Exclude
-@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_pk")
     private Restaurant restaurant;
 
@@ -47,7 +47,7 @@ public class MenuCategory {
         this.position = dto.getPosition();
     }
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "menuCategory")
     private List<MenuEntity> menuList;
 
     @PreRemove
@@ -55,6 +55,7 @@ public class MenuCategory {
         this.restaurant = null;
         if(menuList != null) {
             for(MenuEntity menu : menuList) {
+                menu.setMenuCategory(null);
                 menu.setMenuState(3);
             }
         }

@@ -123,6 +123,7 @@ public class ReviewController {
             if ("ROLE_OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
                 req.setRestaurant(restaurantService.getRestaurantData(user));
                 result = service.getOwnerReviews(req);
+
             }
             if ("ROLE_USER".equals(userRole)){
                 req.setUser(user);

@@ -355,12 +355,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserByUserNameAndUserEmail(FindUserIdReq req) throws Exception {
-        return repository.findByUserEmailAndUserName(req.getUserEmail(), req.getUserName());
+        return repository.findByUserEmailAndUserName(req.getUserEmail(), req.getUserName()).orElseThrow(NullPointerException::new);
     }
 
-    @Override
-    public User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req){
-        return repository.findByUserEmailAndUserNameAndUserId(req.getUserEmail(), req.getUserName(), req.getUserId());
+
+    public User getUserByUserNameAndUserEmailAndUserId(String userName, String userEmail, String userId){
+        return repository.findByUserEmailAndUserNameAndUserId(userEmail, userName, userId).orElseThrow(NullPointerException::new);
     }
 
     public Boolean confirmPw(FindUserPwReq req) {
