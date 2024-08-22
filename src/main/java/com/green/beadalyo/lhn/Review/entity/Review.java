@@ -59,6 +59,9 @@ public class Review {
     @Column(name = "review_state")
     private int reviewState;
 
+    @Column(name = "review_blind")
+    private Integer reviewBlind;
+
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;

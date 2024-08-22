@@ -30,6 +30,10 @@ public class ReportServiceForUser {
         return reportRepository.countByReviewPk(review);
     }
 
+    public Integer getReportCountByReviewPkAndUser(Review review, User user) {
+        return reportRepository.countByReviewPkAndUser(review, user);
+    }
+
     public User getUserByPk(Long userPk){
         return userRepository.getReferenceById(userPk);
     }

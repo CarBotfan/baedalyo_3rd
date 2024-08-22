@@ -5,6 +5,7 @@ import com.green.beadalyo.gyb.model.Restaurant;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.kdh.report.user.ReportServiceForUser;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
@@ -164,7 +165,22 @@ public class ReviewService {
     }
 
     // 사장이 보는 자기 가게의 리뷰와 답글들
-    public ReviewGetListResponse getOwnerReviews(ReviewGetDto p) {
+    public ReviewGetListResponse getOwnerReviews(ReviewGetDto p, User user) {
+        Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
+        Page<Review> page = repository.findByResPkOrderByCreatedAtDesc(p.getRestaurant(), pageable);
+        List<ReviewGetRes> list = new ArrayList<>();
+        for(Review rev : page.getContent()) {
+            ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
+            revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPkAndUser(
+                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk()), user) == 0 ? 1 : 0);
+            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+            list.add(revRes);
+        }
+        return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
+    }
+
+    public ReviewGetListResponse getResReviews(ReviewGetDto p) {
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
         Page<Review> page = repository.findByResPkOrderByCreatedAtDesc(p.getRestaurant(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
@@ -178,17 +194,17 @@ public class ReviewService {
         }
         return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
     }
-    // 손님이 보는 자기가 쓴 리뷰
 
-    public ReviewGetListResponse getCustomerReviews(ReviewGetDto p) {
+    // 손님이 보는 자기가 쓴 리뷰
+    public ReviewGetListResponse getCustomerReviews(ReviewGetDto p, User user) {
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
         Page<Review> page = repository.findByUserPkOrderByCreatedAtDesc(p.getUser(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
             revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
-            revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPk(
-                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk())) == 0 ? 1 : 0);
+            revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPkAndUser(
+                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk()), user) == 0 ? 1 : 0);
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }

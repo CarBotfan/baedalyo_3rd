@@ -2,8 +2,8 @@ package com.green.beadalyo.jhw.email;
 
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.email.model.EmailCheckDto;
+import com.green.beadalyo.jhw.email.model.EmailFindRequestDto;
 import com.green.beadalyo.jhw.email.model.EmailRequestDto;
-import com.green.beadalyo.jhw.user.UserService;
 import com.green.beadalyo.jhw.user.UserServiceImpl;
 import com.green.beadalyo.jhw.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +39,7 @@ public class MailController {
 
     @PostMapping("/find")
     @Operation(summary = "인증번호 메일 발송")
-    public ResultDto<String> findMailSend(@RequestBody @Valid EmailRequestDto emailDto) {
+    public ResultDto<String> findMailSend(@RequestBody @Valid EmailFindRequestDto emailDto) {
 
         User user;
         try {

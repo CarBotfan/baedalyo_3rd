@@ -122,12 +122,12 @@ public class ReviewController {
             String userRole = facade.getLoginUserRole();
             if ("ROLE_OWNER".equals(userRole)) { // 사장님 계정 여부를 확인
                 req.setRestaurant(restaurantService.getRestaurantData(user));
-                result = service.getOwnerReviews(req);
+                result = service.getOwnerReviews(req, user);
 
             }
             if ("ROLE_USER".equals(userRole)){
                 req.setUser(user);
-                result = service.getCustomerReviews(req);
+                result = service.getCustomerReviews(req, user);
             }
             if ("ROLE_ADMIN".equals(userRole)){
                 throw new RuntimeException("어드민임니다");
@@ -158,7 +158,7 @@ public class ReviewController {
             ReviewGetDto dto = new ReviewGetDto();
             dto.setPage(p.getPage());
             dto.setRestaurant(restaurant);
-            result = service.getOwnerReviews(dto);
+            result = service.getResReviews(dto);
         } catch (Exception e) {
             code = -13;
             msg = "유효하지 않은 상점 pk입니다.";

@@ -49,8 +49,11 @@ public class ReviewGetRes {
     @Schema(example = "감사" ,description = "사장님의 리뷰에 대한 답변")
     private ReviewReplyRes reply;
 
-    @Schema(example = "신고여부" ,description = "")
+    @Schema(example = "본인 신고여부" ,description = "")
     private Integer reviewReportState;
+
+    @Schema(example = "리뷰 블라인드 여부" ,description = "")
+    private Integer reviewBlind;
 
 
 
@@ -70,5 +73,6 @@ public class ReviewGetRes {
         if (review.getReviewPics3() != null) pics.add(review.getReviewPics3());
         if (review.getReviewPics4() != null) pics.add(review.getReviewPics4());
         this.resName = review.getResPk().getName();
+        this.reviewBlind = review.getReviewBlind();
     }
 }

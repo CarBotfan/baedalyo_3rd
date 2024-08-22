@@ -18,6 +18,8 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
 
     Integer countByReviewPk(Review reviewPk);
 
+    Integer countByReviewPkAndUser(Review reviewPk, User user);
+
     Page<ReportEntity> findAllByOrderByReportPkDesc(Pageable pageable);
 
     Page<ReportEntity> findByUserOrderByReportPkDesc(User user, Pageable pageable);

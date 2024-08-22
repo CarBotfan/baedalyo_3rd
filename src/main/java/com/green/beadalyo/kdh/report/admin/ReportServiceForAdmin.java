@@ -77,6 +77,7 @@ public class ReportServiceForAdmin {
         ReportEntity reportEntity = reportRepository.getReferenceById(p.getReportPk());
         reportEntity.setReportState(2);
         reportEntity.setReportResult(String.format("%d일 정지",p.getUserBlockDate()));
+        reportEntity.getReviewPk().setReviewBlind(1);
         reportRepository.save(reportEntity);
     }
 
