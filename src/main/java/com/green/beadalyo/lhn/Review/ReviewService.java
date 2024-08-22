@@ -9,6 +9,7 @@ import com.green.beadalyo.kdh.report.user.ReportServiceForUser;
 import com.green.beadalyo.lhn.Review.entity.Review;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.report.ReportRepository;
+import com.green.beadalyo.lhn.Review.entity.ReviewComment;
 import com.green.beadalyo.lhn.Review.model.*;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderRepository;
@@ -24,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,6 +38,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final DoneOrderRepository doneOrderRepository;
     private final ReportServiceForUser reportServiceForUser;
+    private final ReviewCommentRepository reviewCommentRepository;
 
 
 
@@ -216,9 +215,10 @@ public class ReviewService {
     // 사장님 답글 수정
     public void updReviewReply(ReviewReplyUpdReq p) {
         long userPk = authenticationFacade.getLoginUserPk();
-        long resPk = repository.getResPkByReviewCommentPk(p.getReviewCommentPk());
+        ReviewComment reviewComment = reviewCommentRepository.findReviewCommentByReviewCommentPk(p.getReviewCommentPk()).orElseThrow(NullPointerException::new);
 
-        if (resPk != repository.getResPkByUserPk(userPk)) {
+
+        if (!reviewComment.getReviewPk().getResPk().getSeq().equals(repository.getResPkByUserPk(userPk))) {
             throw new IllegalArgumentException("리뷰를 작성한 사장님이 아닙니다");
         }
 
@@ -229,7 +229,8 @@ public class ReviewService {
             }
         }
 
-        repository.updReviewReply(p);
+        reviewComment.setCommentContent(p.getCommentContent());
+        reviewCommentRepository.save(reviewComment);
     }
 
     // 리뷰 업데이트

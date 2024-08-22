@@ -61,6 +61,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(nativeQuery = true, value = "SELECT res_pk FROM review WHERE review_pk = (SELECT review_pk FROM review_comment WHERE review_comment_pk = :reviewCommentPk)")
     Long getResPkByReviewCommentPk(@Param("reviewCommentPk") Long reviewCommentPk);
 
+
+
     // 사장님 답글 수정
     @Query(nativeQuery = true, value = "UPDATE review_comment SET comment_content = :p.commentContent WHERE review_comment_pk = :p.reviewCommentPk")
     void updReviewReply(@Param("p") ReviewReplyUpdReq p);

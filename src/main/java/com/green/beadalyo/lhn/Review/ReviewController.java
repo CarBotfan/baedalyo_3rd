@@ -192,6 +192,9 @@ public class ReviewController {
         catch (ArithmeticException arithmeticException){
             code = -19;
             msg = arithmeticException.getMessage();
+        }catch (NullPointerException e){
+            code = -1;
+            msg = "불러올 사장님 답글이 없습니다.";
         }
         catch (Exception e) {
             e.printStackTrace();
