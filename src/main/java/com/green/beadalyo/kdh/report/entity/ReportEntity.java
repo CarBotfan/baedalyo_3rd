@@ -15,12 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(
-        name = "report",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"review_pk"})
-        }
-)
+@Table(name = "report")
 public class ReportEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
