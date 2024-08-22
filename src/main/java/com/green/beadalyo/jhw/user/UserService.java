@@ -17,5 +17,4 @@ public interface UserService {
     Map getAccessToken(HttpServletRequest req) throws Exception;
     int duplicatedIdCheck(String userId);
     User getUserByUserNameAndUserEmail(FindUserIdReq req) throws Exception;
-    User getUserByUserNameAndUserEmailAndUserId(FindUserPwReq req) throws Exception;
 }

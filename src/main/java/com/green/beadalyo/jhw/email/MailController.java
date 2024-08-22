@@ -3,6 +3,9 @@ package com.green.beadalyo.jhw.email;
 import com.green.beadalyo.common.model.ResultDto;
 import com.green.beadalyo.jhw.email.model.EmailCheckDto;
 import com.green.beadalyo.jhw.email.model.EmailRequestDto;
+import com.green.beadalyo.jhw.user.UserService;
+import com.green.beadalyo.jhw.user.UserServiceImpl;
+import com.green.beadalyo.jhw.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "메일 컨트롤러")
 public class MailController {
     private final MailService mailService;
+    private final UserServiceImpl userService;
+
     @PostMapping("/send")
     @Operation(summary = "인증번호 메일 발송")
     public ResultDto<String> mailSend(@RequestBody @Valid EmailRequestDto emailDto) {
@@ -37,12 +42,30 @@ public class MailController {
     @Operation(summary = "인증번호 메일 발송")
     public ResultDto<String> findMailSend(@RequestBody @Valid EmailRequestDto emailDto) {
 
+        User user;
+        try {
+            user = userService.getUserByUserNameAndUserEmailAndUserId(emailDto.getUserName(), emailDto.getEmail(), emailDto.getUserId());
+        } catch (NullPointerException e) {
+            return ResultDto.<String>builder()
+                    .statusCode(-2)
+                    .resultMsg("해당 유저를 찾을 수 없음")
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.<String>builder()
+                    .statusCode(-1)
+                    .resultMsg("기타 에러")
+                    .build();
+        }
+
         String result = mailService.findJoinEmail(emailDto.getEmail());
         return ResultDto.<String>builder()
                 .statusCode(1)
                 .resultMsg(result)
                 .resultData(result).build();
     }
+
+
 
     @PostMapping("/auth_check")
     @Operation(summary = "인증번호 체크")

@@ -23,7 +23,7 @@ public class FindUserIdReq {
     @Pattern(regexp = userEmailPattern, message = "유효하지 않은 형식의 이메일입니다.")
     private String userEmail;
 
-    @Schema(defaultValue = "인증번호 재인증")
-    @NotEmpty(message = "인증번호를 입력하세요.")
-    private String authNum;
+//    @Schema(defaultValue = "인증번호 재인증")
+//    @NotEmpty(message = "인증번호를 입력하세요.")
+//    private String authNum;
 }

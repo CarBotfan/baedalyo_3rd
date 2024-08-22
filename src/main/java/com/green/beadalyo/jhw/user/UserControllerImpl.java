@@ -640,21 +640,28 @@ public class UserControllerImpl implements UserController{
         String msg = "아이디 찾기 성공";
         String result = null;
 
-        Boolean checked = mailService.CheckAuthNum(req.getUserEmail(), req.getAuthNum());
-        if (!checked) {
-            return ResultDto.<String>builder()
-                    .statusCode(-1)
-                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
-                    .build();
-        }
+//        Boolean checked = mailService.CheckAuthNum(req.getUserEmail(), req.getAuthNum());
+//        if (!checked) {
+//            return ResultDto.<String>builder()
+//                    .statusCode(-1)
+//                    .resultMsg("인증번호가 잘못되었거나 만료되었습니다.")
+//                    .build();
+//        }
         User user;
         try {
             user = service.getUserByUserNameAndUserEmail(req);
             result = user.getUserId();
-        } catch (Exception e) {
+
+        } catch (NullPointerException e) {
             return ResultDto.<String>builder()
                     .statusCode(-2)
                     .resultMsg("해당 유저를 찾을 수 없음")
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.<String>builder()
+                    .statusCode(-1)
+                    .resultMsg("기타 에러")
                     .build();
         }
 
@@ -689,13 +696,23 @@ public class UserControllerImpl implements UserController{
         }
         User user;
 
-        user = service.getUserByUserNameAndUserEmailAndUserId(req);
-        if  (user == null ) {
+        try {
+            user = service.getUserByUserNameAndUserEmailAndUserId(req.getUserName(), req.getUserEmail(), req.getUserId());
+        } catch (NullPointerException e) {
             return ResultDto.<Integer>builder()
                     .statusCode(-2)
                     .resultMsg("해당 유저를 찾을 수 없음")
                     .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.<Integer>builder()
+                    .statusCode(-1)
+                    .resultMsg("기타 에러")
+                    .build();
         }
+
+
+
 
         if (!service.confirmPw(req)) {
             return ResultDto.<Integer>builder()
