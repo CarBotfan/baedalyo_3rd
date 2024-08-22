@@ -167,7 +167,7 @@ public class ReviewService {
     // 사장이 보는 자기 가게의 리뷰와 답글들
     public ReviewGetListResponse getOwnerReviews(ReviewGetDto p, User user) throws Exception{
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
-        Page<Review> page = repository.findByResPkOrderByCreatedAtDesc(p.getRestaurant(), pageable);
+        Page<Review> page = repository.findByResPkAndReviewStateOrderByCreatedAtDesc(p.getRestaurant(), 0, pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
