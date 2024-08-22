@@ -333,23 +333,23 @@ public class ReviewService {
 //        review.setPics(pics);
 //    }
 
-    public List<ReviewGetRes> reviewPagingTest(Restaurant res, Integer page) {
-
-        Pageable pageable = PageRequest.of(page - 1, REVIEW_PER_PAGE);
-        Page<Review> list = repository.findByResPkOrderByCreatedAtDesc(res, pageable);
-        List<ReviewGetRes> result = new ArrayList<>();
-        for(Review rev : list.getContent()) {
-            ReviewGetRes revRes = new ReviewGetRes(rev);
-            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
-            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
-            result.add(revRes);
-        }
-        Map<String, Object> map = new HashMap<>();
-        map.put("total Page", list.getTotalPages());
-        map.put("page", result);
-        log.debug("{}", map);
-        return result;
-    }
+//    public List<ReviewGetRes> reviewPagingTest(Restaurant res, Integer page) {
+//
+//        Pageable pageable = PageRequest.of(page - 1, REVIEW_PER_PAGE);
+//        Page<Review> list = repository.findByResPkOrderByCreatedAtDesc(res, pageable);
+//        List<ReviewGetRes> result = new ArrayList<>();
+//        for(Review rev : list.getContent()) {
+//            ReviewGetRes revRes = new ReviewGetRes(rev);
+//            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
+//            revRes.setReply(repository.findReviewReplyByReviewPk(rev));
+//            result.add(revRes);
+//        }
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("total Page", list.getTotalPages());
+//        map.put("page", result);
+//        log.debug("{}", map);
+//        return result;
+//    }
 
 
 }
