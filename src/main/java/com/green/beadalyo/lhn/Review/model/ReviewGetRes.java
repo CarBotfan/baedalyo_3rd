@@ -53,7 +53,7 @@ public class ReviewGetRes {
     private Integer reviewReportState;
 
     @Schema(example = "리뷰 블라인드 여부" ,description = "")
-    private Integer reviewBlind;
+    private Integer reviewBlind = 0;
 
 
 
