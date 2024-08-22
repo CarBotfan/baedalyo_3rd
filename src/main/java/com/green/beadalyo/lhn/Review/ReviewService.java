@@ -165,7 +165,7 @@ public class ReviewService {
     }
 
     // 사장이 보는 자기 가게의 리뷰와 답글들
-    public ReviewGetListResponse getOwnerReviews(ReviewGetDto p, User user) {
+    public ReviewGetListResponse getOwnerReviews(ReviewGetDto p, User user) throws Exception{
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
         Page<Review> page = repository.findByResPkOrderByCreatedAtDesc(p.getRestaurant(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
@@ -173,7 +173,7 @@ public class ReviewService {
             ReviewGetRes revRes = new ReviewGetRes(rev);
             revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPkAndUser(
-                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk()), user) == 0 ? 1 : 0);
+                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk()).orElseThrow(NullPointerException::new), user) == 0 ? 1 : 0);
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
@@ -195,7 +195,7 @@ public class ReviewService {
     }
 
     // 손님이 보는 자기가 쓴 리뷰
-    public ReviewGetListResponse getCustomerReviews(ReviewGetDto p, User user) {
+    public ReviewGetListResponse getCustomerReviews(ReviewGetDto p, User user) throws Exception{
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
         Page<Review> page = repository.findByUserPkOrderByCreatedAtDesc(p.getUser(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
@@ -203,7 +203,7 @@ public class ReviewService {
             ReviewGetRes revRes = new ReviewGetRes(rev);
             revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPkAndUser(
-                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk()), user) == 0 ? 1 : 0);
+                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk()).orElseThrow(NullPointerException::new), user) == 0 ? 1 : 0);
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }

@@ -133,6 +133,9 @@ public class ReviewController {
                 throw new RuntimeException("어드민임니다");
             }
 
+        } catch (NullPointerException e) {
+            code = -1;
+            msg = "리뷰를 불러올 수 없습니다.";
         } catch (Exception e) {
             code = -13;
             msg = e.getMessage();
@@ -271,12 +274,14 @@ public class ReviewController {
         try {
             service.deleteReview(reviewPk);
         } catch (NullPointerException nullPointerException) {
-            code = -10;
-            msg = nullPointerException.getMessage();
-
+            code = -1;
+            msg = "리뷰를 불러올 수 없습니다.";
         } catch (RuntimeException runtimeException) {
             code = -11;
             msg = runtimeException.getMessage();
+        } catch (Exception e) {
+            code = -2;
+            msg = "기타 오류";
         }
         return ResultDto.<Integer>builder()
                 .statusCode(code)
