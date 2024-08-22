@@ -182,7 +182,7 @@ public class ReviewService {
 
     public ReviewGetListResponse getResReviews(ReviewGetDto p) {
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
-        Page<Review> page = repository.findByResPkOrderByCreatedAtDesc(p.getRestaurant(), pageable);
+        Page<Review> page = repository.findByResPkAndReviewStateOrderByCreatedAtDesc(p.getRestaurant(), 0, pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
@@ -197,7 +197,7 @@ public class ReviewService {
     // 손님이 보는 자기가 쓴 리뷰
     public ReviewGetListResponse getCustomerReviews(ReviewGetDto p, User user) throws Exception{
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
-        Page<Review> page = repository.findByUserPkOrderByCreatedAtDesc(p.getUser(), pageable);
+        Page<Review> page = repository.findByUserPkAndReviewStateOrderByCreatedAtDesc(p.getUser(), 0, pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);

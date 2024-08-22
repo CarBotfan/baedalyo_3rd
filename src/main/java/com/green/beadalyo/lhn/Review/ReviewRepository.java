@@ -104,9 +104,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     String selectUserNickName(@Param("userPk") Long userPk);
 
 //    @Query("select r from Review r where r.resPk = :resPk order by r.createdAt")
-    Page<Review> findByResPkOrderByCreatedAtDesc(Restaurant resPk, Pageable pageable);
+    Page<Review> findByResPkAndReviewStateOrderByCreatedAtDesc(Restaurant resPk, Integer reviewState, Pageable pageable);
 
 //    @Query("select r from Review  r where r.userPk = :userPk order by r.createdAt")
-    Page<Review> findByUserPkOrderByCreatedAtDesc(User userPk, Pageable pageable);
+    Page<Review> findByUserPkAndReviewStateOrderByCreatedAtDesc(User userPk, Integer reviewState, Pageable pageable);
 
 }
