@@ -140,6 +140,7 @@ public class ReviewService {
         review.setReviewPics2(p.getReviewPics2());
         review.setReviewPics3(p.getReviewPics3());
         review.setReviewPics4(p.getReviewPics4());
+        review.setReviewBlind(0);
 
         return review;
     }
