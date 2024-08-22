@@ -3,6 +3,7 @@ package com.green.beadalyo.kdh.stat.admin;
 import com.green.beadalyo.gyb.restaurant.repository.RestaurantRepository;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
 import com.green.beadalyo.kdh.stat.admin.model.*;
+import com.green.beadalyo.kdh.stat.owner.model.GetMonthSaleRes;
 import com.green.beadalyo.lmy.doneorder.model.DailyOrderCountDto;
 import com.green.beadalyo.lmy.doneorder.model.DailySalesDto;
 import com.green.beadalyo.lmy.doneorder.model.MonthOrderCountDto;
@@ -28,21 +29,6 @@ public class StatServiceForAdmin {
        return restaurantRepository.existsById(resPk);
     }
 
-    public List<MonthSalesDto> getMonthSalesForAdmin(GetRestaurantStatForAdminReq p){
-       return doneOrderRepository.getMonthSales(p.getDate(), p.getResPk());
-    }
-
-    public List<MonthOrderCountDto> getMonthOrderCountForAdmin (GetRestaurantStatForAdminReq p){
-        return doneOrderRepository.getMonthOrderCount(p.getDate(),p.getResPk());
-    }
-
-    public List<DailySalesDto> getDailySalesForAdmin (GetRestaurantStatForAdminReq p){
-        return doneOrderRepository.getDailySales(p.getDate(), p.getResPk());
-    }
-
-    public List<DailyOrderCountDto> getDailyOrderCountForAdmin (GetRestaurantStatForAdminReq p){
-        return  doneOrderRepository.getDailyOrderCount(p.getDate(),p.getResPk());
-    }
 
     public List<GetDailySignUpCount> getDailySignUpCount(String date){
         return userRepository.getDailySignUpCount(date);
@@ -58,5 +44,21 @@ public class StatServiceForAdmin {
 
     public List<GetMonthSignOutCount> getMonthSignOutCount(String date){
         return userRepository.getMonthSignOutCount(date);
+    }
+
+    public List<MonthSalesDto> getMonthSaleByAllRes(String date){
+        return doneOrderRepository.getMonthSalesByAllRes(date);
+    }
+
+    public List<MonthOrderCountDto> getMonthOrderCountByAllRes(String date){
+        return doneOrderRepository.getMonthOrderCountByAllRes(date);
+    }
+
+    public List<DailySalesDto> getDailySalesByAllRes(String date){
+        return doneOrderRepository.getDailySalesByAllRes(date);
+    }
+
+    public List<DailyOrderCountDto> getDailyOrderCountByAllRes(String date){
+        return doneOrderRepository.getDailyOrderCountByAllRes(date);
     }
 }

@@ -10,6 +10,6 @@ import lombok.ToString;
 public class GetRestaurantStatForAdminReq {
     private String date;
 
-    private Long resPk;
+//    private Long resPk;
 
 }
