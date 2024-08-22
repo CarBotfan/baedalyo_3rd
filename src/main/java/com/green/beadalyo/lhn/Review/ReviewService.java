@@ -299,19 +299,15 @@ public class ReviewService {
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(long reviewPk) {
-        ReviewGetRes review = repository.getReview(reviewPk);
-        long reviewUserPk = (review == null ? 0 : review.getUserPk());
+    public void deleteReview(long reviewPk) throws Exception{
+        Review review = repository.findReviewByReviewPk(reviewPk).orElseThrow(NullPointerException::new);
 
-        if (reviewUserPk == 0) {
-            throw new IllegalArgumentException("존재하지 않는 리뷰입니다");
-        }
-
-        if (reviewUserPk != authenticationFacade.getLoginUserPk()) {
+        if (review.getUserPk().getUserPk() != authenticationFacade.getLoginUserPk()) {
             throw new IllegalArgumentException("리뷰를 작성한 사용자가 아닙니다");
         }
 
-        repository.deleteReview(reviewPk, 2); // 리뷰 상태를 삭제됨(2)으로 업데이트
+        review.setReviewState(2);// 리뷰 상태를 삭제됨(2)으로 업데이트
+        repository.save(review);
     }
 
     // 사장님 답글 삭제
