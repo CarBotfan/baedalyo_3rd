@@ -158,7 +158,12 @@ public class ReviewController {
             ReviewGetDto dto = new ReviewGetDto();
             dto.setPage(p.getPage());
             dto.setRestaurant(restaurant);
-            result = service.getResReviews(dto);
+            try {
+                User user = userService.getUser(facade.getLoginUserPk());
+                result = service.getOwnerReviews(dto, user);
+            } catch (Exception e) {
+                result = service.getResReviews(dto);
+            }
         } catch (Exception e) {
             code = -13;
             msg = "유효하지 않은 상점 pk입니다.";
