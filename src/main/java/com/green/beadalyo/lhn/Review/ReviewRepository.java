@@ -23,9 +23,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Integer countReviewByDoneOrderPk(DoneOrder doneOrderPk);
 
 
-    // 사장님 답글
-    @Query(nativeQuery = true, value = "INSERT INTO review_comment (review_pk, comment_content) VALUES (:p.reviewPk, :p.commentContent)")
-    Long postReviewReply(@Param("p") ReviewReplyReq p);
+//    // 사장님 답글
+//    @Query(nativeQuery = true, value = "INSERT INTO review_comment (review_pk, comment_content) VALUES (:p.reviewPk, :p.commentContent)")
+//    Long postReviewReply(@Param("p") ReviewReplyReq p);
+
+    @Query(nativeQuery = true, value = "INSERT INTO review_comment (review_pk, comment_content) VALUES (:reviewPk, :commentContent)")
+    void postReviewReply(@Param("reviewPk") Long reviewPk, @Param("commentContent") String commentContent);
 
     // 사장님 답글 삭제
     @Query(nativeQuery = true, value = "DELETE FROM review_comment WHERE review_comment_pk = :commentPk")

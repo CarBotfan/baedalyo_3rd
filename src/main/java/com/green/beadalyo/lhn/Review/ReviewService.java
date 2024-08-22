@@ -160,7 +160,8 @@ public class ReviewService {
             }
         }
 
-        return repository.postReviewReply(p);
+        repository.postReviewReply(p.getReviewPk(), p.getCommentContent());
+        return 1L;
     }
 
     // 사장이 보는 자기 가게의 리뷰와 답글들

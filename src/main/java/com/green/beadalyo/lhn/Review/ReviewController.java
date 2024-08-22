@@ -91,6 +91,7 @@ public class ReviewController {
         try {
             result = service.postReviewReply(p);
         } catch (Exception e) {
+            e.printStackTrace();
             code = -16;
             msg = e.getMessage();
         }
