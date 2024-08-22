@@ -25,6 +25,7 @@ import java.util.List;
 public class ReportControllerForUser {
     private final ReportServiceForUser service;
     private final UserServiceImpl userService;
+    private final ReportServiceForUser reportServiceForUser;
     private final AuthenticationFacade authenticationFacade;
 
 
@@ -37,6 +38,13 @@ public class ReportControllerForUser {
 
         try {
             User user = userService.getUser(authenticationFacade.getLoginUserPk());
+            if (reportServiceForUser.getReportCountByReviewPkAndUser(
+                    review, user) != 0) {
+                return ResultDto.<Integer>builder()
+                        .statusCode(-2)
+                        .resultMsg("같은 리뷰를 여러번 신고할 수 없습니다.")
+                        .build();
+            }
             p.setReview(review);
             p.setUser(user);
             ReportEntity reportEntity = service.makeReportForPost(p);
