@@ -49,6 +49,9 @@ public class ReviewGetRes {
     @Schema(example = "감사" ,description = "사장님의 리뷰에 대한 답변")
     private ReviewReplyRes reply;
 
+    @Schema(example = "신고여부" ,description = "")
+    private Integer reviewReportState;
+
 
 
     private String resName;

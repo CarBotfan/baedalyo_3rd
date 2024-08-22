@@ -26,6 +26,10 @@ public class ReportServiceForUser {
     private final ReviewRepository reviewRepository;
     private final AuthenticationFacade authenticationFacade;
 
+    public Integer getReportCountByReviewPk(Review review) {
+        return reportRepository.countByReviewPk(review);
+    }
+
     public User getUserByPk(Long userPk){
         return userRepository.getReferenceById(userPk);
     }
