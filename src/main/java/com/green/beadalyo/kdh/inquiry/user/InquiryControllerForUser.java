@@ -7,6 +7,7 @@ import com.green.beadalyo.kdh.inquiry.entity.InquiryEntity;
 import com.green.beadalyo.kdh.inquiry.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class InquiryControllerForUser {
     @PostMapping()
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "고객센터 문의하기(유저용)")
-    public ResultDto<Integer> postInquiry(@RequestBody PostInquiryForUserReq p){
+    public ResultDto<Integer> postInquiry(@Valid @RequestBody PostInquiryForUserReq p){
 
         User user = service.getUserByPk(authenticationFacade.getLoginUserPk());
         p.setUser(user);
@@ -53,7 +54,7 @@ public class InquiryControllerForUser {
     @PutMapping()
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "문의하기 수정하기(유저용)")
-    public ResultDto<Integer> PutInquiry(@RequestBody PutInquiryForUserReq p){
+    public ResultDto<Integer> PutInquiry(@Valid @RequestBody PutInquiryForUserReq p){
 
         User user = service.getUserByPk(authenticationFacade.getLoginUserPk());
         p.setUser(user);

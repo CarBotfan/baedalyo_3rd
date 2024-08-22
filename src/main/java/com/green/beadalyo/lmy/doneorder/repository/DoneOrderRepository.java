@@ -74,4 +74,24 @@ public interface DoneOrderRepository extends JpaRepository<DoneOrder, Long> {
     //------------통계 부분 어드민!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m') AS createdAt, SUM(o.order_price) AS monthSales " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y') = :date AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')", nativeQuery = true)
+    List<MonthSalesDto> getMonthSalesByAllRes(@Param("date") String date);
+
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m') AS createdAt, COUNT(o.done_order_pk) AS monthOrderCount " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y') = :date AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')", nativeQuery = true)
+    List<MonthOrderCountDto> getMonthOrderCountByAllRes(@Param("date") String date);
+
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m-%d') AS createdAt, SUM(o.order_price) AS dailySales " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y-%m') = :date AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m-%d')", nativeQuery = true)
+    List<DailySalesDto> getDailySalesByAllRes(@Param("date") String date);
+
+    @Query(value = "SELECT DATE_FORMAT(o.created_at, '%Y-%m-%d') AS createdAt, COUNT(o.done_order_pk) AS dailyOrderCount " +
+            "FROM done_order o WHERE DATE_FORMAT(o.created_at, '%Y-%m') = :date AND o.done_order_state = 1 " +
+            "GROUP BY DATE_FORMAT(o.created_at, '%Y-%m-%d')", nativeQuery = true)
+    List<DailyOrderCountDto> getDailyOrderCountByAllRes(@Param("date") String date);
+
 }

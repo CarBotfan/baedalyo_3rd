@@ -27,25 +27,17 @@ public class StatControllerForAdmin {
 
     @GetMapping("month_sales")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "가게의 월 매출을 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
+    @Operation(summary = "어플의 월 매출을 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
             "<p> 1 : 월 매출 불러오기 완료 </p>"+
             "<p> -1 : 월 매출 불러오기 실패 </p>"+
             "<p> -2 : 존재하지 않는 가게입니다.</p>")
-    public ResultDto<List<MonthSalesDto>> getMonthSales(@ParameterObject @ModelAttribute GetRestaurantStatForAdminReq p){
+    public ResultDto<List<MonthSalesDto>> getMonthSalesByAllRes(@ParameterObject @ModelAttribute GetRestaurantStatForAdminReq p){
         List<MonthSalesDto> result = null;
 
 
-        boolean checkRestaurant = service.checkRestaurant(p.getResPk());
-        if (!checkRestaurant){
-            return ResultDto.<List<MonthSalesDto>>builder()
-                    .statusCode(-2)
-                    .resultMsg("존재하지 않는 가게입니다.")
-                    .resultData(result)
-                    .build();
-        }
         int code = 1;
         try {
-            result = service.getMonthSalesForAdmin(p);
+            result = service.getMonthSaleByAllRes(p.getDate());
         } catch (Exception e){
 
             return ResultDto.<List<MonthSalesDto>>builder()
@@ -64,23 +56,16 @@ public class StatControllerForAdmin {
 
     @GetMapping("month_order_count")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "가게의 월 주문수를 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
+    @Operation(summary = "어플의 월 주문수를 불러옵니다." , description = "date의 양식은 2024 입니다.\n" +
             "<p> 1 : 월 주문 수 불러오기 완료 </p>"+
             "<p> -1 : 월 주문 수 불러오기 실패 </p>"+
             "<p> -2 : 존재하지 않는 가게입니다.</p>")
-    public ResultDto<List<MonthOrderCountDto>> getMonthOrderCount(@ParameterObject @ModelAttribute GetRestaurantStatForAdminReq p){
+    public ResultDto<List<MonthOrderCountDto>> getMonthOrderCountByAllRes(@ParameterObject @ModelAttribute GetRestaurantStatForAdminReq p){
         List<MonthOrderCountDto> result = null;
 
-        boolean checkRestaurant = service.checkRestaurant(p.getResPk());
-        if (!checkRestaurant){
-            return ResultDto.<List<MonthOrderCountDto>>builder()
-                    .statusCode(-2)
-                    .resultMsg("존재하지 않는 가게입니다.")
-                    .resultData(result)
-                    .build();
-        }
+
         try {
-            result = service.getMonthOrderCountForAdmin(p);
+            result = service.getMonthOrderCountByAllRes(p.getDate());
         }
         catch (Exception e){
             return ResultDto.<List<MonthOrderCountDto>>builder()
@@ -99,24 +84,17 @@ public class StatControllerForAdmin {
 
     @GetMapping("daily_sales")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "가게의 일일 매출을 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
+    @Operation(summary = "어플의 일일 매출을 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
             "<p> 1 : 일일 매출 불러오기 완료 </p>"+
             "<p> -1 : 일일 매출 불러오기 실패 </p>"+
             "<p> -2 : 존재하지 않는 가게입니다.</p>")
     public ResultDto<List<DailySalesDto>> getDailySales(@ParameterObject @ModelAttribute GetRestaurantStatForAdminReq p){
         List<DailySalesDto> result = null;
 
-        boolean checkRestaurant = service.checkRestaurant(p.getResPk());
-        if (!checkRestaurant){
-            return ResultDto.<List<DailySalesDto>>builder()
-                    .statusCode(-2)
-                    .resultMsg("존재하지 않는 가게입니다.")
-                    .resultData(result)
-                    .build();
-        }
+
 
         try {
-            result = service.getDailySalesForAdmin(p);
+            result = service.getDailySalesByAllRes(p.getDate());
         }
         catch (Exception e){
 
@@ -136,24 +114,16 @@ public class StatControllerForAdmin {
 
     @GetMapping("daily_order_count")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "가게의 일일 주문 수를 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
+    @Operation(summary = "어플의 일일 주문 수를 불러옵니다." , description = "date의 양식은 2024-07 입니다.\n" +
             "<p> 1 : 일일 주문 수 불러오기 완료 </p>"+
             "<p> -1 : 일일 주문 수 불러오기 실패 </p>"+
             "<p> -2 : 존재하지 않는 가게입니다.</p>")
     public ResultDto<List<DailyOrderCountDto>> getDailyOrderCount(@ParameterObject @ModelAttribute GetRestaurantStatForAdminReq p){
         List<DailyOrderCountDto> result = null;
 
-        boolean checkRestaurant = service.checkRestaurant(p.getResPk());
-        if (!checkRestaurant){
-            return ResultDto.<List<DailyOrderCountDto>>builder()
-                    .statusCode(-2)
-                    .resultMsg("존재하지 않는 가게입니다.")
-                    .resultData(result)
-                    .build();
-        }
 
         try {
-            result = service.getDailyOrderCountForAdmin(p);
+            result = service.getDailyOrderCountByAllRes(p.getDate());
         }
         catch (Exception e){
 

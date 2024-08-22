@@ -23,8 +23,8 @@ public class ReportEntity {
     private Long reportPk;
 
     @ToString.Exclude
-@ManyToOne
-    @JoinColumn(name = "review_pk", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "review_pk", nullable = false, unique = true)
     private Review reviewPk;
 
     @ToString.Exclude
