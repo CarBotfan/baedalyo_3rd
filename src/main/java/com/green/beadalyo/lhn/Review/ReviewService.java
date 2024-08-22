@@ -187,8 +187,7 @@ public class ReviewService {
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
             revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
-            revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPk(
-                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk())) == 0 ? 1 : 0);
+            revRes.setReviewReportState(1);
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
@@ -203,7 +202,8 @@ public class ReviewService {
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
             revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
-            revRes.setReviewReportState(1);
+            revRes.setReviewReportState(reportServiceForUser.getReportCountByReviewPkAndUser(
+                    reviewRepository.findReviewByReviewPk(revRes.getReviewPk()), user) == 0 ? 1 : 0);
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
