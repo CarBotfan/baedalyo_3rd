@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -73,7 +75,9 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
             } catch (Exception ignored) {}
             try { signUpParam.setUserEmail(oAuth2UserInfo.getEmail());
             } catch (Exception ignored) {}
-
+            signUpParam.setUserRole("ROLE_USER");
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder() ;
+            signInParam.setUserPw(passwordEncoder.encode("test1234"));
 
             user = new User(signUpParam);
             user = repository.save(user);

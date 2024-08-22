@@ -46,7 +46,7 @@ public class PaymentController
         order.setOrderState(2);
         orderService.saveOrder(order);
         User user2 = order.getOrderRes().getUser() ;
-        sse.sendEmitters("OrderRequest",user2);
+        sse.sendEmitters("OrderRequest",user2.getUserPk());
 
 
     }

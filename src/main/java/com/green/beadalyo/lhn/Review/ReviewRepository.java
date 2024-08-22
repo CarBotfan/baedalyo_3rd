@@ -20,6 +20,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     void insertReview( ReviewPostReq p);
 
 
+    Integer countReviewByDoneOrderPk(DoneOrder doneOrderPk);
+
+
     // 사장님 답글
     @Query(nativeQuery = true, value = "INSERT INTO review_comment (review_pk, comment_content) VALUES (:p.reviewPk, :p.commentContent)")
     Long postReviewReply(@Param("p") ReviewReplyReq p);
@@ -92,10 +95,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(nativeQuery = true, value = "SELECT user_nickname FROM user WHERE user_pk = :userPk")
     String selectUserNickName(@Param("userPk") Long userPk);
 
-    @Query("select r from Review r where r.resPk = :resPk order by r.createdAt")
-    Page<Review> findReviewsByResPk(Restaurant resPk, Pageable pageable);
+//    @Query("select r from Review r where r.resPk = :resPk order by r.createdAt")
+    Page<Review> findByResPkOrderByCreatedAtDesc(Restaurant resPk, Pageable pageable);
 
-    @Query("select r from Review  r where r.userPk = :userPk order by r.createdAt")
-    Page<Review> findReviewsByUserPk(User userPk, Pageable pageable);
+//    @Query("select r from Review  r where r.userPk = :userPk order by r.createdAt")
+    Page<Review> findByUserPkOrderByCreatedAtDesc(User userPk, Pageable pageable);
 
 }

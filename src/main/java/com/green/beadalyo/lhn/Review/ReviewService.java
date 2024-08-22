@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,6 +46,8 @@ public class ReviewService {
 
     private final Integer REVIEW_PER_PAGE = 20;
     private final ReviewRepository reviewRepository;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // 리뷰 작성
     @Transactional
@@ -161,10 +166,11 @@ public class ReviewService {
     // 사장이 보는 자기 가게의 리뷰와 답글들
     public ReviewGetListResponse getOwnerReviews(ReviewGetDto p) {
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
-        Page<Review> page = repository.findReviewsByResPk(p.getRestaurant(), pageable);
+        Page<Review> page = repository.findByResPkOrderByCreatedAtDesc(p.getRestaurant(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
@@ -174,32 +180,33 @@ public class ReviewService {
 
     public ReviewGetListResponse getCustomerReviews(ReviewGetDto p) {
         Pageable pageable = PageRequest.of(p.getPage() - 1, REVIEW_PER_PAGE);
-        Page<Review> page = repository.findReviewsByUserPk(p.getUser(), pageable);
+        Page<Review> page = repository.findByUserPkOrderByCreatedAtDesc(p.getUser(), pageable);
         List<ReviewGetRes> list = new ArrayList<>();
         for(Review rev : page.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             list.add(revRes);
         }
 
         return new ReviewGetListResponse(p.getPage(), page.getTotalPages(), list);
     }
-    private List<ReviewGetRes> getReviewGetRes(long resPk) {
-        List<ReviewGetRes> reviews = repository.getReviewsRestaurant(resPk);
+//    private List<ReviewGetRes> getReviewGetRes(long resPk) {
+//        List<ReviewGetRes> reviews = repository.getReviewsRestaurant(resPk);
+//
+//        for (ReviewGetRes review : reviews) {
+//            addPicsToReview(review);
+//            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
+//            review.setReply(reply);
+//            review.setNickName(repository.selectUserNickName(review.getUserPk()));
+//        }
+//
+//        return reviews;
+//    }
 
-        for (ReviewGetRes review : reviews) {
-            addPicsToReview(review);
-            ReviewReplyRes reply = repository.getReviewComment(review.getReviewPk());
-            review.setReply(reply);
-            review.setNickName(repository.selectUserNickName(review.getUserPk()));
-        }
-
-        return reviews;
-    }
-
-    public List<ReviewGetRes> getReviewListByResPk(long resPk) {
-        return getReviewGetRes(resPk);
-    }
+//    public List<ReviewGetRes> getReviewListByResPk(long resPk) {
+//        return getReviewGetRes(resPk);
+//    }
 
     // 사장님 답글 수정
     public void updReviewReply(ReviewReplyUpdReq p) {
@@ -298,24 +305,25 @@ public class ReviewService {
         repository.deleteReviewReply(reviewCommentPk);
     }
 
-    // 리뷰에 사진 추가
-    private void addPicsToReview(ReviewGetRes review) {
-        List<String> pics = new ArrayList<>();
-        if (review.getReviewPics1() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics1());
-        if (review.getReviewPics2() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics2());
-        if (review.getReviewPics3() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics3());
-        if (review.getReviewPics4() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics4());
-
-        review.setPics(pics);
-    }
+//    // 리뷰에 사진 추가
+//    private void addPicsToReview(ReviewGetRes review) {
+//        List<String> pics = new ArrayList<>();
+//        if (review.getReviewPics1() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics1());
+//        if (review.getReviewPics2() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics2());
+//        if (review.getReviewPics3() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics3());
+//        if (review.getReviewPics4() != null) pics.add("https://zumuniyo.shop/pic"+review.getReviewPics4());
+//
+//        review.setPics(pics);
+//    }
 
     public List<ReviewGetRes> reviewPagingTest(Restaurant res, Integer page) {
 
         Pageable pageable = PageRequest.of(page - 1, REVIEW_PER_PAGE);
-        Page<Review> list = repository.findReviewsByResPk(res, pageable);
+        Page<Review> list = repository.findByResPkOrderByCreatedAtDesc(res, pageable);
         List<ReviewGetRes> result = new ArrayList<>();
         for(Review rev : list.getContent()) {
             ReviewGetRes revRes = new ReviewGetRes(rev);
+            revRes.setCreatedAt(rev.getCreatedAt().format(formatter));
             revRes.setReply(repository.findReviewReplyByReviewPk(rev));
             result.add(revRes);
         }

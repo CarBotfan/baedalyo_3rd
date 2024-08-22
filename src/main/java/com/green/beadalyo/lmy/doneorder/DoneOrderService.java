@@ -3,6 +3,7 @@ package com.green.beadalyo.lmy.doneorder;
 import com.green.beadalyo.jhw.security.AuthenticationFacade;
 import com.green.beadalyo.jhw.user.entity.User;
 import com.green.beadalyo.jhw.user.repository.UserRepository;
+import com.green.beadalyo.lhn.Review.ReviewRepository;
 import com.green.beadalyo.lmy.doneorder.entity.DoneOrder;
 import com.green.beadalyo.lmy.doneorder.model.*;
 import com.green.beadalyo.lmy.doneorder.repository.DoneOrderMenuRepository;
@@ -27,6 +28,7 @@ public class DoneOrderService {
     private final DoneOrderMenuRepository doneOrderMenuRepository;
     private final AuthenticationFacade authenticationFacade;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     public void save(DoneOrder doneOrder)
     {
@@ -49,7 +51,7 @@ public class DoneOrderService {
         Map<String, Object> resultMap = new HashMap<>();
 
         for (DoneOrderMiniGetResUser item : list) {
-            item.setReviewState(doneOrderRepository.countByDoneOrderPk(item.getDoneOrderPk()) == 0 ? 1 : 0);
+            item.setReviewState(reviewRepository.countReviewByDoneOrderPk(doneOrderRepository.findByDoneOrderPk(item.getDoneOrderPk())) == 0 ? 0 : 1);
             List<MenuInfoDto> result2 = doneOrderMenuRepository.findMenuInfoByDoneOrderPk(item.getDoneOrderPk());
             item.setMenuInfoDtos(result2);
         }
