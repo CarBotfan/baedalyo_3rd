@@ -19,6 +19,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(nativeQuery = true, value = "INSERT INTO review (review_pk, done_order_pk, user_pk, res_pk, review_contents, review_rating, review_pics_1, review_pics_2, review_pics_3, review_pics_4) VALUES (:reviewPk, :doneOrderPk, :userPk, (SELECT res_pk FROM done_order WHERE done_order_pk = :p.doneOrderPk), :p.reviewContents, :p.reviewRating, :p.reviewPics1, :p.reviewPics2, :p.reviewPics3, :p.reviewPics4)")
     void insertReview( ReviewPostReq p);
 
+    Review findReviewByReviewPk(Long reviewPk);
 
     Integer countReviewByDoneOrderPk(DoneOrder doneOrderPk);
 

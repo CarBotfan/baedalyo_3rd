@@ -6,6 +6,7 @@ import com.green.beadalyo.kdh.report.admin.model.GetReportListResForAdmin;
 import com.green.beadalyo.kdh.report.admin.model.GetReportOneResForAdmin;
 import com.green.beadalyo.kdh.report.user.model.GetReportListResForUser;
 import com.green.beadalyo.kdh.report.user.model.GetReportOneResForUser;
+import com.green.beadalyo.lhn.Review.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
 
+    Integer countByReviewPk(Review reviewPk);
 
     Page<ReportEntity> findAllByOrderByReportPkDesc(Pageable pageable);
 
