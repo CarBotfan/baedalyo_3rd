@@ -47,7 +47,7 @@ public class MenuCategory {
         this.position = dto.getPosition();
     }
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "menuCategory", orphanRemoval = false)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "menuCategory")
     private List<MenuEntity> menuList;
 
     @PreRemove
@@ -55,6 +55,7 @@ public class MenuCategory {
         this.restaurant = null;
         if(menuList != null) {
             for(MenuEntity menu : menuList) {
+                menu.setMenuCategory(null);
                 menu.setMenuState(3);
             }
         }
