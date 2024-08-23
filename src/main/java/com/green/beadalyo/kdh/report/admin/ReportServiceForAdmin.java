@@ -82,6 +82,8 @@ public class ReportServiceForAdmin {
 
     public void delReport(Long reportPk){
         ReportEntity reportEntity = reportRepository.getReferenceById(reportPk);
+        reportEntity.setReportState(2);
+        reportEntity.setReportResult("제재 사유가 아닙니다.");
         reportRepository.delete(reportEntity);
     }
 

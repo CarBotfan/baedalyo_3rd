@@ -15,7 +15,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "report")
+@Table(name = "report", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "review_pk")
+})
 public class ReportEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +26,7 @@ public class ReportEntity {
 
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "review_pk", nullable = false, unique = true)
+    @JoinColumn(name = "review_pk", nullable = false)
     private Review reviewPk;
 
     @ToString.Exclude
