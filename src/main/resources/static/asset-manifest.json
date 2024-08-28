@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.99a4cf46.css",
-    "main.js": "/static/js/main.39131a2d.js",
+    "main.css": "/static/css/main.a3c43ebc.css",
+    "main.js": "/static/js/main.f13dbcf3.js",
     "static/js/884.dbebef98.chunk.js": "/static/js/884.dbebef98.chunk.js",
     "static/media/vecteezy_discount-coupon-icon-sign-design_9342079.png": "/static/media/vecteezy_discount-coupon-icon-sign-design_9342079.ff9311d01ff07fd6fd86.png",
     "static/media/woman-8671666_640.png": "/static/media/woman-8671666_640.84135425b9ff0015662e.png",
@@ -9,12 +9,12 @@
     "static/media/—Pngtree—drink coffee fruit juice table_3925056.png": "/static/media/—Pngtree—drink coffee fruit juice table_3925056.6ebc565df88356c94fdc.png",
     "static/media/intro.webp": "/static/media/intro.836a1205e27ad1680779.webp",
     "index.html": "/index.html",
-    "main.99a4cf46.css.map": "/static/css/main.99a4cf46.css.map",
-    "main.39131a2d.js.map": "/static/js/main.39131a2d.js.map",
+    "main.a3c43ebc.css.map": "/static/css/main.a3c43ebc.css.map",
+    "main.f13dbcf3.js.map": "/static/js/main.f13dbcf3.js.map",
     "884.dbebef98.chunk.js.map": "/static/js/884.dbebef98.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.99a4cf46.css",
-    "static/js/main.39131a2d.js"
+    "static/css/main.a3c43ebc.css",
+    "static/js/main.f13dbcf3.js"
   ]
 }
